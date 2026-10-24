@@ -1142,7 +1142,7 @@ html:has(.admin-shell[data-admin-size="larger"]) {
     gap: 1.5rem;
   }
   .ledger-tool-directory .admin-workspace-link {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
   }
   .admin-ledger .admin-workspace-shortcuts {
     gap: 0;
@@ -1249,4 +1249,18 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   .focus-primary {
     transition: none;
   }
+}
+
+/* Installation is a secondary Settings action, not the page's primary job. */
+.admin-shell .compact-settings .admin-settings-surface > div > button {
+  background: transparent;
+  color: inherit;
+  padding-inline: 0;
+  font-size: 0.8125rem;
+  font-weight: 450;
+  border: 0;
+  box-shadow: none;
+}
+.admin-shell .compact-settings .admin-settings-surface > div > button svg {
+  display: none;
 }
