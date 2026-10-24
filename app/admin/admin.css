@@ -1252,7 +1252,13 @@ html:has(.admin-shell[data-admin-size="larger"]) {
 }
 
 /* Installation is a secondary Settings action, not the page's primary job. */
-.admin-shell .compact-settings .admin-settings-surface > div > button {
+.admin-shell .compact-settings .admin-settings-surface > div > button,
+.admin-shell
+  .compact-settings
+  .admin-settings-surface
+  > div
+  > div
+  > button:first-child {
   background: transparent;
   color: inherit;
   padding-inline: 0;
@@ -1261,6 +1267,13 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   border: 0;
   box-shadow: none;
 }
-.admin-shell .compact-settings .admin-settings-surface > div > button svg {
+.admin-shell .compact-settings .admin-settings-surface > div > button svg,
+.admin-shell
+  .compact-settings
+  .admin-settings-surface
+  > div
+  > div
+  > button:first-child
+  svg {
   display: none;
 }
