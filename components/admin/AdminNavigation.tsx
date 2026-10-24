@@ -81,9 +81,6 @@ export function AdminNavigation() {
                 <span className="block text-sm font-semibold tracking-tight">
                   {t("Whatelz Admin")}
                 </span>
-                <span className="hidden text-[10px] uppercase sm:block tracking-[0.18em] text-zinc-500">
-                  {t("Your command centre")}
-                </span>
               </span>
             </Link>
             <nav
