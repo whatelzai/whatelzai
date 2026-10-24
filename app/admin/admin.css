@@ -574,7 +574,7 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   .admin-workspace .admin-overview-daily {
     grid-column: span 7;
   }
-  .admin-workspace .admin-overview-attention {
+  .admin-workspace .admin-calm-overview > .admin-overview-attention {
     grid-column: span 5;
     grid-row: span 2;
   }
