@@ -117,7 +117,7 @@ export function AdminNavigation() {
                         ?.focus();
                     }
                   }}
-                  className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full bg-yellow-300 px-4 text-sm font-medium text-zinc-950 transition hover:bg-yellow-200 focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
+                  className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full px-4 text-sm font-medium text-zinc-950 transition focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
                 >
                   {t(activeLabel)}
                   <ChevronDown
@@ -143,7 +143,7 @@ export function AdminNavigation() {
                             switcher.current.querySelector("summary")?.focus();
                           }
                         }}
-                        className={`flex min-h-12 items-center justify-between gap-4 rounded-xl px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${active ? "bg-yellow-100" : "hover:bg-zinc-100"}`}
+                        className={`flex min-h-12 items-center justify-between gap-4 rounded-xl px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${active ? "bg-zinc-100" : "hover:bg-zinc-100"}`}
                       >
                         {t(item.label)}
                         {active && <Check size={16} aria-hidden="true" />}
@@ -185,7 +185,7 @@ export function AdminNavigation() {
                 </nav>
               </details>
             ) : (
-              <span className="inline-flex min-h-11 items-center rounded-full bg-yellow-300 px-4 text-sm font-medium text-zinc-950">
+              <span className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-zinc-950">
                 {t(activeLabel)}
               </span>
             )}
@@ -204,7 +204,7 @@ export function AdminNavigation() {
               key={key}
               href={adminUrl(path)}
               aria-current={active ? "location" : undefined}
-              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${active ? "bg-yellow-300 text-zinc-950" : "text-zinc-500 hover:bg-zinc-100"}`}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${active ? "text-zinc-950" : "text-zinc-500 hover:bg-zinc-100"}`}
             >
               <Icon
                 size={22}

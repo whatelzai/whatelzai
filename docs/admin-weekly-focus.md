@@ -8,7 +8,7 @@ Start focused sprint opens an in-memory distraction-free reading view. It does n
 
 Daily rhythm entries stream separately, with saved/missing/unavailable semantics preserved. Weekly closeout status reads the previous complete Singapore week, never implies a scheduled ChatGPT run succeeded. Existing ChatGPT routines and EMDEE originals are untouched.
 
-Settings caps at640px and uses compact rows rather than full-width tonal panels. Keep real push status/opt-in/error/test controls and per-device schedule behavior. Timetable DOM mounts only when its disclosure opens; drafts and explicit save behavior remain. Appearance/language/text controls are unchanged. Technical access stays in its existing Advanced disclosure. No business data moves into Settings.
+Settings caps at640px and uses compact rows rather than full-width tonal panels. Keep real push status/opt-in/error/test controls and per-device schedule behavior. Timetable DOM mounts only when its disclosure opens; drafts and explicit save behavior remain. Appearance/language/text controls are unchanged. Technical access is removed from the Settings directory; its existing owner-gated route remains unchanged. No business data moves into Settings.
 
 The existing custom native-details/anchor workspace dropdown replaces the prototype's OS select: rounded opaque menu, quiet selected row, 44px links, Escape/outside close, ArrowDown opens/focuses first link, Tab navigation and focus return. Dock active state becomes a short yellow marker. Brand/type preserved; no public/member appearance changes.
 
