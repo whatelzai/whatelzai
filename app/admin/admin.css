@@ -490,7 +490,7 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   gap: 1.5rem;
 }
 .admin-workspace .admin-calm-overview > section {
-  grid-area: auto;
+  grid-row: auto;
   min-width: 0;
   padding: 1.5rem !important;
   border: 0 !important;
@@ -644,7 +644,7 @@ html:has(.admin-shell[data-admin-size="larger"]) {
     grid-template-columns: 1fr;
   }
   .admin-workspace .admin-calm-overview > section {
-    grid-area: auto;
+    grid-row: auto;
     padding: 1.25rem !important;
   }
 }
