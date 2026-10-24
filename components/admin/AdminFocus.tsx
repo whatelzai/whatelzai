@@ -305,7 +305,7 @@ export function AdminFocusProvider({
           dirty: dirty.current,
           editing,
           dialog: !!document.querySelector(
-            "dialog[open], [role=dialog][aria-modal=true], header details[open]",
+            "dialog[open], [role=dialog][aria-modal=true], header details[open], [data-focusing=true]",
           ),
           visible: document.visibilityState === "visible",
         });

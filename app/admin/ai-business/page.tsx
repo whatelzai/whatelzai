@@ -7,6 +7,11 @@ export const metadata: Metadata = { title: "AI Business — Admin" };
 
 const links = [
   {
+    href: "/admin/ai-business/operations",
+    label: "Product health",
+    description: "Whatelzai and EMDEE activity and connection health.",
+  },
+  {
     href: "/admin/profile",
     label: "My profile",
     description: "Manage your profile and related website content.",
@@ -106,6 +111,7 @@ export default function AIBusinessPage() {
           label: "Website & identity",
           links: links.filter((link) =>
             [
+              "Product health",
               "My profile",
               "Brand & design system",
               "Website dashboard",

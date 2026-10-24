@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useAdminPreferences } from "./AdminPreferences";
 import Link from "@/components/admin/AdminLink";
 import { adminUrl } from "@/lib/admin-url";
@@ -23,8 +22,6 @@ export function AdminArea({
   }[];
 }) {
   const { t } = useAdminPreferences();
-  const [selected, setSelected] = useState(0);
-  const active = groups?.[selected] ?? groups?.[0];
   function renderLink(link: {
     href: string;
     label: string;
@@ -46,7 +43,7 @@ export function AdminArea({
     );
   }
   return (
-    <div className="admin-workspace">
+    <div className="admin-workspace admin-ledger lane-ledger">
       <header className="admin-workspace-heading">
         <h1>{t(title)}</h1>
         <p>{t(description)}</p>
@@ -55,32 +52,14 @@ export function AdminArea({
       {links.length > 0 && (
         <div className="admin-workspace-shortcuts">{links.map(renderLink)}</div>
       )}
-      {active && groups && (
-        <div className="admin-workspace-directory">
-          <nav
-            aria-label={t("Workspace tools")}
-            className="admin-workspace-index"
-          >
-            {groups.map((group, index) => (
-              <button
-                type="button"
-                key={group.label}
-                aria-pressed={selected === index}
-                aria-controls="workspace-tools"
-                onClick={() => setSelected(index)}
-              >
-                {t(group.label)}
-              </button>
-            ))}
-          </nav>
-          <section
-            id="workspace-tools"
-            aria-label={t(active.label)}
-            className="admin-workspace-tools"
-          >
-            <h2>{t(active.label)}</h2>
-            <div key={active.label}>{active.links.map(renderLink)}</div>
-          </section>
+      {groups && (
+        <div className="ledger-tool-directory">
+          {groups.map((group) => (
+            <section key={group.label} aria-label={t(group.label)}>
+              <h2>{t(group.label)}</h2>
+              <div>{group.links.map(renderLink)}</div>
+            </section>
+          ))}
         </div>
       )}
       {children}
