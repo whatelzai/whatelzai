@@ -66,7 +66,7 @@ export function AdminNavigation() {
       >
         {t("Skip to content")}
       </a>
-      <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
+      <header className="admin-nav-header sticky top-0 z-30 border-b border-zinc-200 bg-white/95 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 md:px-10">
           <div className="flex min-h-16 items-center justify-between gap-3">
             <Link
@@ -81,13 +81,11 @@ export function AdminNavigation() {
                 <span className="block text-sm font-semibold tracking-tight">
                   {t("Whatelz Admin")}
                 </span>
-                <span className="hidden text-[10px] uppercase sm:block tracking-[0.18em] text-zinc-500">
-                  {t("Your command centre")}
-                </span>
               </span>
             </Link>
             <nav
               aria-label="Desktop admin tabs"
+              data-ledger-tabs=""
               className="hidden items-center gap-1 rounded-full bg-zinc-100 p-1 lg:flex"
             >
               {tabs.map(({ key, label, path, icon: Icon }) => (
@@ -95,7 +93,7 @@ export function AdminNavigation() {
                   key={key}
                   href={adminUrl(path)}
                   aria-current={current.tab === key ? "location" : undefined}
-                  className={`flex min-h-10 items-center gap-2 rounded-full px-5 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${current.tab === key ? "bg-white text-zinc-950 shadow-sm" : "text-zinc-500 hover:text-zinc-950"}`}
+                  className={`flex min-h-10 items-center gap-2 rounded-full px-5 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${current.tab === key ? "bg-white text-zinc-950" : "text-zinc-500 hover:text-zinc-950"}`}
                 >
                   <Icon size={17} aria-hidden="true" />
                   {t(label)}
@@ -106,11 +104,20 @@ export function AdminNavigation() {
               <details
                 key={pathname}
                 ref={switcher}
-                className="group relative shrink-0"
+                className="admin-space-switcher group relative shrink-0"
               >
                 <summary
                   aria-label={`Choose area: ${t(activeLabel)}`}
-                  className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full bg-yellow-300 px-4 text-sm font-medium text-zinc-950 transition hover:bg-yellow-200 focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
+                  onKeyDown={(event) => {
+                    if (event.key === "ArrowDown" && switcher.current) {
+                      event.preventDefault();
+                      switcher.current.open = true;
+                      switcher.current
+                        .querySelector<HTMLAnchorElement>("nav a")
+                        ?.focus();
+                    }
+                  }}
+                  className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full px-4 text-sm font-medium text-zinc-950 transition focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
                 >
                   {t(activeLabel)}
                   <ChevronDown
@@ -136,7 +143,7 @@ export function AdminNavigation() {
                             switcher.current.querySelector("summary")?.focus();
                           }
                         }}
-                        className={`flex min-h-12 items-center justify-between gap-4 rounded-xl px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${active ? "bg-yellow-100" : "hover:bg-zinc-100"}`}
+                        className={`flex min-h-12 items-center justify-between gap-4 rounded-xl px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${active ? "bg-zinc-100" : "hover:bg-zinc-100"}`}
                       >
                         {t(item.label)}
                         {active && <Check size={16} aria-hidden="true" />}
@@ -178,7 +185,7 @@ export function AdminNavigation() {
                 </nav>
               </details>
             ) : (
-              <span className="inline-flex min-h-11 items-center rounded-full bg-yellow-300 px-4 text-sm font-medium text-zinc-950">
+              <span className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-zinc-950">
                 {t(activeLabel)}
               </span>
             )}
@@ -187,7 +194,8 @@ export function AdminNavigation() {
       </header>
       <nav
         aria-label="Admin tabs"
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-lg grid-cols-3 gap-3 border-t border-zinc-200 bg-white/95 px-5 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl sm:rounded-t-3xl sm:border-x lg:hidden"
+        data-ledger-dock=""
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-lg grid-cols-3 gap-3 border-t border-zinc-200 bg-white/95 px-5 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:rounded-t-3xl sm:border-x lg:hidden"
       >
         {tabs.map(({ key, label, path, icon: Icon }) => {
           const active = current.tab === key;
@@ -196,7 +204,7 @@ export function AdminNavigation() {
               key={key}
               href={adminUrl(path)}
               aria-current={active ? "location" : undefined}
-              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${active ? "bg-yellow-300 text-zinc-950" : "text-zinc-500 hover:bg-zinc-100"}`}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${active ? "text-zinc-950" : "text-zinc-500 hover:bg-zinc-100"}`}
             >
               <Icon
                 size={22}

@@ -5,14 +5,12 @@ import {
   PreferenceRows,
   useAdminPreferences,
 } from "@/components/admin/AdminPreferences";
-import Link from "@/components/admin/AdminLink";
-import { adminUrl } from "@/lib/admin-url";
 import { InstallAppButton } from "@/components/fcos/AppInstallation";
 import { SignOutButton } from "@/components/auth/AuthControls";
 export default function SettingsPanel() {
   const { t, preferences } = useAdminPreferences();
   return (
-    <div className="admin-workspace admin-settings-page text-zinc-900">
+    <div className="admin-workspace admin-settings-page admin-ledger compact-settings text-zinc-900">
       <h1>{t("Settings")}</h1>
       <div className="admin-settings-sections">
         <section className="admin-settings-section">
@@ -35,17 +33,6 @@ export default function SettingsPanel() {
               <span className="text-sm font-medium">{t("App")}</span>
               <InstallAppButton language={preferences.language} />
             </div>
-            <details className="py-4">
-              <summary className="flex min-h-11 cursor-pointer items-center text-sm font-medium">
-                {t("Advanced")}
-              </summary>
-              <Link
-                href={adminUrl("/admin/tokens")}
-                className="inline-block min-h-11 py-3 text-sm underline underline-offset-4"
-              >
-                {t("MCP & API access →")}
-              </Link>
-            </details>
             <div className="flex items-center justify-between gap-4 py-5">
               <span className="text-sm font-medium">{t("Your account")}</span>
               <SignOutButton

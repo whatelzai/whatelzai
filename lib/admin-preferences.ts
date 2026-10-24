@@ -18,6 +18,52 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "This week": "本周",
+  "My next sprint": "下一次专注冲刺",
+  "Focused sprint": "专注冲刺",
+  "Accepted for this week": "本周已接受的事项",
+  "Daily rhythm": "每日节奏",
+  "Evening debrief": "晚间复盘",
+  "Weekly closeout": "每周复盘",
+  "Start focused sprint": "开始专注冲刺",
+  "Leave focus view": "退出专注视图",
+  "Choose another": "选择其他事项",
+  "Choose my focus": "选择专注事项",
+  "Review commitments": "查看承诺事项",
+  "Choose one outcome to move forward.": "选择一个要推进的成果。",
+  "Your commitments could not be loaded.": "无法读取承诺事项。",
+  "One thing at a time. Leaving this view does not complete the task.":
+    "一次专注一件事。退出视图不会将事项标记为完成。",
+  "No accepted commitment due this week.": "本周暂无到期的已接受事项。",
+  "Commitments unavailable.": "无法读取承诺事项。",
+  "Open workspace": "打开工作区",
+  Accepted: "已接受",
+  "Carried forward": "延续事项",
+  "Due today": "今天到期",
+  Blocked: "受阻",
+  Waiting: "等待中",
+  "About this week": "关于本周视图",
+  "Shows accepted unfinished commitments due by Sunday, including carried work, from the loaded set of up to 100. Weekly aspirations are not automatically accepted tasks.":
+    "显示已读取的最多100条记录中，截至周日到期的已接受且未完成事项，包括延续事项。每周愿景不会自动变为已接受任务。",
+  "Checking saved entry…": "正在读取记录…",
+  "Last complete week · saved": "上一完整周 · 已保存",
+  "Last complete week · no saved entry": "上一完整周 · 暂无记录",
+  "Choose the next work priority.": "选择下一项工作重点。",
+  "Work priorities could not be loaded.": "无法读取工作重点。",
+  "Upcoming deadlines": "即将到期",
+  "Blockers & handoffs": "阻碍与交接",
+  "No upcoming accepted work in the loaded set.":
+    "已读取记录中暂无即将到期的已接受工作。",
+  "Deadlines unavailable.": "无法读取截止日期。",
+  "No accepted blocked or waiting work in the loaded set.":
+    "已读取记录中暂无受阻或等待中的已接受工作。",
+  "Blockers unavailable.": "无法读取阻碍事项。",
+  "Work boundaries": "工作边界",
+  "AsiaVerify · weekdays 9am–6pm. Keep work within 40 hours a week; extra hours only for emergencies or incidents.":
+    "AsiaVerify · 工作日9点至18点。每周工作控制在40小时内，仅紧急情况或事故时加班。",
+  "A dependable job supports the runway. Protect evenings for building the life beyond it.":
+    "稳定的工作提供支持，守护晚间时间，建设更广阔的生活。",
+  "Product health": "产品状态",
   "Workspace tools": "工作区工具",
   "Reading preferences": "阅读偏好",
   "Notifications & rhythm": "通知与节奏",

@@ -611,3 +611,7 @@ Mandala is a dedicated reader, not an EMDEE heading accordion. Keep the shared A
 ## Admin workspace reading layouts (SPR-170)
 
 Overview exposes its independently streamed reading, attention, AI focus, growth and product sections directly. Shared AdminArea leads with current focus and presents grouped tools through a labelled category index with immediate local selection; all destinations remain. Settings uses reading, notifications/rhythm and app/account sections in desktop label/control columns, stacked on phones. Preserve source semantics, owner authorization, navigation, timetable and notification controls. Taste editorial-greeting seed 667337762 keeps existing identity/type and user-defined shell. See docs/admin-workspace-design.md.
+
+## Weekly focus ledger (SPR-171)
+
+Supersedes SPR-170 panel layouts: compact Overview shows Singapore week, accepted due/carried work per lane, next accepted actionable sprint and independently streamed routine status. In-memory focus view neither mutates nor completes work and protects against automatic space switches. No metric/draft reads on Overview; product metrics live under AI Business/operations. Settings narrow compact rows; timetable DOM mounts on open. Shared dropdown remains custom rounded details/anchors with keyboard/outside/Escape behavior. Plain grouped lane tools; Day Job source-backed work/deadlines/blockers and confirmed boundaries. Preserve loading/pending feedback, reduced-motion progression, owner gates and all existing device controls. See docs/admin-weekly-focus.md.
