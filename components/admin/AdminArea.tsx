@@ -38,7 +38,7 @@ export function AdminArea({
           <span className="font-medium">{t(link.label)}</span>
           <p>{t(link.description)}</p>
         </div>
-        <span aria-hidden="true">→</span>
+        <span aria-hidden="true">›</span>
       </Link>
     );
   }
