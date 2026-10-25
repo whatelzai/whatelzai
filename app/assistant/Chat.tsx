@@ -1,10 +1,13 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { VoiceInput } from "./VoiceInput";
+import { imageDraft } from "./image-draft";
 import { ChatMarkdown } from "./ChatMarkdown";
 import { readReply } from "@/lib/member-ai/stream";
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUp, LoaderCircle } from "lucide-react";
+import { ArrowUp, LoaderCircle, Plus, X } from "lucide-react";
 import type { ChatMessage } from "@/lib/member-ai/model";
 import { acceptCommitment, createConversation } from "./actions";
 export function Chat({
@@ -20,6 +23,20 @@ export function Chat({
   initialPrompt?: string;
   name?: string;
 }) {
+  const [images, setImages] = useState<
+    { key: string; file: File; url: string }[]
+  >([]);
+  const [mediaBusy, setMediaBusy] = useState(false);
+  const [submittedImages, setSubmittedImages] = useState<string[]>([]);
+  const attaching = useRef(false);
+  const picker = useRef<HTMLInputElement>(null);
+  const urls = useRef(new Set<string>());
+  useEffect(
+    () => () => {
+      for (const url of urls.current) URL.revokeObjectURL(url);
+    },
+    [],
+  );
   const [text, setText] = useState(initialPrompt);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -29,7 +46,11 @@ export function Chat({
   const [draftSaved, setDraftSaved] = useState(false);
   const pinned = useRef(true);
   const sending = useRef(false);
-  const pending = useRef<{ text: string; id: string } | null>(null);
+  const pending = useRef<{
+    key: string;
+    id: string;
+    imageIds: string[];
+  } | null>(null);
   const activeConversation = useRef(conversationId);
   const transcript = useRef<HTMLDivElement>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
@@ -41,23 +62,46 @@ export function Chat({
   }, [lastMessage, busy, streamed]);
   async function send(event: React.FormEvent) {
     event.preventDefault();
-    if (sending.current || busy || !enabled || !text.trim()) return;
+    if (
+      sending.current ||
+      busy ||
+      !enabled ||
+      mediaBusy ||
+      text.length > 6000 ||
+      (!text.trim() && !images.length)
+    )
+      return;
     sending.current = true;
     setBusy(true);
     setNotice("");
-    setSubmitted(text);
+    const messageText = text.trim() || "Please help me understand this image.";
+    setSubmitted(messageText);
+    setSubmittedImages(images.map((image) => image.url));
     setStreamed("");
     setStartedFrom(lastMessage);
     setDraftSaved(false);
     pinned.current = true;
-    const requestId =
-      pending.current?.text === text ? pending.current.id : crypto.randomUUID();
-    pending.current = { text, id: requestId };
+    const key = JSON.stringify([text, images.map((image) => image.key)]);
+    if (pending.current?.key !== key)
+      pending.current = { key, id: crypto.randomUUID(), imageIds: [] };
+    const requestId = pending.current.id;
     try {
       // A blank slate stays ephemeral until the first send. Keep this ID for
       // retrying an interrupted request; never create a new chat on each retry.
       if (!activeConversation.current)
         activeConversation.current = (await createConversation()).id;
+      for (let i = pending.current!.imageIds.length; i < images.length; i++) {
+        const form = new FormData();
+        form.set("conversationId", activeConversation.current!);
+        form.set("image", images[i].file);
+        const upload = await fetch("/api/member/assistant/images", {
+          method: "POST",
+          body: form,
+        });
+        const result = await upload.json();
+        if (!upload.ok) throw Error(result.error ?? "Image upload failed.");
+        pending.current!.imageIds.push(result.id);
+      }
       const response = await fetch("/api/member/assistant", {
         method: "POST",
         headers: {
@@ -67,7 +111,8 @@ export function Chat({
         body: JSON.stringify({
           requestId,
           conversationId: activeConversation.current,
-          text,
+          text: messageText,
+          imageIds: pending.current!.imageIds,
         }),
       });
       const result = await readReply(response, (chunk) =>
@@ -78,6 +123,7 @@ export function Chat({
       else {
         setDraftSaved(true);
         setText("");
+        setImages([]);
         pending.current = null;
         if (textarea.current) textarea.current.style.height = "auto";
       }
@@ -93,6 +139,34 @@ export function Chat({
       sending.current = false;
       setBusy(false);
       if (conversationId) router.refresh();
+    }
+  }
+  async function attach(files: File[]) {
+    if (sending.current || busy || mediaBusy || !enabled || attaching.current)
+      return;
+    if (images.length + files.length > 2) {
+      setNotice("Attach up to two images per message.");
+      return;
+    }
+    attaching.current = true;
+    setMediaBusy(true);
+    setNotice("");
+    try {
+      const drafts: { key: string; file: File; url: string }[] = [];
+      for (const file of files) {
+        const prepared = await imageDraft(file);
+        const url = URL.createObjectURL(prepared);
+        urls.current.add(url);
+        drafts.push({ key: crypto.randomUUID(), file: prepared, url });
+      }
+      setImages((previous) => [...previous, ...drafts]);
+    } catch (e) {
+      setNotice(
+        e instanceof Error ? e.message : "Image could not be prepared.",
+      );
+    } finally {
+      attaching.current = false;
+      setMediaBusy(false);
     }
   }
   async function accept(message: string, proposal: string) {
@@ -149,6 +223,27 @@ export function Chat({
               <p className="sr-only">
                 {message.role === "user" ? "You" : "fcOS"}
               </p>
+              {!!message.images?.length && (
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {message.images.map((image) => (
+                    <a
+                      key={image.id}
+                      href={`/api/member/assistant/images/${image.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Image
+                        unoptimized
+                        src={`/api/member/assistant/images/${image.id}`}
+                        width={220}
+                        height={180}
+                        alt="Attached image"
+                        className="max-h-56 max-w-full rounded-xl object-contain"
+                      />
+                    </a>
+                  ))}
+                </div>
+              )}
               {message.role === "assistant" ? (
                 <ChatMarkdown body={message.body} />
               ) : (
@@ -200,6 +295,21 @@ export function Chat({
           {submitted && lastMessage === startedFrom && (
             <article className="ml-10 rounded-3xl bg-zinc-100 px-4 py-3">
               <p className="sr-only">You</p>
+              {!!submittedImages.length && (
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {submittedImages.map((url) => (
+                    <Image
+                      key={url}
+                      unoptimized
+                      src={url}
+                      width={180}
+                      height={150}
+                      alt="Attached image"
+                      className="max-h-44 rounded-xl object-contain"
+                    />
+                  ))}
+                </div>
+              )}
               <p className="whitespace-pre-wrap break-words text-[15px] leading-7">
                 {submitted}
               </p>
@@ -235,7 +345,62 @@ export function Chat({
         onSubmit={send}
         className="fcos-chat-composer shrink-0 bg-white px-1 pt-3 md:px-5"
       >
+        {!!images.length && (
+          <div
+            className="mx-auto mb-2 flex max-w-3xl gap-3"
+            aria-label="Images to send"
+          >
+            {images.map((image, index) => (
+              <div key={image.key} className="relative">
+                <Image
+                  unoptimized
+                  src={image.url}
+                  alt={`Image ${index + 1} preview`}
+                  width={72}
+                  height={72}
+                  className="size-18 rounded-xl object-cover"
+                />
+                <button
+                  type="button"
+                  disabled={busy || mediaBusy}
+                  aria-label={`Remove image ${index + 1}`}
+                  onClick={() =>
+                    setImages((previous) =>
+                      previous.filter((item) => item.key !== image.key),
+                    )
+                  }
+                  className="absolute -right-2 -top-2 flex size-11 items-center justify-center rounded-full bg-white/95 shadow-sm"
+                >
+                  <X size={14} aria-hidden="true" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <input
+          ref={picker}
+          type="file"
+          accept="image/*"
+          multiple
+          className="sr-only"
+          tabIndex={-1}
+          aria-label="Choose chat images"
+          onChange={(event) => {
+            const files = Array.from(event.target.files ?? []);
+            event.target.value = "";
+            void attach(files);
+          }}
+        />
         <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-[28px] border border-zinc-200 bg-zinc-50 p-1.5 shadow-sm focus-within:border-zinc-400">
+          <button
+            type="button"
+            aria-label="Attach images"
+            disabled={busy || mediaBusy || !enabled || images.length >= 2}
+            onClick={() => picker.current?.click()}
+            className="flex size-11 shrink-0 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 disabled:opacity-40"
+          >
+            <Plus size={22} aria-hidden="true" />
+          </button>
           <label htmlFor="member-message" className="sr-only">
             Message fcOS
           </label>
@@ -259,16 +424,41 @@ export function Chat({
                 e.currentTarget.form?.requestSubmit();
               }
             }}
+            onPaste={(event) => {
+              const files = Array.from(event.clipboardData.files).filter(
+                (file) => file.type.startsWith("image/"),
+              );
+              if (files.length) {
+                event.preventDefault();
+                void attach(files);
+              }
+            }}
             maxLength={6000}
             rows={1}
-            disabled={busy || !enabled}
+            disabled={busy || mediaBusy || !enabled}
             className="fcos-chat-input max-h-36 min-h-11 min-w-0 flex-1 resize-none bg-transparent px-3 py-2.5 text-base leading-6 outline-none disabled:opacity-60"
             placeholder="Message fcOS…"
+          />
+          <VoiceInput
+            disabled={busy || mediaBusy || !enabled}
+            onActive={setMediaBusy}
+            onNotice={setNotice}
+            onText={(transcript) =>
+              setText((previous) =>
+                previous.trim() ? `${previous}\n${transcript}` : transcript,
+              )
+            }
           />
           <button
             aria-label={busy ? "Preparing reply" : "Send message"}
             title="Send message"
-            disabled={busy || !enabled || !text.trim()}
+            disabled={
+              busy ||
+              mediaBusy ||
+              !enabled ||
+              text.length > 6000 ||
+              (!text.trim() && !images.length)
+            }
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-yellow-300 text-zinc-950 disabled:bg-zinc-100 disabled:text-zinc-400"
           >
             {busy ? (
@@ -286,7 +476,9 @@ export function Chat({
           role="status"
           className="mx-auto max-w-3xl px-2 pt-2 text-xs leading-5 text-zinc-600"
         >
-          {notice || (!enabled ? "Chat is currently paused." : "")}
+          {(text.length > 6000
+            ? "Shorten your message to 6,000 characters before sending."
+            : notice) || (!enabled ? "Chat is currently paused." : "")}
         </p>
       </form>
     </section>

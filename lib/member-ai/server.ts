@@ -50,13 +50,29 @@ export async function conversationMessages(
     throw Error("Conversation unavailable");
   const { data, error } = await supabaseAdmin
     .from("member_ai_messages")
-    .select("id,role,body,proposals,created_at")
+    .select("id,role,body,proposals,created_at,request_id")
     .eq("user_id", userId)
     .eq("conversation_id", conversationId)
     .order("created_at", { ascending: false })
     .limit(100);
   if (error) throw Error("Messages unavailable");
-  return (data ?? []).reverse() as ChatMessage[];
+  const imageRows = await supabaseAdmin
+    .from("member_ai_images")
+    .select("id,request_id")
+    .eq("user_id", userId)
+    .eq("conversation_id", conversationId)
+    .not("request_id", "is", null)
+    .limit(200);
+  if (imageRows.error) throw Error("Chat images unavailable");
+  return (data ?? []).reverse().map((message) => ({
+    ...message,
+    images:
+      message.role === "user"
+        ? (imageRows.data ?? [])
+            .filter((image) => image.request_id === message.request_id)
+            .map(({ id }) => ({ id }))
+        : [],
+  })) as ChatMessage[];
 }
 export async function memberWorkspace(conversationId?: string, blank = false) {
   const actor = await memberActor();
