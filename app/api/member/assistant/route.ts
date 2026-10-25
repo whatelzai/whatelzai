@@ -1,3 +1,4 @@
+import { modelChatImages } from "@/lib/member-ai/images";
 import { after } from "next/server";
 import { createReplyStream } from "@/lib/member-ai/reply-stream";
 import { readFcosResource } from "@/lib/fcos/resources";
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
   );
   if (!parsed.success)
     return json({ error: "Enter a message of up to 6,000 characters." }, 400);
-  const { requestId, conversationId, text } = parsed.data;
+  const { requestId, conversationId, text, imageIds } = parsed.data;
   const model = actor.access.model;
   // Check provider readiness before reserving member funds.
   let key: string;
@@ -58,14 +59,26 @@ export async function POST(request: Request) {
   } catch {
     return json({ error: "AI service is not configured." }, 503);
   }
-  const reservation = reserveCost(model);
-  const held = await supabaseAdmin.rpc("reserve_member_ai", {
+  let images: Awaited<ReturnType<typeof modelChatImages>>;
+  try {
+    images = await modelChatImages(
+      actor.user.id,
+      conversationId,
+      imageIds,
+      requestId,
+    );
+  } catch {
+    return json({ error: "Chat images could not be loaded." }, 503);
+  }
+  const reservation = reserveCost(model, images.length);
+  const held = await supabaseAdmin.rpc("reserve_member_ai_images", {
     p_user: actor.user.id,
     p_request: requestId,
     p_conversation: conversationId,
     p_text: text,
     p_reserve: reservation,
     p_model: model,
+    p_images: imageIds,
   });
   if (held.error) {
     const reason = held.error.message;
@@ -104,6 +117,7 @@ export async function POST(request: Request) {
         day: singaporeDay(),
         history: await conversationMessages(actor.user.id, conversationId),
         receipt,
+        images,
         readFcos: readFcosResource,
         readVault: (path) => readMemberVault(actor.user.id, path),
         readCommitments: async () => {

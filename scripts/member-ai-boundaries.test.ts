@@ -74,6 +74,7 @@ test("member route rejects disabled, cross-origin and inactive calls before prov
         "@/lib/member-ai/model": model,
         "@/lib/member-ai/agent": {},
         "@/lib/member-ai/reply-stream": { createReplyStream },
+        "@/lib/member-ai/images": { modelChatImages: async () => [] },
         "next/server": { after: () => {} },
         "@/lib/fcos/resources": {
           readFcosResource: async () => {
@@ -568,6 +569,9 @@ test("blank Chat skips transcript reads while latest Chat loads only its owner's
               in() {
                 return this;
               },
+              not() {
+                return this;
+              },
               order() {
                 return this;
               },
@@ -761,7 +765,7 @@ test("Profile usage rejects anonymous reads and scopes every private query to th
   const result = await signedIn.loadProfileData();
   assert.equal(result.usage.canChat, true);
   assert.equal(result.usage.allowance, 5000000);
-  assert.equal(queries.length, 4);
+  assert.equal(queries.length, 5);
   for (const query of queries) {
     assert.equal(query.filters.user_id, "verified-account");
     assert.doesNotMatch(query.selected, /encrypted|credential|subject|body/);
@@ -791,10 +795,11 @@ test("streaming route keeps settlement alive after disconnect and replay cannot 
         after: (task: Promise<unknown>) => pendingAfter.push(task),
       },
       "@/lib/member-ai/reply-stream": { createReplyStream },
+      "@/lib/member-ai/images": { modelChatImages: async () => [] },
       "@/lib/supabase-server": {
         supabaseAdmin: {
           rpc: async (name: string, args: Record<string, unknown>) => {
-            if (name === "reserve_member_ai") {
+            if (name === "reserve_member_ai_images") {
               if (reserved)
                 return {
                   data: {
@@ -885,6 +890,7 @@ test("streaming route sends an explicit error only after retaining an uncertain 
     {
       "next/server": { after: (task: Promise<unknown>) => tasks.push(task) },
       "@/lib/member-ai/reply-stream": { createReplyStream },
+      "@/lib/member-ai/images": { modelChatImages: async () => [] },
       "@/lib/supabase-server": {
         supabaseAdmin: {
           rpc: async (name: string, args: Record<string, unknown>) => {
@@ -943,4 +949,150 @@ test("streaming route sends an explicit error only after retaining an uncertain 
   assert.equal(settlements[0].p_failed, true);
   assert.equal(settlements[0].p_uncertain, true);
   assert.equal(settlements[0].p_body, "");
+});
+
+test("image reads require the verified owner before downloading private storage", async () => {
+  for (const allowed of [false, true]) {
+    const filters: unknown[][] = [];
+    let downloads = 0;
+    const route = load<{ GET: (r: Request, p: unknown) => Promise<Response> }>(
+      "app/api/member/assistant/images/[id]/route.ts",
+      {
+        "@/lib/app-access": {
+          requireAssignedUser: async () => ({ id: "owner" }),
+        },
+        "@/lib/member-ai/images": {
+          chatImagePath: (u: string, id: string) => `${u}/${id}.webp`,
+        },
+        "@/lib/supabase-server": {
+          supabaseAdmin: {
+            from: () => ({
+              select() {
+                return this;
+              },
+              eq(...args: unknown[]) {
+                filters.push(args);
+                return this;
+              },
+              maybeSingle: async () => ({
+                data: allowed ? { id: "fixture" } : null,
+              }),
+            }),
+            storage: {
+              from: (bucket: string) => ({
+                download: async (path: string) => {
+                  downloads++;
+                  assert.equal(bucket, "chat-images");
+                  assert.match(path, /^owner\//);
+                  return { data: new Blob(["fixture"]) };
+                },
+              }),
+            },
+          },
+        },
+      },
+    );
+    const response = await route.GET(new Request("https://app.whatelz.ai"), {
+      params: Promise.resolve({ id: "11111111-1111-4111-8111-111111111111" }),
+    });
+    assert.equal(response.status, allowed ? 200 : 404);
+    assert.ok(
+      filters.some(([key, value]) => key === "user_id" && value === "owner"),
+    );
+    assert.equal(downloads, allowed ? 1 : 0);
+    assert.equal(response.headers.get("cache-control"), "private, no-store");
+  }
+});
+
+test("dictation authenticates before reading media and settles success, rejection and unknown outcomes", async () => {
+  const { encodeVoice } = await import("../lib/member-ai/media");
+  const media = await import("../lib/member-ai/media");
+  for (const outcome of [
+    "inactive",
+    "cached",
+    "success",
+    "rejected",
+    "network",
+  ]) {
+    let providerCalls = 0;
+    const settlements: Record<string, unknown>[] = [];
+    const route = load<{ POST: (r: Request) => Promise<Response> }>(
+      "app/api/member/assistant/transcribe/route.ts",
+      {
+        "@/lib/member-ai/server": {
+          memberActor: async () => {
+            if (outcome === "inactive") throw Error("Inactive");
+            return { user: { id: "owner" } };
+          },
+          memberApiEnabled: () => true,
+          platformKey: async () => "fixture",
+        },
+        "@/lib/member-ai/http": { memberOriginAllowed: () => true },
+        "@/lib/member-ai/media": media,
+        "@/lib/supabase-server": {
+          supabaseAdmin: {
+            rpc: async (name: string, args: Record<string, unknown>) => {
+              assert.equal(args.p_user, "owner");
+              if (name === "reserve_member_dictation")
+                return {
+                  data:
+                    outcome === "cached"
+                      ? {
+                          duplicate: true,
+                          status: "completed",
+                          text: "Cached draft",
+                        }
+                      : { duplicate: false },
+                };
+              assert.equal(name, "finish_member_dictation");
+              settlements.push(args);
+              return {};
+            },
+          },
+        },
+      },
+      {
+        File,
+        FormData,
+        Blob,
+        fetch: async () => {
+          providerCalls++;
+          if (outcome === "network") throw Error("Lost connection");
+          return outcome === "rejected"
+            ? new Response(null, { status: 400 })
+            : Response.json({ text: "Editable draft" });
+        },
+      },
+    );
+    const form = new FormData();
+    form.set("requestId", "11111111-1111-4111-8111-111111111111");
+    const bytes = encodeVoice([new Float32Array(16000)], 16000);
+    form.set(
+      "audio",
+      new Blob([bytes.buffer as ArrayBuffer], { type: "audio/wav" }),
+      "test.wav",
+    );
+    const response = await route.POST(
+      new Request("https://app.whatelz.ai", { method: "POST", body: form }),
+    );
+    assert.equal(
+      response.status,
+      outcome === "inactive"
+        ? 400
+        : outcome === "rejected" || outcome === "network"
+          ? 502
+          : 200,
+    );
+    assert.equal(
+      providerCalls,
+      outcome === "inactive" || outcome === "cached" ? 0 : 1,
+    );
+    assert.equal(settlements.length, providerCalls);
+    if (settlements.length) {
+      assert.equal(settlements[0].p_uncertain, outcome === "network");
+      assert.equal(settlements[0].p_failed, outcome !== "success");
+    }
+    if (outcome === "success")
+      assert.equal((await response.json()).text, "Editable draft");
+  }
 });

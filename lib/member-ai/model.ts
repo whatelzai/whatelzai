@@ -10,11 +10,12 @@ export const rates = {
   "gpt-6-luna": { input: 0.1, output: 0.5 },
   "gpt-6.1-sol": { input: 2, output: 10 },
 } as const;
-export function reserveCost(model: MemberModel) {
+export function reserveCost(model: MemberModel, images = 0) {
   const rate = rates[model];
   return Math.ceil(
     MAX_CALLS *
-      ((MAX_PAYLOAD_BYTES + 8192) * rate.input +
+      ((MAX_PAYLOAD_BYTES + 8192 + Math.min(2, Math.max(0, images)) * 8192) *
+        rate.input +
         MAX_OUTPUT_TOKENS * rate.output),
   );
 }
@@ -30,6 +31,7 @@ export const sendSchema = z
     requestId: z.uuid(),
     conversationId: z.uuid(),
     text: z.string().trim().min(1).max(6000),
+    imageIds: z.array(z.uuid()).max(2).default([]),
   })
   .strict();
 export const proposalSchema = z
@@ -46,6 +48,8 @@ export type ChatMessage = {
   role: "user" | "assistant";
   body: string;
   proposals: Proposal[];
+  request_id?: string;
+  images?: { id: string }[];
 };
 export function money(micro: number, precision = 2) {
   return new Intl.NumberFormat("en", {

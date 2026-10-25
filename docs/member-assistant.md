@@ -88,9 +88,18 @@ Daily remains on ChatGPT. Enrollment is validated by a service-only database
 function; the normal US$1 weekly baseline and private per-user data boundaries remain.
 Owner-selected full/half resets are documented in docs/member-credit-resets.md.
 
-
 ## Markdown and streaming
 
 The Chat client opts into `application/x-ndjson`. After the existing authorization and atomic reservation, the route streams visible text deltas from the Responses API, followed by a terminal saved message or explicit error. Private tool payloads never cross this transport. Provider usage is taken only from a validated terminal response; truncated/unknown outcomes retain the maximum reservation. Next `after()` keeps settlement tracked even if the client leaves. Legacy JSON requests remain supported. Existing request IDs are reused on transport retries; no automatic provider retry is introduced.
 
 Assistant Markdown uses the installed GFM renderer, with local table/code scrolling, safe URL handling, skipped raw HTML and text-only embedded images. Note review and proposal acceptance appear only on the canonical saved message after refresh. New text scrolls into view while the reader stays near the bottom; scrolling up pauses following.
+
+## Chat images and dictation (SPR-173)
+
+The composer’s plus button previews up to two images per message; remove before sending, or send an image without accompanying text. Supported browser-decodable photos are rasterized locally (up to 15 MB / 40 MP), then the server accepts only bounded JPG/PNG/WebP bytes and normalizes them to at most 1024 px and 256 KiB WebP. EXIF metadata is stripped. Private `chat-images` Storage has no browser read policies; authenticated owner-filtered API routes serve saved history with no-store headers. Uploads are capped at 40/day and 10 unbound/day per account. The last two images are included in subsequent model context; ask to reattach older images. Vision token reserves cover every bounded tool round.
+
+The microphone records only after a user action and permission, for at most 60 seconds, then stops the tracks and returns editable text. Recording can be discarded. Browser Web Audio encodes canonical 16 kHz mono PCM WAV; server validates actual bytes/sample count, not a submitted duration. GPT-Transcribe costs USD0.0045/minute, charged against the same weekly allowance. Raw audio is not stored in Supabase; the private dictation ledger retains request/hash, status and resulting draft text for idempotent retry. Provider processing still applies. Dictation never sends the Chat message automatically.
+
+Service-only RPCs serialize reservations against the account lock. Image binding and Chat reservation commit together; changed attachments on replay fail. Dictation has its own request ID/hash, one running recording at a time and a 30/hour cap. Completed retries return the cached transcript; known provider rejections release the hold, unknown outcomes retain it. Late completion settles the original cycle even after an admin reset. No automatic inference retry, Baobei mutation, note save or sharing is added. Existing Resources tools remain available for attachment-related questions within the member’s permissions.
+
+Run `node --import tsx --test scripts/chat-media.test.ts scripts/chat-media-sql.test.mjs scripts/member-ai-boundaries.test.ts scripts/member-ai.test.ts scripts/member-ai-stream.test.ts`. Use synthetic image/speech for provider QA; actual Android/iPhone microphone permission, capture and keyboard interaction need physical-device validation.
