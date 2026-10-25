@@ -619,3 +619,7 @@ Supersedes SPR-170 panel layouts: compact Overview shows Singapore week, accepte
 ## Chat images and dictation (SPR-173)
 
 Chat supports two previewed images per message and up to 60-second microphone dictation. Server-normalized metadata-free WebP images stay in private Storage, owner-scoped history routes and the latest-two-image model context. GPT-Transcribe returns editable text without auto-send; raw audio is not persisted. Service-only image binding and dictation ledger RPCs preserve weekly reservations, replay protection, uncertain holds and original-cycle settlement across resets. Existing Resources access and explicit note/proposal actions remain; attachments never auto-save Baobei facts or share data. See docs/member-assistant.md. Physical handset microphone QA remains required.
+
+## Admin passkeys (SPR-172)
+
+Native experimental Supabase passkeys are scoped to canonical admin.whatelz.ai RP/origin. Explicit client opt-in, Google recovery and shared cookie behavior retained. Owner-only Security page and enrollment API require stable owner, same-origin JSON, bounded inputs and verified signed-session AMR authentication within10minutes. Native WebAuthn requests device verification; Supabase handles cryptography and sessions. Server finish independently checks owner and confines redirects to Admin. No credential table, key material, biometric storage, role grants or member UI changes. Activation requires project passkey configuration; final physical enrollment is Edmund's phone action. No reopen lock or AAL2 claim. See docs/admin-passkeys.md.

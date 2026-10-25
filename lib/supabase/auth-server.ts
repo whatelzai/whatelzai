@@ -12,6 +12,11 @@ export async function createAuthClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookieOptions: authCookieOptions(requestHeaders.get("host") ?? ""),
+      auth: {
+        experimental: {
+          passkey: requestHeaders.get("host") === "admin.whatelz.ai",
+        },
+      },
       cookies: {
         getAll: () => store.getAll(),
         setAll(values) {

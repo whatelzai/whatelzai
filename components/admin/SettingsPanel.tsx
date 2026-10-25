@@ -1,4 +1,6 @@
 "use client";
+import Link from "./AdminLink";
+import { adminUrl } from "@/lib/admin-url";
 import { FocusSettingsCard } from "@/components/admin/FocusSettings";
 import { PushNotifications } from "@/components/admin/PushNotifications";
 import {
@@ -33,6 +35,13 @@ export default function SettingsPanel() {
               <span className="text-sm font-medium">{t("App")}</span>
               <InstallAppButton language={preferences.language} />
             </div>
+            <Link
+              href={adminUrl("/admin/settings/security")}
+              className="flex min-h-14 items-center justify-between gap-4 border-b border-zinc-200 text-sm"
+            >
+              <span>{t("Security")}</span>
+              <span aria-hidden="true">›</span>
+            </Link>
             <div className="flex items-center justify-between gap-4 py-5">
               <span className="text-sm font-medium">{t("Your account")}</span>
               <SignOutButton
