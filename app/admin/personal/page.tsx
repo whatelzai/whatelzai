@@ -8,6 +8,11 @@ export default function PersonalPage() {
       description="A little space for yourself. Read your daily brief, reflect, and decide what deserves your attention."
       links={[
         {
+          href: "/admin/personal/money",
+          label: "Money",
+          description: "My jars, spending and recurring expenses.",
+        },
+        {
           href: "/admin/personal/mandala",
           label: "My Mandala",
           description:
