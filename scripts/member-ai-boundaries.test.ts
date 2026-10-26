@@ -74,6 +74,7 @@ test("member route rejects disabled, cross-origin and inactive calls before prov
         "@/lib/member-ai/model": model,
         "@/lib/member-ai/agent": {},
         "@/lib/member-ai/reply-stream": { createReplyStream },
+        "@/lib/member-ai/title-server": { titleConversation: async () => {} },
         "@/lib/member-ai/images": { modelChatImages: async () => [] },
         "next/server": { after: () => {} },
         "@/lib/fcos/resources": {
@@ -783,6 +784,8 @@ test("streaming route keeps settlement alive after disconnect and replay cannot 
     release = resolve;
   });
   const pendingAfter: Promise<unknown>[] = [];
+  const titleTasks: (() => Promise<unknown>)[] = [];
+  let titleCalls = 0;
   const settlements: Record<string, unknown>[] = [];
   let invoked = 0;
   let reserved = false;
@@ -792,9 +795,18 @@ test("streaming route keeps settlement alive after disconnect and replay cannot 
     "app/api/member/assistant/route.ts",
     {
       "next/server": {
-        after: (task: Promise<unknown>) => pendingAfter.push(task),
+        after: (task: Promise<unknown> | (() => Promise<unknown>)) => {
+          if (typeof task !== "function") pendingAfter.push(task);
+          else titleTasks.push(task);
+        },
       },
       "@/lib/member-ai/reply-stream": { createReplyStream },
+      "@/lib/member-ai/title-server": {
+        titleConversation: async (owner: string) => {
+          assert.equal(owner, user);
+          titleCalls++;
+        },
+      },
       "@/lib/member-ai/images": { modelChatImages: async () => [] },
       "@/lib/supabase-server": {
         supabaseAdmin: {
@@ -874,6 +886,10 @@ test("streaming route keeps settlement alive after disconnect and replay cannot 
   release();
   await Promise.all(pendingAfter);
   assert.equal(settlements.length, 1);
+  assert.equal(titleCalls, 0);
+  assert.equal(titleTasks.length, 1);
+  await titleTasks[0]();
+  assert.equal(titleCalls, 1);
   assert.equal(settlements[0].p_user, user);
   assert.equal(settlements[0].p_charge, 2);
   assert.equal(settlements[0].p_uncertain, false);
@@ -888,8 +904,13 @@ test("streaming route sends an explicit error only after retaining an uncertain 
   const route = load<{ POST: (request: Request) => Promise<Response> }>(
     "app/api/member/assistant/route.ts",
     {
-      "next/server": { after: (task: Promise<unknown>) => tasks.push(task) },
+      "next/server": {
+        after: (task: Promise<unknown> | (() => Promise<unknown>)) => {
+          if (typeof task !== "function") tasks.push(task);
+        },
+      },
       "@/lib/member-ai/reply-stream": { createReplyStream },
+      "@/lib/member-ai/title-server": { titleConversation: async () => {} },
       "@/lib/member-ai/images": { modelChatImages: async () => [] },
       "@/lib/supabase-server": {
         supabaseAdmin: {
