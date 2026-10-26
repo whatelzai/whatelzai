@@ -43,7 +43,10 @@ export function ChatMenu({
             type="button"
             aria-label="Chat menu"
             aria-haspopup="dialog"
-            onClick={() => dialog.current?.showModal()}
+            onClick={() => {
+              dialog.current?.showModal();
+              router.refresh();
+            }}
             className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-zinc-100"
           >
             <Menu size={22} aria-hidden="true" />

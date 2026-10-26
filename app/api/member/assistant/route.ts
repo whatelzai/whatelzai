@@ -1,3 +1,4 @@
+import { titleConversation } from "@/lib/member-ai/title-server";
 import { modelChatImages } from "@/lib/member-ai/images";
 import { after } from "next/server";
 import { createReplyStream } from "@/lib/member-ai/reply-stream";
@@ -177,6 +178,9 @@ export async function POST(request: Request) {
         },
         502,
       );
+    after(() =>
+      titleConversation(actor.user.id, conversationId, key).catch(() => {}),
+    );
     return json({
       message: {
         id: randomUUID(),
