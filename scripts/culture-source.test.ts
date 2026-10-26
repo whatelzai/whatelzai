@@ -1,48 +1,83 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
-import library from "../content/culture/ultra.json";
+import { readFileSync } from "node:fs";
+import { cultureFromRows } from "../lib/knowledge/model";
 import { domainRoute } from "../lib/domain-routing";
 
-test("every source occurrence survives deduplication with wording, chapter and order intact", () => {
-  const source = readFileSync(
-    new URL("../content/culture/ultra-source.txt", import.meta.url),
-    "utf8",
+test("database culture preserves exact text and multiple chapter links while excluding provenance from reader output", () => {
+  const result = cultureFromRows(
+    [
+      {
+        id: "example",
+        title: "Example collection",
+        metadata: {
+          displayName: "Example",
+          teacher: "Teacher",
+          chapters: [
+            { id: "one", title: "First" },
+            { id: "two", title: "Second" },
+          ],
+          privateSource: "not serialized",
+        },
+      },
+    ],
+    [
+      {
+        id: "saying",
+        collection_id: "example",
+        body: "Original punctuation！",
+        metadata: {
+          chapters: ["one", "two"],
+          occurrences: [
+            { chapterId: "one", sourceOrder: 1 },
+            { chapterId: "two", sourceOrder: 2 },
+          ],
+        },
+      },
+    ],
   );
-  const original: { text: string; chapterId: string; sourceOrder: number }[] =
-    [];
-  let chapter = 0;
-  for (const line of source.split("\n")) {
-    if (line.startsWith("## ")) {
-      assert.equal(library.chapters[chapter].title, line.slice(3));
-      chapter++;
-    } else if (line && !line.startsWith("#")) {
-      original.push({
-        text: line,
-        chapterId: library.chapters[chapter - 1].id,
-        sourceOrder: original.length + 1,
-      });
-    }
-  }
-  const restored = library.quotes
-    .flatMap((quote) =>
-      quote.occurrences.map((occurrence) => ({
-        text: quote.text,
-        ...occurrence,
-      })),
-    )
-    .sort((a, b) => a.sourceOrder - b.sourceOrder);
-  assert.deepEqual(restored, original);
-  assert.equal(chapter, 15);
-  assert.equal(original.length, 233);
-  assert.equal(library.quotes.length, 231);
-  assert.equal(new Set(library.quotes.map((quote) => quote.text)).size, 231);
+  assert.equal(result[0].quotes[0].text, "Original punctuation！");
+  assert.deepEqual(result[0].quotes[0].chapters, ["one", "two"]);
+  assert.doesNotMatch(JSON.stringify(result), /privateSource|occurrences/);
+  assert.throws(
+    () =>
+      cultureFromRows(
+        [
+          {
+            id: "example",
+            title: "Example",
+            metadata: {
+              displayName: "Example",
+              teacher: "Teacher",
+              chapters: [],
+            },
+          },
+        ],
+        [
+          {
+            id: "saying",
+            collection_id: "example",
+            body: "Text",
+            metadata: { chapters: ["missing"] },
+          },
+        ],
+      ),
+    /Unknown chapter/,
+  );
 });
-
-test("Culture belongs to the protected member surface", () => {
+test("Culture belongs to the protected member surface and has no bundled content dependency", () => {
   assert.equal(
     domainRoute("whatelz.ai", "/culture").redirect,
     "https://app.whatelz.ai/culture",
   );
   assert.equal(domainRoute("app.whatelz.ai", "/culture").protect, true);
+  for (const file of [
+    "app/culture/page.tsx",
+    "components/culture/CultureLibrary.tsx",
+    "lib/fcos/resources.ts",
+  ])
+    assert.doesNotMatch(
+      readFileSync(new URL("../" + file, import.meta.url), "utf8"),
+      /content\/culture|ultra\.json/,
+    );
 });

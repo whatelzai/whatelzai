@@ -1,5 +1,7 @@
-# Member Culture library
+# Culture content moved to Supabase
 
-Versioned editorial snapshot of Edmund’s supplied “陈婉芬老师金玉良言” compilation, received 2026-10-10. Attribution to 陈婉芬老师 / Ultra is user-provided, not independently verified. The source is `ultra-source.txt`; `ultra.json` preserves 233 source occurrences across 15 chapters as 231 distinct exact-text sayings. Only line-end whitespace is trimmed. Exact duplicates retain chapter links and source-order occurrences; punctuation/wording variants remain distinct. Possible transcription errors are preserved for review, including “大所谓” and “视若无赌”. Shared sayings are not asserted to originate exclusively with Ultra.
+Culture content is database-owned. Runtime collections, labels, teachers, chapters and sayings are read from `member_knowledge_collections` / `member_knowledge_entries`; original source text, attribution and occurrence provenance are preserved there.
 
-The signed-in `/culture` reader displays original sayings, search and chapter filters. It adds no interpretations, medical advice or income promises. Soon Ye (李金城老师, user-provided attribution) and Founder’s Club are empty collections. No runtime vault access, inference, identity linking or membership changes. Content is versioned in the repository rather than a new database table; verified users are checked before rendering. Refresh the source and JSON together and retain all source occurrences.
+Do not add culture content files or content-bearing seed SQL here. Historical snapshots remain in Git history; ignored local migration inputs are under `supabase/private/knowledge/`. The current reader and Chat have no bundled-content fallback.
+
+See `docs/fcos-knowledge.md` for storage, editing/import and verification.
