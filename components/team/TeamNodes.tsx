@@ -17,14 +17,12 @@ export function TeamNodes({
   onSelect,
   editingId,
   quickEdit = false,
-  fitOnMount = false,
 }: {
   people: TeamPerson[];
   selectedId: string;
   onSelect?: (id: string) => void;
   editingId?: string | null;
   quickEdit?: boolean;
-  fitOnMount?: boolean;
 }) {
   const layout = useMemo(() => layoutTeamNodes(people), [people]);
   const viewport = useRef<HTMLDivElement>(null);
@@ -41,7 +39,7 @@ export function TeamNodes({
     fitted.current = true;
     const selected = layout.nodes.find((node) => node.person.id === selectedId);
     updateCamera(
-      fitOnMount || !selected
+      !selected
         ? fitNodeCamera(
             layout.width,
             layout.height,
@@ -54,7 +52,7 @@ export function TeamNodes({
             y: element.clientHeight / 2 - selected.y - NODE_HEIGHT / 2,
           },
     );
-  }, [fitOnMount, layout, selectedId, updateCamera]);
+  }, [layout, selectedId, updateCamera]);
   const { zoom } = camera;
   const zoomAt = (value: number) =>
     zoomCamera(value, {
@@ -68,13 +66,12 @@ export function TeamNodes({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p id="team-node-help" className="text-xs text-zinc-500">
-          Sponsors sit above their downlines. Drag or scroll to explore. Pinch
-          with two fingers to zoom.
+        <p id="team-node-help" className="sr-only">
+          Drag to move the network. Pinch to zoom.
           {quickEdit
-            ? " Tap once to edit. Tap again or double-click to open the profile."
+            ? " Select once to edit. Select again to open the profile."
             : onSelect
-              ? " Select a person to change perspective."
+              ? " Select a person for details."
               : ""}
         </p>
         <div className="flex items-center gap-2" aria-label="Node view zoom">
