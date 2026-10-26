@@ -8,7 +8,7 @@ export function TeamTree({
   people,
   focusId,
   canSeeAll = false,
-  initialView = "tree",
+  initialView = "nodes",
   onPersonActivate,
   editingId,
 }: {

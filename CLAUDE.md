@@ -639,3 +639,7 @@ Explicit 2026-10-27 user policy supersedes private-by-default Baobei/briefing re
 ## Responsive fcOS navigation (SPR-177)
 
 Member route loading shells are data-free and retain the header/nav. MemberLink reflects real Next pending navigation; New Chat uses a router transition. Do not force full private-data prefetch or simulate progress. App root skips unused public identity/admin-link reads; page/API/session gates remain. Own/team Baobei reads and authorized profile/history reads run concurrently. Linked notes stream separately. Optional profile/activity editor modules mount on first disclosure expansion and remain mounted across collapse to preserve drafts. Core Chat stays eager; no persistent private caching, schema or inference changes. See docs/fcos-performance.md.
+
+## Member team default (SPR-178)
+
+The member team page opens in Node view by default. Tree view remains selectable; admin retains its explicit Node view default. Sponsor relationships and member levels remain database-owned. — codex, 2026-10-27
