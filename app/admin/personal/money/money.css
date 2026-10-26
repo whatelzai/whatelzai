@@ -453,3 +453,11 @@
 .money-dialog details[open] summary {
   margin-bottom: 12px;
 }
+.money-dialog details {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.money-dialog .money-fields {
+  align-items: end;
+}

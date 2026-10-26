@@ -37,6 +37,7 @@ export default function EntryForm({
   useEffect(() => {
     const dialog = ref.current;
     dialog?.showModal();
+    dialog?.querySelector<HTMLInputElement>('input[name="amount"]')?.focus();
     return () => dialog?.close();
   }, []);
   const title =
@@ -235,7 +236,7 @@ export default function EntryForm({
                 </select>
               </label>
               <label>
-                Account / payment method
+                Paid through
                 <input
                   name="account"
                   list="money-accounts"
