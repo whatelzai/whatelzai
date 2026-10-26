@@ -12,6 +12,43 @@ const photoSchema = z.object({
   revision: z.coerce.number().int().positive(),
   remove: z.boolean(),
 });
+export async function saveLeadPrivacy(
+  _: ActionResult,
+  form: FormData,
+): Promise<ActionResult> {
+  const owner = await leadOwner();
+  const p = z
+    .object({
+      id: z.uuid(),
+      revision: z.coerce.number().int().positive(),
+      visibility: z.enum(["team", "private"]),
+    })
+    .safeParse(Object.fromEntries(form));
+  if (!p.success) return { error: "Reload this profile and try again." };
+  const r = await supabaseAdmin
+    .from("member_leads")
+    .update({
+      visibility: p.data.visibility,
+      revision: p.data.revision + 1,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", p.data.id)
+    .eq("owner_id", owner)
+    .eq("revision", p.data.revision)
+    .select("id")
+    .maybeSingle();
+  if (r.error || !r.data)
+    return { error: "This profile changed. Reload before saving." };
+  revalidatePath("/leads", "layout");
+  revalidatePath("/briefings", "layout");
+  revalidatePath("/assistant");
+  return {
+    success:
+      p.data.visibility === "private"
+        ? "Hidden from the team."
+        : "Visible to the team, subject to individual exclusions.",
+  };
+}
 export async function saveLeadPhoto(
   _: ActionResult,
   form: FormData,

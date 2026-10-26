@@ -1,6 +1,8 @@
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { requireAssignedUser } from "@/lib/app-access";
+import { sharedLeadIds } from "@/lib/leads/sharing";
+import { sharedBriefingIds } from "./sharing";
 import type { Briefing } from "./model";
 export async function fcosOwner() {
   const user = await requireAssignedUser();
@@ -9,10 +11,18 @@ export async function fcosOwner() {
 }
 export async function briefingLeads() {
   const owner = await fcosOwner();
+  const shared = await sharedLeadIds(owner);
   const { data, error } = await supabaseAdmin
     .from("member_leads")
     .select("id,name")
-    .eq("owner_id", owner)
+    .or(
+      `owner_id.eq.${owner},id.in.(${
+        shared
+          .slice(0, 500)
+          .map((x) => x.id)
+          .join(",") || "00000000-0000-0000-0000-000000000000"
+      })`,
+    )
     .order("name")
     .limit(200);
   if (error) throw Error("Leads unavailable.");
@@ -23,7 +33,7 @@ export async function loadBriefing(id: string) {
   const { data, error } = await supabaseAdmin
     .from("member_briefings")
     .select(
-      "id,kind,title,event_name,event_key,event_month,occurred_on,lead_ids,observations,reflections,next_steps,status,revision",
+      "id,kind,title,event_name,event_key,event_month,occurred_on,lead_ids,observations,reflections,next_steps,status,revision,visibility",
     )
     .eq("owner_id", owner)
     .eq("id", id)
@@ -48,10 +58,18 @@ export async function contextBriefings(
   context: { lead: string } | { event: string },
 ) {
   const owner = await fcosOwner();
+  const shared = await sharedBriefingIds(owner);
   let query = supabaseAdmin
     .from("member_briefings")
     .select("id,kind,title,status,occurred_on", { count: "exact" })
-    .eq("owner_id", owner);
+    .or(
+      `owner_id.eq.${owner},id.in.(${
+        shared
+          .slice(0, 500)
+          .map((x) => x.id)
+          .join(",") || "00000000-0000-0000-0000-000000000000"
+      })`,
+    );
   query =
     "lead" in context
       ? query.contains("lead_ids", [context.lead])

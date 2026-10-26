@@ -80,6 +80,7 @@ export type Lead = Omit<z.infer<typeof leadUpdateSchema>, "id"> & {
   id: string;
   updated_at: string;
   is_priority: boolean;
+  visibility?: "team" | "private";
   has_photo?: boolean;
 };
 export type LeadSummary = Pick<

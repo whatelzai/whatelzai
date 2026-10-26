@@ -70,7 +70,7 @@ export default async function BriefingsPage({
           aria-current={shared ? "page" : undefined}
           className={`rounded-full border px-4 py-3 ${shared ? "bg-yellow-100" : ""}`}
         >
-          Shared with me
+          Team notes
         </Link>
       </nav>
       <div className="space-y-3">
@@ -91,7 +91,7 @@ export default async function BriefingsPage({
       {!notes.count && (
         <p className="rounded-xl border border-dashed p-6 text-zinc-500">
           {shared
-            ? "No notes have been shared with your account yet."
+            ? "No team notes are available yet."
             : "Your first note starts here. Write it yourself or bring a draft from Chat."}
         </p>
       )}

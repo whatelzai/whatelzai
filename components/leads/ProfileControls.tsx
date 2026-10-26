@@ -20,8 +20,8 @@ export function PhotoEditor({ lead }: { lead: Lead }) {
         />
       </label>
       <p className="text-xs text-zinc-500">
-        JPG, PNG or WebP · up to 3 MB. Only you and people you share this lead
-        with can see it.
+        JPG, PNG or WebP · up to 3 MB. Visible with the Baobei profile; hiding
+        the profile also hides its photo.
       </p>
       <div className="flex gap-3">
         <button
@@ -58,7 +58,7 @@ function Recipient({
   leads: { id: string; name: string }[];
   limited: boolean;
 }) {
-  const [mode, setMode] = useState(grant?.mode ?? "none");
+  const [mode, setMode] = useState(grant?.mode ?? "all");
   const [state, action, pending] = useActionState(saveVisibility, {});
   return (
     <form action={action} className="space-y-3 rounded-2xl bg-zinc-50 p-4">
@@ -71,9 +71,9 @@ function Recipient({
         value={mode}
         onChange={(value) => setMode(value as typeof mode)}
         options={[
-          { value: "none", label: "Private" },
-          { value: "selected", label: "Selected leads" },
-          { value: "all", label: "All my leads" },
+          { value: "none", label: "Hide all from this person" },
+          { value: "selected", label: "Only selected Baobeis" },
+          { value: "all", label: "Default team access" },
         ]}
       />
       {mode === "selected" && (
@@ -107,7 +107,8 @@ function Recipient({
       )}
       {mode === "all" && (
         <p className="text-xs text-zinc-600">
-          Includes your current and future leads until you turn this off.
+          Allows current and future team-visible Baobeis. Profiles set to Only
+          me stay hidden.
         </p>
       )}
       <button
@@ -145,7 +146,7 @@ export function LeadSharing({
   return (
     <details className="rounded-2xl border border-zinc-200 bg-white p-3 open:w-full">
       <summary className="cursor-pointer text-sm font-medium">
-        Sharing
+        Individual access exceptions
         {grants.some((g) => g.mode !== "none") && (
           <span className="ml-2 text-zinc-500">
             {grants.filter((g) => g.mode !== "none").length}
@@ -154,13 +155,14 @@ export function LeadSharing({
       </summary>
       <div className="mt-4 space-y-4">
         <p className="text-sm text-zinc-500">
-          Share read-only profiles, stories, photos and event dates/statuses.
-          Contact details, private remarks, activity notes, HQH/HHH and Chat
+          Team-visible profiles are readable by default. These settings can
+          exclude selected team members. Only me on a profile overrides every
+          exception. Contact details, private remarks, activity notes and Chat
           stay private.
         </p>
         <p className="text-xs text-zinc-500">
-          Only activated team accounts appear here. Uplines and sidelines have
-          no access unless you choose them and save.
+          Only activated team accounts appear here. Hidden linked profiles also
+          restrict their HQH/HHH.
         </p>
         {people.map((r) => (
           <Recipient

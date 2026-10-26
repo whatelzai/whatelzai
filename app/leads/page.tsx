@@ -29,7 +29,7 @@ export default async function LeadsPage({
   if (!(await ensureUserRow())) redirect("/sign-in?redirect_url=/leads");
   const query = await searchParams;
   const data = await loadLeads({ q: query.q, page: query.page });
-  const shared = await loadSharedLeads();
+  const shared = await loadSharedLeads(data.q);
   const today = todayUtc8();
   const plans = groupPlans(data.upcoming);
   const cards = (leads: typeof data.leads) => (
@@ -79,19 +79,17 @@ export default async function LeadsPage({
         </p>
       )}
       {cards(data.leads)}
-      {!data.leads.length && (
+      {!data.leads.length && !shared.length && (
         <p className="py-8 text-center text-sm text-zinc-500">
           {data.q ? "No baobeis found." : "Add your first baobei with +."}
         </p>
       )}
       {shared.length > 0 && (
-        <details className="rounded-2xl border border-zinc-200 p-4">
-          <summary className="cursor-pointer text-sm font-medium">
-            Shared with me
-          </summary>
+        <section className="space-y-3">
+          <h2 className="text-sm font-medium text-zinc-500">Team Baobeis</h2>
           <p className="mt-3 text-xs text-zinc-500">
-            Read-only profiles shared by your team. Showing up to 50 profiles
-            from the first 500 permitted leads.
+            Team-visible profiles · read only. Showing up to 50 profiles from
+            the first 500 permitted leads.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {shared.map(({ photo_path, ...lead }) => (
@@ -112,7 +110,7 @@ export default async function LeadsPage({
               </Link>
             ))}
           </div>
-        </details>
+        </section>
       )}
       <nav aria-label="Baobeis pages" className="flex gap-4">
         {data.page > 1 && (

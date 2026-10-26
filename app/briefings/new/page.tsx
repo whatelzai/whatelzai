@@ -4,6 +4,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { ensureUserRow } from "@/lib/users";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { leadAccess } from "@/lib/leads/server";
 import { briefingLeads } from "@/lib/fcos/server";
 import { briefingEvents, calendarEvent } from "@/lib/fcos/events";
 import { validMonth, localDay } from "@/lib/community-calendar/model";
@@ -39,11 +40,11 @@ export default async function NewBriefing({
   const leadIds: string[] = [];
   if (q.lead) {
     if (!z.uuid().safeParse(q.lead).success) notFound();
+    if (!(await leadAccess(q.lead))) notFound();
     const { data, error } = await supabaseAdmin
       .from("member_leads")
       .select("id,name")
       .eq("id", q.lead)
-      .eq("owner_id", user.id)
       .maybeSingle();
     if (error) throw Error("Lead unavailable.");
     if (!data) notFound();
@@ -79,6 +80,7 @@ export default async function NewBriefing({
         note={{
           id: randomUUID(),
           revision: 0,
+          visibility: "team",
           kind: q.kind === "HHH" ? "HHH" : "HQH",
           title: "",
           event_name: event?.title ?? "",

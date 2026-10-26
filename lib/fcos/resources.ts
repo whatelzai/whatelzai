@@ -1,6 +1,7 @@
 import "server-only";
 import { readLeadContext } from "@/lib/leads/context";
 import { sourceQuerySchema } from "./model";
+import { sharedBriefingIds } from "./sharing";
 import { fcosOwner } from "./server";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { loadCatalogue } from "@/lib/catalogue/server";
@@ -17,12 +18,20 @@ export async function readFcosResource(input: unknown) {
     return readLeadContext(query);
   }
   if (source === "briefings") {
+    const permitted = await sharedBriefingIds(owner);
     const { data, error } = await supabaseAdmin
       .from("member_briefings")
       .select(
         "id,title,kind,status,event_name,observations,reflections,next_steps",
       )
-      .eq("owner_id", owner)
+      .or(
+        `owner_id.eq.${owner},id.in.(${
+          permitted
+            .slice(0, 500)
+            .map((x) => x.id)
+            .join(",") || "00000000-0000-0000-0000-000000000000"
+        })`,
+      )
       .ilike("title", filter)
       .order("updated_at", { ascending: false })
       .limit(3);
@@ -36,7 +45,7 @@ export async function readFcosResource(input: unknown) {
         url: `/briefings/${note.id}`,
       })),
       coverage:
-        "Your private notes only; drafts and reviewed records are distinguished.",
+        "Your notes and permitted team notes, title search, latest 3. Drafts and reviewed records are distinguished. For a Baobei, read their profile to retrieve linked notes.",
     };
   }
   if (source === "products") {

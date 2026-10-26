@@ -1,4 +1,5 @@
 import { ContextNotes } from "@/components/fcos/ContextNotes";
+import { LeadPrivacy } from "@/components/leads/LeadPrivacy";
 import { LeadAvatar } from "@/components/leads/LeadAvatar";
 import { PhotoEditor } from "@/components/leads/ProfileControls";
 import Link from "next/link";
@@ -58,7 +59,9 @@ export default async function LeadPage({
           </div>
         </div>
         <p className="mt-5 text-xs text-zinc-500">
-          {canEdit ? "Your profile" : "Shared with you · read only"}
+          {canEdit
+            ? `Your profile · ${lead.visibility === "private" ? "Hidden" : "Team visible"}`
+            : "Team profile · read only"}
         </p>
       </header>
       <section className="space-y-4 rounded-3xl bg-white p-5 sm:p-6">
@@ -127,6 +130,7 @@ export default async function LeadPage({
             Edit profile
           </summary>
           <div className="mt-5 space-y-6">
+            <LeadPrivacy key={`privacy-${lead.revision}`} lead={lead} />
             <PhotoEditor key={`photo-${lead.revision}`} lead={lead} />
             <LeadPriority key={`priority-${lead.revision}`} lead={lead} />
             <LeadEditor key={`profile-${lead.revision}`} lead={lead} />
@@ -212,16 +216,14 @@ export default async function LeadPage({
           </div>
         </details>
       )}
-      {canEdit && (
-        <details className={disclosure}>
-          <summary className="cursor-pointer text-sm font-medium">
-            HQH & HHH notes
-          </summary>
-          <div className="mt-4">
-            <ContextNotes context={{ lead: id }} createQuery={`lead=${id}`} />
-          </div>
-        </details>
-      )}
+      <details className={disclosure}>
+        <summary className="cursor-pointer text-sm font-medium">
+          HQH & HHH notes
+        </summary>
+        <div className="mt-4">
+          <ContextNotes context={{ lead: id }} createQuery={`lead=${id}`} />
+        </div>
+      </details>
     </main>
   );
 }

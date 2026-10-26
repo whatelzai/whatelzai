@@ -325,10 +325,11 @@ test("attention loader verifies identity, scopes private sources and preserves s
   assert.equal(calls.length, 3);
 });
 
-test("shared-note reads require an active grant to the verified recipient and select only the note", async () => {
+test("team-note reads require current permission for the verified recipient before selecting content", async () => {
   for (const granted of [false, true]) {
     const calls: { table: string; columns: string; filters: unknown[][] }[] =
       [];
+    const permissions: Record<string, unknown>[] = [];
     const sharing = load<{
       loadSharedBriefing: (id: string) => Promise<unknown>;
     }>("lib/fcos/sharing.ts", {
@@ -336,6 +337,11 @@ test("shared-note reads require an active grant to the verified recipient and se
       "@/lib/team/server": {},
       "@/lib/supabase-server": {
         supabaseAdmin: {
+          rpc: async (name: string, args: Record<string, unknown>) => {
+            assert.equal(name, "can_read_member_briefing");
+            permissions.push(args);
+            return { data: granted, error: null };
+          },
           from: (table: string) => {
             const entry = { table, columns: "", filters: [] as unknown[][] };
             calls.push(entry);
@@ -348,17 +354,8 @@ test("shared-note reads require an active grant to the verified recipient and se
                 entry.filters.push(args);
                 return this;
               },
-              is(...args: unknown[]) {
-                entry.filters.push(args);
-                return this;
-              },
               maybeSingle: async () => ({
-                data:
-                  table === "member_briefing_shares"
-                    ? granted
-                      ? { briefing_id: "note" }
-                      : null
-                    : { id: "note", title: "Shared example" },
+                data: { id: "note", title: "Team example" },
                 error: null,
               }),
             };
@@ -367,24 +364,17 @@ test("shared-note reads require an active grant to the verified recipient and se
       },
     });
     const result = await sharing.loadSharedBriefing("note");
-    assert.ok(
-      calls[0].filters.some(
-        (value) =>
-          value[0] === "recipient_user_id" && value[1] === "verified-recipient",
-      ),
-    );
-    assert.ok(
-      calls[0].filters.some(
-        (value) => value[0] === "revoked_at" && value[1] === null,
-      ),
-    );
+    assert.equal(permissions.length, 1);
+    assert.equal(permissions[0].p_viewer, "verified-recipient");
+    assert.equal(permissions[0].p_note, "note");
     if (!granted) {
       assert.equal(result, null);
-      assert.equal(calls.length, 1);
+      assert.equal(calls.length, 0);
     } else {
-      assert.equal(calls.length, 2);
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0].table, "member_briefings");
       assert.doesNotMatch(
-        calls[1].columns,
+        calls[0].columns,
         /lead_ids|owner_id|event_key|email|phone/,
       );
     }
@@ -511,7 +501,7 @@ test("note grants use the verified owner and selected team label; revocation is 
     form.set("recipient_label", "Forged label");
     assert.match(
       (await actions.changeNoteSharing({}, form)).message,
-      operation === "share" ? /now shared/ : /revoked/,
+      operation === "share" ? /exclusion removed/ : /excluded/,
     );
     if (operation === "share") {
       assert.equal(written?.owner_id, owner);

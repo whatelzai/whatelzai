@@ -12,13 +12,16 @@ export function NoteSharing({
 }) {
   const [state, action, pending] = useActionState(changeNoteSharing, {});
   return (
-    <section className="space-y-4 rounded-2xl border p-5">
-      <h2 className="text-xl font-semibold">Share this saved note</h2>
+    <details className="space-y-4 rounded-2xl border p-5">
+      <summary className="cursor-pointer text-sm font-medium">
+        Individual access exceptions
+      </summary>
+
       <p className="text-sm leading-6 text-zinc-600">
-        Chosen people can read this entire note and future saved edits,
-        including its background, reflections and next steps. They cannot edit
-        it or open the linked lead profiles. Unsaved edits are not included. No
-        messages or invitations are sent.
+        Team members can read this saved note by default. Individual exclusions
+        remain in effect; restoring access removes an exclusion. Only me and
+        hidden linked Baobeis always take precedence. Unsaved edits and personal
+        chats are never shared.
       </p>
       {shares.map((share) => (
         <form
@@ -75,7 +78,7 @@ export function NoteSharing({
             disabled={pending}
             className="min-h-12 rounded-xl bg-yellow-300 px-5 font-semibold"
           >
-            Share saved note · Read only
+            Allow team access
           </button>
         </form>
       ) : (
@@ -88,6 +91,6 @@ export function NoteSharing({
       <p role="status" className="text-sm">
         {state.message}
       </p>
-    </section>
+    </details>
   );
 }
