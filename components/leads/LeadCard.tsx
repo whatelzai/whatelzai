@@ -1,5 +1,5 @@
 import { LeadAvatar } from "./LeadAvatar";
-import Link from "next/link";
+import Link from "@/components/fcos/MemberLink";
 import type { LeadSummary } from "@/lib/leads/model";
 import { dateLabel } from "@/lib/leads/model";
 import { planDate, type Plan } from "@/lib/leads/plans";

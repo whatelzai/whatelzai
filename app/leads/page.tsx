@@ -2,7 +2,7 @@ import { AppHeader } from "@/components/fcos/AppHeader";
 import { LeadAvatar } from "@/components/leads/LeadAvatar";
 import { loadSharedLeads } from "@/lib/leads/sharing";
 import { Search } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/fcos/MemberLink";
 import { LeadCard } from "@/components/leads/LeadCard";
 import { groupPlans } from "@/lib/leads/plans";
 import { redirect } from "next/navigation";
@@ -28,8 +28,11 @@ export default async function LeadsPage({
 }) {
   if (!(await ensureUserRow())) redirect("/sign-in?redirect_url=/leads");
   const query = await searchParams;
-  const data = await loadLeads({ q: query.q, page: query.page });
-  const shared = await loadSharedLeads(data.q);
+  const q = (query.q ?? "").trim().slice(0, 160);
+  const [data, shared] = await Promise.all([
+    loadLeads({ q, page: query.page }),
+    loadSharedLeads(q),
+  ]);
   const today = todayUtc8();
   const plans = groupPlans(data.upcoming);
   const cards = (leads: typeof data.leads) => (

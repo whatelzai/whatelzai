@@ -1,7 +1,7 @@
 import { AppHeader } from "@/components/fcos/AppHeader";
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/fcos/MemberLink";
 import {
   LogOut,
   Sparkles,

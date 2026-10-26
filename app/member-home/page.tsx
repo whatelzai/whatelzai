@@ -1,5 +1,5 @@
 import { AppHeader } from "@/components/fcos/AppHeader";
-import Link from "next/link";
+import Link from "@/components/fcos/MemberLink";
 import { redirect } from "next/navigation";
 import {
   ArrowUpRight,

@@ -635,3 +635,7 @@ New successful member exchanges schedule one nonblocking GPT-6 Luna title job vi
 ## Team-visible Baobeis and HQH/HHH (SPR-176)
 
 Explicit 2026-10-27 user policy supersedes private-by-default Baobei/briefing reads. Same assigned fcOS team reads existing/future team-visible records by default; owners alone edit. Per-record Only me overrides grants; existing recipient exclusions remain. Hidden linked Baobeis suppress the whole note for other readers. Service-only permission RPCs govern lists, detail/photo routes, linked context and Chat; browser grants stay denied, chats/vaults/contact fields/private remarks stay private. Notes may link visible sideline Baobeis without ownership/sponsor changes. Chat includes two bounded permitted linked notes per profile. Import real names operationally only, with introducer metadata. See docs/team-baobeis.md.
+
+## Responsive fcOS navigation (SPR-177)
+
+Member route loading shells are data-free and retain the header/nav. MemberLink reflects real Next pending navigation; New Chat uses a router transition. Do not force full private-data prefetch or simulate progress. App root skips unused public identity/admin-link reads; page/API/session gates remain. Own/team Baobei reads and authorized profile/history reads run concurrently. Linked notes stream separately. Optional profile/activity editor modules mount on first disclosure expansion and remain mounted across collapse to preserve drafts. Core Chat stays eager; no persistent private caching, schema or inference changes. See docs/fcos-performance.md.

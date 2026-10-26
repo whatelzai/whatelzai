@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/fcos/MemberLink";
 import {
   House,
   MessageCircle,

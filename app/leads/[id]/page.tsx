@@ -1,20 +1,20 @@
 import { ContextNotes } from "@/components/fcos/ContextNotes";
-import { LeadPrivacy } from "@/components/leads/LeadPrivacy";
+import { Suspense } from "react";
+import { LoadingRows } from "@/components/fcos/RouteLoading";
+import {
+  DeferredLeadEditor,
+  DeferredActivityStatus,
+  DeferredNewActivity,
+} from "@/components/leads/DeferredControls";
 import { LeadAvatar } from "@/components/leads/LeadAvatar";
-import { PhotoEditor } from "@/components/leads/ProfileControls";
-import Link from "next/link";
+import Link from "@/components/fcos/MemberLink";
 import { notFound, redirect } from "next/navigation";
 import { ensureUserRow } from "@/lib/users";
 import { loadLead } from "@/lib/leads/server";
 import { dateLabel, todayUtc8 } from "@/lib/leads/model";
 import { groupPlans, planDate } from "@/lib/leads/plans";
 import { MemberNav } from "@/components/culture/MemberNav";
-import {
-  LeadPriority,
-  LeadEditor,
-  NewActivity,
-  ActivityStatus,
-} from "@/components/leads/LeadForms";
+
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Lead profile",
@@ -124,19 +124,7 @@ export default async function LeadPage({
           </span>
         )}
       </div>
-      {canEdit && (
-        <details className={disclosure}>
-          <summary className="cursor-pointer text-sm font-medium">
-            Edit profile
-          </summary>
-          <div className="mt-5 space-y-6">
-            <LeadPrivacy key={`privacy-${lead.revision}`} lead={lead} />
-            <PhotoEditor key={`photo-${lead.revision}`} lead={lead} />
-            <LeadPriority key={`priority-${lead.revision}`} lead={lead} />
-            <LeadEditor key={`profile-${lead.revision}`} lead={lead} />
-          </div>
-        </details>
-      )}
+      {canEdit && <DeferredLeadEditor lead={lead} />}
       <details className={disclosure}>
         <summary className="cursor-pointer text-sm font-medium">
           Activities{" "}
@@ -166,19 +154,7 @@ export default async function LeadPage({
                   {activity.status === "Tentative" ? "Maybe" : activity.status}
                 </span>
               </div>
-              {canEdit && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer text-xs text-zinc-500">
-                    Update or add context
-                  </summary>
-                  {activity.notes && (
-                    <p className="mt-3 whitespace-pre-wrap text-sm">
-                      {activity.notes}
-                    </p>
-                  )}
-                  <ActivityStatus key={activity.revision} activity={activity} />
-                </details>
-              )}
+              {canEdit && <DeferredActivityStatus activity={activity} />}
             </article>
           ))}
           {!activities.length && (
@@ -189,14 +165,7 @@ export default async function LeadPage({
               Showing the latest 500 records.
             </p>
           )}
-          {canEdit && (
-            <details>
-              <summary className="cursor-pointer py-2 text-sm font-medium">
-                + Record an activity
-              </summary>
-              <NewActivity leadId={id} />
-            </details>
-          )}
+          {canEdit && <DeferredNewActivity leadId={id} />}
         </div>
       </details>
       {(lead.interests || lead.concerns) && (
@@ -221,7 +190,9 @@ export default async function LeadPage({
           HQH & HHH notes
         </summary>
         <div className="mt-4">
-          <ContextNotes context={{ lead: id }} createQuery={`lead=${id}`} />
+          <Suspense fallback={<LoadingRows label="Loading linked notes…" />}>
+            <ContextNotes context={{ lead: id }} createQuery={`lead=${id}`} />
+          </Suspense>
         </div>
       </details>
     </main>

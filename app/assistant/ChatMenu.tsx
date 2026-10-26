@@ -1,7 +1,7 @@
 "use client";
 import { AppHeader } from "@/components/fcos/AppHeader";
-import { useRef, useState } from "react";
-import Link from "next/link";
+import { useRef, useState, useTransition } from "react";
+import Link from "@/components/fcos/MemberLink";
 import { useRouter } from "next/navigation";
 import { Menu, Search, SquarePen, X } from "lucide-react";
 
@@ -23,10 +23,13 @@ export function ChatMenu({
   const dialog = useRef<HTMLDialogElement>(null);
   const [search, setSearch] = useState("");
   const router = useRouter();
+  const [navigating, startTransition] = useTransition();
   const newChat = () => {
     dialog.current?.close();
     setSearch("");
-    router.push(`/assistant?new=1&draft=${crypto.randomUUID()}`);
+    startTransition(() =>
+      router.push(`/assistant?new=1&draft=${crypto.randomUUID()}`),
+    );
   };
   const visible = chats.filter((chat) =>
     `${chat.title} ${date.format(new Date(chat.created_at))}`
@@ -57,10 +60,16 @@ export function ChatMenu({
             type="button"
             aria-label="New chat"
             title="New chat"
+            aria-busy={navigating}
+            disabled={navigating}
             onClick={newChat}
             className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-zinc-100"
           >
-            <SquarePen size={21} aria-hidden="true" />
+            <SquarePen
+              size={21}
+              aria-hidden="true"
+              className={navigating ? "motion-safe:animate-pulse" : ""}
+            />
           </button>
         }
       />

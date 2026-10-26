@@ -173,47 +173,56 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const requestHeaders = await headers();
   const surface = siteSurface(requestHeaders.get("host") ?? "");
-  const [isAdmin, s] = await Promise.all([getIsAdmin(), getSiteIdentity()]);
+  // The member shell uses neither public identity nor the public admin-link flag.
+  // Keep its loading boundary free of these reads; protected pages verify identity.
+  const [isAdmin, s] =
+    surface === "app"
+      ? ([false, null] as const)
+      : await Promise.all([getIsAdmin(), getSiteIdentity()]);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Person",
-        "@id": `${SITE_URL}/#person`,
-        name: s.owner_name,
-        url: SITE_URL,
-        jobTitle: "AI Solopreneur & Builder",
-        description:
-          s.meta_description ?? "AI engineer and founder building AI systems.",
-        sameAs: [
-          "https://www.instagram.com/whatelz.ai/",
-          s.linkedin_url,
-          "https://www.youtube.com/@whatelzai",
-          "https://medium.com/@whatelz.ai",
-          "https://github.com/whatelzai",
-        ].filter(Boolean),
-        knowsAbout: [
-          "Artificial Intelligence",
-          "AI Systems Engineering",
-          "Large Language Models",
-          "Retrieval-Augmented Generation",
-          "Next.js",
-          "TypeScript",
-          "Supabase",
-          "AI Training",
+  const jsonLd = s
+    ? {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": `${SITE_URL}/#person`,
+            name: s.owner_name,
+            url: SITE_URL,
+            jobTitle: "AI Solopreneur & Builder",
+            description:
+              s.meta_description ??
+              "AI engineer and founder building AI systems.",
+            sameAs: [
+              "https://www.instagram.com/whatelz.ai/",
+              s.linkedin_url,
+              "https://www.youtube.com/@whatelzai",
+              "https://medium.com/@whatelz.ai",
+              "https://github.com/whatelzai",
+            ].filter(Boolean),
+            knowsAbout: [
+              "Artificial Intelligence",
+              "AI Systems Engineering",
+              "Large Language Models",
+              "Retrieval-Augmented Generation",
+              "Next.js",
+              "TypeScript",
+              "Supabase",
+              "AI Training",
+            ],
+          },
+          {
+            "@type": "WebSite",
+            "@id": `${SITE_URL}/#website`,
+            url: SITE_URL,
+            name: SITE_NAME,
+            description:
+              "The solopreneur’s playbook. Money Mindset × AI Skillset.",
+            author: { "@id": `${SITE_URL}/#person` },
+          },
         ],
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        url: SITE_URL,
-        name: SITE_NAME,
-        description: "The solopreneur’s playbook. Money Mindset × AI Skillset.",
-        author: { "@id": `${SITE_URL}/#person` },
-      },
-    ],
-  };
+      }
+    : null;
 
   return (
     <html
@@ -227,15 +236,17 @@ export default async function RootLayout({
             __html: `(function(){var t;try{t=localStorage.getItem('whatelz-theme-v1')}catch(e){}document.documentElement.dataset.theme=t==='light'||t==='dark'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()`,
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        {jsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+        )}
       </head>
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <ShellProvider
           isAdmin={isAdmin}
-          ownerName={s.owner_name}
+          ownerName={s?.owner_name ?? "fcOS"}
           surface={surface}
         >
           {children}
