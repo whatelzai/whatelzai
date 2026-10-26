@@ -643,3 +643,7 @@ Member route loading shells are data-free and retain the header/nav. MemberLink 
 ## Member team default (SPR-178)
 
 The member team page opens in Node view by default. Tree view remains selectable; admin retains its explicit Node view default. Sponsor relationships and member levels remain database-owned. — codex, 2026-10-27
+
+## Compact team nodes (SPR-179)
+
+Node view uses 88px name-only circles and straight sponsor connectors on member/admin surfaces. Explicit two-name ampersand labels render as two slightly overlapping circles, retaining one stored identity and sponsor link; no relationship inference or data split. Subtree layout measures actual single/pair widths. Selection reveals details; pan/pinch/zoom and admin quick-edit/repeat-profile behavior remain. — codex, 2026-10-27
