@@ -1096,3 +1096,100 @@ test("dictation authenticates before reading media and settles success, rejectio
       assert.equal((await response.json()).text, "Editable draft");
   }
 });
+
+test("database culture authenticates before data access, filters published rows and paginates without a bundled fallback", async () => {
+  const model = await import("../lib/knowledge/model");
+  for (const signedIn of [false, true]) {
+    const calls: { table: string; filters: unknown[][]; range?: number[] }[] =
+      [];
+    const server = load<{
+      loadCulture: () => Promise<{ quotes: unknown[] }[]>;
+    }>("lib/knowledge/server.ts", {
+      "@/lib/app-access": {
+        requireAssignedUser: async () => {
+          if (!signedIn) throw Error("Sign in");
+          return { id: "owner" };
+        },
+      },
+      "./model": model,
+      "@/lib/supabase-server": {
+        supabaseAdmin: {
+          from: (table: string) => {
+            const call: {
+              table: string;
+              filters: unknown[][];
+              range?: number[];
+            } = { table, filters: [] };
+            calls.push(call);
+            const collection = {
+              id: "sample",
+              title: "Sample",
+              metadata: {
+                displayName: "Sample",
+                teacher: "Teacher",
+                chapters: [],
+              },
+            };
+            return {
+              select() {
+                return this;
+              },
+              eq(...args: unknown[]) {
+                call.filters.push(args);
+                return this;
+              },
+              in(...args: unknown[]) {
+                call.filters.push(args);
+                return this;
+              },
+              order() {
+                return this;
+              },
+              then(resolve: (x: unknown) => unknown) {
+                return Promise.resolve({ data: [collection] }).then(resolve);
+              },
+              range(start: number, end: number) {
+                call.range = [start, end];
+                return Promise.resolve({
+                  data: Array.from(
+                    { length: start === 0 ? 500 : 1 },
+                    (_, i) => ({
+                      id: "sample-" + (start + i),
+                      collection_id: "sample",
+                      body: "Synthetic saying",
+                      metadata: { chapters: [] },
+                    }),
+                  ),
+                });
+              },
+            };
+          },
+        },
+      },
+    });
+    if (!signedIn) {
+      await assert.rejects(() => server.loadCulture(), /Sign in/);
+      assert.equal(calls.length, 0);
+      continue;
+    }
+    assert.equal((await server.loadCulture())[0].quotes.length, 501);
+    assert.deepEqual(
+      calls.filter((x) => x.range).map((x) => x.range),
+      [
+        [0, 499],
+        [500, 999],
+      ],
+    );
+    for (const call of calls)
+      assert.ok(
+        call.filters.some(
+          ([key, value]) => key === "published" && value === true,
+        ),
+      );
+    assert.ok(
+      calls[0].filters.some(
+        ([key, value]) => key === "kind" && value === "culture",
+      ),
+    );
+  }
+});

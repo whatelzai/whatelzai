@@ -1,23 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import type ultra from "@/content/culture/ultra.json";
+import type { CultureCollection } from "@/lib/knowledge/model";
 
-const collections = [
-  { id: "ultra", name: "超凡 · Ultra", teacher: "陈婉芬老师" },
-  { id: "soon-ye", name: "顺育 · Soon Ye", teacher: "李金城老师" },
-  { id: "founders", name: "Founder’s Club", teacher: "Community culture" },
-] as const;
-
-export function CultureLibrary({ library }: { library: typeof ultra }) {
-  const [collection, setCollection] = useState<string>("ultra");
+export function CultureLibrary({
+  libraries,
+}: {
+  libraries: CultureCollection[];
+}) {
+  const [collection, setCollection] = useState<string>(libraries[0]?.id ?? "");
   const [chapter, setChapter] = useState("all");
   const [search, setSearch] = useState("");
-  const selected = collections.find((item) => item.id === collection)!;
+  const selected = libraries.find((item) => item.id === collection);
+  const library = selected;
   const query = search.trim().toLocaleLowerCase();
-  const matches = library.quotes.filter((quote) => {
+  const matches = (library?.quotes ?? []).filter((quote) => {
     const titles = quote.chapters
-      .map((id) => library.chapters.find((item) => item.id === id)?.title)
+      .map((id) => library?.chapters.find((item) => item.id === id)?.title)
       .join(" ");
     return (
       (chapter === "all" || quote.chapters.includes(chapter)) &&
@@ -25,6 +24,10 @@ export function CultureLibrary({ library }: { library: typeof ultra }) {
     );
   });
 
+  if (!library || !selected)
+    return (
+      <p className="text-zinc-500">No culture collections published yet.</p>
+    );
   return (
     <section className="space-y-8">
       <div
@@ -32,7 +35,7 @@ export function CultureLibrary({ library }: { library: typeof ultra }) {
         aria-label="Culture collections"
         className="grid gap-3 sm:grid-cols-3"
       >
-        {collections.map((item) => (
+        {libraries.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -42,34 +45,40 @@ export function CultureLibrary({ library }: { library: typeof ultra }) {
             aria-controls="culture-panel"
             tabIndex={collection === item.id ? 0 : -1}
             onKeyDown={(event) => {
-              const index = collections.findIndex(
+              const index = libraries.findIndex(
                 (entry) => entry.id === item.id,
               );
               const next =
                 event.key === "ArrowRight"
-                  ? (index + 1) % collections.length
+                  ? (index + 1) % libraries.length
                   : event.key === "ArrowLeft"
-                    ? (index + collections.length - 1) % collections.length
+                    ? (index + libraries.length - 1) % libraries.length
                     : event.key === "Home"
                       ? 0
                       : event.key === "End"
-                        ? collections.length - 1
+                        ? libraries.length - 1
                         : -1;
               if (next < 0) return;
               event.preventDefault();
-              setCollection(collections[next].id);
-              document.getElementById(`tab-${collections[next].id}`)?.focus();
+              setCollection(libraries[next].id);
+              setChapter("all");
+              document.getElementById(`tab-${libraries[next].id}`)?.focus();
             }}
-            onClick={() => setCollection(item.id)}
+            onClick={() => {
+              setCollection(item.id);
+              setChapter("all");
+            }}
             className={`rounded-2xl border p-5 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-900 ${collection === item.id ? "border-yellow-400 bg-yellow-50" : "border-zinc-200 bg-white hover:bg-zinc-50"}`}
           >
-            <span className="block text-lg font-semibold">{item.name}</span>
+            <span className="block text-lg font-semibold">
+              {item.displayName}
+            </span>
             <span className="mt-2 block text-sm text-zinc-600">
               {item.teacher}
             </span>
             <span className="mt-3 block text-xs text-zinc-500">
-              {item.id === "ultra"
-                ? `${library.quotes.length} sayings · ${library.chapters.length} chapters`
+              {item.quotes.length > 0
+                ? `${item.quotes.length} sayings · ${item.chapters.length} chapters`
                 : "To be added"}
             </span>
           </button>
@@ -82,9 +91,9 @@ export function CultureLibrary({ library }: { library: typeof ultra }) {
         tabIndex={0}
         className="space-y-6"
       >
-        {collection !== "ultra" ? (
+        {library.quotes.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-zinc-300 p-8 sm:p-12">
-            <h2 className="text-2xl font-semibold">{selected.name}</h2>
+            <h2 className="text-2xl font-semibold">{selected.displayName}</h2>
             <p className="mt-4 text-zinc-600">
               This collection is ready for the words and teachings you’ll share
               next.
@@ -180,7 +189,7 @@ export function CultureLibrary({ library }: { library: typeof ultra }) {
                           className="rounded-full bg-zinc-100 px-3 py-1 text-xs leading-relaxed text-zinc-600 hover:bg-yellow-100"
                         >
                           {
-                            library.chapters.find((item) => item.id === id)
+                            library?.chapters.find((item) => item.id === id)
                               ?.title
                           }
                         </button>

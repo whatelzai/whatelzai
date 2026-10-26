@@ -623,3 +623,7 @@ Chat supports two previewed images per message and up to 60-second microphone di
 ## Admin passkeys rollback (SPR-172)
 
 Passkeys were removed at Edmund’s request. Admin uses the existing Google sign-in and stable sole-owner authorization. Supabase passkey authentication is disabled; there is no passkey enrollment or sign-in UI, route or experimental client opt-in. Preserve the existing PWA, sessions and Google flow.
+
+## Database-owned fcOS knowledge (SPR-174)
+
+Supersedes bundled Culture content in SPR-120. Editable business knowledge belongs in Supabase, not application imports or seed SQL. Shared references use member_knowledge_collections/entries (text + bounded JSONB metadata; original source provenance excluded from reader/Chat). Culture reader and Chat share an assigned-user, published-only paginated loader with no content fallback. Collection labels/teachers/chapters/sayings are data. Existing Baobei and HQH/HHH prose remains in private text columns; additive metadata JSONB supports variable attributes without changing ownership/sharing. Product prices/PV/BV remain authoritative relational facts. Import tooling is service-only, insert-only and atomic with exact verification. No semantic embeddings or new lesson editor implied. See docs/fcos-knowledge.md.

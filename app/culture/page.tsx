@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ensureUserRow } from "@/lib/users";
-import ultra from "@/content/culture/ultra.json";
+import { loadCulture } from "@/lib/knowledge/server";
 import { CultureLibrary } from "@/components/culture/CultureLibrary";
 import { MemberNav } from "@/components/culture/MemberNav";
 
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 
 export default async function CulturePage() {
   if (!(await ensureUserRow())) redirect("/sign-in?redirect_url=/culture");
+  const libraries = await loadCulture();
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-5 py-10 sm:px-8">
       <MemberNav current="/culture" />
@@ -26,7 +27,7 @@ export default async function CulturePage() {
           of each community, one chapter at a time.
         </p>
       </header>
-      <CultureLibrary library={ultra} />
+      <CultureLibrary libraries={libraries} />
     </main>
   );
 }

@@ -6,7 +6,7 @@ import { supabaseAdmin } from "@/lib/supabase-server";
 import { loadCatalogue } from "@/lib/catalogue/server";
 import { loadCommunityCalendar } from "@/lib/community-calendar/server";
 import { todayUtc8 } from "@/lib/leads/model";
-import ultra from "@/content/culture/ultra.json";
+import { loadCulture } from "@/lib/knowledge/server";
 export async function readFcosResource(input: unknown) {
   const { source, query } = sourceQuerySchema.parse(input);
   const owner = await fcosOwner();
@@ -61,13 +61,32 @@ export async function readFcosResource(input: unknown) {
   }
   if (source === "culture") {
     return {
-      items: ultra.quotes
-        .filter((x) => match(x.text))
-        .slice(0, 6)
-        .map(({ id, text, chapters }) => ({ id, text, chapters })),
+      items: (await loadCulture())
+        .flatMap((collection) =>
+          collection.quotes
+            .filter(
+              (x) =>
+                match(x.text) ||
+                x.chapters.some((id) =>
+                  match(
+                    collection.chapters.find((chapter) => chapter.id === id)
+                      ?.title ?? "",
+                  ),
+                ),
+            )
+            .map(({ id, text, chapters }) => ({
+              id,
+              text,
+              chapters,
+              collection: collection.displayName,
+              attribution: collection.source,
+              attributionStatus: collection.attributionStatus,
+            })),
+        )
+        .slice(0, 6),
       url: "/culture",
       attribution:
-        "User-provided Ultra compilation; attribution not independently verified.",
+        "See each record’s stored source and attribution status; attribution is not independently verified.",
     };
   }
   const calendar = await loadCommunityCalendar(todayUtc8().slice(0, 7));
