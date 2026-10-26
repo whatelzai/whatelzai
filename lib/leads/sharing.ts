@@ -42,7 +42,7 @@ export async function visibilitySettings() {
     limited: (leads.data?.length ?? 0) > 500,
   };
 }
-export async function loadSharedLeads() {
+export async function loadSharedLeads(search = "") {
   const viewer = await leadOwner();
   const ids = await sharedLeadIds(viewer);
   if (!ids.length) return [];
@@ -54,6 +54,7 @@ export async function loadSharedLeads() {
       "id",
       ids.slice(0, 500).map((x) => x.id),
     )
+    .ilike("name", `%${search.replace(/[\\%_]/g, "\\$&")}%`)
     .order("name")
     .limit(50);
   if (r.error) throw Error("Shared profiles unavailable.");

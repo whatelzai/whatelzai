@@ -1,4 +1,5 @@
 "use client";
+import { MobilePicker } from "@/components/leads/MobilePicker";
 import { useActionState, useState } from "react";
 import { saveBriefing } from "@/app/briefings/actions";
 import type { Briefing } from "@/lib/fcos/model";
@@ -119,7 +120,8 @@ export function BriefingEditor({
         </summary>
         <p className="mt-2 text-xs text-zinc-500">
           Your first 200 leads alphabetically. Class learnings can have no
-          linked lead. Linking never shares private notes.
+          linked Baobei. Hidden profiles also hide their linked notes from other
+          members.
         </p>
         <div className="mt-3 grid max-h-52 gap-3 overflow-y-auto sm:grid-cols-2">
           {leads.map((lead) => (
@@ -182,6 +184,18 @@ export function BriefingEditor({
           />
         </label>
       ))}
+      <MobilePicker
+        name="visibility"
+        label="Who can see this note?"
+        value={draft.visibility}
+        onChange={(value) =>
+          setDraft({ ...draft, visibility: value as Briefing["visibility"] })
+        }
+        options={[
+          { value: "team", label: "Everyone in my team" },
+          { value: "private", label: "Only me · Hidden" },
+        ]}
+      />
       <label className="block">
         Review status
         <select
@@ -197,9 +211,9 @@ export function BriefingEditor({
         </select>
       </label>
       <p className="text-sm text-zinc-500">
-        Private unless you share this saved note with selected accounts. Saving
-        does not send invitations or accept a commitment. People with access to
-        this note can read future saved edits too.
+        Saved notes are visible to your team by default, including drafts.
+        Choose Only me to hide this note. Hidden linked Baobeis and individual
+        exclusions also restrict access. Saving sends no messages.
       </p>
       <p role="status" className="text-sm text-red-700">
         {state.error}

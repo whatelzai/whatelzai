@@ -13,8 +13,8 @@ export async function ContextNotes({
     <section className="fcos-context-notes space-y-4 rounded-2xl border border-zinc-200 p-5">
       <h2 className="text-xl font-semibold">HQH & HHH · Linked notes</h2>
       <p className="text-sm text-zinc-500">
-        The same saved notes you’ll find in Resources. Private unless you choose
-        to share an individual note.
+        Team-visible HQH and HHH, including your notes. Hidden notes and hidden
+        Baobeis stay restricted.
       </p>
       <div className="flex flex-wrap gap-3 text-sm">
         <Link

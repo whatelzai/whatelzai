@@ -53,7 +53,7 @@ export async function changeNoteSharing(
   return {
     message:
       operation === "revoke"
-        ? "Access revoked. Previously read information cannot be recalled."
-        : "This saved note is now shared read only with the selected account.",
+        ? "This person is excluded from this note. Previously read information cannot be recalled."
+        : "Individual exclusion removed. Team access still respects hidden notes and Baobeis.",
   };
 }

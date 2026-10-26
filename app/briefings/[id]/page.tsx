@@ -37,10 +37,10 @@ export default async function BriefingPage({
       <main className="mx-auto max-w-3xl space-y-6 px-5 py-8">
         <MemberNav current="/briefings" />
         <Link href="/briefings?view=shared" className="text-sm underline">
-          ← Shared with me
+          ← Team notes
         </Link>
         <header>
-          <p className="text-sm text-zinc-500">Shared with you · Read only</p>
+          <p className="text-sm text-zinc-500">Team note · Read only</p>
           <h1 className="mt-2 text-3xl font-semibold">{shared.title}</h1>
           <p className="mt-3 text-sm">
             {shared.kind} · {shared.status} · {dateLabel(shared.occurred_on)}
@@ -60,8 +60,8 @@ export default async function BriefingPage({
           </section>
         ))}
         <p className="text-sm text-zinc-500">
-          Access is limited to this note and its saved edits. Linked lead
-          profiles and other private records are not shared.
+          Team visibility is read only. Each linked Baobei has its own
+          visibility controls.
         </p>
       </main>
     );
@@ -84,9 +84,9 @@ export default async function BriefingPage({
       {q.saved === "1" && (
         <p role="status" className="text-green-700">
           Note saved
-          {shares.length
-            ? " · visible to the accounts you selected."
-            : " · private to you."}
+          {note.visibility === "private"
+            ? " · hidden from the team."
+            : " · team visible, subject to linked Baobei visibility and individual exclusions."}
         </p>
       )}
       <div className="flex flex-wrap gap-3 text-sm">

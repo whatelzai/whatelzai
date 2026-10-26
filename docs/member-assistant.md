@@ -113,3 +113,7 @@ Service-only `claim_member_ai_title` locks and creates one durable `member_ai_ti
 Title generation is small operational overhead paid by the platform, separate from the member's weekly allowance. Calls are bounded to 100/account/day and 200/platform/day, with a 2,000-micro-dollar receipt ceiling per job. These limits include failed/uncertain claims. No paid Gateway provisioning or Haiku dependency was added: Edmund explicitly chose GPT-6 Luna.
 
 `scripts/backfill-conversation-titles.ts` runs the same claim/generate/settle path for a single explicitly authorized immutable owner ID, supplied through `TITLE_BACKFILL_OWNER_ID` in an ignored environment file. It caps a run at 100 candidate conversations, preserves all existing custom titles and prints only outcome counts/costs. Never default this script to all users. Claimed jobs remain idempotent on reruns; inspect failures instead of deleting claims and silently repeating inference. The authorized initial backfill is limited to Edmund's own account.
+
+## Team context (SPR-176)
+
+The 2026-10-27 team-visible policy supersedes earlier private-by-default Baobei and HQH/HHH descriptions. Chat can read same-team visible profiles and saved notes, with current record hides and individual exclusions. Profile results include two recent permitted linked notes; source coverage remains bounded. Contacts, private remarks, raw activity notes, chats and vaults remain private. Context never grants edit permission; note/profile mutations still use explicit owner-scoped editors. See docs/team-baobeis.md.

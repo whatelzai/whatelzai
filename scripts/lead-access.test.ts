@@ -39,6 +39,8 @@ function chain(data: unknown, log: { method: string; args: unknown[] }[]) {
     "order",
     "limit",
     "maybeSingle",
+    "or",
+    "contains",
   ])
     q[method] = (...args: unknown[]) => {
       log.push({ method, args });
@@ -59,6 +61,9 @@ test("Chat reads priority profiles and actual activities; shared context omits p
       q: string,
     ) => Promise<{ items: Record<string, unknown>[]; coverage: string }>;
   }>("lib/leads/context.ts", {
+    "@/lib/fcos/sharing": {
+      sharedBriefingIds: async () => [{ id: "team-note", owner_id: "other" }],
+    },
     "./server": { leadOwner: async () => "viewer" },
     "./model": model,
     "./sharing": {
@@ -85,13 +90,25 @@ test("Chat reads priority profiles and actual activities; shared context omits p
                     photo_path: "PRIVATE_PATH",
                   },
                 ]
-              : [
-                  {
-                    title: "Badminton",
-                    activity_on: "2026-10-27",
-                    status: "Tentative",
-                  },
-                ],
+              : table === "member_briefings"
+                ? [
+                    {
+                      id: "team-note",
+                      title: "Session",
+                      kind: "HQH",
+                      status: "draft",
+                      observations: "Known",
+                      reflections: "Approach",
+                      next_steps: "Ask",
+                    },
+                  ]
+                : [
+                    {
+                      title: "Badminton",
+                      activity_on: "2026-10-27",
+                      status: "Tentative",
+                    },
+                  ],
             calls,
           );
         },
@@ -142,6 +159,22 @@ test("Chat reads priority profiles and actual activities; shared context omits p
     ),
   );
   assert.match(r.coverage, /NOT attendance/);
+  assert.equal(
+    (r.items[1].linkedNotes as { title: string }[])[0].title,
+    "Session",
+  );
+  for (const log of logs.filter((x) => x.table === "member_briefings")) {
+    assert.ok(
+      log.calls.some(
+        (x) => x.method === "or" && String(x.args[0]).includes("team-note"),
+      ),
+    );
+    assert.ok(
+      log.calls.some(
+        (x) => x.method === "contains" && x.args[0] === "lead_ids",
+      ),
+    );
+  }
 });
 test("Profile/photo access denies foreign IDs by default and rechecks grants after revocation", async () => {
   let permitted = false;
@@ -224,4 +257,60 @@ test("Sharing actions reject unapproved recipients and derive owner from the ses
     (params as Record<string, unknown> | undefined)?.p_owner,
     "verified-owner",
   );
+});
+
+test("record hiding derives owner from session and guards stale revisions", async () => {
+  for (const present of [true, false]) {
+    const filters: unknown[][] = [];
+    let patch: Record<string, unknown> | undefined;
+    const actions = load<{
+      saveLeadPrivacy: (
+        s: object,
+        f: FormData,
+      ) => Promise<{ error?: string; success?: string }>;
+    }>("app/leads/profile-actions.ts", {
+      "next/cache": { revalidatePath: () => {} },
+      "@/lib/leads/server": { leadOwner: async () => "verified-owner" },
+      "@/lib/fcos/sharing": {},
+      "@/lib/leads/photo": {},
+      "@/lib/supabase-server": {
+        supabaseAdmin: {
+          from: (table: string) => {
+            assert.equal(table, "member_leads");
+            return {
+              update(value: Record<string, unknown>) {
+                patch = value;
+                return this;
+              },
+              eq(...args: unknown[]) {
+                filters.push(args);
+                return this;
+              },
+              select() {
+                return this;
+              },
+              maybeSingle: async () => ({
+                data: present ? { id: "fixture" } : null,
+                error: null,
+              }),
+            };
+          },
+        },
+      },
+    });
+    const form = new FormData();
+    form.set("id", "00000000-0000-4000-8000-000000000001");
+    form.set("revision", "3");
+    form.set("visibility", "private");
+    form.set("owner_id", "forged");
+    const result = await actions.saveLeadPrivacy({}, form);
+    assert.equal(Boolean(result.success), present);
+    assert.equal(Boolean(result.error), !present);
+    assert.equal(patch?.visibility, "private");
+    assert.equal(patch?.revision, 4);
+    assert.ok(
+      filters.some((x) => x[0] === "owner_id" && x[1] === "verified-owner"),
+    );
+    assert.ok(filters.some((x) => x[0] === "revision" && x[1] === 3));
+  }
 });

@@ -5,6 +5,7 @@ export const briefingSchema = z
     id: z.uuid(),
     revision: z.coerce.number().int().nonnegative(),
     kind: z.enum(["HQH", "HHH"]),
+    visibility: z.enum(["team", "private"]).default("team"),
     title: z.string().trim().min(1).max(180),
     event_name: z.string().trim().max(240),
     occurred_on: z.string().refine(validDate),
