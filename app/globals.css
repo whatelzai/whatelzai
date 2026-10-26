@@ -354,3 +354,16 @@ body:has([data-fcos-persistent-nav]):not(:has(.fcos-chat-page)) {
   border: 0;
   flex-shrink: 0;
 }
+
+/* fcOS router state: no timers or simulated progress. */
+.fcos-navigation-hint {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  pointer-events: none;
+}
+[data-fcos-link]:has([data-fcos-navigation-pending]) {
+  outline: 2px solid #eab308;
+  outline-offset: -2px;
+}

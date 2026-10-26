@@ -314,3 +314,71 @@ test("record hiding derives owner from session and guards stale revisions", asyn
     assert.ok(filters.some((x) => x[0] === "revision" && x[1] === 3));
   }
 });
+
+test(
+  "authorized profile and activity reads start together without widening their owner scope",
+  { timeout: 1500 },
+  async () => {
+    const starts: string[] = [];
+    let release!: () => void;
+    const barrier = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const started = async (name: string, data: unknown) => {
+      starts.push(name);
+      if (starts.length === 2) release();
+      await barrier;
+      return { data, error: null };
+    };
+    let profiles = 0;
+    const queries: { table: string; filters: unknown[][] }[] = [];
+    const server = load<{
+      loadLead: (id: string) => Promise<{ canEdit: boolean }>;
+    }>("lib/leads/server.ts", {
+      "@/lib/app-access": {
+        requireAssignedUser: async () => ({ id: "viewer" }),
+      },
+      "./model": model,
+      "./sharing": {
+        sharedLeadIds: async () => [],
+        sharedLeadColumns: "id,name",
+      },
+      "@/lib/supabase-server": {
+        supabaseAdmin: {
+          from: (table: string) => {
+            const item = { table, filters: [] as unknown[][] };
+            queries.push(item);
+            const q: Record<string, unknown> = {};
+            for (const method of ["select", "eq", "order", "limit"])
+              q[method] = (...args: unknown[]) => {
+                if (method === "eq") item.filters.push(args);
+                return q;
+              };
+            if (table === "member_leads")
+              q.maybeSingle = () =>
+                profiles++ === 0
+                  ? Promise.resolve({
+                      data: { id: "profile", owner_id: "viewer" },
+                      error: null,
+                    })
+                  : started("profile", {
+                      id: "profile",
+                      name: "Fixture",
+                      photo_path: null,
+                    });
+            else
+              q.then = (resolve: (r: unknown) => unknown) =>
+                started("activities", []).then(resolve);
+            return q;
+          },
+        },
+      },
+    });
+    assert.equal((await server.loadLead("profile")).canEdit, true);
+    assert.deepEqual(starts.sort(), ["activities", "profile"]);
+    for (const query of queries)
+      assert.ok(
+        query.filters.some((x) => x[0] === "owner_id" && x[1] === "viewer"),
+      );
+  },
+);

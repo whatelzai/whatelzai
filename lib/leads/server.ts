@@ -110,16 +110,30 @@ export async function leadAccess(id: string) {
 export async function loadLead(id: string) {
   const access = await leadAccess(id);
   if (!access) return null;
-  const profile = await supabaseAdmin
-    .from("member_leads")
-    .select(
-      access.canEdit
-        ? "id,name,region,membership,stage,goal,email,phone,birthday,zodiac,relationship,story,interests,concerns,notes,next_action,follow_up_on,is_priority,revision,updated_at,photo_path,visibility"
-        : sharedLeadColumns,
-    )
-    .eq("owner_id", access.owner_id)
-    .eq("id", id)
-    .maybeSingle();
+  const [profile, history] = await Promise.all([
+    supabaseAdmin
+      .from("member_leads")
+      .select(
+        access.canEdit
+          ? "id,name,region,membership,stage,goal,email,phone,birthday,zodiac,relationship,story,interests,concerns,notes,next_action,follow_up_on,is_priority,revision,updated_at,photo_path,visibility"
+          : sharedLeadColumns,
+      )
+      .eq("owner_id", access.owner_id)
+      .eq("id", id)
+      .maybeSingle(),
+    supabaseAdmin
+      .from("member_lead_activities")
+      .select(
+        access.canEdit
+          ? "id,lead_id,title,activity_on,status,notes,revision"
+          : "id,lead_id,title,activity_on,status",
+      )
+      .eq("owner_id", access.owner_id)
+      .eq("lead_id", id)
+      .order("activity_on", { ascending: false })
+      .order("id")
+      .limit(501),
+  ]);
   if (profile.error) throw Error("This profile could not be loaded.");
   if (!profile.data) return null;
   const { photo_path, ...fields } = profile.data as unknown as Partial<Lead> & {
@@ -136,18 +150,6 @@ export async function loadLead(id: string) {
     ...fields,
     has_photo: Boolean(photo_path),
   } as Lead;
-  const history = await supabaseAdmin
-    .from("member_lead_activities")
-    .select(
-      access.canEdit
-        ? "id,lead_id,title,activity_on,status,notes,revision"
-        : "id,lead_id,title,activity_on,status",
-    )
-    .eq("owner_id", access.owner_id)
-    .eq("lead_id", id)
-    .order("activity_on", { ascending: false })
-    .order("id")
-    .limit(501);
   if (history.error) throw Error("Activity history unavailable.");
   return {
     lead,
