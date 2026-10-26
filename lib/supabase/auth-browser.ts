@@ -8,11 +8,6 @@ export function createAuthBrowserClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookieOptions: authCookieOptions(window.location.host),
-      auth: {
-        experimental: {
-          passkey: window.location.hostname === "admin.whatelz.ai",
-        },
-      },
     },
   );
 }
