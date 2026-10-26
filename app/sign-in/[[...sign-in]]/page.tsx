@@ -1,4 +1,3 @@
-import { PasskeySignIn } from "@/components/auth/PasskeySignIn";
 import { headers } from "next/headers";
 import { safeAuthRedirect } from "@/lib/auth/redirect";
 
@@ -22,7 +21,6 @@ export default async function SignInPage({
     .then((r) => (r.ok ? r.json() : null))
     .catch(() => null);
   const enabled = settings?.external?.google === true;
-  const admin = host === "admin.whatelz.ai";
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-12">
       <section className="w-full max-w-md space-y-6 rounded-2xl border border-zinc-200 bg-white p-8 text-zinc-900">
@@ -38,7 +36,6 @@ export default async function SignInPage({
             Sign-in could not be completed. Please try again.
           </p>
         ) : null}
-        {admin && <PasskeySignIn next={params.redirect_url ?? "/"} />}
         <form action="/auth/google" method="post">
           <input
             type="hidden"
