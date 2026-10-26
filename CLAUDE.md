@@ -646,4 +646,4 @@ The member team page opens in Node view by default. Tree view remains selectable
 
 ## Compact team nodes (SPR-179)
 
-Node view uses 88px name-only circles and straight sponsor connectors on member/admin surfaces. Explicit two-name ampersand labels render as two slightly overlapping circles, retaining one stored identity and sponsor link; no relationship inference or data split. Subtree layout measures actual single/pair widths. Selection reveals details; pan/pinch/zoom and admin quick-edit/repeat-profile behavior remain. — codex, 2026-10-27
+Node view uses 88px name-only circles and straight sponsor connectors on member/admin surfaces. Explicit two-name ampersand labels render as two slightly overlapping circles, retaining one stored identity and sponsor link; no relationship inference or data split. Subtree layout measures actual single/pair widths. Member view starts centered on the selected person at readable scale; admin retains its initial overview fit. Selection reveals details; pan/pinch/zoom and admin quick-edit/repeat-profile behavior remain. — codex, 2026-10-27

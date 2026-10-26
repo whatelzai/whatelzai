@@ -37,17 +37,24 @@ export function TeamNodes({
   const fitted = useRef(false);
   useEffect(() => {
     const element = viewport.current;
-    if (!fitOnMount || fitted.current || !element) return;
+    if (fitted.current || !element) return;
     fitted.current = true;
+    const selected = layout.nodes.find((node) => node.person.id === selectedId);
     updateCamera(
-      fitNodeCamera(
-        layout.width,
-        layout.height,
-        element.clientWidth,
-        element.clientHeight,
-      ),
+      fitOnMount || !selected
+        ? fitNodeCamera(
+            layout.width,
+            layout.height,
+            element.clientWidth,
+            element.clientHeight,
+          )
+        : {
+            zoom: 1,
+            x: element.clientWidth / 2 - selected.x - selected.width / 2,
+            y: element.clientHeight / 2 - selected.y - NODE_HEIGHT / 2,
+          },
     );
-  }, [fitOnMount, layout.width, layout.height, updateCamera]);
+  }, [fitOnMount, layout, selectedId, updateCamera]);
   const { zoom } = camera;
   const zoomAt = (value: number) =>
     zoomCamera(value, {
@@ -118,12 +125,19 @@ export function TeamNodes({
             className={controlClass}
             onClick={() => {
               const element = viewport.current;
+              const selected = layout.nodes.find(
+                (node) => node.person.id === selectedId,
+              );
               updateCamera({
                 zoom: 1,
-                x: ((element?.clientWidth ?? layout.width) - layout.width) / 2,
+                x:
+                  (element?.clientWidth ?? layout.width) / 2 -
+                  (selected
+                    ? selected.x + selected.width / 2
+                    : layout.width / 2),
                 y:
-                  ((element?.clientHeight ?? layout.height) - layout.height) /
-                  2,
+                  (element?.clientHeight ?? layout.height) / 2 -
+                  (selected ? selected.y + NODE_HEIGHT / 2 : layout.height / 2),
               });
             }}
           >
