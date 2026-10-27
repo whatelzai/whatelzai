@@ -34,7 +34,6 @@ export function AdminTeamCanvas({
         people={people}
         focusId={focusId}
         canSeeAll
-        initialView="nodes"
         onPersonActivate={activate}
         editingId={editingId}
       />

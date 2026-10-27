@@ -69,7 +69,7 @@ export default async function TeamPage() {
       </header>
       <AdminTeamCanvas
         people={view.people}
-        focusId={view.team.focus_person_id}
+        focusId={view.focusId}
         teamId={view.team.id}
       />
       <details className="space-y-4 rounded-xl border border-zinc-200 p-5">
