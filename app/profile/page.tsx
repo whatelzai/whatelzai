@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ReleaseArchive } from "@/components/releases/ReleaseArchive";
 import { AppHeader } from "@/components/fcos/AppHeader";
 import { redirect } from "next/navigation";
 import Image from "next/image";
@@ -36,14 +38,17 @@ const card =
 export default async function Profile({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; resets?: string }>;
+  searchParams: Promise<{ tab?: string; resets?: string; before?: string }>;
 }) {
   const user = await ensureUserRow();
   if (!user) redirect("/sign-in");
-  const { tab, resets } = await searchParams;
+  const { tab, resets, before } = await searchParams;
   const resetHistory = resets === "history";
   const usageTab = tab === "usage";
-  const { persona, usage } = await loadProfileData();
+  const releasesTab = tab === "releases";
+  const { persona, usage } = releasesTab
+    ? { persona: null, usage: null }
+    : await loadProfileData();
   const observedAt = usage ? Date.parse(usage.observedAt) : 0;
   const firstName = user.name?.split(" ")[0] || "friend";
   return (
@@ -62,7 +67,7 @@ export default async function Profile({
         }
       />
       <MemberNav current="/profile" compact persistent accent="orange" />
-      {!usageTab && (
+      {!usageTab && !releasesTab && (
         <section className="flex items-center gap-4 py-3 sm:gap-6">
           <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full border-4 border-orange-100 bg-orange-50 text-3xl font-semibold text-orange-600 sm:h-28 sm:w-28">
             {user.image_url ? (
@@ -102,20 +107,39 @@ export default async function Profile({
         className="flex rounded-2xl bg-zinc-200/60 p-1"
       >
         {[
-          { label: "Profile", href: "/profile", selected: !usageTab },
+          {
+            label: "Profile",
+            href: "/profile",
+            selected: !usageTab && !releasesTab,
+          },
           { label: "Usage", href: "/profile?tab=usage", selected: usageTab },
+          {
+            label: "Release notes",
+            href: "/profile?tab=releases",
+            selected: releasesTab,
+          },
         ].map((item) => (
           <Link
             key={item.label}
             href={item.href}
             aria-current={item.selected ? "page" : undefined}
-            className={`flex-1 rounded-xl px-4 py-3 text-center text-sm font-semibold ${item.selected ? "bg-white text-orange-600 shadow-sm" : "text-zinc-500"}`}
+            className={`flex-1 whitespace-nowrap rounded-xl px-3 py-3 text-center text-sm font-semibold ${item.selected ? "bg-white text-orange-600 shadow-sm" : "text-zinc-500"}`}
           >
             {item.label}
           </Link>
         ))}
       </nav>
-      {usageTab ? (
+      {releasesTab ? (
+        <Suspense
+          fallback={
+            <p role="status" className="py-5 text-sm text-zinc-500">
+              Loading release notes…
+            </p>
+          }
+        >
+          <ReleaseArchive before={before} />
+        </Suspense>
+      ) : usageTab ? (
         <div className="space-y-5">
           {!usage ? (
             <section className={card}>

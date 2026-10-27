@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { HomeReleaseNotes } from "@/components/releases/HomeReleaseNotes";
 import { AppHeader } from "@/components/fcos/AppHeader";
 import Link from "@/components/fcos/MemberLink";
 import { redirect } from "next/navigation";
@@ -34,6 +36,9 @@ export default async function MemberHome() {
   return (
     <main className="fcos-tab-page mx-auto max-w-5xl space-y-5 px-5 py-6 sm:px-6 sm:py-8">
       <AppHeader title="Home" />
+      <Suspense fallback={null}>
+        <HomeReleaseNotes />
+      </Suspense>
       <MemberNav current="/" compact persistent />
       <header className="flex items-center justify-between gap-3 py-1">
         <div>
