@@ -648,6 +648,9 @@ The member team page opens in Node view by default. Tree view remains selectable
 
 Node view uses 88px name-only circles and straight sponsor connectors on member/admin surfaces. Explicit two-name ampersand labels render as two slightly overlapping circles, retaining one stored identity and sponsor link; no relationship inference or data split. Subtree layout measures actual single/pair widths. Member view starts centered on the selected person at readable scale; admin retains its initial overview fit. Selection reveals details; pan/pinch/zoom and admin quick-edit/repeat-profile behavior remain. — codex, 2026-10-27
 
+## Personal money (SPR-180)
+
+Private Personal/Money is an owner-gated manual ledger: exact minor units, separate SGD/MYR/USD, six-jar salary plan, transactions and recurring bills. SQL service-only RLS tables and invoker functions; no browser grants, bank integrations, automated charges, inferred FX or seeded balances. Idempotent writes, atomic recurring payment/date advancement, void/restore history, paged lists/CSV. Bank mapping and LTSS target are plans, not balances or completed transfers. Preserve no-store reads and network-only PWA behavior. See docs/personal-money.md.
 ## Node-only personal team view (SPR-181)
 
 Team visualization is node-only, with no perspective dropdown or visible relationship/gesture explanations. Member and admin initial cameras center the verified linked viewer at normal zoom; admin uses loadTeamView.focusId, not the shared team focus. Manual Fit remains available. Selecting a node retains details/editing without changing account links, view permissions or initial identity. This supersedes SPR-178’s Tree switch and SPR-179’s admin initial overview fit. — codex, 2026-10-27
