@@ -660,3 +660,6 @@ Personal is a private reading and action home: source-backed Mandala direction, 
 ## Member release notes (SPR-182)
 
 Home streams an optional latest-three What’s new modal when a published release is unseen. Close/Escape/View all saves a monotonic account-owned acknowledgement; Profile → Release notes is the permanent paginated archive. Release prose and dismissal state live in service-only Supabase tables, never bundled content or localStorage. Native modal scrolling/focus and immediate close preserve mobile usability. All reads/actions require assigned identity; drafts/future notes stay hidden. Release-tab reads skip unrelated credit queries. See docs/fcos-release-notes.md. — codex, 2026-10-27
+
+## Admin release notes (SPR-184)
+Owner-only Admin layout supplies versioned server-only release content, independent of member releases. `lib/admin-releases/data.ts` keeps newest-first immutable IDs and bilingual verified feature notes; never put operational/private facts in it. Home’s optional lazy native dialog shows newest three once per new release per device/owner; localStorage receipt is UX only, no database permissions. Close/Escape immediate, scrolling inside fixed header/footer. Full history is Settings `?tab=releases`, with Preferences as default. Settings/deep pages do not trigger popup. See docs/admin-release-notes.md.
