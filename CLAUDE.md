@@ -654,3 +654,7 @@ Private Personal/Money is an owner-gated manual ledger: exact minor units, separ
 ## Node-only personal team view (SPR-181)
 
 Team visualization is node-only, with no perspective dropdown or visible relationship/gesture explanations. Member and admin initial cameras center the verified linked viewer at normal zoom; admin uses loadTeamView.focusId, not the shared team focus. Manual Fit remains available. Selecting a node retains details/editing without changing account links, view permissions or initial identity. This supersedes SPR-178’s Tree switch and SPR-179’s admin initial overview fit. — codex, 2026-10-27
+
+## Member release notes (SPR-182)
+
+Home streams an optional latest-three What’s new modal when a published release is unseen. Close/Escape/View all saves a monotonic account-owned acknowledgement; Profile → Release notes is the permanent paginated archive. Release prose and dismissal state live in service-only Supabase tables, never bundled content or localStorage. Native modal scrolling/focus and immediate close preserve mobile usability. All reads/actions require assigned identity; drafts/future notes stay hidden. Release-tab reads skip unrelated credit queries. See docs/fcos-release-notes.md. — codex, 2026-10-27
