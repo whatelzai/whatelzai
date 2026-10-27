@@ -18,6 +18,13 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "Release notes": "更新说明",
+  Preferences: "偏好设置",
+  "Settings sections": "设置页面",
+  "View all release notes": "查看全部更新",
+  "Latest three releases": "最近三条更新",
+  "Close release notes": "关闭更新说明",
+  "What’s new": "最新更新",
   "Your personal outcome could not be loaded. Refresh to try again.":
     "无法读取本周成果，请刷新重试。",
   "No recurring expenses recorded yet.": "尚未记录固定支出。",
