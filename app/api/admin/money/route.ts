@@ -14,7 +14,7 @@ const reply = (body: unknown, status = 200) =>
     status,
     headers: { "Cache-Control": "private, no-store" },
   });
-export function moneyHost(request: Request) {
+function moneyHost(request: Request) {
   const h = new URL(request.url).hostname;
   return (
     h === "admin.whatelz.ai" ||
