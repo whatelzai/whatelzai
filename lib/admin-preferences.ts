@@ -18,6 +18,38 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "Your personal outcome could not be loaded. Refresh to try again.":
+    "无法读取本周成果，请刷新重试。",
+  "No recurring expenses recorded yet.": "尚未记录固定支出。",
+  "SGD and MYR kept separate": "新币与马币分别记录",
+  "Targets, not bank balances. Record spending when it happens.":
+    "这是目标，不是银行余额。消费后随手记录。",
+  "LTSS reserve target": "LTSS应急储备目标",
+  "Monthly jar plan": "每月分罐计划",
+  "One personal outcome, chosen by you. Your Mandala is a direction, not 64 weekly obligations.":
+    "由你选择一个个人成果。曼陀罗是方向，不是每周的64项义务。",
+  "Something specific I want to move forward.": "一个我想推进的具体成果。",
+  "Edit outcome": "修改成果",
+  "Reopen outcome": "重新开启",
+  "Mark done": "标记完成",
+  "Done this week": "本周已完成",
+  "Chosen for this week": "本周已选定",
+  "Choose this outcome": "选定这个成果",
+  "Life area": "生活领域",
+  "One outcome for this week": "本周的一个成果",
+  "Log expense": "记一笔支出",
+  "Full plan": "完整计划",
+  "My life, in balance": "生活的平衡",
+  "My rhythm": "我的节奏",
+  "Open tracker": "打开账本",
+  "My money": "我的财务",
+  "This week, for myself": "本周，留给自己",
+  "Read my Mandala": "查看我的曼陀罗",
+  "Proof window": "验证期",
+  "Living-cost baseline": "生活费基准",
+  "/month in sustainable passive income": "／月可持续被动收入",
+  "Financial freedom by": "实现财务自由的年龄：",
+  "My direction": "我的方向",
   "This week": "本周",
   "My next sprint": "下一次专注冲刺",
   "Focused sprint": "专注冲刺",

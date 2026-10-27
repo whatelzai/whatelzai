@@ -7,7 +7,21 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
-export default async function MoneyPage() {
+export default async function MoneyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ entry?: string; view?: string }>;
+}) {
   await dailyOwner();
-  return <MoneyWorkspace />;
+  const query = await searchParams;
+  return (
+    <MoneyWorkspace
+      initialEntry={query.entry === "expense"}
+      initialView={
+        ["jars", "activity", "recurring"].includes(query.view ?? "")
+          ? query.view
+          : "jars"
+      }
+    />
+  );
 }

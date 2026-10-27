@@ -15,10 +15,16 @@ const EntryForm = dynamic(() => import("./EntryForm"), {
   ssr: false,
   loading: () => <p role="status">Opening entry form…</p>,
 });
-export default function MoneyWorkspace() {
+export default function MoneyWorkspace({
+  initialEntry = false,
+  initialView = "jars",
+}: {
+  initialEntry?: boolean;
+  initialView?: string;
+}) {
   const [month, setMonth] = useState(() => singaporeDay().slice(0, 7));
   const [currency, setCurrency] = useState<Currency>("SGD");
-  const [view, setView] = useState("jars");
+  const [view, setView] = useState(initialView);
   const [page, setPage] = useState(0);
   const [data, setData] = useState<MoneyData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +33,7 @@ export default function MoneyWorkspace() {
   const [form, setForm] = useState<{
     mode: "entry" | "recurring" | "paid";
     rule?: Rule;
-  } | null>(null);
+  } | null>(initialEntry ? { mode: "entry" } : null);
   const [busy, setBusy] = useState(false);
   const serial = useRef(0);
   const load = useCallback(async () => {
@@ -205,7 +211,9 @@ export default function MoneyWorkspace() {
               Monthly plan:{" "}
               {data?.plan
                 ? `${money(data.plan.jar_base_minor, "SGD")} after ${money(data.plan.tax_minor, "SGD")} tax provision.`
-                : "Not configured."}{" "}
+                : loading
+                  ? "Reading plan…"
+                  : "Not configured."}{" "}
               Allocations are targets, not recorded deposits.
             </p>
             <div className="money-jar-head">
@@ -298,7 +306,9 @@ export default function MoneyWorkspace() {
                 LTSS reserve target:{" "}
                 {data?.plan
                   ? money(data.plan.reserve_target_minor, "SGD")
-                  : "Not configured"}
+                  : loading
+                    ? "Reading plan…"
+                    : "Not configured"}
                 . Opening funds have not been imported.
               </p>
               <p>No bank connections or automatic transfers are enabled.</p>

@@ -1,0 +1,239 @@
+.personal-home {
+  max-width: 1120px;
+  margin: auto;
+  color: var(--admin-text, inherit);
+}
+.personal-title,
+.personal-section-title,
+.personal-direction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.personal-title {
+  margin-bottom: 2rem;
+}
+.personal-title h1 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+.personal-title p,
+.personal-meta {
+  font-size: 0.875rem;
+  color: var(--admin-muted, #707078);
+  line-height: 1.6;
+}
+.personal-primary {
+  background: #20201e;
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.8rem 1.1rem;
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.personal-direction {
+  padding: 1.75rem 0 2rem;
+  border-top: 3px solid #fbd51b;
+  border-bottom: 1px solid #d9d9d4;
+  align-items: flex-end;
+}
+.personal-home h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+.personal-goal {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  margin: 0.5rem 0;
+}
+.personal-goal-detail {
+  font-size: 1.05rem;
+  margin: 0.5rem 0;
+}
+.personal-main {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 3.5rem;
+  margin: 2.5rem 0;
+}
+.personal-week-focus h3 {
+  font-size: 1.5rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.personal-week-focus label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+.personal-week-focus input,
+.personal-week-focus select {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #c8c8c1;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  padding: 0.7rem;
+  margin-top: 0.45rem;
+  font: inherit;
+}
+.personal-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.personal-actions button {
+  min-height: 44px;
+  border: 1px solid #bbbcb5;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.personal-actions button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.personal-actions button:first-child {
+  background: #ffe22b;
+  color: #171713;
+  border-color: #ffe22b;
+}
+.personal-section-title h2,
+.personal-section-title h3 {
+  margin: 0;
+}
+.personal-section-title a,
+.personal-direction > a {
+  font-size: 0.875rem;
+  text-underline-offset: 4px;
+}
+.personal-money-plan {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+}
+.personal-money-plan strong {
+  font-variant-numeric: tabular-nums;
+}
+.personal-bill-title {
+  margin: 1.5rem 0 0.5rem;
+}
+.personal-bill-title h3 {
+  font-size: 0.875rem;
+}
+.personal-bill {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #deded8;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.personal-bill small,
+.personal-routine small {
+  display: block;
+  color: var(--admin-muted, #707078);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+.personal-rhythm {
+  padding: 1.5rem 0;
+  border-top: 1px solid #d9d9d4;
+  border-bottom: 1px solid #d9d9d4;
+}
+.personal-rhythm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  margin-top: 1rem;
+}
+.personal-routine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  padding: 0.8rem 0;
+  font-size: 0.9rem;
+}
+.personal-areas {
+  margin-top: 2rem;
+}
+.personal-area-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0 1.5rem;
+  margin-top: 1rem;
+}
+.personal-area-list a {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  text-decoration: none;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #deded8;
+}
+.personal-error {
+  color: #ae2c22;
+}
+.personal-home a:focus-visible,
+.personal-home button:focus-visible,
+.personal-home input:focus-visible,
+.personal-home select:focus-visible {
+  outline: 3px solid #ad8500;
+  outline-offset: 4px;
+}
+.admin-shell[data-admin-theme="dark"] .personal-primary {
+  background: #f3f1e6;
+  color: #171713;
+}
+.admin-shell[data-admin-theme="dark"] .personal-direction,
+.admin-shell[data-admin-theme="dark"] .personal-rhythm,
+.admin-shell[data-admin-theme="dark"] .personal-bill,
+.admin-shell[data-admin-theme="dark"] .personal-area-list a {
+  border-bottom-color: #44443e;
+}
+.admin-shell[data-admin-theme="dark"] .personal-meta,
+.admin-shell[data-admin-theme="dark"] .personal-routine small,
+.admin-shell[data-admin-theme="dark"] .personal-bill small {
+  color: #b7b7ad;
+}
+@media (max-width: 700px) {
+  .personal-main {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .personal-direction {
+    display: block;
+    padding: 1.25rem 0;
+  }
+  .personal-direction > a {
+    display: inline-block;
+    margin-top: 0.75rem;
+  }
+  .personal-rhythm-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .personal-area-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .personal-title {
+    margin-bottom: 1.25rem;
+  }
+  .personal-primary {
+    padding: 0.75rem 0.9rem;
+  }
+}

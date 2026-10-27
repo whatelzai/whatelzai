@@ -654,3 +654,6 @@ Private Personal/Money is an owner-gated manual ledger: exact minor units, separ
 ## Node-only personal team view (SPR-181)
 
 Team visualization is node-only, with no perspective dropdown or visible relationship/gesture explanations. Member and admin initial cameras center the verified linked viewer at normal zoom; admin uses loadTeamView.focusId, not the shared team focus. Manual Fit remains available. Selecting a node retains details/editing without changing account links, view permissions or initial identity. This supersedes SPR-178’s Tree switch and SPR-179’s admin initial overview fit. — codex, 2026-10-27
+
+## Personal life workspace (SPR-183)
+Personal is a private reading and action home: source-backed Mandala direction, one owner-chosen Singapore-week outcome, expense capture, jar plan/upcoming bills and independent daily/weekly saved status. It does not mix business commitments into Personal or generate 64 weekly tasks. `personal_weekly_focus` is service-only with RLS and no browser grants; current-week writes require owner, Admin origin and matching revision. Previous weeks remain intact. Money quick links accept bounded entry/view hints, never submit automatically. Financial targets are not verified balances or income progress. Keep the shared shell, translations, large text and independent Suspense boundaries.
