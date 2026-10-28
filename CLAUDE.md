@@ -670,3 +670,7 @@ Profile offers English/简体中文 for shared member navigation/header and Prof
 
 ## Simple income (SPR-186)
 Income has three source choices (Working/Investment/Business), optional notes and a receiving account. `incomeFields` validates source/notes, supplies a default description and stores UNALLOCATED/personal as ledger bookkeeping; no jar selector, expense wording or hidden required expense fields in the Income UI. Existing category column carries income source; history/CSV already show it. No migration/reclassification or automatic allocations/tax/passive-income claims. Expense/refund/transfer/opening/recurring behavior stays distinct.
+
+## First-visit member language (SPR-187)
+
+Signed-in member Home offers English (initially selected) and 简体中文 when this device has no valid member-language cookie. Continue uses the existing assigned-user save action; it saves explicit English too. Home mounts either LanguageWelcome or the release popup boundary, never both. The confirmed language remains changeable in Profile. This inherits SPR-185’s per-device preference, original-content preservation and no extra root auth/database reads; no inferred browser language, account onboarding flag or forced full legacy-screen translation. — codex, 2026-10-28

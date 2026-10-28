@@ -367,3 +367,8 @@ body:has([data-fcos-persistent-nav]):not(:has(.fcos-chat-page)) {
   outline: 2px solid #eab308;
   outline-offset: -2px;
 }
+
+/* The welcome heading receives initial reading focus, not a control outline. */
+.fcos-language-welcome h2:focus {
+  outline: none;
+}

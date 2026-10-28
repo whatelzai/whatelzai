@@ -1,3 +1,5 @@
+import { getMemberLanguagePreference } from "@/lib/fcos/language-server";
+import { LanguageWelcome } from "@/components/fcos/LanguageWelcome";
 import { Suspense } from "react";
 import { HomeReleaseNotes } from "@/components/releases/HomeReleaseNotes";
 import { AppHeader } from "@/components/fcos/AppHeader";
@@ -27,7 +29,10 @@ const eyebrow =
 export default async function MemberHome() {
   const user = await ensureUserRow();
   if (!user) redirect("/sign-in");
-  const data = await loadAttentionDashboard();
+  const [data, preference] = await Promise.all([
+    loadAttentionDashboard(),
+    getMemberLanguagePreference(),
+  ]);
   const canChat = memberApiEnabled();
   const complete = data.leads.available && data.tasks.available;
   const total = complete
@@ -36,9 +41,13 @@ export default async function MemberHome() {
   return (
     <main className="fcos-tab-page mx-auto max-w-5xl space-y-5 px-5 py-6 sm:px-6 sm:py-8">
       <AppHeader title="Home" />
-      <Suspense fallback={null}>
-        <HomeReleaseNotes />
-      </Suspense>
+      {preference.needsChoice ? (
+        <LanguageWelcome />
+      ) : (
+        <Suspense fallback={null}>
+          <HomeReleaseNotes />
+        </Suspense>
+      )}
       <MemberNav current="/" compact persistent />
       <header className="flex items-center justify-between gap-3 py-1">
         <div>

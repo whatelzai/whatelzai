@@ -7,9 +7,13 @@ import * as language from "../lib/fcos/language";
 import { resetCountdown } from "../lib/profile/usage";
 
 test("member language validates choices and preserves stored or unknown text", () => {
-  for (const value of [undefined, null, "fr", "ZH", {}, "<script>"])
+  for (const value of [undefined, null, "fr", "ZH", {}, "<script>"]) {
     assert.equal(language.memberLanguage(value), "en");
+    assert.equal(language.needsMemberLanguageChoice(value), true);
+  }
   assert.equal(language.memberLanguage("zh"), "zh");
+  assert.equal(language.needsMemberLanguageChoice("en"), false);
+  assert.equal(language.needsMemberLanguageChoice("zh"), false);
   assert.equal(language.memberText("zh", "Profile"), "个人");
   assert.equal(language.memberText("en", "Profile"), "Profile");
   assert.equal(

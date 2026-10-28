@@ -3,11 +3,17 @@ export const MEMBER_LANGUAGE_COOKIE = "fcos-member-language";
 export function isMemberLanguage(value: unknown): value is MemberLanguage {
   return value === "en" || value === "zh";
 }
+export function needsMemberLanguageChoice(value: unknown) {
+  return !isMemberLanguage(value);
+}
 export function memberLanguage(value: unknown): MemberLanguage {
   return isMemberLanguage(value) ? value : "en";
 }
 // Interface copy only. Never pass stored names, stories, notes or teachings here.
 const chinese: Record<string, string> = {
+  "Select your preferred language": "选择你的首选语言",
+  "You can change this later in Profile.": "你可以稍后在个人页面更改。",
+  Continue: "继续",
   Profile: "个人",
   Usage: "用量",
   Home: "首页",
