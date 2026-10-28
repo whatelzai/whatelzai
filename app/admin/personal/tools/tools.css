@@ -317,3 +317,10 @@
 .personal-tools .timer-tool .preset-row {
   justify-content: center;
 }
+
+/* Selection survives greyscale: outline and weight supplement the colour. */
+.personal-tools nav button[aria-current],
+.personal-tools .preset-row button[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px currentColor;
+  font-weight: 650;
+}

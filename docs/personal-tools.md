@@ -19,3 +19,7 @@ Meditation presets 3/5/10/20 minutes. Teaching is 60 seconds with optional topic
 ## Release
 
 Migration: `20261028121901_personal_tools.sql`. Production execution was blocked by automatic approval review pending explicit approval of the migration/release. Do not claim applied or deployed until verified. No existing user records changed by tests.
+
+## Greyscale viewing
+
+Edmund frequently uses greyscale on his phone. Colour is supplementary: each destination has a different icon and short label; selected tools/presets have an inset outline and stronger weight; checklists use native checked shapes; timers show digits and explicit state text. Preserve these distinctions without depending on hue. Mobile first, desktop friendly.
