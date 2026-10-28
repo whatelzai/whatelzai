@@ -667,3 +667,6 @@ Owner-only Admin layout supplies versioned server-only release content, independ
 ## Member language and Profile footer (SPR-185)
 
 Profile offers English/简体中文 for shared member navigation/header and Profile/usage controls. An assigned-user action validates the enum and sets a host-only HttpOnly SameSite=Lax one-year cookie; app root reads only this cookie, adding no identity/database work. Admin language preferences remain separate. Stored names, notes, teachings and release prose are preserved, with English fallback for untranslated interface copy. Release history stays at `/profile?tab=releases`, reached through a muted Profile footer link with a back link; only Profile and Usage remain as tabs. This is interface localization, not automatic translation of all legacy screens or user content.
+
+## Simple income (SPR-186)
+Income has three source choices (Working/Investment/Business), optional notes and a receiving account. `incomeFields` validates source/notes, supplies a default description and stores UNALLOCATED/personal as ledger bookkeeping; no jar selector, expense wording or hidden required expense fields in the Income UI. Existing category column carries income source; history/CSV already show it. No migration/reclassification or automatic allocations/tax/passive-income claims. Expense/refund/transfer/opening/recurring behavior stays distinct.

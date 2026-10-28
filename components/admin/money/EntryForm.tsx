@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import {
   accounts,
+  incomeTypes,
+  incomeFields,
   currencies,
   jars,
   kinds,
@@ -40,12 +42,15 @@ export default function EntryForm({
     dialog?.querySelector<HTMLInputElement>('input[name="amount"]')?.focus();
     return () => dialog?.close();
   }, []);
+  const income = mode === "entry" && kind === "income";
   const title =
     mode === "recurring"
       ? "Add recurring expense"
       : mode === "paid"
         ? "Record payment"
-        : "Add entry";
+        : income
+          ? "Add income"
+          : "Add entry";
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (busy) return;
@@ -96,10 +101,14 @@ export default function EntryForm({
             amount_minor: minorUnits(get("amount")),
             currency: get("currency"),
             account: get("account"),
-            jar: get("jar"),
-            description: get("description"),
-            category: get("category"),
-            scope: get("scope"),
+            ...(income
+              ? incomeFields(get("income_type"), get("description"))
+              : {
+                  jar: get("jar"),
+                  description: get("description"),
+                  category: get("category"),
+                  scope: get("scope"),
+                }),
             to_account: transfer ? get("to_account") : null,
             to_jar: transfer ? get("to_jar") : null,
             to_currency: transfer ? get("to_currency") : null,
@@ -162,6 +171,9 @@ export default function EntryForm({
                 if (v === "income") {
                   setJar("UNALLOCATED");
                   setAccount("DBS");
+                } else if (kind === "income") {
+                  setJar("NECC");
+                  setAccount("GXS");
                 }
               }}
               name="kind"
@@ -207,36 +219,56 @@ export default function EntryForm({
         </div>
         {mode !== "paid" ? (
           <>
-            <label>
-              {mode === "recurring" ? "Service or bill" : "What was it for?"}
-              <input
-                name="description"
-                maxLength={200}
-                required
-                placeholder="Lunch, rent, hosting…"
-              />
-            </label>
-            <div className="money-fields">
+            {income ? (
               <label>
-                Jar
-                <select
-                  name="jar"
-                  value={jar}
-                  onChange={(e) => setJar(e.target.value)}
-                >
-                  {jars.map((j) => (
-                    <option key={j} value={j}>
-                      {j === "UNALLOCATED"
-                        ? "Income / unallocated"
-                        : j === "BUSINESS"
-                          ? "Business costs"
-                          : j}
-                    </option>
+                Income type
+                <select name="income_type">
+                  {incomeTypes.map((type) => (
+                    <option key={type}>{type}</option>
                   ))}
                 </select>
               </label>
+            ) : null}
+            <label>
+              {income
+                ? "Notes (optional)"
+                : mode === "recurring"
+                  ? "Service or bill"
+                  : "What was it for?"}
+              <input
+                name="description"
+                maxLength={200}
+                required={!income}
+                placeholder={
+                  income
+                    ? "Salary month, payer or a short note"
+                    : "Lunch, rent, hosting…"
+                }
+              />
+            </label>
+            <div className={income ? undefined : "money-fields"}>
+              {!income ? (
+                <label>
+                  Jar
+                  <select
+                    name="jar"
+                    value={jar}
+                    onChange={(e) => setJar(e.target.value)}
+                  >
+                    {jars.map((j) => (
+                      <option key={j} value={j}>
+                        {j === "UNALLOCATED"
+                          ? "Income / unallocated"
+                          : j === "BUSINESS"
+                            ? "Business costs"
+                            : j}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
               <label>
-                Paid through
+                {income ? "Received into" : "Paid through"}
                 <input
                   name="account"
                   list="money-accounts"
@@ -247,29 +279,33 @@ export default function EntryForm({
                 />
               </label>
             </div>
-            <details>
-              <summary>More details</summary>
-              <div className="money-fields">
-                <label>
-                  Category
-                  <input
-                    name="category"
-                    list="money-categories"
-                    defaultValue="General"
-                    required
-                    maxLength={60}
-                  />
-                </label>
-                <label>
-                  Purpose
-                  <select name="scope">
-                    <option value="personal">Personal</option>
-                    <option value="ai_business">AI business</option>
-                    <option value="network_marketing">Network marketing</option>
-                  </select>
-                </label>
-              </div>
-            </details>
+            {!income ? (
+              <details>
+                <summary>More details</summary>
+                <div className="money-fields">
+                  <label>
+                    Category
+                    <input
+                      name="category"
+                      list="money-categories"
+                      defaultValue="General"
+                      required
+                      maxLength={60}
+                    />
+                  </label>
+                  <label>
+                    Purpose
+                    <select name="scope">
+                      <option value="personal">Personal</option>
+                      <option value="ai_business">AI business</option>
+                      <option value="network_marketing">
+                        Network marketing
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+            ) : null}
           </>
         ) : null}
         <label>

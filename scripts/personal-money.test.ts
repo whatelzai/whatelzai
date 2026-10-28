@@ -312,3 +312,24 @@ test("real SQL ledger and bill recording: private grants, exact aggregation, ato
     await db.close();
   }
 });
+
+test("three income sources save without notes or a jar choice, preserving exact cents", () => {
+  for (const type of model.incomeTypes) {
+    const data = model.entrySchema.parse({
+      ...entry,
+      kind: "income",
+      amount_minor: model.minorUnits("3545.45"),
+      ...model.incomeFields(type, " "),
+    });
+    assert.equal(data.category, type);
+    assert.equal(data.description, type);
+    assert.equal(data.jar, "UNALLOCATED");
+    assert.equal(data.amount_minor, 354545);
+  }
+  assert.equal(
+    model.incomeFields("Business income", "  Client payment  ").description,
+    "Client payment",
+  );
+  assert.throws(() => model.incomeFields("Other", ""));
+  assert.throws(() => model.incomeFields("Working income", "x".repeat(201)));
+});
