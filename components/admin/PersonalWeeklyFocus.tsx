@@ -139,11 +139,6 @@ export function PersonalWeeklyFocus({
               </button>
             ) : null}
           </div>
-          <p className="personal-meta">
-            {t(
-              "One personal outcome, chosen by you. Your Mandala is a direction, not 64 weekly obligations.",
-            )}
-          </p>
         </form>
       )}
       {error ? (

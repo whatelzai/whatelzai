@@ -84,6 +84,7 @@ function route(
   customFrom?: (table: string) => unknown,
 ) {
   let calls = 0;
+  const reads: unknown[][] = [];
   const code = ts.transpileModule(
     readFileSync(
       new URL("../app/api/admin/money/route.ts", import.meta.url),
@@ -105,7 +106,8 @@ function route(
     "@/lib/admin-policy": { isOwnerUser },
     "@/lib/money/model": model,
     "@/lib/money/server": {
-      moneyData: async () => {
+      moneyData: async (...args: unknown[]) => {
+        reads.push(args);
         calls++;
         return { entries: [] };
       },
@@ -131,7 +133,7 @@ function route(
     TextEncoder,
     console,
   });
-  return { api: mod.exports, calls: () => calls };
+  return { api: mod.exports, calls: () => calls, reads };
 }
 // Owner policy uses the real env default; restore after testing.
 test("actual routes reject foreign roles, public/member hosts, cross-origin and oversized payloads before data access", async () => {
@@ -411,5 +413,42 @@ test("date correction uses owner, active-entry and expected-date guards; stale c
   } finally {
     if (previous === undefined) delete process.env.WHATELZ_OWNER_USER_ID;
     else process.env.WHATELZ_OWNER_USER_ID = previous;
+  }
+});
+
+test("activity history filter is bounded, explicit and preserves existing API default", async () => {
+  const prior = process.env.WHATELZ_OWNER_USER_ID;
+  process.env.WHATELZ_OWNER_USER_ID = OWNER;
+  try {
+    const r = route({ id: OWNER, role: "admin" });
+    for (const [query, expected] of [
+      ["", true],
+      ["&include_voided=0", false],
+      ["&include_voided=1", true],
+    ] as const) {
+      const res = await r.api.GET(
+        new Request(
+          "https://admin.whatelz.ai/api/admin/money?month=2026-10&page=2" +
+            query,
+        ),
+      );
+      assert.equal(res.status, 200);
+      assert.deepEqual(r.reads.at(-1), [OWNER, "2026-10", 2, expected]);
+    }
+    const before = r.calls();
+    assert.equal(
+      (
+        await r.api.GET(
+          new Request(
+            "https://admin.whatelz.ai/api/admin/money?include_voided=maybe",
+          ),
+        )
+      ).status,
+      400,
+    );
+    assert.equal(r.calls(), before);
+  } finally {
+    if (prior === undefined) delete process.env.WHATELZ_OWNER_USER_ID;
+    else process.env.WHATELZ_OWNER_USER_ID = prior;
   }
 });

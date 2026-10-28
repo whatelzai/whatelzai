@@ -35,6 +35,9 @@ export async function GET(request: Request) {
   if (!id) return reply({ error: "Owner access required." }, 403);
   const params = new URL(request.url).searchParams;
   const month = params.get("month") || singaporeDay().slice(0, 7);
+  const includeVoided = params.get("include_voided") ?? "1";
+  if (!["0", "1"].includes(includeVoided))
+    return reply({ error: "Invalid history filter." }, 400);
   const rawPage = params.get("page") ?? "0";
   if (!/^\d{1,6}$/.test(rawPage)) return reply({ error: "Invalid page." }, 400);
   try {
@@ -76,7 +79,9 @@ export async function GET(request: Request) {
         },
       });
     }
-    return reply(await moneyData(id, month, Number(rawPage)));
+    return reply(
+      await moneyData(id, month, Number(rawPage), includeVoided === "1"),
+    );
   } catch {
     return reply(
       { error: "Money records are temporarily unavailable. Please retry." },

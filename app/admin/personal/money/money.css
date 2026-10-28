@@ -461,3 +461,363 @@
 .money-dialog .money-fields {
   align-items: end;
 }
+/* Visual-first money: stable jar identities, quiet amounts, detail on demand. */
+.money-workspace .money-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.money-heading {
+  margin: 8px 0 16px;
+}
+.money-toolbar {
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+.money-toolbar label {
+  min-width: 0;
+}
+.money-toolbar > button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  padding: 8px;
+  flex-shrink: 0;
+}
+.money-toolbar input {
+  max-width: 165px;
+}
+.money-figures {
+  padding: 10px 0 16px;
+  gap: 16px;
+}
+.money-figures p {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 0.8rem;
+}
+.money-figures strong,
+.money-figures > div + div strong {
+  font-size: 1.55rem;
+  margin-top: 2px;
+}
+.money-status:empty {
+  min-height: 0;
+  padding: 0;
+}
+.money-tabs {
+  margin-bottom: 18px;
+}
+.money-section-title {
+  margin-bottom: 12px;
+}
+.money-muted {
+  font-size: 0.8rem;
+  color: var(--money-muted);
+}
+.tone-mint {
+  --jar-tone: #edf5ed;
+  --jar-ink: #355d47;
+}
+.tone-blue {
+  --jar-tone: #edf2fb;
+  --jar-ink: #415676;
+}
+.tone-yellow {
+  --jar-tone: #fcf7dd;
+  --jar-ink: #6b5b27;
+}
+.tone-peach {
+  --jar-tone: #fcf0e5;
+  --jar-ink: #79583f;
+}
+.tone-lilac {
+  --jar-tone: #f3effa;
+  --jar-ink: #655579;
+}
+.tone-rose {
+  --jar-tone: #fbeef0;
+  --jar-ink: #815363;
+}
+.tone-neutral {
+  --jar-tone: #f1f1f2;
+  --jar-ink: #55555c;
+}
+.money-jar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.money-workspace .money-jar-tile {
+  aspect-ratio: 1;
+  min-height: 170px;
+  min-width: 0;
+  background: var(--jar-tone);
+  color: #24252a;
+  border: 0;
+  border-radius: 22px;
+  padding: 18px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+}
+.money-tile-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  color: var(--jar-ink);
+}
+.money-tile-top span {
+  font-size: 0.8rem;
+}
+.money-tile-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.money-tile-name strong {
+  font-size: 0.95rem;
+}
+.money-tile-name span {
+  font-size: 0.8rem;
+  color: var(--jar-ink);
+}
+.money-tile-amount {
+  font-size: 1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.money-tile-amount small {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--jar-ink);
+  margin-top: 4px;
+}
+.money-jar-tile progress {
+  height: 3px;
+  width: 100%;
+  appearance: none;
+  border: 0;
+  background: #0000000c;
+  border-radius: 3px;
+}
+.money-jar-tile progress::-webkit-progress-bar {
+  background: #0000000c;
+  border-radius: 3px;
+}
+.money-jar-tile progress::-webkit-progress-value {
+  background: var(--jar-ink);
+  border-radius: 3px;
+}
+.money-jar-tile progress::-moz-progress-bar {
+  background: var(--jar-ink);
+}
+.money-jar-skeleton {
+  aspect-ratio: 1;
+  background: var(--money-panel);
+  border-radius: 22px;
+}
+.money-symbol {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: var(--jar-tone);
+  color: var(--jar-ink);
+}
+.money-workspace .money-activity-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding: 15px 0;
+  border: 0;
+  border-bottom: 1px solid var(--money-line);
+  border-radius: 0;
+  text-align: left;
+  min-width: 0;
+}
+.money-row-copy {
+  flex: 1;
+  min-width: 0;
+}
+.money-row-copy strong {
+  font-size: 0.9rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  display: block;
+}
+.money-row-copy small {
+  display: block;
+  color: var(--money-muted);
+  font-size: 0.78rem;
+  margin-top: 5px;
+}
+.money-row-value {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.money-row-value svg {
+  color: var(--money-muted);
+}
+.money-activity-row.is-voided .money-row-copy {
+  text-decoration: line-through;
+}
+.money-history-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--money-muted);
+  min-height: 44px;
+  justify-content: flex-end;
+}
+.money-history-filter input {
+  width: 16px;
+  height: 16px;
+  accent-color: #ad8300;
+}
+.money-section-title > a {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+.money-section-title > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.money-detail-dialog > .money-symbol {
+  margin-bottom: 14px;
+}
+.money-detail-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 13px 16px;
+  font-size: 0.9rem;
+  margin: 10px 0 22px;
+}
+.money-detail-values dt {
+  color: var(--money-muted, #626269);
+}
+.money-detail-values dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+}
+.money-detail-actions {
+  display: flex;
+  gap: 10px;
+}
+.money-detail-dialog header > button {
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+.money-detail-dialog p {
+  margin-top: 14px;
+}
+.money-workspace .money-activity-row:hover:not(:disabled) {
+  outline: 0;
+  background: var(--money-panel);
+}
+.money-workspace .money-activity-row:focus-visible {
+  outline: 3px solid #ad8300;
+  outline-offset: 2px;
+}
+.admin-shell[data-admin-theme="dark"] .tone-mint {
+  --jar-tone: #24362c;
+  --jar-ink: #c5dfce;
+}
+.admin-shell[data-admin-theme="dark"] .tone-blue {
+  --jar-tone: #293344;
+  --jar-ink: #c4d3ed;
+}
+.admin-shell[data-admin-theme="dark"] .tone-yellow {
+  --jar-tone: #393522;
+  --jar-ink: #eddfac;
+}
+.admin-shell[data-admin-theme="dark"] .tone-peach {
+  --jar-tone: #3b3028;
+  --jar-ink: #e6cbb7;
+}
+.admin-shell[data-admin-theme="dark"] .tone-lilac {
+  --jar-tone: #332e40;
+  --jar-ink: #d8cbe8;
+}
+.admin-shell[data-admin-theme="dark"] .tone-rose {
+  --jar-tone: #3c2d33;
+  --jar-ink: #e8c6d2;
+}
+.admin-shell[data-admin-theme="dark"] .tone-neutral {
+  --jar-tone: #303034;
+  --jar-ink: #d2d2d8;
+}
+.admin-shell[data-admin-theme="dark"] .money-jar-tile {
+  color: #f5f5ef;
+}
+.admin-shell[data-admin-theme="dark"] .money-detail-values dt {
+  color: #b6b6bc;
+}
+@media (max-width: 760px) {
+  .money-jar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .money-workspace .money-jar-tile {
+    padding: 16px;
+    min-height: 180px;
+  }
+  .money-toolbar label:first-child {
+    flex: 1.4;
+  }
+  .money-toolbar label:nth-child(2) {
+    flex: 1;
+  }
+  .money-toolbar input {
+    max-width: none;
+  }
+  .money-figures strong,
+  .money-figures > div + div strong {
+    font-size: 1.35rem;
+  }
+  .money-columns aside {
+    border: 0;
+    margin-top: 4px;
+    padding-top: 8px;
+  }
+  .money-row-value {
+    font-size: 0.85rem;
+  }
+  .money-row-copy strong {
+    font-size: 0.9rem;
+  }
+  .money-history-filter {
+    margin-top: -8px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .money-refreshing {
+    animation: money-spin 1s linear infinite;
+  }
+  @keyframes money-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

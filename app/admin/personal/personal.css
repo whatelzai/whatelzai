@@ -237,3 +237,110 @@
     padding: 0.75rem 0.9rem;
   }
 }
+.personal-visual-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: #f1f1f0;
+  color: #55555b;
+}
+.personal-routine {
+  gap: 12px;
+}
+.personal-routine-copy {
+  flex: 1;
+  min-width: 0;
+}
+.personal-warm,
+.personal-tone-0 {
+  background: #fcf7dd;
+  color: #6b5b27;
+}
+.personal-lilac,
+.personal-tone-1 {
+  background: #f3effa;
+  color: #655579;
+}
+.personal-mint,
+.personal-tone-2 {
+  background: #edf5ed;
+  color: #355d47;
+}
+.personal-tone-3 {
+  background: #edf2fb;
+  color: #415676;
+}
+.personal-area-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.personal-area-list a {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  padding: 16px 8px;
+  border-radius: 18px;
+  background: #f8f8f6;
+  min-height: 110px;
+  font-size: 0.85rem;
+}
+.personal-area-list a:hover {
+  background: #f1f1ed;
+}
+.personal-area-list .personal-visual-icon {
+  width: 52px;
+  height: 52px;
+}
+.admin-shell[data-admin-theme="dark"] .personal-visual-icon {
+  background: #303034;
+  color: #d2d2d8;
+}
+.admin-shell[data-admin-theme="dark"] .personal-area-list a {
+  background: #242427;
+}
+.admin-shell[data-admin-theme="dark"] .personal-warm,
+.admin-shell[data-admin-theme="dark"] .personal-tone-0 {
+  background: #393522;
+  color: #eddfac;
+}
+.admin-shell[data-admin-theme="dark"] .personal-lilac,
+.admin-shell[data-admin-theme="dark"] .personal-tone-1 {
+  background: #332e40;
+  color: #d8cbe8;
+}
+.admin-shell[data-admin-theme="dark"] .personal-mint,
+.admin-shell[data-admin-theme="dark"] .personal-tone-2 {
+  background: #24362c;
+  color: #c5dfce;
+}
+.admin-shell[data-admin-theme="dark"] .personal-tone-3 {
+  background: #293344;
+  color: #c4d3ed;
+}
+@media (max-width: 700px) {
+  .personal-area-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .personal-area-list a {
+    padding: 12px 3px;
+    min-height: 100px;
+    font-size: 0.75rem;
+  }
+  .personal-area-list .personal-visual-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+}
+@media (max-width: 360px) {
+  .personal-area-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
