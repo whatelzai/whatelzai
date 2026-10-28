@@ -78,7 +78,11 @@ test("CSV prevents formula injection and preserves quoted descriptions", () => {
   assert.equal(model.csvCell("hello, world"), '"hello, world"');
 });
 const nodeRequire = createRequire(import.meta.url);
-function route(user: unknown, env = "production") {
+function route(
+  user: unknown,
+  env = "production",
+  customFrom?: (table: string) => unknown,
+) {
   let calls = 0;
   const code = ts.transpileModule(
     readFileSync(
@@ -108,8 +112,9 @@ function route(user: unknown, env = "production") {
     },
     "@/lib/supabase-server": {
       supabaseAdmin: {
-        from() {
+        from(table: string) {
           calls++;
+          if (customFrom) return customFrom(table);
           throw Error("Unexpected DB access");
         },
       },
@@ -332,4 +337,79 @@ test("three income sources save without notes or a jar choice, preserving exact 
   );
   assert.throws(() => model.incomeFields("Other", ""));
   assert.throws(() => model.incomeFields("Working income", "x".repeat(201)));
+});
+
+test("date-only command rejects impossible dates and unrelated changes", () => {
+  const c = {
+    action: "entry_date",
+    id: ID,
+    expected_date: "2026-10-27",
+    occurred_on: "2026-09-30",
+  };
+  assert.equal(model.commandSchema.safeParse(c).success, true);
+  for (const bad of [
+    { ...c, occurred_on: "2026-02-30" },
+    { ...c, expected_date: "bad" },
+    { ...c, amount_minor: 1 },
+  ])
+    assert.equal(model.commandSchema.safeParse(bad).success, false);
+});
+test("date correction uses owner, active-entry and expected-date guards; stale changes fail", async () => {
+  const previous = process.env.WHATELZ_OWNER_USER_ID;
+  process.env.WHATELZ_OWNER_USER_ID = OWNER;
+  try {
+    for (const matches of [true, false]) {
+      const filters: unknown[][] = [];
+      let update: unknown;
+      const query = {
+        update(value: unknown) {
+          update = value;
+          return this;
+        },
+        eq(k: string, v: unknown) {
+          filters.push([k, v]);
+          return this;
+        },
+        select() {
+          return Promise.resolve({
+            data: matches ? [{ id: ID }] : [],
+            error: null,
+          });
+        },
+      };
+      const r = route({ id: OWNER, role: "admin" }, "production", (table) => {
+        assert.equal(table, "personal_money_entries");
+        return query;
+      });
+      const res = await r.api.POST(
+        new Request("https://admin.whatelz.ai/api/admin/money", {
+          method: "POST",
+          headers: {
+            origin: "https://admin.whatelz.ai",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "entry_date",
+            id: ID,
+            expected_date: "2026-10-27",
+            occurred_on: "2026-09-30",
+          }),
+        }),
+      );
+      assert.equal(res.status, matches ? 200 : 409);
+      assert.equal(
+        JSON.stringify(update),
+        JSON.stringify({ occurred_on: "2026-09-30" }),
+      );
+      assert.deepEqual(filters, [
+        ["owner_id", OWNER],
+        ["id", ID],
+        ["occurred_on", "2026-10-27"],
+        ["voided", false],
+      ]);
+    }
+  } finally {
+    if (previous === undefined) delete process.env.WHATELZ_OWNER_USER_ID;
+    else process.env.WHATELZ_OWNER_USER_ID = previous;
+  }
 });

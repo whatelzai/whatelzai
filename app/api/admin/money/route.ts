@@ -154,6 +154,24 @@ export async function POST(request: Request) {
             409,
           );
       } else if (result.error) throw result.error;
+    } else if (c.action === "entry_date") {
+      const result = await db
+        .from("personal_money_entries")
+        .update({ occurred_on: c.occurred_on })
+        .eq("owner_id", ownerId)
+        .eq("id", c.id)
+        .eq("occurred_on", c.expected_date)
+        .eq("voided", false)
+        .select("id");
+      if (result.error) throw result.error;
+      if (!result.data.length)
+        return reply(
+          {
+            error:
+              "This entry changed or was voided. Refresh before editing its date.",
+          },
+          409,
+        );
     } else if (c.action === "void") {
       const result = await db
         .from("personal_money_entries")
