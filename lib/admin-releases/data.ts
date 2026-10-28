@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-10-28-simple-income",
+    date: "2026-10-28",
+    title: "Income, without the expense fields",
+    titleZh: "收入记录，更简单",
+    items: [
+      {
+        en: "Choose Working, Investment or Business income. Notes are optional, and the receiving account is clearly labelled.",
+        zh: "选择工作收入、投资收入或业务收入；备注选填，并明确显示收款账户。",
+      },
+      {
+        en: "Income no longer asks for an expense description or a jar. Allocate it later when you transfer between jars.",
+        zh: "记录收入时无需填写支出说明或选择罐子；之后转账时再分配。",
+      },
+    ],
+  },
+  {
     id: "2026-10-27-admin-release-history",
     date: "2026-10-27",
     title: "A quieter way to catch up",

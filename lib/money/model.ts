@@ -1,4 +1,20 @@
 import { z } from "zod";
+export const incomeTypes = [
+  "Working income",
+  "Investment income",
+  "Business income",
+] as const;
+/** Raw income arrives before jar allocation. Notes are optional, source is explicit. */
+export function incomeFields(type: string, notes: string) {
+  const category = z.enum(incomeTypes).parse(type);
+  const description = z.string().trim().max(200).parse(notes) || category;
+  return {
+    category,
+    description,
+    jar: "UNALLOCATED" as const,
+    scope: "personal" as const,
+  };
+}
 export const currencies = ["SGD", "MYR", "USD"] as const;
 export const jars = [
   "FFA",
