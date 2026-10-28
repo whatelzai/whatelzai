@@ -651,17 +651,21 @@ Node view uses 88px name-only circles and straight sponsor connectors on member/
 ## Personal money (SPR-180)
 
 Private Personal/Money is an owner-gated manual ledger: exact minor units, separate SGD/MYR/USD, six-jar salary plan, transactions and recurring bills. SQL service-only RLS tables and invoker functions; no browser grants, bank integrations, automated charges, inferred FX or seeded balances. Idempotent writes, atomic recurring payment/date advancement, void/restore history, paged lists/CSV. Bank mapping and LTSS target are plans, not balances or completed transfers. Preserve no-store reads and network-only PWA behavior. See docs/personal-money.md.
+
 ## Node-only personal team view (SPR-181)
 
 Team visualization is node-only, with no perspective dropdown or visible relationship/gesture explanations. Member and admin initial cameras center the verified linked viewer at normal zoom; admin uses loadTeamView.focusId, not the shared team focus. Manual Fit remains available. Selecting a node retains details/editing without changing account links, view permissions or initial identity. This supersedes SPR-178’s Tree switch and SPR-179’s admin initial overview fit. — codex, 2026-10-27
 
 ## Personal life workspace (SPR-183)
+
 Personal is a private reading and action home: source-backed Mandala direction, one owner-chosen Singapore-week outcome, expense capture, jar plan/upcoming bills and independent daily/weekly saved status. It does not mix business commitments into Personal or generate 64 weekly tasks. `personal_weekly_focus` is service-only with RLS and no browser grants; current-week writes require owner, Admin origin and matching revision. Previous weeks remain intact. Money quick links accept bounded entry/view hints, never submit automatically. Financial targets are not verified balances or income progress. Keep the shared shell, translations, large text and independent Suspense boundaries.
+
 ## Member release notes (SPR-182)
 
 Home streams an optional latest-three What’s new modal when a published release is unseen. Close/Escape/View all saves a monotonic account-owned acknowledgement; Profile → Release notes is the permanent paginated archive. Release prose and dismissal state live in service-only Supabase tables, never bundled content or localStorage. Native modal scrolling/focus and immediate close preserve mobile usability. All reads/actions require assigned identity; drafts/future notes stay hidden. Release-tab reads skip unrelated credit queries. See docs/fcos-release-notes.md. — codex, 2026-10-27
 
 ## Admin release notes (SPR-184)
+
 Owner-only Admin layout supplies versioned server-only release content, independent of member releases. `lib/admin-releases/data.ts` keeps newest-first immutable IDs and bilingual verified feature notes; never put operational/private facts in it. Home’s optional lazy native dialog shows newest three once per new release per device/owner; localStorage receipt is UX only, no database permissions. Close/Escape immediate, scrolling inside fixed header/footer. Full history is Settings `?tab=releases`, with Preferences as default. Settings/deep pages do not trigger popup. See docs/admin-release-notes.md.
 
 ## Member language and Profile footer (SPR-185)
@@ -669,6 +673,7 @@ Owner-only Admin layout supplies versioned server-only release content, independ
 Profile offers English/简体中文 for shared member navigation/header and Profile/usage controls. An assigned-user action validates the enum and sets a host-only HttpOnly SameSite=Lax one-year cookie; app root reads only this cookie, adding no identity/database work. Admin language preferences remain separate. Stored names, notes, teachings and release prose are preserved, with English fallback for untranslated interface copy. Release history stays at `/profile?tab=releases`, reached through a muted Profile footer link with a back link; only Profile and Usage remain as tabs. This is interface localization, not automatic translation of all legacy screens or user content.
 
 ## Simple income (SPR-186)
+
 Income has three source choices (Working/Investment/Business), optional notes and a receiving account. `incomeFields` validates source/notes, supplies a default description and stores UNALLOCATED/personal as ledger bookkeeping; no jar selector, expense wording or hidden required expense fields in the Income UI. Existing category column carries income source; history/CSV already show it. No migration/reclassification or automatic allocations/tax/passive-income claims. Expense/refund/transfer/opening/recurring behavior stays distinct.
 
 ## First-visit member language (SPR-187)
@@ -676,7 +681,13 @@ Income has three source choices (Working/Investment/Business), optional notes an
 Signed-in member Home offers English (initially selected) and 简体中文 when this device has no valid member-language cookie. Continue uses the existing assigned-user save action; it saves explicit English too. Home mounts either LanguageWelcome or the release popup boundary, never both. The confirmed language remains changeable in Profile. This inherits SPR-185’s per-device preference, original-content preservation and no extra root auth/database reads; no inferred browser language, account onboarding flag or forced full legacy-screen translation. — codex, 2026-10-28
 
 ## Money entry dates (SPR-188)
+
 Active entries support Edit date through a lazy compact dialog and strict `entry_date` command. Owner/origin gate plus expected occurred_on and nonvoided filters protect updates. Only occurred_on changes; no recurring schedule or financial fields changed. Activity follows the saved month and reloads totals; CSV naturally uses saved dates. No migration; stale/voided corrections return409. Other corrections keep void/replacement.
 
 ## Visual-first Personal and Money (SPR-189)
+
 Edmund explicitly prefers icon/color/visual recognition first, words as short supporting labels, following the supplied fcOS Resources reference. This overrides taste defaults against pastel icon tiles: use stable semantic pastel identities, not random status colors, keep yellow brand and accessible labels/contrast. Money has six jar-spending tiles (SGD-only progress vs plan; no cross-currency comparison), compact row buttons and lazy detail dialogs for full metadata/date/void/paid actions. UI hides voided entries by default using explicit include_voided=0; service filters before count/pagination. Existing API default and full CSV audit export remain inclusive. Paused recurring is hidden behind Show paused. No record deletion, math/schema/permissions changed. Personal life areas/rhythm share icon-led links; preserve no-store reads/lazy forms and truthful planned-vs-recorded values.
+
+## Personal daily tools (SPR-190)
+
+Personal-only tools use owner-gated no-store records, service-only RLS/invoker revision saves, actual SGD salary receipts and reviewed exact-cent allocations. Manual confirmations do not execute bank transfers or add ledger records. Timestamp timers save only explicit sessions; user-authored gym routines and current Singapore-week evidence preserve unknown activity. No API inference, new schedules, private offline storage or EMDEE summary duplication. See docs/personal-tools.md. Migration/release awaits specific approval after automatic review blocked direct production setup.

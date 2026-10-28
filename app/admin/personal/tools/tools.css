@@ -1,0 +1,319 @@
+.personal-tools {
+  --tool-ink: #20211f;
+  --tool-muted: #646660;
+  --tool-surface: #f5f6f3;
+  --tool-line: #e3e5df;
+  color: var(--tool-ink);
+  max-width: 1040px;
+  margin: auto;
+  padding: 0 0 32px;
+}
+.admin-shell[data-admin-theme="dark"] .personal-tools {
+  --tool-ink: #f1f2ed;
+  --tool-muted: #b5b7af;
+  --tool-surface: #262824;
+  --tool-line: #42453d;
+}
+.personal-tools header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.personal-tools header a,
+.tool-actions,
+.tool-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.personal-tools nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.personal-tools nav button {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 20px;
+  background: var(--tool-surface);
+  border: 0;
+  border-radius: 20px;
+  min-height: 102px;
+}
+.personal-tools nav button[aria-current] {
+  background: #fff1a6;
+  color: #29281d;
+}
+.personal-tools button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--tool-line);
+  border-radius: 12px;
+  min-height: 44px;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+.personal-tools button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.personal-tools button:active {
+  transform: scale(0.98);
+}
+.personal-tools :focus-visible {
+  outline: 3px solid #b68c00;
+  outline-offset: 3px;
+}
+.personal-tools .tool-primary {
+  background: var(--tool-ink);
+  color: var(--tool-surface);
+  border: 0;
+}
+.tool-boundary {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.tool-content {
+  max-width: 720px;
+  margin-inline: auto;
+}
+.personal-tools h1 {
+  font-size: 1.65rem !important;
+  margin: 0 0 18px !important;
+}
+.personal-tools h2 {
+  font-size: 1.1rem !important;
+  margin: 26px 0 12px;
+}
+.personal-tools label {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0;
+  font-size: 0.95rem;
+}
+.personal-tools input,
+.personal-tools select,
+.personal-tools textarea {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--tool-line);
+  border-radius: 10px;
+  min-height: 46px;
+  padding: 10px;
+  width: 100%;
+  min-width: 0;
+}
+.personal-tools input[type="checkbox"] {
+  width: 22px;
+  min-height: 22px;
+  accent-color: #c39c00;
+}
+.personal-tools small,
+.personal-tools .tool-hint {
+  color: var(--tool-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.personal-tools .tool-hint {
+  margin: 16px 0;
+}
+.tool-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.tool-actions {
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.personal-tools details {
+  margin: 24px 0;
+}
+.personal-tools summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+}
+.timer-face {
+  width: 260px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #eff4e9;
+  color: #333e2a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 24px 0;
+}
+.timer-face.practice {
+  background: #f1edf8;
+  color: #453952;
+}
+.timer-face output {
+  font-size: 3.2rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.timer-face span {
+  font-size: 0.85rem;
+}
+.preset-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.preset-row button[aria-pressed="true"] {
+  background: var(--tool-surface);
+  border-color: var(--tool-ink);
+}
+.allocation-list label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--tool-line);
+  padding: 16px 0;
+  margin: 0;
+}
+.allocation-list label span {
+  flex: 1;
+  display: grid;
+  gap: 4px;
+}
+.allocation-list label strong {
+  font-variant-numeric: tabular-nums;
+}
+.workout-set {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 80px 90px 44px;
+  gap: 10px;
+  align-items: end;
+}
+.workout-set label {
+  margin: 12px 0;
+}
+.workout-set button {
+  padding: 8px;
+  margin-bottom: 12px;
+}
+.rest-timer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--tool-surface);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 24px 0;
+}
+.rest-timer select {
+  width: 85px;
+}
+.rest-timer output {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.4rem;
+}
+.weekly-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.weekly-tool-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border-radius: 18px;
+  background: var(--tool-surface);
+}
+.tool-links {
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.tool-content {
+  animation: tool-appear 0.18s ease-out;
+}
+@keyframes tool-appear {
+  from {
+    opacity: 0.6;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tool-content {
+    animation: none;
+  }
+  .personal-tools button:active {
+    transform: none;
+  }
+}
+@media (max-width: 640px) {
+  .personal-tools nav {
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .personal-tools nav button {
+    padding: 12px 6px;
+    align-items: center;
+    min-height: 80px;
+    border-radius: 14px;
+    font-size: 0.75rem;
+    gap: 9px;
+  }
+  .tool-two {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .workout-set {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px;
+    gap: 8px;
+    margin: 18px 0;
+  }
+  .workout-set .exercise-label {
+    grid-column: 1/-1;
+  }
+  .workout-set label {
+    margin: 0;
+  }
+  .workout-set button {
+    margin: 0;
+  }
+  .timer-face {
+    margin: 24px auto;
+  }
+  .personal-tools .timer-tool .tool-actions {
+    justify-content: center;
+  }
+  .weekly-tool-grid > div {
+    padding: 16px;
+  }
+  .personal-tools .tool-links {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.personal-tools .timer-face {
+  margin: 24px auto;
+}
+.personal-tools .timer-tool .tool-actions,
+.personal-tools .timer-tool .preset-row {
+  justify-content: center;
+}
