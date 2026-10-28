@@ -36,6 +36,7 @@ export function LanguageWelcome() {
         id="language-welcome-title"
         tabIndex={-1}
         autoFocus
+        style={{ outline: "none" }}
         className="text-2xl font-semibold tracking-tight outline-none"
       >
         {t("Select your preferred language")}
