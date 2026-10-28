@@ -1,3 +1,5 @@
+"use client";
+import { useMemberLanguage } from "@/components/fcos/MemberLanguage";
 import Link from "@/components/fcos/MemberLink";
 import {
   House,
@@ -25,11 +27,12 @@ export function MemberNav({
   accent?: "yellow" | "orange";
   persistent?: boolean;
 }) {
+  const { t } = useMemberLanguage();
   const selected = memberTab(current);
   const orange = accent === "orange";
   return (
     <nav
-      aria-label="fcOS workspace"
+      aria-label={t("fcOS workspace")}
       data-fcos-nav
       data-fcos-persistent-nav={persistent || undefined}
       className={
@@ -49,7 +52,9 @@ export function MemberNav({
             OS
           </span>
         </Link>
-        <span className="text-xs text-zinc-500">Prepare · connect · grow</span>
+        <span className="text-xs text-zinc-500">
+          {t("Prepare · connect · grow")}
+        </span>
       </div>
       <div
         className={`${persistent ? "fcos-persistent-tabs " : ""}fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-zinc-200 bg-white px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_24px_rgba(0,0,0,0.04)] md:static md:gap-1 md:border-0 md:p-0 md:shadow-none`}
@@ -78,7 +83,7 @@ export function MemberNav({
                 item.href === "/" ? "font-bold uppercase md:normal-case" : ""
               }
             >
-              {item.label}
+              {t(item.label)}
             </span>
           </Link>
         ))}

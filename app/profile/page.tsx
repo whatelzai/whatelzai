@@ -1,3 +1,5 @@
+import { memberTranslator } from "@/lib/fcos/language-server";
+import { LanguageSwitch } from "./LanguageSwitch";
 import { Suspense } from "react";
 import { ReleaseArchive } from "@/components/releases/ReleaseArchive";
 import { AppHeader } from "@/components/fcos/AppHeader";
@@ -24,8 +26,8 @@ export const metadata = {
   title: "Profile · fcOS",
   robots: { index: false, follow: false },
 };
-const date = (value: string) =>
-  new Intl.DateTimeFormat("en-SG", {
+const date = (value: string, language: string) =>
+  new Intl.DateTimeFormat(language === "zh" ? "zh-SG" : "en-SG", {
     timeZone: "Asia/Singapore",
     day: "numeric",
     month: "short",
@@ -43,6 +45,7 @@ export default async function Profile({
   const user = await ensureUserRow();
   if (!user) redirect("/sign-in");
   const { tab, resets, before } = await searchParams;
+  const { language, t } = await memberTranslator();
   const resetHistory = resets === "history";
   const usageTab = tab === "usage";
   const releasesTab = tab === "releases";
@@ -54,11 +57,11 @@ export default async function Profile({
   return (
     <main className="fcos-tab-page fcos-profile-page mx-auto min-h-dvh max-w-5xl space-y-6 bg-[#f7f6f4] px-5 pb-8 pt-6 text-zinc-950 sm:px-8">
       <AppHeader
-        title="Profile"
+        title={releasesTab ? "Release notes" : "Profile"}
         end={
           <SignOutButton>
             <button
-              aria-label="Sign out"
+              aria-label={t("Sign out")}
               className="flex h-11 w-11 items-center justify-center rounded-full bg-red-50 text-red-600"
             >
               <LogOut size={20} aria-hidden="true" />
@@ -67,6 +70,7 @@ export default async function Profile({
         }
       />
       <MemberNav current="/profile" compact persistent accent="orange" />
+      {!usageTab && !releasesTab && <LanguageSwitch />}
       {!usageTab && !releasesTab && (
         <section className="flex items-center gap-4 py-3 sm:gap-6">
           <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full border-4 border-orange-100 bg-orange-50 text-3xl font-semibold text-orange-600 sm:h-28 sm:w-28">
@@ -85,55 +89,60 @@ export default async function Profile({
           </div>
           <div className="min-w-0">
             <h2 className="text-[1.7rem] font-bold leading-tight tracking-tight sm:text-4xl">
-              Welcome back,
+              {t("Welcome back,")}
               <br />
               {firstName}.
             </h2>
             <p className="mt-2 text-sm leading-6 text-zinc-500">
-              Current tier:{" "}
+              {t("Current tier:")}{" "}
               <strong className="font-semibold uppercase text-zinc-600">
-                {persona ?? "Unavailable"}
+                {persona ?? t("Unavailable")}
               </strong>
             </p>
             <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1 text-[11px] font-semibold text-orange-600">
               <Sparkles size={13} aria-hidden="true" />
-              Prepare · connect · grow
+              {t("Prepare · connect · grow")}
             </span>
           </div>
         </section>
       )}
-      <nav
-        aria-label="Profile sections"
-        className="flex rounded-2xl bg-zinc-200/60 p-1"
-      >
-        {[
-          {
-            label: "Profile",
-            href: "/profile",
-            selected: !usageTab && !releasesTab,
-          },
-          { label: "Usage", href: "/profile?tab=usage", selected: usageTab },
-          {
-            label: "Release notes",
-            href: "/profile?tab=releases",
-            selected: releasesTab,
-          },
-        ].map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            aria-current={item.selected ? "page" : undefined}
-            className={`flex-1 whitespace-nowrap rounded-xl px-3 py-3 text-center text-sm font-semibold ${item.selected ? "bg-white text-orange-600 shadow-sm" : "text-zinc-500"}`}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      {!releasesTab && (
+        <nav
+          aria-label="Profile sections"
+          className="flex rounded-2xl bg-zinc-200/60 p-1"
+        >
+          {[
+            {
+              label: "Profile",
+              href: "/profile",
+              selected: !usageTab && !releasesTab,
+            },
+            { label: "Usage", href: "/profile?tab=usage", selected: usageTab },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              aria-current={item.selected ? "page" : undefined}
+              className={`flex-1 whitespace-nowrap rounded-xl px-3 py-3 text-center text-sm font-semibold ${item.selected ? "bg-white text-orange-600 shadow-sm" : "text-zinc-500"}`}
+            >
+              {t(item.label)}
+            </Link>
+          ))}
+        </nav>
+      )}
+      {releasesTab && (
+        <Link
+          href="/profile"
+          className="inline-flex min-h-11 items-center text-sm text-zinc-500"
+        >
+          ← {t("Back to Profile")}
+        </Link>
+      )}
       {releasesTab ? (
         <Suspense
           fallback={
             <p role="status" className="py-5 text-sm text-zinc-500">
-              Loading release notes…
+              {t("Loading release notes…")}
             </p>
           }
         >
@@ -144,10 +153,10 @@ export default async function Profile({
           {!usage ? (
             <section className={card}>
               <h2 className="text-xl font-bold">
-                Usage temporarily unavailable
+                {t("Usage temporarily unavailable")}
               </h2>
               <p className="mt-3 text-sm text-zinc-500">
-                Your balance could not be checked. Reload to try again.
+                {t("Your balance could not be checked. Reload to try again.")}
               </p>
             </section>
           ) : (
@@ -163,24 +172,26 @@ export default async function Profile({
                 />
                 {!usage.canChat && (
                   <p className="mt-4 text-sm text-zinc-500">
-                    AI Chat is currently unavailable.
+                    {t("AI Chat is currently unavailable.")}
                   </p>
                 )}
               </section>
               <section className={card}>
-                <h2 className="text-lg font-semibold">Usage limit resets</h2>
+                <h2 className="text-lg font-semibold">
+                  {t("Usage limit resets")}
+                </h2>
                 <nav
                   aria-label="Reset sections"
                   className="mt-4 flex gap-1 border-b border-zinc-100 pb-3"
                 >
                   {[
                     {
-                      label: `Available ${usage.resetCredits.filter((c) => availableReset(c, observedAt)).length}`,
+                      label: `${t("Available")} ${usage.resetCredits.filter((c) => availableReset(c, observedAt)).length}`,
                       href: "/profile?tab=usage",
                       selected: !resetHistory,
                     },
                     {
-                      label: "History",
+                      label: t("History"),
                       href: "/profile?tab=usage&resets=history",
                       selected: resetHistory,
                     },
@@ -191,7 +202,7 @@ export default async function Profile({
                       aria-current={item.selected ? "page" : undefined}
                       className={`min-h-11 rounded-xl px-4 py-3 text-sm font-medium ${item.selected ? "bg-zinc-100 text-zinc-900" : "text-zinc-500 hover:bg-zinc-50"}`}
                     >
-                      {item.label}
+                      {t(item.label)}
                     </Link>
                   ))}
                 </nav>
@@ -203,13 +214,13 @@ export default async function Profile({
                         <div key={c.id} className="py-4">
                           <p className="text-sm font-semibold">
                             {c.used_at
-                              ? "Full reset used"
-                              : "Full reset expired"}
+                              ? t("Full reset used")
+                              : t("Full reset expired")}
                           </p>
                           <p className="mt-1 text-xs text-zinc-500">
                             {c.used_at
-                              ? date(c.used_at)
-                              : `Expired ${date(c.expires_at)} · SGT`}
+                              ? date(c.used_at, language)
+                              : `${t("Expired")} ${date(c.expires_at, language)} · SGT`}
                           </p>
                         </div>
                       ))}
@@ -217,9 +228,11 @@ export default async function Profile({
                       .filter((c) => c.reason === "owner-reset")
                       .map((c) => (
                         <div key={c.id} className="py-4">
-                          <p className="text-sm font-semibold">Admin reset</p>
+                          <p className="text-sm font-semibold">
+                            {t("Admin reset")}
+                          </p>
                           <p className="mt-1 text-xs text-zinc-500">
-                            {date(c.started_at)}
+                            {date(c.started_at, language)}
                           </p>
                         </div>
                       ))}
@@ -230,7 +243,7 @@ export default async function Profile({
                         (c) => c.reason === "owner-reset",
                       ) && (
                         <p className="py-5 text-sm text-zinc-500">
-                          No resets used yet.
+                          {t("No resets used yet.")}
                         </p>
                       )}
                   </div>
@@ -244,9 +257,12 @@ export default async function Profile({
                           className="flex items-start justify-between gap-3 pt-5"
                         >
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold">Full reset</p>
+                            <p className="text-sm font-semibold">
+                              {t("Full reset")}
+                            </p>
                             <p className="mt-1 text-xs text-zinc-500">
-                              Expires {date(c.expires_at)} · SGT
+                              {t("Expires")} {date(c.expires_at, language)} ·
+                              SGT
                             </p>
                           </div>
                           <ResetCreditButton
@@ -259,7 +275,7 @@ export default async function Profile({
                       availableReset(c, observedAt),
                     ) && (
                       <p className="py-5 text-sm text-zinc-500">
-                        No resets available.
+                        {t("No resets available.")}
                       </p>
                     )}
                   </div>
@@ -280,15 +296,15 @@ export default async function Profile({
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/80">
                   fcOS · Founder’s Club OS
                 </p>
-                <h2 className="mt-2 text-2xl font-bold">Member Pass</h2>
+                <h2 className="mt-2 text-2xl font-bold">{t("Member Pass")}</h2>
               </div>
               <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase">
-                {persona ?? "Unverified"}
+                {persona ?? t("Unverified")}
               </span>
             </div>
             <div className="relative mt-9">
               <p className="text-lg font-semibold">
-                {user.name || "Your account"}
+                {user.name || t("Your account")}
               </p>
               <p className="mt-1 break-all text-xs text-white/80">
                 {user.email}
@@ -306,12 +322,12 @@ export default async function Profile({
                   className="text-orange-500"
                   aria-hidden="true"
                 />
-                View my team
+                {t("View my team")}
               </span>
               <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
             <div className="border-t border-zinc-100 pt-5">
-              <InstallAppButton accent="orange" />
+              <InstallAppButton accent="orange" language={language} />
             </div>
             <p className="flex items-start gap-2 text-xs leading-5 text-zinc-400">
               <ShieldCheck
@@ -319,10 +335,18 @@ export default async function Profile({
                 className="mt-0.5 shrink-0"
                 aria-hidden="true"
               />
-              Your leads and notes stay private unless you explicitly share a
-              note. Signing in does not automatically link a team profile.
+              {t(
+                "Baobei profiles and saved HQH/HHH are visible to your team unless hidden. Your chats stay private. Signing in does not automatically link a team profile.",
+              )}
             </p>
           </section>
+          <Link
+            href="/profile?tab=releases"
+            className="flex min-h-11 items-center justify-between px-2 text-sm text-zinc-500 hover:text-zinc-800"
+          >
+            <span>{t("Release notes")}</span>
+            <span aria-hidden="true">→</span>
+          </Link>
         </div>
       )}
     </main>

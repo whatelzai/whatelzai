@@ -1,4 +1,5 @@
 "use client";
+import { useMemberLanguage } from "@/components/fcos/MemberLanguage";
 import { useEffect, useRef } from "react";
 import Link from "@/components/fcos/MemberLink";
 import { X } from "lucide-react";
@@ -7,6 +8,7 @@ import type { ReleaseNote } from "@/lib/releases/model";
 import { ReleaseList } from "./ReleaseList";
 
 export function ReleasePopup({ releases }: { releases: ReleaseNote[] }) {
+  const { t } = useMemberLanguage();
   const dialog = useRef<HTMLDialogElement>(null);
   const dismissed = useRef(false);
   const previousOverflow = useRef("");
@@ -44,14 +46,16 @@ export function ReleasePopup({ releases }: { releases: ReleaseNote[] }) {
       <div className="flex h-full flex-col">
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-100 px-5 py-4">
           <div>
-            <p className="text-xs font-medium text-zinc-500">fcOS updates</p>
+            <p className="text-xs font-medium text-zinc-500">
+              {t("fcOS updates")}
+            </p>
             <h2 id="release-popup-title" className="mt-1 text-xl font-semibold">
-              What’s new
+              {t("What’s new")}
             </h2>
           </div>
           <button
             type="button"
-            aria-label="Close release notes"
+            aria-label={t("Close release notes")}
             onClick={close}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-700 focus-visible:outline-2 focus-visible:outline-yellow-500"
           >
@@ -60,7 +64,7 @@ export function ReleasePopup({ releases }: { releases: ReleaseNote[] }) {
         </header>
         <div
           tabIndex={0}
-          aria-label="Latest three releases"
+          aria-label={t("Latest three releases")}
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-yellow-500"
         >
           <ReleaseList releases={releases} />
@@ -71,7 +75,7 @@ export function ReleasePopup({ releases }: { releases: ReleaseNote[] }) {
             onClick={close}
             className="flex min-h-11 items-center justify-center rounded-xl bg-zinc-950 px-4 py-3 text-sm font-semibold text-white"
           >
-            View all release notes
+            {t("View all release notes")}
           </Link>
         </footer>
       </div>

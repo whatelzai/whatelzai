@@ -1,3 +1,5 @@
+import { getMemberLanguage } from "@/lib/fcos/language-server";
+import { MemberLanguageProvider } from "@/components/fcos/MemberLanguage";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { siteSurface } from "@/lib/domain-routing";
@@ -173,6 +175,7 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const requestHeaders = await headers();
   const surface = siteSurface(requestHeaders.get("host") ?? "");
+  const memberLanguage = surface === "app" ? await getMemberLanguage() : "en";
   // The member shell uses neither public identity nor the public admin-link flag.
   // Keep its loading boundary free of these reads; protected pages verify identity.
   const [isAdmin, s] =
@@ -226,7 +229,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang={memberLanguage === "zh" ? "zh-Hans" : "en"}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
@@ -249,7 +252,13 @@ export default async function RootLayout({
           ownerName={s?.owner_name ?? "fcOS"}
           surface={surface}
         >
-          {children}
+          {surface === "app" ? (
+            <MemberLanguageProvider language={memberLanguage}>
+              {children}
+            </MemberLanguageProvider>
+          ) : (
+            children
+          )}
         </ShellProvider>
       </body>
     </html>

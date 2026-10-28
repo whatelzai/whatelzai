@@ -2,7 +2,7 @@
 
 Assigned members see a native “What’s new” modal on Home when the latest published release is newer than their own acknowledgement. The latest three entries scroll vertically between a fixed close control and View all footer. Native dialog focus trapping/Escape and a focusable scroll region support keyboard use; no automatic carousel motion. Closing is immediate; acknowledgement persists independently. A failed acknowledgement can show it again next visit. View all closes/acknowledges and opens Profile → Release notes; opening the archive directly does not mark anything seen.
 
-The optional modal streams under its own Home Suspense boundary. Failed news reads stay silent on Home; the Profile archive has a retry state. Archive loads 20 entries with stable publication-time/ID pagination and skips unrelated Profile credit/membership queries. Existing Profile and Usage views are unchanged.
+The optional modal streams under its own Home Suspense boundary. Failed news reads stay silent on Home; the Profile archive has a retry state. Archive loads 20 entries with stable publication-time/ID pagination and skips unrelated Profile credit/membership queries. The archive has its own back link; its entry is a muted footer link on Profile, not a third Profile/Usage tab.
 
 Content is stored in `member_release_notes` (title, newline-separated highlights, publication timestamp, draft/published flag). It is not bundled in application code. Only published entries with publication time at or before now reach assigned members. The archive and modal share the same source and plain-text renderer; no HTML execution. New releases are published through trusted server-side operations; there is no member editing or AI generation.
 
