@@ -1,5 +1,7 @@
 # fcOS release notes
 
+On first signed-in Home visit without a valid device language choice, the preferred-language dialog appears first (English default, 简体中文 optional). Continue saves through the existing Profile language action. Home does not mount the release popup until that choice is saved, preventing stacked dialogs.
+
 Assigned members see a native “What’s new” modal on Home when the latest published release is newer than their own acknowledgement. The latest three entries scroll vertically between a fixed close control and View all footer. Native dialog focus trapping/Escape and a focusable scroll region support keyboard use; no automatic carousel motion. Closing is immediate; acknowledgement persists independently. A failed acknowledgement can show it again next visit. View all closes/acknowledges and opens Profile → Release notes; opening the archive directly does not mark anything seen.
 
 The optional modal streams under its own Home Suspense boundary. Failed news reads stay silent on Home; the Profile archive has a retry state. Archive loads 20 entries with stable publication-time/ID pagination and skips unrelated Profile credit/membership queries. The archive has its own back link; its entry is a muted footer link on Profile, not a third Profile/Usage tab.
