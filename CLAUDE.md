@@ -663,3 +663,6 @@ Home streams an optional latest-three What’s new modal when a published releas
 
 ## Admin release notes (SPR-184)
 Owner-only Admin layout supplies versioned server-only release content, independent of member releases. `lib/admin-releases/data.ts` keeps newest-first immutable IDs and bilingual verified feature notes; never put operational/private facts in it. Home’s optional lazy native dialog shows newest three once per new release per device/owner; localStorage receipt is UX only, no database permissions. Close/Escape immediate, scrolling inside fixed header/footer. Full history is Settings `?tab=releases`, with Preferences as default. Settings/deep pages do not trigger popup. See docs/admin-release-notes.md.
+
+## Simple income (SPR-186)
+Income has three source choices (Working/Investment/Business), optional notes and a receiving account. `incomeFields` validates source/notes, supplies a default description and stores UNALLOCATED/personal as ledger bookkeeping; no jar selector, expense wording or hidden required expense fields in the Income UI. Existing category column carries income source; history/CSV already show it. No migration/reclassification or automatic allocations/tax/passive-income claims. Expense/refund/transfer/opening/recurring behavior stays distinct.
