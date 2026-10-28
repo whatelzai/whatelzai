@@ -1,5 +1,29 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import {
+  Wallet,
+  Code,
+  Camera,
+  Users,
+  Briefcase,
+  Mic,
+  Heart,
+  Battery,
+  Sun,
+  Moon,
+  CalendarDays,
+} from "lucide-react";
+const areaIcons = [Wallet, Code, Camera, Users, Briefcase, Mic, Heart, Battery];
+const areaLabels = [
+  "Money",
+  "Build",
+  "Brand",
+  "Network",
+  "Work",
+  "Teach",
+  "Health",
+  "Energy",
+];
 import Link from "@/components/admin/AdminLink";
 import { AdminText } from "@/components/admin/AdminPreferences";
 import { PersonalWeeklyFocus } from "@/components/admin/PersonalWeeklyFocus";
@@ -202,9 +226,7 @@ async function Money({ source }: { source: Sources["money"] }) {
           <Text s="No jar plan configured." />
         </p>
       )}
-      <p className="personal-meta">
-        <Text s="Targets, not bank balances. Record spending when it happens." />
-      </p>
+
       <div className="personal-section-title personal-bill-title">
         <h3>
           <Text s="Next bills" />
@@ -247,7 +269,16 @@ async function Routine({
   const value = await source;
   return (
     <Link className="personal-routine" href={adminUrl(`/admin/today#${kind}`)}>
-      <span>
+      <span
+        className={`personal-visual-icon ${kind === "morning" ? "personal-warm" : "personal-lilac"}`}
+      >
+        {kind === "morning" ? (
+          <Sun size={22} aria-hidden="true" />
+        ) : (
+          <Moon size={22} aria-hidden="true" />
+        )}
+      </span>
+      <span className="personal-routine-copy">
         <Text s={kind === "morning" ? "Morning brief" : "Evening debrief"} />
         <small>
           <Text s={briefStatus(value, kind, now)} />
@@ -261,7 +292,10 @@ async function Weekly({ source }: { source: Sources["weekly"] }) {
   const value = await source;
   return (
     <Link className="personal-routine" href={adminUrl("/admin/today/weekly")}>
-      <span>
+      <span className="personal-visual-icon personal-mint">
+        <CalendarDays size={22} aria-hidden="true" />
+      </span>
+      <span className="personal-routine-copy">
         <Text s="Weekly closeout" />
         <small>
           <Text
@@ -295,12 +329,21 @@ async function LifeAreas({ source }: { source: Sources["direction"] }) {
       </div>
       {areas ? (
         <div className="personal-area-list">
-          {areas.map((a) => (
-            <Link key={a.title} href={adminUrl("/admin/personal/mandala")}>
-              <Text s={a.title.replace(/^\d+\.\s*/, "")} />
-              <span aria-hidden="true">›</span>
-            </Link>
-          ))}
+          {areas.map((a, i) => {
+            const Icon = areaIcons[i] ?? Wallet;
+            return (
+              <Link
+                key={a.title}
+                href={adminUrl("/admin/personal/mandala")}
+                aria-label={a.title}
+              >
+                <span className={`personal-visual-icon personal-tone-${i % 4}`}>
+                  <Icon size={24} strokeWidth={1.7} aria-hidden="true" />
+                </span>
+                <Text s={areaLabels[i] ?? a.title.replace(/^\d+\.\s*/, "")} />
+              </Link>
+            );
+          })}
         </div>
       ) : (
         <p className="personal-meta">

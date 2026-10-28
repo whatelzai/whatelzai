@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-10-28-visual-money",
+    date: "2026-10-28",
+    title: "Money at a glance",
+    titleZh: "财务，一眼看清",
+    items: [
+      {
+        en: "Recognise your jars by icon and pastel colour. Tap a tile for the plan and account.",
+        zh: "用图标和柔和色彩识别罐子，点击查看计划与账户。",
+      },
+      {
+        en: "Activity and bills are compact. Tap a row for details and actions; voided entries and paused bills stay available behind a filter.",
+        zh: "收支与账单更简洁，点击查看详情与操作；筛选即可查看已作废账目和已暂停账单。",
+      },
+    ],
+  },
+  {
     id: "2026-10-28-entry-date",
     date: "2026-10-28",
     title: "Correct an entry’s date",

@@ -18,6 +18,13 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  Energy: "能量",
+  Health: "健康",
+  Teach: "教学",
+  Work: "工作",
+  Network: "人脉",
+  Brand: "品牌",
+  Build: "打造",
   "Release notes": "更新说明",
   Preferences: "偏好设置",
   "Settings sections": "设置页面",

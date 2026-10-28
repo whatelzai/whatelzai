@@ -11,15 +11,18 @@ export async function moneyData(
   owner: string,
   month: string,
   page = 0,
+  includeVoided = true,
 ): Promise<MoneyData> {
   const { start, end } = monthRange(month);
+  let entries = db
+    .from("personal_money_entries")
+    .select("*", { count: "exact" })
+    .eq("owner_id", owner)
+    .gte("occurred_on", start)
+    .lt("occurred_on", end);
+  if (!includeVoided) entries = entries.eq("voided", false);
   const [ledger, plan, summary] = await Promise.all([
-    db
-      .from("personal_money_entries")
-      .select("*", { count: "exact" })
-      .eq("owner_id", owner)
-      .gte("occurred_on", start)
-      .lt("occurred_on", end)
+    entries
       .order("occurred_on", { ascending: false })
       .order("created_at", { ascending: false })
       .order("id")
