@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-10-28-entry-date",
+    date: "2026-10-28",
+    title: "Correct an entry’s date",
+    titleZh: "修改账目日期",
+    items: [
+      {
+        en: "Use Edit date on an active Activity entry, without voiding or recreating it.",
+        zh: "在明细中直接修改有效账目的日期，无需作废或重建。",
+      },
+      {
+        en: "Totals and exports follow the saved date. Recurring bill schedules stay unchanged.",
+        zh: "汇总和导出会使用修改后的日期；固定账单的计划保持不变。",
+      },
+    ],
+  },
+  {
     id: "2026-10-28-simple-income",
     date: "2026-10-28",
     title: "Income, without the expense fields",

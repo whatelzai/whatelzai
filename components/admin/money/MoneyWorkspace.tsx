@@ -8,12 +8,17 @@ import {
   money,
   singaporeDay,
   type Currency,
+  type Entry,
   type Rule,
   type MoneyData,
 } from "@/lib/money/model";
 const EntryForm = dynamic(() => import("./EntryForm"), {
   ssr: false,
   loading: () => <p role="status">Opening entry form…</p>,
+});
+const EntryDateForm = dynamic(() => import("./EntryDateForm"), {
+  ssr: false,
+  loading: () => <p role="status">Opening date editor…</p>,
 });
 export default function MoneyWorkspace({
   initialEntry = false,
@@ -34,6 +39,7 @@ export default function MoneyWorkspace({
     mode: "entry" | "recurring" | "paid";
     rule?: Rule;
   } | null>(initialEntry ? { mode: "entry" } : null);
+  const [dateEntry, setDateEntry] = useState<Entry | null>(null);
   const [busy, setBusy] = useState(false);
   const serial = useRef(0);
   const load = useCallback(async () => {
@@ -101,7 +107,7 @@ export default function MoneyWorkspace({
   return (
     <section
       className="money-workspace"
-      data-focusing={form ? "true" : undefined}
+      data-focusing={form || dateEntry ? "true" : undefined}
     >
       <Link href={adminUrl("/admin/personal")} className="money-back">
         Personal
@@ -326,7 +332,8 @@ export default function MoneyWorkspace({
           </div>
           <p className="money-note">
             All currencies · {data?.total ?? 0} entries. Voided entries remain
-            in history. To correct an entry, void it and add the replacement.
+            in history. Edit a date directly; for other corrections, void the
+            entry and add its replacement.
           </p>
           {data && !data.entries.length ? (
             <p className="money-empty">
@@ -354,6 +361,15 @@ export default function MoneyWorkspace({
                 </div>
                 <div className="money-entry-amount">
                   <span>{money(e.amount_minor, e.currency)}</span>
+                  {!e.voided ? (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setDateEntry(e)}
+                    >
+                      Edit date
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     disabled={busy}
@@ -470,6 +486,24 @@ export default function MoneyWorkspace({
             </div>
           ))}
         </section>
+      ) : null}
+      {dateEntry ? (
+        <EntryDateForm
+          entry={dateEntry}
+          onClose={() => setDateEntry(null)}
+          onSaved={(day) => {
+            setDateEntry(null);
+            setNotice("Date updated. Viewing the entry’s month.");
+            setLoading(true);
+            setPage(0);
+            if (day.slice(0, 7) !== month) {
+              setMonth(day.slice(0, 7));
+              setData(null);
+            } else if (page === 0) {
+              void load();
+            }
+          }}
+        />
       ) : null}
       {form ? (
         <EntryForm

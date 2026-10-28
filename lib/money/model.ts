@@ -132,6 +132,17 @@ export const recurringSchema = z
   })
   .strict();
 export const commandSchema = z.discriminatedUnion("action", [
+  z
+    .object({
+      action: z.literal("entry_date"),
+      id: z.string().uuid(),
+      expected_date: day,
+      occurred_on: day.refine(
+        (v) => v < "2100-01-01",
+        "Use a date before 2100.",
+      ),
+    })
+    .strict(),
   z.object({ action: z.literal("entry"), entry: entrySchema }),
   z.object({ action: z.literal("recurring"), rule: recurringSchema }),
   z.object({

@@ -674,3 +674,6 @@ Income has three source choices (Working/Investment/Business), optional notes an
 ## First-visit member language (SPR-187)
 
 Signed-in member Home offers English (initially selected) and 简体中文 when this device has no valid member-language cookie. Continue uses the existing assigned-user save action; it saves explicit English too. Home mounts either LanguageWelcome or the release popup boundary, never both. The confirmed language remains changeable in Profile. This inherits SPR-185’s per-device preference, original-content preservation and no extra root auth/database reads; no inferred browser language, account onboarding flag or forced full legacy-screen translation. — codex, 2026-10-28
+
+## Money entry dates (SPR-188)
+Active entries support Edit date through a lazy compact dialog and strict `entry_date` command. Owner/origin gate plus expected occurred_on and nonvoided filters protect updates. Only occurred_on changes; no recurring schedule or financial fields changed. Activity follows the saved month and reloads totals; CSV naturally uses saved dates. No migration; stale/voided corrections return409. Other corrections keep void/replacement.
