@@ -1,3 +1,5 @@
+"use client";
+import { useMemberLanguage } from "./MemberLanguage";
 import type { ReactNode } from "react";
 import Link from "@/components/fcos/MemberLink";
 import { PullRefresh } from "./PullRefresh";
@@ -12,6 +14,7 @@ export function AppHeader({
   end?: ReactNode;
   chat?: boolean;
 }) {
+  const { t } = useMemberLanguage();
   return (
     <>
       <header
@@ -23,7 +26,7 @@ export function AppHeader({
             {start ?? (
               <Link
                 href="/"
-                aria-label="fcOS home"
+                aria-label={t("fcOS home")}
                 className="rounded-xl py-3 text-sm font-bold tracking-tight"
               >
                 fc<span className="text-yellow-500">OS</span>
@@ -31,7 +34,7 @@ export function AppHeader({
             )}
           </div>
           <h1 className="truncate text-center text-lg font-semibold tracking-tight">
-            {title}
+            {t(title)}
           </h1>
           <div className="flex items-center justify-end">{end}</div>
         </div>

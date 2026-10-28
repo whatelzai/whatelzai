@@ -8,9 +8,19 @@ const req = createRequire(import.meta.url);
 for (const surface of ["app", "public", "admin"])
   test(`root ${surface} layout keeps member loading free of unused identity/admin reads`, async () => {
     let auth = 0,
-      identity = 0;
+      identity = 0,
+      languageReads = 0;
     const testModule = { exports: {} };
     const mocks: Record<string, unknown> = {
+      "@/lib/fcos/language-server": {
+        getMemberLanguage: async () => {
+          languageReads++;
+          return "zh";
+        },
+      },
+      "@/components/fcos/MemberLanguage": {
+        MemberLanguageProvider: () => null,
+      },
       "next/headers": {
         headers: async () => ({ get: () => `${surface}.example.test` }),
       },
@@ -57,6 +67,7 @@ for (const surface of ["app", "public", "admin"])
     };
     const child = "protected page content";
     await exports.default({ children: child });
+    assert.equal(languageReads, surface === "app" ? 1 : 0);
     assert.equal(auth, surface === "app" ? 0 : 1);
     assert.equal(identity, surface === "app" ? 0 : 1);
   });

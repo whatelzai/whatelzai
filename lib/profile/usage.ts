@@ -17,13 +17,19 @@ export type UsageCycle = {
 export function percentage(value: number, total: number) {
   return total > 0 ? Math.max(0, Math.min(100, (value / total) * 100)) : 0;
 }
-export function resetCountdown(endsAt: string, now: number) {
+export function resetCountdown(
+  endsAt: string,
+  now: number,
+  language: "en" | "zh" = "en",
+) {
   const remaining = Date.parse(endsAt) - now;
-  if (remaining <= 0) return "Resetting…";
+  if (remaining <= 0) return language === "zh" ? "正在重置…" : "Resetting…";
   const totalMinutes = Math.ceil(remaining / 60000);
   const days = Math.floor(totalMinutes / 1440);
   const hours = Math.floor((totalMinutes % 1440) / 60);
   const minutes = totalMinutes % 60;
+  if (language === "zh")
+    return `${days ? `${days}天 ` : ""}${hours}小时 ${minutes}分钟后重置`;
   return `Resets in ${days ? `${days}d ` : ""}${hours}h ${minutes}m`;
 }
 export function summarizeUsage(
