@@ -18,7 +18,7 @@ Meditation presets 3/5/10/20 minutes. Teaching is 60 seconds with optional topic
 
 ## Release
 
-Migration: `20261028121901_personal_tools.sql`. Production execution was blocked by automatic approval review pending explicit approval of the migration/release. Do not claim applied or deployed until verified. No existing user records changed by tests.
+Migration: `20261028121901_personal_tools.sql`. Edmund explicitly approved migration, merge and deployment on 2026-10-28. Applied through the authenticated Supabase CLI using an isolated migration directory: dry run confirmed only this migration; legacy unrecorded migrations were excluded, not replayed. Verify production deployment and live reads before claiming shipped. No existing user records changed by tests.
 
 ## Greyscale viewing
 
