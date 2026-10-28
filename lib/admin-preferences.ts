@@ -18,6 +18,10 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  Payday: "发薪",
+  Meditate: "静心",
+  Train: "训练",
+  Practise: "练习",
   Energy: "能量",
   Health: "健康",
   Teach: "教学",

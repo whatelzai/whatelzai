@@ -12,6 +12,8 @@ import {
   Sun,
   Moon,
   CalendarDays,
+  Flower2,
+  Dumbbell,
 } from "lucide-react";
 const areaIcons = [Wallet, Code, Camera, Users, Briefcase, Mic, Heart, Battery];
 const areaLabels = [
@@ -67,6 +69,28 @@ export default async function PersonalPage() {
           <Text s="Log expense" />
         </Link>
       </header>
+      <nav className="personal-tool-shortcuts" aria-label="Personal tools">
+        {[
+          ["payday", Wallet, "Payday"],
+          ["meditation", Flower2, "Meditate"],
+          ["training", Dumbbell, "Train"],
+          ["practice", Mic, "Practise"],
+          ["weekly", CalendarDays, "This week"],
+        ].map(([key, Icon, label]) => {
+          const I = Icon as typeof Wallet;
+          return (
+            <Link
+              key={String(key)}
+              href={adminUrl(`/admin/personal/tools?tool=${key}`)}
+            >
+              <I size={25} />
+              <span>
+                <Text s={String(label)} />
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
       <Suspense fallback={<Placeholder label="My direction" />}>
         <Direction source={sources.direction} />
       </Suspense>

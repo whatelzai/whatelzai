@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-10-28-personal-tools",
+    date: "2026-10-28",
+    title: "Small tools for everyday life",
+    titleZh: "日常生活的小工具",
+    items: [
+      {
+        en: "Personal brings together payday allocation, meditation, workout logging and one-minute teaching practice.",
+        zh: "在个人页使用发薪分配、静心计时、训练记录与一分钟表达练习。",
+      },
+      {
+        en: "This week shows saved sessions and spending alongside your chosen outcome. Home stays focused on business and work.",
+        zh: "本周视图汇总已保存的练习、支出与所选成果；主页继续专注业务和工作。",
+      },
+    ],
+  },
+  {
     id: "2026-10-28-visual-money",
     date: "2026-10-28",
     title: "Money at a glance",
