@@ -1,4 +1,5 @@
 import "server-only";
+import { readSocialPosts } from "@/lib/social/server";
 import { readLeadContext } from "@/lib/leads/context";
 import { sourceQuerySchema } from "./model";
 import { sharedBriefingIds } from "./sharing";
@@ -11,6 +12,7 @@ import { loadCulture } from "@/lib/knowledge/server";
 export async function readFcosResource(input: unknown) {
   const { source, query } = sourceQuerySchema.parse(input);
   const owner = await fcosOwner();
+  if (source === "social") return readSocialPosts(owner, query);
   const match = (value: string) =>
     value.toLocaleLowerCase().includes(query.toLocaleLowerCase());
   const filter = `%${query.replace(/[\\%_]/g, "\\$&")}%`;

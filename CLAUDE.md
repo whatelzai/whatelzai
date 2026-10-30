@@ -693,3 +693,17 @@ Edmund explicitly prefers icon/color/visual recognition first, words as short su
 Personal-only tools use owner-gated no-store records, service-only RLS/invoker revision saves, actual SGD salary receipts and reviewed exact-cent allocations. Manual confirmations do not execute bank transfers or add ledger records. Timestamp timers save only explicit sessions; user-authored gym routines and current Singapore-week evidence preserve unknown activity. No API inference, new schedules, private offline storage or EMDEE summary duplication. See docs/personal-tools.md. Edmund approved this migration and release on 2026-10-28; migration applied through the authenticated CLI after a dry run isolated this file from legacy unrecorded migrations.
 
 Admin accessibility preference (2026-10-28): Edmund frequently views his phone in greyscale. Meaning, current selection, success/error and progress must be understandable through icons, labels, shapes, outlines and numeric values. Keep colour as supplementary rather than the only distinction. Mobile first and desktop friendly.
+
+## App-owned social connections (SPR-192)
+
+Owner-only Profile → Social connections supports one LinkedIn and two Instagram
+professional-account OAuth slots. Client credentials and tokens are encrypted in
+private Supabase tables using the existing integration key; social passwords are
+never collected. State/cookie/owner/app and account revisions bind authorization;
+disconnect atomically removes tokens and cached posts. A production-only daily
+11:00 Singapore cron refreshes up to 25 own posts/account without AI calls. Chat's
+`read_fcos` source `social` returns owner-only cached excerpts, never team content,
+DMs, live web search or inferred follower profiles. LinkedIn identity authorization
+does not imply restricted `r_member_social` access. Live activation requires
+provider app registration and consent. See `docs/fcos-social-connections.md`.
+— codex, 2026-10-31
