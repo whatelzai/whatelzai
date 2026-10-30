@@ -1,4 +1,5 @@
 import { memberTranslator } from "@/lib/fcos/language-server";
+import { isOwnerUser } from "@/lib/admin-policy";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { Suspense } from "react";
 import { ReleaseArchive } from "@/components/releases/ReleaseArchive";
@@ -329,6 +330,15 @@ export default async function Profile({
             <div className="border-t border-zinc-100 pt-5">
               <InstallAppButton accent="orange" language={language} />
             </div>
+            {isOwnerUser(user) && (
+              <Link
+                href="/profile/connections"
+                className="flex min-h-11 items-center justify-between border-t border-zinc-100 pt-5 text-sm font-semibold"
+              >
+                <span>Social connections</span>
+                <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
+            )}
             <p className="flex items-start gap-2 text-xs leading-5 text-zinc-400">
               <ShieldCheck
                 size={17}

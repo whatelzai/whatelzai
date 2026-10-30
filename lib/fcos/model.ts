@@ -31,7 +31,14 @@ export const briefingSchema = z
 export type Briefing = z.infer<typeof briefingSchema>;
 export const sourceQuerySchema = z
   .object({
-    source: z.enum(["leads", "products", "events", "culture", "briefings"]),
+    source: z.enum([
+      "leads",
+      "products",
+      "events",
+      "culture",
+      "briefings",
+      "social",
+    ]),
     query: z.string().trim().max(100),
   })
   .strict();
