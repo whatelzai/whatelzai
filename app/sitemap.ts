@@ -27,6 +27,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticEntries: Entry[] = [
     {
+      url: `${SITE_URL}/events`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/events/millionairs-ai-playbook`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: `${SITE_URL}/`,
       lastModified: now,
       changeFrequency: "weekly",

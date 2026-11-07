@@ -707,3 +707,7 @@ DMs, live web search or inferred follower profiles. LinkedIn identity authorizat
 does not imply restricted `r_member_social` access. Live activation requires
 provider app registration and consent. See `docs/fcos-social-connections.md`.
 — codex, 2026-10-31
+
+## Public offers (SPR-193)
+
+The public navigation is My why / Testimonials / M.A.P. events / The book. Home focuses on Millionair’s AI Playbook Thursday seminars and The Solopreneur’s Playbook, retaining the owner's why and verified testimonials. The book now has a sales page at `/playbook`; full draft bodies are server-gated at `/playbook/read`, superseding the earlier ungated preview. Event and book Payment Links, live operational setup, verification limits and release checks: `docs/design/map-commerce.md`. Never publish owner-issued promotion codes in site source. Stripe fulfilment gates on completed paid/no-payment-required sessions and canonicalizes the book offer; keep the signing secret server-only. First event date remains tentative and venue unconfirmed. No recurring event instances are invented.

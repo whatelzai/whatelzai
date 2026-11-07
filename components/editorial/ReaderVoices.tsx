@@ -22,9 +22,9 @@ export function ReaderVoices({ voices }: { voices: ReaderVoice[] }) {
     >
       <div className="voices-intro">
         <h2>
-          Good people.
+          In their
           <br />
-          Different perspectives.
+          own words.
         </h2>
         <Link href="/testimonials" className="text-link">
           All testimonials <ArrowUpRight size={18} />

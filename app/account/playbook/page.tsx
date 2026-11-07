@@ -73,6 +73,9 @@ export default async function AccountPlaybookPage() {
         )}
       </header>
 
+      <Link href="/playbook/read" className="field-button mb-8">
+        Open the full reader →
+      </Link>
       {chapters.length === 0 ? (
         <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-6 text-sm text-zinc-600">
           <p>Chapters are being published — check back soon.</p>

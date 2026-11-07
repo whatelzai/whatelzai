@@ -7,6 +7,7 @@ import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import "./editorial.css";
 import "./themes.css";
+import "./offers.css";
 import { ShellProvider } from "@/components/shell/ShellProvider";
 import { getSiteIdentity } from "@/lib/site-identity";
 import { ensureUserRow } from "@/lib/users";
