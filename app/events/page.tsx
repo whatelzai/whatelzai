@@ -27,17 +27,17 @@ export default function EventsPage() {
       <section className="event-listing" aria-labelledby="next-talk">
         <Image
           className="map-poster-photo"
-          src="/images/events/map-edmund-poster-v1.png"
+          src="/images/events/map-edmund-poster-v2.png"
           alt="M.A.P. Thursday seminar poster featuring Edmund speaking."
-          width={1122}
-          height={1402}
+          width={1024}
+          height={1536}
           sizes="(max-width:700px) 100vw, 40vw"
         />
         <div className="offer-copy">
           <h2 id="next-talk">{mapEvent.title}</h2>
           <p>
             {open
-              ? "First session planned for Thursday, 12 November 2026."
+              ? "First session: Thursday, 12 November 2026."
               : "The next session will be announced here."}
           </p>
           <p>
@@ -45,7 +45,9 @@ export default function EventsPage() {
             <br />
             20 participants maximum · S$97
             <br />
-            Venue to be confirmed
+            {mapEvent.venue}
+            <br />
+            {mapEvent.address}
           </p>
           <Link className="field-button" href={mapEvent.path}>
             {open ? "Details & registration" : "About the seminar"}
