@@ -12,6 +12,11 @@ import {
   revokeEntitlementByCharge,
 } from "@/lib/entitlements";
 import { logWebhookEvent } from "@/lib/webhook-log";
+import {
+  canFulfillCheckout,
+  entitlementProductSlug,
+  checkoutGrantKey,
+} from "@/lib/stripe-fulfillment";
 
 export const dynamic = "force-dynamic";
 // Stripe requires the raw request body for signature verification.
@@ -102,10 +107,10 @@ async function syncSubscription(sub: Stripe.Subscription): Promise<void> {
 // SPR-110 — user_id is null here and stitched later (SPR-112) on Google sign-in
 // via customer_email match. Idempotent on stripe_event_id.
 async function grantOneOffFromSession(
-  eventId: string,
   session: Stripe.Checkout.Session,
   stripe: Stripe,
 ): Promise<void> {
+  if (!canFulfillCheckout(session)) return;
   const customerId =
     typeof session.customer === "string"
       ? session.customer
@@ -165,8 +170,8 @@ async function grantOneOffFromSession(
     app_user_id: await resolvePaymentUserId(session.metadata?.user_id, clerkId),
     stripe_customer_id: customerId,
     customer_email: email,
-    product_slug: productSlug,
-    stripe_event_id: eventId,
+    product_slug: entitlementProductSlug(productSlug),
+    stripe_event_id: checkoutGrantKey(session.id),
     stripe_checkout_session_id: session.id,
     stripe_charge_id: chargeId,
   });
@@ -231,10 +236,20 @@ export async function POST(req: Request) {
             await syncSubscription(sub);
           }
         } else if (session.mode === "payment") {
-          await grantOneOffFromSession(event.id, session, stripe);
+          await grantOneOffFromSession(session, stripe);
         }
         break;
       }
+
+      case "checkout.session.async_payment_succeeded": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        if (session.mode === "payment")
+          await grantOneOffFromSession(session, stripe);
+        break;
+      }
+      case "checkout.session.async_payment_failed":
+        // No access was granted while the payment was unpaid.
+        break;
 
       case "customer.subscription.created":
       case "customer.subscription.updated":
