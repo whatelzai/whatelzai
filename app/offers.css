@@ -585,3 +585,8 @@
     font-size: 34px;
   }
 }
+.map-poster-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+}

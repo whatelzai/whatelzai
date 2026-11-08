@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
 import "../offers.css";
@@ -24,11 +25,14 @@ export default function EventsPage() {
         </p>
       </header>
       <section className="event-listing" aria-labelledby="next-talk">
-        <div className="event-date">
-          <span>{open ? "NOV" : "M.A.P."}</span>
-          <strong>{open ? "12" : "→"}</strong>
-          <span>{open ? "THURSDAY" : "THURSDAYS"}</span>
-        </div>
+        <Image
+          className="map-poster-photo"
+          src="/images/events/map-edmund-poster-v1.png"
+          alt="M.A.P. Thursday seminar poster featuring Edmund speaking."
+          width={1122}
+          height={1402}
+          sizes="(max-width:700px) 100vw, 40vw"
+        />
         <div className="offer-copy">
           <h2 id="next-talk">{mapEvent.title}</h2>
           <p>

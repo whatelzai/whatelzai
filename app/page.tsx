@@ -50,15 +50,14 @@ export default async function Home() {
       </section>
       <section className="map-feature" aria-labelledby="map-heading">
         <div className="field-wrap map-feature-grid">
-          <div className="map-poster" aria-hidden="true">
-            <span>M.A.P.</span>
-            <p>
-              Millionair’s
-              <br />
-              AI Playbook
-            </p>
-            <small>THURSDAYS WITH EDMUND</small>
-          </div>
+          <Image
+            className="map-poster-photo"
+            src="/images/events/map-edmund-poster-v1.png"
+            alt="Millionair’s AI Playbook with Edmund Lin Zhenming: AI Skillset × Money Mindset, Thursdays 7:30–9:30 PM, 20 people, S$97."
+            width={1122}
+            height={1402}
+            sizes="(max-width:700px) 100vw, 50vw"
+          />
           <div className="offer-copy">
             <p className="offer-label">The Thursday seminar</p>
             <h2 id="map-heading">
