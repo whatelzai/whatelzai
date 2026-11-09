@@ -22,7 +22,7 @@ export default function MapPage() {
       </Link>
       <div className="map-detail-grid">
         <header>
-          <p className="offer-label">Thursdays with Edmund</p>
+          <p className="offer-label">Thursdays with Edmund · {mapEvent.id}</p>
           <h1>
             Money Mindset
             <br />× AI Skillset.

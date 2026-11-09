@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { pastThursdayEvents } from "@/lib/public-events/past";
 import { mapEvent } from "@/lib/public-events/map";
 import "../../offers.css";
 export function generateStaticParams() {
-  return pastThursdayEvents.map((event) => ({ date: event.date }));
+  return pastThursdayEvents.map((event) => ({ date: event.id }));
 }
 export async function generateMetadata({
   params,
@@ -14,11 +14,13 @@ export async function generateMetadata({
   params: Promise<{ date: string }>;
 }): Promise<Metadata> {
   const { date } = await params;
-  const event = pastThursdayEvents.find((event) => event.date === date);
+  const event = pastThursdayEvents.find(
+    (event) => event.id === date || event.date === date,
+  );
   if (!event) return { title: "Event not found" };
   return {
     title: `${event.title} — ${event.label}`,
-    description: `Past Thursday seminar with Edmund at ${event.venue}. ${event.participants} participants.`,
+    description: `Thursday seminar with Edmund at ${event.venue}. ${event.participants} participants.`,
     alternates: { canonical: `https://whatelz.ai${event.path}` },
   };
 }
@@ -28,15 +30,18 @@ export default async function PastEventPage({
   params: Promise<{ date: string }>;
 }) {
   const { date } = await params;
-  const event = pastThursdayEvents.find((event) => event.date === date);
+  const event = pastThursdayEvents.find(
+    (event) => event.id === date || event.date === date,
+  );
   if (!event) notFound();
+  if (date !== event.id) permanentRedirect(event.path);
   return (
     <main className="map-events field-wrap">
       <Link href="/events" className="text-link">
         ← All events
       </Link>
       <header className="events-intro">
-        <p className="offer-label">Past event · Thursdays with Edmund</p>
+        <p className="offer-label">Thursdays with Edmund</p>
         <h1>{event.title}</h1>
         <p>
           <time dateTime={event.date}>{event.label}</time>
@@ -61,7 +66,7 @@ export default async function PastEventPage({
             <br />
             {event.participants} participants
           </p>
-          <p>This event has ended.</p>
+          <p className="offer-label">Event ID: {event.id}</p>
           <Link href={mapEvent.path} className="field-button">
             See the next session ↗
           </Link>

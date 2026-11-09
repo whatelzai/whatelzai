@@ -29,7 +29,7 @@ export default async function TicketPage({
   const qr = await QRCode.toDataURL(ticketUrl(id), { width: 600, margin: 4 });
   return (
     <main className="field-wrap" style={{ paddingBlock: 64, maxWidth: 640 }}>
-      <p>Your event ticket</p>
+      <p>Your event ticket · {mapEvent.id}</p>
       <h1>{mapEvent.title}</h1>
       <p>
         {mapEvent.dateLabel}

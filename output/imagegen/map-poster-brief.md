@@ -30,3 +30,6 @@ Built-in ImageGen. Each portrait2:3 poster uses exact copy Money Mindset × AI S
 - 29Oct2026: photo_2026-11-08 12.38.31.jpeg, lavender shirt/open extended arm. public/images/events/past-2026-10-29.png.
 - 22Oct2026: photo_2026-11-08 12.38.05.jpeg, lavender shirt/raised hand. public/images/events/past-2026-10-22.png. Targeted follow-up removed unrequested architectural background, replacing it with plain ivory paper texture.
 Upcoming12Nov poster and The Vibe/address remain unchanged.
+
+## Final normal poster correction
+Built-in ImageGen targeted edits on all three dated posters: remove PAST EVENT text and its badge/ribbon completely; fill with matching background and preserve all other photo/text/layout. Final assets: public/images/events/elz-evt-0001.png (22Oct), elz-evt-0002.png (29Oct), elz-evt-0003.png (5Nov). These replace the earlier status-labelled poster files and are attached to their event records.

@@ -6,7 +6,7 @@ export default function PastEvents() {
   return (
     <section className="past-events" aria-labelledby="past-events-heading">
       <p className="offer-label">Thursdays with Edmund</p>
-      <h2 id="past-events-heading">Past sessions.</h2>
+      <h2 id="past-events-heading">Previous sessions.</h2>
       <ul>
         {pastThursdayEvents.map((event) => (
           <li key={event.date}>
@@ -19,7 +19,7 @@ export default function PastEvents() {
                 sizes="(max-width:700px) 100vw, 33vw"
               />
               <div className="past-event-copy">
-                <p className="offer-label">Past event</p>
+                <p className="offer-label">{event.id}</p>
                 <h3>
                   <time dateTime={event.date}>{event.label}</time>
                 </h3>
