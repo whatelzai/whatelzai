@@ -278,6 +278,28 @@ export async function POST(req: Request) {
         const charge = event.data.object as Stripe.Charge;
         // Only revoke if fully refunded — partial refunds leave access intact.
         if (charge.refunded) {
+          const paymentIntent =
+            typeof charge.payment_intent === "string"
+              ? charge.payment_intent
+              : charge.payment_intent?.id;
+          if (paymentIntent) {
+            const { error: ledgerError } = await supabaseAdmin
+              .from("event_refund_ledger")
+              .upsert(
+                { stripe_payment_intent_id: paymentIntent },
+                {
+                  onConflict: "stripe_payment_intent_id",
+                  ignoreDuplicates: true,
+                },
+              );
+            if (ledgerError)
+              throw new Error("Refund receipt could not be saved");
+            const { error } = await supabaseAdmin
+              .from("event_registrations")
+              .update({ status: "cancelled" })
+              .eq("stripe_payment_intent_id", paymentIntent);
+            if (error) throw new Error("Ticket cancellation failed");
+          }
           await revokeEntitlementByCharge(charge.id);
         }
         break;

@@ -50,6 +50,9 @@ export default async function proxy(req: NextRequest) {
     }
     if (
       user ||
+      req.nextUrl.pathname.startsWith("/tickets/") ||
+      req.nextUrl.pathname.startsWith("/event-checkin") ||
+      req.nextUrl.pathname.startsWith("/api/event-checkin") ||
       route.protect ||
       req.nextUrl.pathname.startsWith("/api/admin") ||
       req.nextUrl.pathname.startsWith("/auth/") ||
