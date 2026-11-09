@@ -1,8 +1,9 @@
 import "server-only";
 import type Stripe from "stripe";
 import { supabaseAdmin } from "./supabase-server";
+import { mapEvent } from "./public-events/map";
 import { mapConfirmation } from "./event-confirmation";
-export const EVENT_KEY = "ai-skillset-money-mindset-20261112";
+export const EVENT_KEY = mapEvent.key;
 export const TICKET_ORIGIN = "https://whatelz.ai";
 export const ticketUrl = (id: string) => `${TICKET_ORIGIN}/tickets/${id}`;
 export async function ensureEventTicket(session: Stripe.Checkout.Session) {

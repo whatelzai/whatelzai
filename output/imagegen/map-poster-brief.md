@@ -23,3 +23,13 @@ Built-in ImageGen edit: replace only venue footer with THE VIBE, Paya Lebar Squa
 User chose high quality. Read https://github.com/eachlabs/skills/blob/main/skills/poster-design-generation/SKILL.md and adapted its format, margins, hierarchy, palette and composition guidance. EachLabs API itself was not run: no EACHLABS_API_KEY or connector available. Used built-in ImageGen and original real speaker photo. Final asset public/images/events/money-mindset-ai-skillset-editorial.png. Yellow draft retained as a sibling asset.
 
 Prompt brief: final portrait 2:3 Swiss editorial event poster; exact speaker identity, natural face/glasses/black shirt/microphone/open hand; clean extraction removing lanyard and extra microphone. Asymmetrical left typography and right photographic speaker, generous safe margins. Warm ivory, yellow and near-black with fine paper texture. Title Money Mindset × AI Skillset; A Thursday seminar with Edmund Lin.; Thursday 12 November 2026; 7:30–9:30 PM Singapore; The Vibe; Paya Lebar Square #07-16 Singapore409051; 20 places S$97; Register at whatelz.ai/events. No M.A.P., millionaire wording or QR code.
+
+## ELZ's Hideout historical posters
+Built-in ImageGen. Each portrait2:3 poster uses exact copy Money Mindset × AI Skillset, With Edmund Lin, its Thursday/date, ELZ's Hideout,10participants,PAST EVENT. No address, postcode, price, time or registration CTA. Preserve source face/pose and use ivory/yellow/charcoal editorial palette.
+- 5Nov2026: photo_2026-11-08 12.38.44.jpeg, seated black shirt without glasses. public/images/events/past-2026-11-05.png.
+- 29Oct2026: photo_2026-11-08 12.38.31.jpeg, lavender shirt/open extended arm. public/images/events/past-2026-10-29.png.
+- 22Oct2026: photo_2026-11-08 12.38.05.jpeg, lavender shirt/raised hand. public/images/events/past-2026-10-22.png. Targeted follow-up removed unrequested architectural background, replacing it with plain ivory paper texture.
+Upcoming12Nov poster and The Vibe/address remain unchanged.
+
+## Final normal poster correction
+Built-in ImageGen targeted edits on all three dated posters: remove PAST EVENT text and its badge/ribbon completely; fill with matching background and preserve all other photo/text/layout. Final assets: public/images/events/elz-evt-0001.png (22Oct), elz-evt-0002.png (29Oct), elz-evt-0003.png (5Nov). These replace the earlier status-labelled poster files and are attached to their event records.
