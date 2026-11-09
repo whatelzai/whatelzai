@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PastEvents from "@/components/events/PastEvents";
 import { ArrowUpRight } from "lucide-react";
 import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
 import "../../offers.css";
@@ -24,8 +25,7 @@ export default function MapPage() {
           <p className="offer-label">Thursdays with Edmund</p>
           <h1>
             Money Mindset
-            <br />
-            × AI Skillset.
+            <br />× AI Skillset.
           </h1>
           <p className="map-deck">
             Two hours. A small room.
@@ -39,14 +39,12 @@ export default function MapPage() {
         </header>
         <section className="map-booking" aria-labelledby="registration-heading">
           <h2 id="registration-heading">
-            {open ? "Join the first session" : "Registration closed"}
+            {open ? "Join the next session" : "Registration closed"}
           </h2>
           <dl>
             <div>
               <dt>When</dt>
-              <dd>
-                {mapEvent.dateLabel}
-              </dd>
+              <dd>{mapEvent.dateLabel}</dd>
             </div>
             <div>
               <dt>Time</dt>
@@ -55,7 +53,13 @@ export default function MapPage() {
             <div>
               <dt>Where</dt>
               <dd>
-                <a href={mapEvent.venueUrl} target="_blank" rel="noopener noreferrer">{mapEvent.venue} ↗</a>
+                <a
+                  href={mapEvent.venueUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {mapEvent.venue} ↗
+                </a>
                 <small>{mapEvent.address}</small>
               </dd>
             </div>
@@ -73,20 +77,21 @@ export default function MapPage() {
                 Register with Stripe <ArrowUpRight size={20} />
               </a>
               <p className="booking-note">
-                Name, phone number and email are required at checkout. Have a code from Edmund? Enter it for complimentary
-                admission.
+                Name, phone number and email are required at checkout. Have a
+                code from Edmund? Enter it for complimentary admission.
               </p>
             </>
           )}
         </section>
       </div>
+      <PastEvents />
       <section className="map-learning">
         <h2>A seminar that becomes a book.</h2>
         <p>
           Each Thursday is a place to teach, ask questions and develop ideas.
           Those lessons will feed into{" "}
-          <Link href="/playbook">The Money & AI Playbook</Link>, bringing
-          what happens in the room onto the page.
+          <Link href="/playbook">The Money & AI Playbook</Link>, bringing what
+          happens in the room onto the page.
         </p>
         <div className="map-related">
           <Link href="/about">Meet Edmund and read his why ↗</Link>

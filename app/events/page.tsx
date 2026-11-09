@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import PastEvents from "@/components/events/PastEvents";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
@@ -37,7 +38,7 @@ export default function EventsPage() {
           <h2 id="next-talk">{mapEvent.title}</h2>
           <p>
             {open
-              ? "First session: Thursday, 12 November 2026."
+              ? "Next session: Thursday, 12 November 2026."
               : "The next session will be announced here."}
           </p>
           <p>
@@ -55,6 +56,7 @@ export default function EventsPage() {
           </Link>
         </div>
       </section>
+      <PastEvents />
       <section className="events-book-note">
         <h2>From the room to the page.</h2>
         <p>
