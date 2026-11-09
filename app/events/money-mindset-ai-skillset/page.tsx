@@ -36,6 +36,7 @@ export default function MapPage() {
             A weekly Thursday seminar with Edmund, bringing money mindset and
             practical AI learning into the same conversation.
           </p>
+          <p>After three 10-person sessions, the next session has 20 places.</p>
         </header>
         <section className="map-booking" aria-labelledby="registration-heading">
           <h2 id="registration-heading">

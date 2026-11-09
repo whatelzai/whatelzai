@@ -1,19 +1,25 @@
-// Dates and approximate attendance supplied by Edmund on 9 November 2026.
-// These are historical sessions, not bookable dates or measured check-in totals.
+// Historical dates, venue and participant count supplied by Edmund.
+// Posters are designed from his supplied portraits, not dated documentary photos.
 export const pastThursdayEvents = [
   {
     date: "2026-11-05",
     label: "5 November 2026",
-    attendance: "About 10 participants",
+    poster: "/images/events/past-2026-11-05.png",
   },
   {
     date: "2026-10-29",
     label: "29 October 2026",
-    attendance: "About 10 participants",
+    poster: "/images/events/past-2026-10-29.png",
   },
   {
     date: "2026-10-22",
     label: "22 October 2026",
-    attendance: "About 10 participants",
+    poster: "/images/events/past-2026-10-22.png",
   },
-] as const;
+].map((event) => ({
+  ...event,
+  title: "Money Mindset × AI Skillset",
+  venue: "ELZ’s Hideout",
+  participants: 10,
+  path: `/events/${event.date}`,
+}));

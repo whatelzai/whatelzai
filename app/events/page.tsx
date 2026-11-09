@@ -36,6 +36,7 @@ export default function EventsPage() {
         />
         <div className="offer-copy">
           <h2 id="next-talk">{mapEvent.title}</h2>
+          <p>From groups of 10 to 20 places for the next session.</p>
           <p>
             {open
               ? "Next session: Thursday, 12 November 2026."
