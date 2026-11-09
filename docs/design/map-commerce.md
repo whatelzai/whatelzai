@@ -58,3 +58,10 @@ Edmund clarified that only the three past sessions use ELZ’s Hideout, with no 
 ## Normal posters and permanent references
 Removed all PAST EVENT status badges from the three posters as requested, and status labels from the listing/detail page. Each uses a unique portrait, ELZ’s Hideout, no address and10participants. Upcoming12Nov poster remains unchanged.
 Permanent IDs: ELZ-EVT-0001=22Oct2026; ELZ-EVT-0002=29Oct2026; ELZ-EVT-0003=5Nov2026; ELZ-EVT-0004=12Nov2026. IDs are explicitly assigned in the source-controlled event registry and must never be regenerated or reused. Historical canonical URLs use the permanent ID; date URLs redirect. The upcoming ID is shown on the event/ticket page and future confirmation emails; live Stripe Payment Link metadata now includes event_id=ELZ-EVT-0004. Existing event_key ai-skillset-money-mindset-20261112 and registration/ticket rows are preserved for continuity. Next session ID allocation starts0005.
+
+## Light default and event write-ups — 10 November
+User requested light mode unless a visitor changes it, and approved broader event descriptions instead of date-specific topics. Initial HTML and before-paint script now default to light, ignoring OS color preference; existing explicit saved light/dark preferences and cross-tab storage changes are preserved. Blocked or invalid storage falls back to light. Theme toggle remains available.
+
+Added distinct broader descriptions for all four permanent event IDs, using supplied date/venue/attendance facts and the Money Mindset × AI Skillset positioning. No specific historical agenda, attendee quote, financial result or learning outcome is asserted. Upcoming description introduces the two pillars, practical work/business questions and expansion to20places.
+
+Validation: production webpack build, TypeScript, focused lint and theme initialization tests passed. Browser verified fresh production-preview light default, manual dark selection, persistence after reload and return to light. Dev preview client interaction was inconclusive; production build verified toggle behavior successfully. Browser screenshot /tmp/whatelz-light-event-copy.png.

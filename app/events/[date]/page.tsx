@@ -1,3 +1,4 @@
+import EventWriteup from "@/components/events/EventWriteup";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -72,6 +73,7 @@ export default async function PastEventPage({
           </Link>
         </div>
       </section>
+      <EventWriteup eventId={event.id} />
     </main>
   );
 }

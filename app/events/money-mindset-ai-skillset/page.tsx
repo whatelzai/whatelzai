@@ -1,3 +1,4 @@
+import EventWriteup from "@/components/events/EventWriteup";
 import type { Metadata } from "next";
 import Link from "next/link";
 import PastEvents from "@/components/events/PastEvents";
@@ -85,6 +86,7 @@ export default function MapPage() {
           )}
         </section>
       </div>
+      <EventWriteup eventId={mapEvent.id} />
       <PastEvents />
       <section className="map-learning">
         <h2>A seminar that becomes a book.</h2>

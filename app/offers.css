@@ -648,3 +648,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+.event-writeup {
+  max-width: 780px;
+  padding-block: 36px 64px;
+}
+.event-writeup h2 {
+  font-size: clamp(30px, 4vw, 42px);
+  margin: 0 0 28px;
+}
+.event-writeup p {
+  font-size: 20px;
+  line-height: 1.75;
+  margin: 0 0 22px;
+}
