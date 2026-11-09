@@ -18,3 +18,8 @@ Built-in ImageGen edit of v1. Preserve speaker likeness and yellow/black identit
 
 ## The Vibe revision (v3)
 Built-in ImageGen edit: replace only venue footer with THE VIBE, Paya Lebar Square #07-16, Singapore 409051. Preserve speaker likeness, yellow/black design and all other event details. Saved public/images/events/map-edmund-poster-v3.png.
+
+## New event name and skill-guided editorial poster
+User chose high quality. Read https://github.com/eachlabs/skills/blob/main/skills/poster-design-generation/SKILL.md and adapted its format, margins, hierarchy, palette and composition guidance. EachLabs API itself was not run: no EACHLABS_API_KEY or connector available. Used built-in ImageGen and original real speaker photo. Final asset public/images/events/money-mindset-ai-skillset-editorial.png. Yellow draft retained as a sibling asset.
+
+Prompt brief: final portrait 2:3 Swiss editorial event poster; exact speaker identity, natural face/glasses/black shirt/microphone/open hand; clean extraction removing lanyard and extra microphone. Asymmetrical left typography and right photographic speaker, generous safe margins. Warm ivory, yellow and near-black with fine paper texture. Title Money Mindset × AI Skillset; A Thursday seminar with Edmund Lin.; Thursday 12 November 2026; 7:30–9:30 PM Singapore; The Vibe; Paya Lebar Square #07-16 Singapore409051; 20 places S$97; Register at whatelz.ai/events. No M.A.P., millionaire wording or QR code.

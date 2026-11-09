@@ -5,9 +5,9 @@ import { BookObject } from "@/components/editorial/FieldElements";
 import chapters from "@/content/playbook/chapters.json";
 
 export const metadata: Metadata = {
-  title: "The Solopreneur’s Playbook",
+  title: "The Money & AI Playbook",
   description:
-    "Money Mindset × AI Skillset. The Solopreneur’s Playbook by Edmund. S$47 for digital access, including future updates.",
+    "Money Mindset × AI Skillset. The Money & AI Playbook by Edmund. S$47 for digital access, including future updates.",
   alternates: { canonical: "https://whatelz.ai/playbook" },
 };
 export default function PlaybookPage() {
@@ -17,13 +17,12 @@ export default function PlaybookPage() {
         <div className="offer-copy">
           <p className="offer-label">By Edmund Lin Zhenming</p>
           <h1>
-            The Solopreneur’s
+            The Money &amp; AI
             <br />
             Playbook.
           </h1>
           <p>
-            Money Mindset × AI Skillset. Lessons on building something of your
-            own, with AI by your side.
+            Money mindset. AI skillset. Practical lessons for building your own way.
           </p>
           <p className="book-sales-price">
             S$47 <span>One payment · digital access</span>
@@ -53,11 +52,11 @@ export default function PlaybookPage() {
             future updates.
           </p>
           <p>
-            The Thursday M.A.P. seminars are where I teach and develop ideas
+            The Thursday seminars are where I teach and develop ideas
             that will become part of this book.
           </p>
           <Link href="/events" className="text-link">
-            Join a M.A.P. seminar ↗
+            Join a Thursday seminar ↗
           </Link>
         </div>
         <ol>

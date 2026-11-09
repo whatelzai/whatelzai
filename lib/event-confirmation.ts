@@ -12,8 +12,8 @@ export function mapConfirmation(session: Stripe.Checkout.Session) {
   const name = session.customer_details?.name?.trim() || "there";
   return {
     to: email,
-    subject: "You’re confirmed — Millionair’s AI Playbook",
-    text: `Hi ${name},\n\nYour place at Millionair’s AI Playbook (M.A.P.) is confirmed!\n\n${mapEvent.dateLabel}\n7:30–9:30 PM · Singapore time\n${mapEvent.venue}\n${mapEvent.address}\n\nWe’ll explore AI Skillset × Money Mindset through practical ideas and conversation.\n\nLooking forward to meeting you!\n\nEdmund Lin Zhenming\nhttps://whatelz.ai${mapEvent.path}`,
+    subject: "You’re confirmed — Money Mindset × AI Skillset",
+    text: `Hi ${name},\n\nYour place at Money Mindset × AI Skillset is confirmed!\n\n${mapEvent.dateLabel}\n7:30–9:30 PM · Singapore time\n${mapEvent.venue}\n${mapEvent.address}\n\nWe’ll explore AI Skillset × Money Mindset through practical ideas and conversation.\n\nLooking forward to meeting you!\n\nEdmund Lin Zhenming\nhttps://whatelz.ai${mapEvent.path}`,
     key: `map-confirmation/${session.id}`,
   };
 }

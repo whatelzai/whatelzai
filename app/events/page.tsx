@@ -6,9 +6,9 @@ import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
 import "../offers.css";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "M.A.P. — Thursday seminars",
+  title: "Money Mindset × AI Skillset — Thursday seminars",
   description:
-    "Millionair’s AI Playbook: two hours every Thursday exploring AI Skillset × Money Mindset with Edmund.",
+    "Money Mindset × AI Skillset: two hours every Thursday exploring AI Skillset × Money Mindset with Edmund.",
   alternates: { canonical: "https://whatelz.ai/events" },
 };
 export default function EventsPage() {
@@ -17,18 +17,18 @@ export default function EventsPage() {
     <main className="map-events field-wrap">
       <header className="events-intro">
         <p className="offer-label">Thursdays with Edmund</p>
-        <h1>Find your M.A.P.</h1>
+        <h1>Money Mindset × AI Skillset</h1>
         <p>
-          Millionair’s AI Playbook.
+          A Thursday seminar with Edmund Lin.
           <br />
-          AI Skillset × Money Mindset, two hours every Thursday.
+          Two hours to learn, ask questions and put ideas into practice.
         </p>
       </header>
       <section className="event-listing" aria-labelledby="next-talk">
         <Image
           className="map-poster-photo"
-          src="/images/events/map-edmund-poster-v3.png"
-          alt="M.A.P. Thursday seminar poster featuring Edmund speaking."
+          src="/images/events/money-mindset-ai-skillset-editorial.png"
+          alt="Money Mindset × AI Skillset seminar poster featuring Edmund speaking."
           width={1024}
           height={1536}
           sizes="(max-width:700px) 100vw, 40vw"
@@ -59,7 +59,7 @@ export default function EventsPage() {
         <h2>From the room to the page.</h2>
         <p>
           The lessons taught here will become part of{" "}
-          <Link href="/playbook">The Solopreneur’s Playbook</Link>. Join the
+          <Link href="/playbook">The Money & AI Playbook</Link>. Join the
           conversation, then keep learning with the book.
         </p>
       </section>
