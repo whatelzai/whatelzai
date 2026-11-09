@@ -11,3 +11,10 @@ Exact copy: whatelz.ai; M.A.P.; Millionair’s AI Playbook (intentional user-sup
 ## Saved asset
 
 `public/images/events/map-edmund-poster-v1.png`, 1122×1402. Used by the home seminar feature and events listing, with responsive Next Image rendering and descriptive alternative text. The generated portrait composite is promotional artwork based on the supplied photograph; it is not presented as a photograph of the upcoming event.
+
+
+## Venue revision (v2)
+Built-in ImageGen edit of v1. Preserve speaker likeness and yellow/black identity; rework footer with THU 12 NOV 2026 · 7:30–9:30 PM, Wings of the Dawn Meeting Room, Blk 712 Ang Mo Kio Ave 6 #03-4056, Singapore 560712, 20 PEOPLE · S$97. User confirmed cap20 with venue. Saved as public/images/events/map-edmund-poster-v2.png.
+
+## The Vibe revision (v3)
+Built-in ImageGen edit: replace only venue footer with THE VIBE, Paya Lebar Square #07-16, Singapore 409051. Preserve speaker likeness, yellow/black design and all other event details. Saved public/images/events/map-edmund-poster-v3.png.

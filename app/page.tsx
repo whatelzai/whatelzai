@@ -52,10 +52,10 @@ export default async function Home() {
         <div className="field-wrap map-feature-grid">
           <Image
             className="map-poster-photo"
-            src="/images/events/map-edmund-poster-v1.png"
+            src="/images/events/map-edmund-poster-v3.png"
             alt="Millionair’s AI Playbook with Edmund Lin Zhenming: AI Skillset × Money Mindset, Thursdays 7:30–9:30 PM, 20 people, S$97."
-            width={1122}
-            height={1402}
+            width={1024}
+            height={1536}
             sizes="(max-width:700px) 100vw, 50vw"
           />
           <div className="offer-copy">
@@ -71,10 +71,14 @@ export default async function Home() {
             </p>
             <p className="offer-event-facts">
               {isMapRegistrationOpen()
-                ? "Planned: 12 November"
+                ? "Thursday, 12 November"
                 : "Next date to be announced"}
               <br />
               7:30–9:30 PM · 20 people · S$97
+              <br />
+              {mapEvent.venue}
+              <br />
+              {mapEvent.address}
             </p>
             <Link className="field-button" href={mapEvent.path}>
               See the seminar <ArrowUpRight size={20} />
