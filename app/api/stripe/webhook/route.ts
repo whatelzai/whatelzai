@@ -11,6 +11,7 @@ import {
   grantEntitlement,
   revokeEntitlementByCharge,
 } from "@/lib/entitlements";
+import { sendEventConfirmation } from "@/lib/send-event-confirmation";
 import { logWebhookEvent } from "@/lib/webhook-log";
 import {
   canFulfillCheckout,
@@ -236,7 +237,8 @@ export async function POST(req: Request) {
             await syncSubscription(sub);
           }
         } else if (session.mode === "payment") {
-          await grantOneOffFromSession(session, stripe);
+          if (!(await sendEventConfirmation(session)))
+            await grantOneOffFromSession(session, stripe);
         }
         break;
       }
@@ -244,7 +246,8 @@ export async function POST(req: Request) {
       case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
         if (session.mode === "payment")
-          await grantOneOffFromSession(session, stripe);
+          if (!(await sendEventConfirmation(session)))
+            await grantOneOffFromSession(session, stripe);
         break;
       }
       case "checkout.session.async_payment_failed":

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Millionair’s AI Playbook — M.A.P.",
   description:
-    "AI Skillset × Money Mindset. A two-hour Thursday seminar with Edmund. S$97, limited to 20 participants. Venue to be confirmed.",
+    "AI Skillset × Money Mindset. A two-hour Thursday seminar with Edmund. S$97, limited to 20 participants. At The Vibe, Paya Lebar Square.",
   alternates: {
     canonical: "https://whatelz.ai/events/millionairs-ai-playbook",
   },
@@ -46,7 +46,6 @@ export default function MapPage() {
               <dt>When</dt>
               <dd>
                 {mapEvent.dateLabel}
-                <small>Planned date</small>
               </dd>
             </div>
             <div>
@@ -55,7 +54,10 @@ export default function MapPage() {
             </div>
             <div>
               <dt>Where</dt>
-              <dd>Venue to be confirmed</dd>
+              <dd>
+                <a href={mapEvent.venueUrl} target="_blank" rel="noopener noreferrer">{mapEvent.venue} ↗</a>
+                <small>{mapEvent.address}</small>
+              </dd>
             </div>
             <div>
               <dt>Room size</dt>
@@ -71,15 +73,11 @@ export default function MapPage() {
                 Register with Stripe <ArrowUpRight size={20} />
               </a>
               <p className="booking-note">
-                Have a code from Edmund? Enter it at checkout for complimentary
+                Name, phone number and email are required at checkout. Have a code from Edmund? Enter it for complimentary
                 admission.
               </p>
             </>
           )}
-          <p className="booking-note">
-            Please note the planned date and unconfirmed venue before
-            registering.
-          </p>
         </section>
       </div>
       <section className="map-learning">

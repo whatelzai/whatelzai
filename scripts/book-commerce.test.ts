@@ -52,3 +52,19 @@ test("event registration closes at the UTC+8 seminar start", () => {
   assert.equal(isMapRegistrationOpen(start + 1), false);
   assert.equal(start, Date.parse("2026-11-12T11:30:00Z"));
 });
+
+// Confirmation only follows settled registrations from the event payment link.
+import type Stripe from "stripe";
+import { mapConfirmation, MAP_PAYMENT_LINK } from "../lib/event-confirmation";
+test("event confirmation includes venue and accepts paid or complimentary orders", () => {
+  const base = { id: "cs_test_map", status: "complete", payment_status: "paid", payment_link: MAP_PAYMENT_LINK, customer_details: { name: "Test attendee", email: "attendee@example.test" } } as unknown as Stripe.Checkout.Session;
+  const message = mapConfirmation(base)!;
+  assert.match(message.text, /The Vibe/);
+  assert.match(message.text, /Paya Lebar Square #07-16/);
+  assert.equal(message.to, "attendee@example.test");
+  assert.equal(message.key, "map-confirmation/cs_test_map");
+  assert.ok(mapConfirmation({ ...base, payment_status: "no_payment_required" }));
+  assert.equal(mapConfirmation({ ...base, payment_status: "unpaid" }), null);
+  assert.equal(mapConfirmation({ ...base, status: "open" }), null);
+  assert.equal(mapConfirmation({ ...base, payment_link: "plink_other" }), null);
+});

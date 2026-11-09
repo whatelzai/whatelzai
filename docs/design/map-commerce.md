@@ -2,7 +2,7 @@
 
 Edmund's direction, 7 November 2026: a smaller public site around My why, Testimonials, M.A.P. events and The book. Existing portfolio and writing routes remain reachable directly. The home page retains real, source-backed testimonials and Edmund's portrait/story.
 
-Millionair’s AI Playbook (M.A.P.) is the user-supplied series name. Two-hour Thursday seminars develop material that will eventually enter The Solopreneur’s Playbook. Only the first occurrence is listed: tentative 12 November 2026, 19:30–21:30 UTC+8, venue unconfirmed. No invented future dates, attendees, outcomes or remaining-seat counts.
+Millionair’s AI Playbook (M.A.P.) is the user-supplied series name. Two-hour Thursday seminars develop material that will eventually enter The Solopreneur’s Playbook. Only the first occurrence is listed: 12 November 2026, 19:30–21:30 UTC+8, Wings of the Dawn Meeting Room, Blk 712 Ang Mo Kio Avenue 6 #03-4056, Singapore 560712. No invented future dates, attendees, outcomes or remaining-seat counts.
 
 ## Commerce
 
@@ -28,4 +28,11 @@ Critique: strongest change is removing the twelve-destination menu; explicit pro
 
 Production webpack build, TypeScript, focused ESLint, source lint and five commerce model tests pass. Live Stripe checkout was inspected at S$97/S$0 event and S$47/S$5 book. No checkout was completed, no real payment made, and no event seat consumed. Anonymous full-reader navigation redirects to sign-in; inspected public sales DOM contains no full chapter body. A genuine completed purchase and account entitlement round trip remains a release check after webhook configuration reaches Production.
 
-Production merge requires Edmund's approval under CLAUDE.md's human-merge rule. Do not advertise the new book link as ready for fulfilment until the reviewed deployment includes the new webhook secret and handler. Event venue and first date remain pending confirmation. Later Thursday occurrences require their own listing and registration allocation.
+Production merge requires Edmund's approval under CLAUDE.md's human-merge rule. Do not advertise the new book link as ready for fulfilment until the reviewed deployment includes the new webhook secret and handler. Edmund supplied the venue booking (19:00–22:00) and confirmed that the registration cap remains 20 despite the booking summary listing 15 guests. The advertised talk remains 19:30–21:30. Later Thursday occurrences require their own listing and registration allocation.
+
+## Confirmed venue and registration — 9 November
+Edmund locked in The Vibe, Paya Lebar Square #07-16, Singapore 409051 (https://thevibe.sg), replacing Wings of the Dawn. Date/time remain 12 November 2026, 19:30–21:30 Singapore; cap20. Live Stripe link now requires individual name, phone and email, and hosted confirmation carries The Vibe.
+
+Event emails: signed webhook handles completed and async-payment-success, gated on complete+paid/no_payment_required and the exact event Payment Link. Resend sends the approved plain-text confirmation. Session-based provider idempotency plus persistent webhook log receipt prevents normal retries and duplicate event types from sending twice. A crash between provider acceptance and receipt persistence beyond Resend's 24-hour idempotency window can resend. Provider failure returns non-2xx for Stripe retry. No marketing subscription is created.
+
+Production activation remains blocked: STRIPE_SECRET_KEY, RESEND_API_KEY and EVENT_CONFIRMATION_FROM are absent. Install a restricted Stripe read key and a Resend sending credential with a verified sender before claiming delivery active. Test a complete registration and delivery after deployment. No live attendee email was sent during development.
