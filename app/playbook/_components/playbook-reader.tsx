@@ -91,7 +91,7 @@ function PageContent({
         )}
       </div>
       <div className={styles.folio}>
-        <span>The Solopreneur’s AI Playbook</span>
+        <span>The Money & AI Playbook</span>
         <span>{number <= total ? String(number).padStart(2, "0") : "—"}</span>
       </div>
     </div>
@@ -257,8 +257,8 @@ export function PlaybookReader({ chapters }: { chapters: PlaybookChapter[] }) {
       <header className={styles.heading}>
         <div>
           <h1>
-            The Solopreneur’s
-            <br className={styles.mobileBreak} /> AI Playbook<span>.</span>
+            The Money &amp; AI
+            <br className={styles.mobileBreak} /> Playbook<span>.</span>
           </h1>
           <p>Money Mindset. AI Skillset. A business of your own.</p>
         </div>
@@ -420,9 +420,9 @@ export function PlaybookReader({ chapters }: { chapters: PlaybookChapter[] }) {
                     <span className={styles.coverTitle}>
                       The
                       <br />
-                      Solopreneur’s
+                      Money &amp; AI
                       <br />
-                      <em>AI Playbook.</em>
+                      <em>Playbook.</em>
                     </span>
                     <span className={styles.coverSubtitle}>
                       MONEY MINDSET.

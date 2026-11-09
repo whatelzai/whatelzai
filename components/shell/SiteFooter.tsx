@@ -12,11 +12,11 @@ export function SiteFooter({ ownerName }: { ownerName: string }) {
           <div>
             <h2>See you on Thursday.</h2>
             <Link href="/events" className="text-link">
-              Explore M.A.P. events ↗
+              Explore events ↗
             </Link>
           </div>
           <nav aria-label="Footer navigation">
-            <Link href="/events">M.A.P. events</Link>
+            <Link href="/events">Events</Link>
             <Link href="/playbook">The book</Link>
             <Link href="/about">My why</Link>
             <Link href="/testimonials">Testimonials</Link>

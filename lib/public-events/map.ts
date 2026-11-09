@@ -1,9 +1,9 @@
 // The series is weekly; only this occurrence has a confirmed venue.
 export const mapEvent = {
-  title: "Millionair’s AI Playbook",
-  shortName: "M.A.P.",
+  title: "Money Mindset × AI Skillset",
+  shortName: "Money Mindset × AI Skillset",
   subtitle: "AI Skillset × Money Mindset",
-  path: "/events/millionairs-ai-playbook",
+  path: "/events/money-mindset-ai-skillset",
   startsAt: "2026-11-12T19:30:00+08:00",
   endsAt: "2026-11-12T21:30:00+08:00",
   dateLabel: "Thursday, 12 November 2026",

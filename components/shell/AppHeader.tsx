@@ -7,7 +7,7 @@ import { ThemeToggle } from "./ThemeToggle";
 const navigation = [
   ["/about", "My why"],
   ["/testimonials", "Testimonials"],
-  ["/events", "M.A.P. events"],
+  ["/events", "Events"],
   ["/playbook", "The book"],
 ];
 export function AppHeader() {

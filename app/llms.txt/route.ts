@@ -49,7 +49,7 @@ ${SITE_URL}
 ## Primary pages
 - [Home](${SITE_URL}/): who ${firstName} is and what ${firstName} builds
 - [About](${SITE_URL}/about): what whatelz.ai is
-- [The Playbook](${SITE_URL}/playbook): The Solopreneur's AI Playbook — Mindset + Skillset, S$9 lifetime access
+- [The Playbook](${SITE_URL}/playbook): The Money & AI Playbook — Money Mindset × AI Skillset, S$47 digital access
 - [Projects](${SITE_URL}/projects): shipped AI systems and side projects
 - [Blog](${SITE_URL}/blog): writing on AI systems and building in public
 - [Career](${SITE_URL}/career): work history

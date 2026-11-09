@@ -12,7 +12,7 @@ import "./offers.css";
 export const metadata: Metadata = {
   title: { absolute: "whatelz.ai — Money Mindset × AI Skillset" },
   description:
-    "Meet Edmund, join Millionair’s AI Playbook on Thursdays, and explore The Solopreneur’s Playbook. Money Mindset × AI Skillset.",
+    "Meet Edmund, join Money Mindset × AI Skillset on Thursdays, and explore The Money & AI Playbook. Money Mindset × AI Skillset.",
   alternates: { canonical: "https://whatelz.ai" },
 };
 export default async function Home() {
@@ -44,7 +44,7 @@ export default async function Home() {
             Take the lessons into your own life.
           </p>
           <Link className="field-button" href="/events">
-            Explore M.A.P. <ArrowUpRight size={20} />
+            Explore the seminars <ArrowUpRight size={20} />
           </Link>
         </div>
       </section>
@@ -52,8 +52,8 @@ export default async function Home() {
         <div className="field-wrap map-feature-grid">
           <Image
             className="map-poster-photo"
-            src="/images/events/map-edmund-poster-v3.png"
-            alt="Millionair’s AI Playbook with Edmund Lin Zhenming: AI Skillset × Money Mindset, Thursdays 7:30–9:30 PM, 20 people, S$97."
+            src="/images/events/money-mindset-ai-skillset-editorial.png"
+            alt="Money Mindset × AI Skillset with Edmund Lin Zhenming: AI Skillset × Money Mindset, Thursdays 7:30–9:30 PM, 20 people, S$97."
             width={1024}
             height={1536}
             sizes="(max-width:700px) 100vw, 50vw"
@@ -61,9 +61,9 @@ export default async function Home() {
           <div className="offer-copy">
             <p className="offer-label">The Thursday seminar</p>
             <h2 id="map-heading">
-              Millionair’s
+              Money Mindset
               <br />
-              AI Playbook.
+              × AI Skillset.
             </h2>
             <p>
               Two hours exploring AI Skillset × Money Mindset, together. A small
@@ -90,12 +90,12 @@ export default async function Home() {
         <div className="offer-copy">
           <p className="offer-label">The book</p>
           <h2 id="book-heading">
-            The Solopreneur’s
+            The Money &amp; AI
             <br />
             Playbook.
           </h2>
           <p>
-            The ideas don’t end when the room clears. What I teach at M.A.P.
+            The ideas don’t end when the room clears. What I teach on Thursdays
             will find its way into this book: lessons on money, AI and building
             something of your own.
           </p>

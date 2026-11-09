@@ -53,7 +53,7 @@ export function BookObject({
       aria-label={
         href === "/playbook/read"
           ? "Open your Playbook reader"
-          : "Open The Solopreneur’s Playbook"
+          : "Open The Money & AI Playbook"
       }
     >
       <span className="book-pages" aria-hidden="true" />
@@ -64,7 +64,7 @@ export function BookObject({
         <span className="book-title">
           The
           <br />
-          Solopreneur’s
+          Money &amp; AI
           <br />
           <em>Playbook.</em>
         </span>
