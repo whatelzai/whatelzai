@@ -55,7 +55,11 @@ test("event registration closes at the UTC+8 seminar start", () => {
 
 // Confirmation only follows settled registrations from the event payment link.
 import type Stripe from "stripe";
-import { mapConfirmation, MAP_PAYMENT_LINK } from "../lib/event-confirmation";
+import {
+  mapConfirmation,
+  MAP_PAYMENT_LINK,
+  LEGACY_MAP_PAYMENT_LINK,
+} from "../lib/event-confirmation";
 test("event confirmation includes venue and accepts paid or complimentary orders", () => {
   const base = {
     id: "cs_test_map",
@@ -75,6 +79,23 @@ test("event confirmation includes venue and accepts paid or complimentary orders
   assert.equal(mapConfirmation({ ...base, payment_status: "unpaid" }), null);
   assert.equal(mapConfirmation({ ...base, status: "open" }), null);
   assert.equal(mapConfirmation({ ...base, payment_link: "plink_other" }), null);
+  assert.ok(
+    mapConfirmation({ ...base, payment_link: LEGACY_MAP_PAYMENT_LINK }),
+  );
+  assert.ok(
+    mapConfirmation({
+      ...base,
+      payment_link: { id: MAP_PAYMENT_LINK } as Stripe.PaymentLink,
+    }),
+  );
+  assert.equal(
+    mapConfirmation({
+      ...base,
+      payment_link: LEGACY_MAP_PAYMENT_LINK,
+      payment_status: "unpaid",
+    }),
+    null,
+  );
 });
 
 import { parseTicket } from "../lib/event-checkin-policy";

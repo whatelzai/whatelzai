@@ -7,6 +7,7 @@ import { listFeaturedTestimonials, testimonialSlug } from "@/lib/testimonials";
 import { BookObject } from "@/components/editorial/FieldElements";
 import { ReaderVoices } from "@/components/editorial/ReaderVoices";
 import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
+import { EventPrice } from "@/components/events/EventPrice";
 import "./offers.css";
 
 export const metadata: Metadata = {
@@ -52,8 +53,8 @@ export default async function Home() {
         <div className="field-wrap map-feature-grid">
           <Image
             className="map-poster-photo"
-            src="/images/events/money-mindset-ai-skillset-editorial.png"
-            alt="Money Mindset × AI Skillset with Edmund Lin Zhenming: AI Skillset × Money Mindset, Thursdays 7:30–9:30 PM, 20 people, S$97."
+            src="/images/events/money-mindset-ai-skillset-nov12-offer.png"
+            alt="Money Mindset × AI Skillset with Edmund Lin Zhenming: 12 November, 7:30–9:30 PM, 20 people, originally S$97, now S$7."
             width={1024}
             height={1536}
             sizes="(max-width:700px) 100vw, 50vw"
@@ -62,8 +63,7 @@ export default async function Home() {
             <p className="offer-label">The Thursday seminar</p>
             <h2 id="map-heading">
               Money Mindset
-              <br />
-              × AI Skillset.
+              <br />× AI Skillset.
             </h2>
             <p>
               Two hours exploring AI Skillset × Money Mindset, together. A small
@@ -74,12 +74,13 @@ export default async function Home() {
                 ? "Thursday, 12 November"
                 : "Next date to be announced"}
               <br />
-              7:30–9:30 PM · 20 people · S$97
+              7:30–9:30 PM · 20 people
               <br />
               {mapEvent.venue}
               <br />
               {mapEvent.address}
             </p>
+            <EventPrice />
             <Link className="field-button" href={mapEvent.path}>
               See the seminar <ArrowUpRight size={20} />
             </Link>
