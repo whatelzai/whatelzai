@@ -26,6 +26,9 @@ export default async function AdminEventsPage() {
 
   return (
     <div className="space-y-6">
+      <Link href={adminUrl("/admin/event-checkin")} className="underline">
+        Seminar registrations &amp; check-in →
+      </Link>
       <nav className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
         <Link
           href={adminUrl("/admin/testimonials")}
