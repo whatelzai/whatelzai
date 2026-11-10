@@ -723,3 +723,7 @@ owner requirement (10 November 2026).
 For this event-signup iteration, do not show account creation, sign-in, event
 history or membership prompts in registration, confirmation or QR ticket email.
 The attendee-facing flow is email-based signup and QR ticket delivery only.
+
+Do not advertise free admission, S$0 or first-time-joiner discounts in public
+event marketing copy. Keep promotion codes private; the adjusted total and
+payment requirement may be shown after an attendee applies a valid code.
