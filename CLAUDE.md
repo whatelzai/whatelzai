@@ -711,3 +711,15 @@ provider app registration and consent. See `docs/fcos-social-connections.md`.
 ## Public offers (SPR-193)
 
 The public navigation is My why / Testimonials / M.A.P. events / The book. Home focuses on Millionair’s AI Playbook Thursday seminars and The Solopreneur’s Playbook, retaining the owner's why and verified testimonials. The book now has a sales page at `/playbook`; full draft bodies are server-gated at `/playbook/read`, superseding the earlier ungated preview. Event and book Payment Links, live operational setup, verification limits and release checks: `docs/design/map-commerce.md`. Never publish owner-issued promotion codes in site source. Stripe fulfilment gates on completed paid/no-payment-required sessions and canonicalizes the book offer; keep the signing secret server-only. First event date remains tentative and venue unconfirmed. No recurring event instances are invented.
+
+## Public brand boundary
+
+Do not mention FC, Founder’s Club or its membership relationship in public
+Whatelz website copy, event registration, ticket communications or the customer
+event-history flow. Use Whatelz-only wording. Internal membership mapping and
+access controls remain private implementation details. This is an explicit
+owner requirement (10 November 2026).
+
+For this event-signup iteration, do not show account creation, sign-in, event
+history or membership prompts in registration, confirmation or QR ticket email.
+The attendee-facing flow is email-based signup and QR ticket delivery only.

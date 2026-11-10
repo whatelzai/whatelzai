@@ -45,7 +45,7 @@ export async function sendStoredEventTicket(
       from,
       to: message.to,
       subject: message.subject,
-      text: `${message.text}\n\nYour ticket: ${ticketUrl(ticket.id)}\nShow this QR ticket at the door. Keep it private; each ticket admits one person.\n\nYour events: https://whatelz.ai/account/events\nSign in with this email to connect your event history. Your membership is managed by Edmund.`,
+      text: `${message.text}\n\nYour ticket: ${ticketUrl(ticket.id)}\nShow this QR ticket at the door. Keep it private; each ticket admits one person.`,
       attachments: [
         {
           filename: "event-ticket.png",

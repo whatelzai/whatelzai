@@ -44,14 +44,6 @@ export default async function RegisterPage({
       ) : (
         <RegistrationForm checkExisting={hasSignup || Boolean(payment)} />
       )}
-      <details className="registration-account-note">
-        <summary>About your Whatelz account</summary>
-        <p>
-          New here? You’ll start as a Guest. Registration does not change your
-          FC membership or grant app access. Sign in with a verified email to
-          connect your event history.
-        </p>
-      </details>
     </main>
   );
 }
