@@ -6,18 +6,18 @@ import {
   platformCheckoutParams,
   paymentFreezeUntil,
 } from "../lib/event-registration-policy";
-test("the payment request contains no attendee contact data or promo code", () => {
+test("payment prefill shares only email, without attendee name, phone or promo code", () => {
   const params = platformCheckoutParams(
     {
       id: "8b531f30-6599-4b9b-9247-2b68f68c2ff9",
       created_at: "2026-11-10T08:00:00Z",
+      email: "attendee@example.test",
     },
     "https://whatelz.ai",
   );
-  const serialized = JSON.stringify(params);
+  assert.equal(params.customer_email, "attendee@example.test");
   assert.equal(params.expires_at, Date.parse("2026-11-10T09:00:00Z") / 1000);
   for (const key of [
-    "customer_email",
     "phone_number_collection",
     "name_collection",
     "customer",
@@ -30,7 +30,7 @@ test("the payment request contains no attendee contact data or promo code", () =
   );
   assert.equal(params.line_items?.[0].quantity, 1);
   assert.equal(params.line_items?.[0].price, "price_1UZvRuPA71qp9sGS6HIJUA8N");
-  assert.ok(!serialized.includes("attendee"));
+  assert.deepEqual(params.metadata, { whatelz_event_id: "ELZ-EVT-0004" });
 });
 test("a reference alone never confirms a payment", () => {
   const paid = {
@@ -90,6 +90,7 @@ test("the payment waiting period lasts three minutes without expiring its checko
     {
       id: "8b531f30-6599-4b9b-9247-2b68f68c2ff9",
       created_at: "2026-11-10T08:00:00Z",
+      email: "attendee@example.test",
     },
     "https://whatelz.ai",
   );
