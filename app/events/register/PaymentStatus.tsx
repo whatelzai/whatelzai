@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Check, Clock3, X } from "lucide-react";
 type State = {
   state: string;
@@ -164,9 +163,6 @@ export function PaymentStatusView({
       <div className="payment-status-actions">
         {confirmed ? (
           <>
-            <Link className="field-button" href="/account/events">
-              View my registrations →
-            </Link>
             <button
               className="payment-status-secondary"
               type="button"
