@@ -753,3 +753,152 @@
 .registration-total {
   font-size: 24px;
 }
+
+/* Status uses shape and words as well as colour, including in greyscale. */
+.payment-status {
+  margin-block: 32px;
+  padding: clamp(24px, 4vw, 36px);
+  background: var(--panel, #f2f0e4);
+}
+.payment-status-heading {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+.payment-status-icon {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #facc15;
+  color: #29291f;
+}
+.payment-status--success .payment-status-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+.payment-status--ended .payment-status-icon {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.payment-status h2 {
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1.2;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+.payment-status p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+}
+.payment-status-countdown {
+  margin-top: 24px;
+}
+.payment-status-time {
+  display: block;
+  font-size: 48px;
+  line-height: 1.1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.payment-status-countdown p {
+  margin-top: 8px;
+}
+.payment-status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+.payment-status-actions:not(:empty) {
+  margin-top: 24px;
+}
+.payment-status .field-button {
+  min-height: 48px;
+  padding: 14px 20px;
+  box-shadow: none;
+  font: inherit;
+  cursor: pointer;
+}
+.payment-status .field-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.payment-status-secondary {
+  background: none;
+  color: inherit;
+  border: 0;
+  padding: 12px 0;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.payment-status-actions :focus-visible,
+.registration-account-note summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+.payment-status .payment-status-error {
+  margin-top: 20px;
+}
+.registration-account-note {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 24px;
+}
+.registration-account-note summary {
+  cursor: pointer;
+}
+.registration-account-note p {
+  margin-top: 12px;
+}
+@media (max-width: 480px) {
+  .payment-status-heading {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .payment-status-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .payment-status-actions .field-button {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+.event-agenda {
+  margin-top: 32px;
+}
+.event-agenda h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+.event-agenda dl {
+  margin-block: 24px;
+}
+.event-agenda dl > div {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 16px;
+  padding-block: 10px;
+}
+.event-agenda dt {
+  font-variant-numeric: tabular-nums;
+}
+.event-agenda dd {
+  margin: 0;
+}
+.event-agenda .event-agenda-reminder {
+  font-size: 17px;
+}
+@media (max-width: 480px) {
+  .event-agenda dl > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

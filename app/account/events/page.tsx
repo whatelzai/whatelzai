@@ -44,13 +44,11 @@ export default async function AccountEvents() {
       <h1>Your events</h1>
       <p>Signed in as {user.email}</p>
       <p>
-        FC membership: <strong>{persona}</strong>
+        Membership: <strong>{persona}</strong>
       </p>
       <p>
-        Guest is the starting point. Spark is FC membership without an ABO
-        account; Catalyst is for people with an ABO account. Edmund manages
-        these categories. Event attendance does not automatically change your
-        membership.
+        Edmund manages membership categories. Event attendance does not
+        automatically change your membership.
       </p>
       {tickets.length === 0 ? (
         <p>No registrations found for this verified email.</p>

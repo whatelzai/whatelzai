@@ -96,9 +96,8 @@ export default function MapPage() {
                 Register <ArrowUpRight size={20} />
               </a>
               <p className="booking-note">
-                Name, phone number and email are required to register. Have a
-                first-time joiner code from Edmund? Enter it for free admission
-                (S$0).
+                Name, phone number and email are required to register. Your QR
+                ticket will be sent by email.
               </p>
             </>
           )}

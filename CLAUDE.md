@@ -715,3 +715,19 @@ The public navigation is My why / Testimonials / M.A.P. events / The book. Home 
 ## Priority event operations (SPR-194)
 
 Overview and AI Business stream current-event status prominently; /event-checkin leads with searchable responsive attendees, stored payment evidence, email dispatch and check-in. Staff/promo/cutover controls disclose below. Owner/no-store API, visible-only30s polling, failed-read status and actual read time. Join attempt/ticket/person IDs; legacy Stripe amounts stay Not recorded and out of money totals. Pending reservations are not paid tickets; refunded/cancelled tickets do not inflate active totals. No new schema/Stripe calls/membership changes. See docs/admin-event-operations.md; mirrored in EMDEE INSTRUCTIONS. Content-bank work remains separate.
+
+## Public brand boundary
+
+Do not mention FC, Founder’s Club or its membership relationship in public
+Whatelz website copy, event registration, ticket communications or the customer
+event-history flow. Use Whatelz-only wording. Internal membership mapping and
+access controls remain private implementation details. This is an explicit
+owner requirement (10 November 2026).
+
+For this event-signup iteration, do not show account creation, sign-in, event
+history or membership prompts in registration, confirmation or QR ticket email.
+The attendee-facing flow is email-based signup and QR ticket delivery only.
+
+Do not advertise free admission, S$0 or first-time-joiner discounts in public
+event marketing copy. Keep promotion codes private; the adjusted total and
+payment requirement may be shown after an attendee applies a valid code.

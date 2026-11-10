@@ -8,6 +8,25 @@ export default function EventWriteup({ eventId }: { eventId: string }) {
       {writeup.paragraphs.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
+      {writeup.agenda && (
+        <div className="event-agenda">
+          <h3>Evening schedule</h3>
+          <p>Thursday, 12 November · Singapore time</p>
+          <dl>
+            {writeup.agenda.map(({ time, activity }) => (
+              <div key={time}>
+                <dt>{time}</dt>
+                <dd>{activity}</dd>
+              </div>
+            ))}
+          </dl>
+          {writeup.reminder && (
+            <p className="event-agenda-reminder">
+              <strong>{writeup.reminder}</strong>
+            </p>
+          )}
+        </div>
+      )}
     </section>
   );
 }
