@@ -3,7 +3,10 @@ import type Stripe from "stripe";
 import QRCode from "qrcode";
 import { ensureEventTicket, ticketUrl } from "./event-tickets";
 import { supabaseAdmin } from "./supabase-server";
-import { mapConfirmation } from "./event-confirmation";
+import {
+  eventConfirmationMessage,
+  mapConfirmation,
+} from "./event-confirmation";
 
 export async function sendEventConfirmation(session: Stripe.Checkout.Session) {
   const message = mapConfirmation(session);
@@ -11,15 +14,22 @@ export async function sendEventConfirmation(session: Stripe.Checkout.Session) {
   const ticket = await ensureEventTicket(session);
   if (!ticket || ticket.status !== "confirmed") return true;
   if (ticket.email_sent_at) return true;
-  // Session identity deduplicates completed + async-success and later retries.
-  const { data, error } = await supabaseAdmin
-    .from("webhook_events_log")
-    .select("processed_ok")
-    .eq("stripe_event_id", message.key)
-    .maybeSingle();
-  if (error) throw new Error("Confirmation delivery lookup failed");
-  // An earlier email without a QR must be resent with its new ticket.
-  if (data?.processed_ok && ticket.email_sent_at) return true;
+  return sendStoredEventTicket(ticket.id, session.id);
+}
+
+export async function sendStoredEventTicket(
+  ticketId: string,
+  deliveryId: string,
+) {
+  const { data: ticket, error } = await supabaseAdmin
+    .from("event_registrations")
+    .select("id,email,status,email_sent_at")
+    .eq("id", ticketId)
+    .single();
+  if (error || !ticket) throw new Error("Ticket unavailable for delivery");
+  if (ticket.status !== "confirmed" || ticket.email_sent_at) return true;
+  // Send no attendee name or phone to the email provider.
+  const message = eventConfirmationMessage(ticket.email);
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EVENT_CONFIRMATION_FROM;
   if (!key || !from)
@@ -29,13 +39,13 @@ export async function sendEventConfirmation(session: Stripe.Checkout.Session) {
     headers: {
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
-      "Idempotency-Key": `qr-ticket/${session.id}`,
+      "Idempotency-Key": `qr-ticket/${deliveryId}`,
     },
     body: JSON.stringify({
       from,
       to: message.to,
       subject: message.subject,
-      text: `${message.text}\n\nYour ticket: ${ticketUrl(ticket.id)}\nShow this QR ticket at the door. Keep it private; each ticket admits one person.`,
+      text: `${message.text}\n\nYour ticket: ${ticketUrl(ticket.id)}\nShow this QR ticket at the door. Keep it private; each ticket admits one person.\n\nYour events: https://whatelz.ai/account/events\nSign in with this email to connect your event history. Your membership is managed by Edmund.`,
       attachments: [
         {
           filename: "event-ticket.png",
@@ -61,7 +71,7 @@ export async function sendEventConfirmation(session: Stripe.Checkout.Session) {
     .from("webhook_events_log")
     .upsert(
       {
-        stripe_event_id: message.key,
+        stripe_event_id: `map-confirmation/${deliveryId}`,
         event_type: "map.confirmation.sent",
         processed_ok: true,
         error_msg: null,

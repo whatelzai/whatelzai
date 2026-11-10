@@ -1,6 +1,8 @@
+import { platformRegistrationEnabled } from "@/lib/platform-event-registration";
 import EventWriteup from "@/components/events/EventWriteup";
 import { EventPrice } from "@/components/events/EventPrice";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import PastEvents from "@/components/events/PastEvents";
 import { ArrowUpRight } from "lucide-react";
@@ -29,6 +31,15 @@ export default function MapPage() {
             Money Mindset
             <br />× AI Skillset.
           </h1>
+          <Image
+            className="map-detail-poster"
+            src="/images/events/money-mindset-ai-skillset-nov12-offer.png"
+            alt="Money Mindset × AI Skillset with Edmund, 12 November 2026 at The Vibe. Original S$97 crossed out, now S$7."
+            width={1024}
+            height={1536}
+            sizes="(max-width: 700px) 100vw, 430px"
+            priority
+          />
           <p className="map-deck">
             Two hours. A small room.
             <br />
@@ -74,11 +85,18 @@ export default function MapPage() {
           <EventPrice />
           {open && (
             <>
-              <a href={mapEvent.checkoutUrl} className="field-button">
-                Register with Stripe <ArrowUpRight size={20} />
+              <a
+                href={
+                  platformRegistrationEnabled()
+                    ? "/events/register"
+                    : mapEvent.checkoutUrl
+                }
+                className="field-button"
+              >
+                Register <ArrowUpRight size={20} />
               </a>
               <p className="booking-note">
-                Name, phone number and email are required at checkout. Have a
+                Name, phone number and email are required to register. Have a
                 first-time joiner code from Edmund? Enter it for free admission
                 (S$0).
               </p>

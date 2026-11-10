@@ -3,9 +3,9 @@ export const personas = ["Oracle", "Catalyst", "Spark", "Guest"] as const;
 export type Persona = (typeof personas)[number];
 export const personaDescriptions: Record<Persona, string> = {
   Oracle: "Dick Lim alone · Founder of Founder’s Club",
-  Catalyst: "ABO account + Founder’s Club membership",
-  Spark: "Founder’s Club membership · No ABO account",
-  Guest: "No membership · Attends only by invitation from a Catalyst",
+  Catalyst: "Has an ABO account",
+  Spark: "Paid Founder’s Club membership · No ABO account yet",
+  Guest: "Not a Founder’s Club member yet · Getting to know the community",
 };
 export function isPersona(value: unknown): value is Persona {
   return personas.some((p) => p === value);

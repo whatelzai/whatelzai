@@ -674,3 +674,82 @@
   line-height: 1.75;
   margin: 0 0 22px;
 }
+
+.event-registration-page {
+  max-width: 720px;
+  padding-block: 64px;
+}
+.map-detail-poster {
+  display: block;
+  width: 100%;
+  max-width: 430px;
+  height: auto;
+  margin: 24px 0 32px;
+}
+.event-registration-page h1 {
+  font-size: clamp(36px, 6vw, 60px);
+  margin-block: 32px 24px;
+}
+.event-registration-form {
+  display: grid;
+  gap: 24px;
+  margin-block: 36px;
+}
+.event-registration-form label {
+  display: grid;
+  gap: 8px;
+  font-size: 18px;
+}
+.event-registration-form label span {
+  color: var(--muted);
+}
+.event-registration-form input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--muted);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  border-radius: 0;
+}
+.event-registration-form input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.event-registration-form .registration-privacy {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.registration-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.event-promo-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 8px;
+}
+.event-promo-row input {
+  min-width: 0;
+  flex: 1;
+}
+.event-promo-row button {
+  background: var(--accent);
+  color: var(--ink);
+  padding: 12px 20px;
+  font: inherit;
+  border: 0;
+  cursor: pointer;
+}
+.event-promo-row button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.registration-total {
+  font-size: 24px;
+}

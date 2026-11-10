@@ -19,9 +19,15 @@ export function mapConfirmation(session: Stripe.Checkout.Session) {
   if (!email) throw new Error("Event registration has no email");
   const name = session.customer_details?.name?.trim() || "there";
   return {
+    ...eventConfirmationMessage(email, name),
+    key: `map-confirmation/${session.id}`,
+  };
+}
+
+export function eventConfirmationMessage(email: string, name = "there") {
+  return {
     to: email,
     subject: "You’re confirmed — Money Mindset × AI Skillset",
     text: `Hi ${name},\n\nYour place at Money Mindset × AI Skillset is confirmed!\n\nEvent ID: ${mapEvent.id}\n${mapEvent.dateLabel}\n7:30–9:30 PM · Singapore time\n${mapEvent.venue}\n${mapEvent.address}\n\nWe’ll explore AI Skillset × Money Mindset through practical ideas and conversation.\n\nLooking forward to meeting you!\n\nEdmund Lin Zhenming\nhttps://whatelz.ai${mapEvent.path}`,
-    key: `map-confirmation/${session.id}`,
   };
 }
