@@ -47,3 +47,13 @@ Browser verified Apply with the real private code (Free/S$0 + Confirm registrati
 The event detail page now includes the existing November12 S$7 poster, preserving The Vibe and full address. CTA text is Register. Owner authorized PR221 merge/deployment; first-party registration remains off until the credential/cutover checklist is complete.
 
 Organizer subsequently requested payment prefill. Paid Checkout Sessions now receive customer_email from the first-party registration to avoid re-entry. Name and phone are still omitted; free registrations still bypass Stripe. This explicitly supersedes the earlier no-email-forwarding decision. UI data-use disclosure and privacy tests updated.
+
+### Payment status display
+
+The waiting panel uses a yellow clock, a green check for confirmed registrations,
+and a red cross for cancelled, expired or missing registrations. Text labels carry
+the same meaning without colour. The server-provided three-minute lock deadline
+counts down every second; reaching zero only enables another status check and
+never marks a payment failed or creates a replacement checkout. Existing payment
+polling, session reuse and server-side confirmation remain unchanged. Account
+membership context sits in an expandable note rather than the payment message.

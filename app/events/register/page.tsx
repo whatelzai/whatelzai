@@ -34,18 +34,6 @@ export default async function RegisterPage({
         {mapEvent.venue} · {mapEvent.address}
       </p>
       <EventPrice />
-      {payment === "returned" && (
-        <p role="status">
-          We’re checking your payment. Your confirmation and QR ticket will
-          arrive by email once it’s confirmed. You don’t need to register again.
-        </p>
-      )}
-      {payment === "cancelled" && (
-        <p role="status">
-          Your payment was not completed. Your place remains reserved until the
-          checkout expires. Please use your original checkout or contact Edmund.
-        </p>
-      )}
       {!isMapRegistrationOpen() ? (
         <p>Registration is closed.</p>
       ) : !platformRegistrationEnabled() ? (
@@ -56,11 +44,14 @@ export default async function RegisterPage({
       ) : (
         <RegistrationForm checkExisting={hasSignup || Boolean(payment)} />
       )}
-      <p>
-        New here? You’ll start as a Guest. Event registration does not change
-        your FC membership or grant app access. After signing in with a verified
-        email, you can connect your event history to your account.
-      </p>
+      <details className="registration-account-note">
+        <summary>About your Whatelz account</summary>
+        <p>
+          New here? You’ll start as a Guest. Registration does not change your
+          FC membership or grant app access. Sign in with a verified email to
+          connect your event history.
+        </p>
+      </details>
     </main>
   );
 }

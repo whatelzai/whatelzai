@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Check, Clock3, X } from "lucide-react";
 type State = {
   state: string;
   lockUntil?: number;
@@ -71,84 +72,140 @@ export default function PaymentStatus({
       clearInterval(timer);
     };
   }, [requestToken]);
+  useEffect(() => {
+    // Tick independently of the network poll so the countdown moves every second.
+    const ticker = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(ticker);
+  }, []);
   const seconds = Math.max(
     0,
     Math.ceil(((status.lockUntil ?? 0) - now) / 1000),
   );
-  if (status.state === "cancelled")
-    return (
-      <section aria-live="polite">
-        <h2>Your registration was cancelled.</h2>
-        <p>Contact Edmund if you have questions about your ticket.</p>
-      </section>
-    );
-  if (status.state === "confirmed")
-    return (
-      <section aria-live="polite">
-        <h2>You’re registered.</h2>
-        <p>Your place is confirmed. Look out for your QR ticket by email.</p>
-        <p>
-          <Link href="/account/events">
-            Connect your event history to your account →
-          </Link>
-        </p>
-        <button type="button" onClick={onStartOver}>
-          Register someone else
-        </button>
-      </section>
-    );
-  if (status.state === "expired" || status.state === "unknown")
-    return (
-      <section aria-live="polite">
-        <h2>
-          {status.state === "expired"
-            ? "Checkout expired."
-            : "No active registration found."}
-        </h2>
-        <p>
-          {status.state === "expired"
-            ? "That checkout is closed. You can start a new registration."
-            : "If you already paid, check your email or contact Edmund before trying again."}
-        </p>
-        <button type="button" onClick={onStartOver}>
-          Start a new registration
-        </button>
-      </section>
-    );
   return (
-    <section aria-live="polite">
-      <h2>Waiting for payment confirmation.</h2>
-      <p>
-        We’re waiting for Stripe’s result. Please don’t pay again. Your existing
-        registration will be used for any retry.
-      </p>
-      {seconds > 0 ? (
-        <p>
-          Payment check available in {Math.floor(seconds / 60)}:
-          {String(seconds % 60).padStart(2, "0")}. We’ll confirm automatically
-          if Stripe responds sooner.
-        </p>
-      ) : (
-        <button
-          type="button"
-          disabled={busy || status.state === "checking"}
-          onClick={() => void check(true)}
-        >
-          {busy ? "Checking…" : "Check payment status"}
-        </button>
+    <PaymentStatusView
+      status={status}
+      seconds={seconds}
+      busy={busy}
+      onCheck={() => void check(true)}
+      onStartOver={onStartOver}
+    />
+  );
+}
+
+export function PaymentStatusView({
+  status,
+  seconds,
+  busy,
+  onCheck,
+  onStartOver,
+}: {
+  status: State;
+  seconds: number;
+  busy: boolean;
+  onCheck: () => void;
+  onStartOver: () => void;
+}) {
+  const confirmed = status.state === "confirmed";
+  const ended = ["cancelled", "expired", "unknown"].includes(status.state);
+  const checking = status.state === "checking";
+  const tone = confirmed ? "success" : ended ? "ended" : "waiting";
+  const Icon = confirmed ? Check : ended ? X : Clock3;
+  const title = confirmed
+    ? "You’re registered!"
+    : status.state === "cancelled"
+      ? "Registration cancelled"
+      : status.state === "expired"
+        ? "Checkout expired"
+        : status.state === "unknown"
+          ? "No registration found"
+          : checking
+            ? "Checking your registration"
+            : "Confirming your payment";
+  const message = confirmed
+    ? "Your QR ticket is on its way to your inbox."
+    : status.state === "cancelled"
+      ? "Contact Edmund if you need help with your ticket."
+      : status.state === "expired"
+        ? "This checkout is closed. You can register again."
+        : status.state === "unknown"
+          ? "Already paid? Check your email or contact Edmund before retrying."
+          : "We’ll update this page automatically. Please don’t pay again.";
+  return (
+    <section
+      className={`payment-status payment-status--${tone}`}
+      aria-label="Registration status"
+    >
+      <div className="payment-status-heading" role="status">
+        <span className="payment-status-icon" aria-hidden="true">
+          <Icon size={28} strokeWidth={2.5} />
+        </span>
+        <div>
+          <h2>{title}</h2>
+          <p>{message}</p>
+        </div>
+      </div>
+      {!confirmed && !ended && !checking && (
+        <div className="payment-status-countdown">
+          <span
+            className="payment-status-time"
+            role="timer"
+            aria-label="Time until payment check is available"
+            aria-live="off"
+          >
+            {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}
+          </span>
+          <p>
+            {seconds > 0
+              ? "until you can check again"
+              : "Still waiting for confirmation"}
+          </p>
+        </div>
       )}
-      {status.resumeUrl && (
-        <p>
-          <a className="field-button" href={status.resumeUrl}>
-            Resume the same payment
+      <div className="payment-status-actions">
+        {confirmed ? (
+          <>
+            <Link className="field-button" href="/account/events">
+              View my registrations →
+            </Link>
+            <button
+              className="payment-status-secondary"
+              type="button"
+              onClick={onStartOver}
+            >
+              Register someone else
+            </button>
+          </>
+        ) : ended ? (
+          status.state !== "cancelled" && (
+            <button
+              className="field-button"
+              type="button"
+              onClick={onStartOver}
+            >
+              Start a new registration
+            </button>
+          )
+        ) : !checking && seconds === 0 ? (
+          <button
+            className="field-button"
+            type="button"
+            disabled={busy}
+            onClick={onCheck}
+          >
+            {busy ? "Checking…" : "Check payment status"}
+          </button>
+        ) : null}
+        {!confirmed && !ended && status.resumeUrl && (
+          <a className="payment-status-secondary" href={status.resumeUrl}>
+            Continue payment →
           </a>
+        )}
+      </div>
+      {status.error && (
+        <p className="payment-status-error" role="alert">
+          {status.error}
         </p>
       )}
-      {status.error && <p role="alert">{status.error}</p>}
-      <p>
-        If confirmation is taking longer, contact Edmund. A new payment won’t be
-        created while the existing checkout is unresolved.
-      </p>
     </section>
   );
 }

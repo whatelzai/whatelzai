@@ -1,8 +1,13 @@
 // Descriptions use organizer-supplied event facts and the series' two pillars.
-// Specific agendas, attendee quotes and learning outcomes are not supplied.
+// The 12 November schedule is organizer-confirmed; earlier sessions retain broad descriptions.
 export const eventWriteups: Record<
   string,
-  { heading: string; paragraphs: string[] }
+  {
+    heading: string;
+    paragraphs: string[];
+    agenda?: { time: string; activity: string }[];
+    reminder?: string;
+  }
 > = {
   "ELZ-EVT-0001": {
     heading: "Starting with mindset and skillset.",
@@ -27,6 +32,12 @@ export const eventWriteups: Record<
   },
   "ELZ-EVT-0004": {
     heading: "Think deliberately. Put AI to work.",
+    agenda: [
+      { time: "7:00–7:30 PM", activity: "Registration" },
+      { time: "7:30–9:30 PM", activity: "Activity" },
+      { time: "9:30–10:00 PM", activity: "Post-event networking" },
+    ],
+    reminder: "Remember to have your dinner before coming over!",
     paragraphs: [
       "Money influences what we choose to build. AI changes how we can build it. This two-hour seminar brings both into one conversation: thinking more deliberately about money and getting more practical with AI.",
       "We’ll explore how money mindset shapes everyday choices, where AI can support work and business, and how to turn an idea into a useful next step. Come with a question from your own work or something you want to build.",
