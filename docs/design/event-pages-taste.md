@@ -68,3 +68,12 @@ The skill’s separate CDP inspector was not run: this session requires browser
 interaction through CUA. Equivalent responsive screenshots and targeted read-only
 DOM measurements were made through that browser. The source-lint result must not
 be represented as an automated rendered-page inspector pass.
+
+### Dark-mode follow-up
+
+The shared contrast repair is included in this branch. The new event panels,
+registration surface, input borders/focus background and placeholder text now use
+semantic theme tokens, while the yellow Register action keeps dark brand ink.
+Both redesigned routes pass the targeted solid-color contrast check in dark mode;
+registration is checked in light mode too. Selected testimonial filters also
+retain readable dark text on yellow. Shared repair: PR #228.

@@ -1,8 +1,8 @@
 /* A shared event invitation and signup, scoped away from other public offers. */
 .event-detail-v2,
 .event-signup-v2 {
-  --event-panel: #f1efe7;
-  --event-input-border: #d6d3c7;
+  --event-panel: var(--surface);
+  --event-input-border: var(--line);
   --event-round: 24px;
   width: 100%;
   max-width: 1200px;
@@ -133,7 +133,7 @@
   min-height: 56px;
   border-radius: 999px;
   background: var(--accent);
-  color: var(--ink);
+  color: var(--brand-ink);
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
@@ -332,7 +332,7 @@
 }
 .event-signup-panel {
   min-width: 0;
-  background: #fffef9;
+  background: var(--surface-raised);
   padding: 40px;
   border-radius: 28px;
 }
@@ -371,17 +371,17 @@
     background 0.2s ease;
 }
 .event-signup-v2 .event-registration-form input::placeholder {
-  color: #79796e;
+  color: var(--muted);
   opacity: 1;
 }
 .event-signup-v2 .event-registration-form input:hover {
-  border-color: #8c8a7d;
+  border-color: var(--muted);
 }
 .event-signup-v2 .event-registration-form input:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
   border-color: var(--ink);
-  background: #fff;
+  background: var(--surface-raised);
 }
 .event-signup-v2 .event-registration-form .event-input-hint {
   font-size: 13px;
