@@ -75,7 +75,7 @@ export default function MapPage() {
           {open && (
             <>
               <a href={mapEvent.checkoutUrl} className="field-button">
-                Register with Stripe <ArrowUpRight size={20} />
+                Register <ArrowUpRight size={20} />
               </a>
               <p className="booking-note">
                 Name, phone number and email are required at checkout. Have a
