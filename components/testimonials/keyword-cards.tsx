@@ -47,7 +47,7 @@ export function KeywordCards({
                 aria-pressed={isActive}
                 aria-label={`Filter by ${keywordLabel(k.word)} — ${meta.description}`}
                 title={meta.description}
-                className={`group relative flex h-full min-h-[220px] w-full flex-col items-center justify-between gap-6 overflow-hidden border p-6 text-center transition-all sm:min-h-[260px] sm:p-8 ${
+                className={`public-keyword-filter group relative flex h-full min-h-[220px] w-full flex-col items-center justify-between gap-6 overflow-hidden border p-6 text-center transition-all sm:min-h-[260px] sm:p-8 ${
                   isActive
                     ? "border-zinc-900 shadow-lg"
                     : "border-zinc-200 bg-white hover:border-zinc-900"
