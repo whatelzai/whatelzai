@@ -104,30 +104,47 @@ export default function RegistrationForm({
     <form className="event-registration-form" onSubmit={submit}>
       <label>
         Name
-        <input name="name" autoComplete="name" required maxLength={160} />
-      </label>
-      <label>
-        Phone number
         <input
+          name="name"
+          autoComplete="name"
+          placeholder="Your full name"
+          required
+          maxLength={160}
+        />
+      </label>
+      <div className="event-form-field">
+        <label htmlFor="event-phone">Phone number</label>
+        <input
+          id="event-phone"
           name="phone"
           type="tel"
           autoComplete="tel"
           required
           maxLength={24}
-          placeholder="+65 8123 4567"
+          placeholder="e.g. +65 8123 4567"
+          aria-describedby="event-phone-hint"
         />
-      </label>
-      <label>
-        Email address
+        <span id="event-phone-hint" className="event-input-hint">
+          Include your country code, e.g. +65 or +60.
+        </span>
+      </div>
+      <div className="event-form-field">
+        <label htmlFor="event-email">Email address</label>
         <input
+          id="event-email"
           name="email"
           type="email"
           autoComplete="email"
           required
           maxLength={254}
+          placeholder="you@example.com"
+          aria-describedby="event-email-hint"
         />
-      </label>
-      <div>
+        <span id="event-email-hint" className="event-input-hint">
+          We’ll send your QR ticket here.
+        </span>
+      </div>
+      <div className="event-promo-field">
         <label htmlFor="event-promo">Promo code (optional)</label>
         <div className="event-promo-row">
           <input
@@ -158,7 +175,7 @@ export default function RegistrationForm({
         </label>
       </div>
       <p className="registration-total">
-        Your ticket: <strong>{applied ? "S$0" : "S$7"}</strong>
+        Ticket total <strong>{applied ? "S$0" : "S$7"}</strong>
       </p>
       <details className="registration-privacy">
         <summary>How we use your details</summary>
