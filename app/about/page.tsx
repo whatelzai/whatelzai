@@ -50,7 +50,7 @@ export default async function AboutPage() {
           </Link>
         </div>
       </section>
-      <section className="quote-interlude">
+      <section className="quote-interlude about-quote">
         <div className="field-wrap">
           <Eyebrow>Why share the journey?</Eyebrow>
           <blockquote>
