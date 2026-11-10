@@ -11,6 +11,10 @@ import {
   grantEntitlement,
   revokeEntitlementByCharge,
 } from "@/lib/entitlements";
+import {
+  fulfillPlatformSession,
+  releasePlatformSession,
+} from "@/lib/platform-event-registration";
 import { sendEventConfirmation } from "@/lib/send-event-confirmation";
 import { logWebhookEvent } from "@/lib/webhook-log";
 import {
@@ -237,7 +241,10 @@ export async function POST(req: Request) {
             await syncSubscription(sub);
           }
         } else if (session.mode === "payment") {
-          if (!(await sendEventConfirmation(session)))
+          if (
+            !(await fulfillPlatformSession(session)) &&
+            !(await sendEventConfirmation(session))
+          )
             await grantOneOffFromSession(session, stripe);
         }
         break;
@@ -246,11 +253,23 @@ export async function POST(req: Request) {
       case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
         if (session.mode === "payment")
-          if (!(await sendEventConfirmation(session)))
+          if (
+            !(await fulfillPlatformSession(session)) &&
+            !(await sendEventConfirmation(session))
+          )
             await grantOneOffFromSession(session, stripe);
         break;
       }
+      case "checkout.session.expired":
+        await releasePlatformSession(
+          event.data.object as Stripe.Checkout.Session,
+        );
+        break;
       case "checkout.session.async_payment_failed":
+        await releasePlatformSession(
+          event.data.object as Stripe.Checkout.Session,
+          true,
+        );
         // No access was granted while the payment was unpaid.
         break;
 

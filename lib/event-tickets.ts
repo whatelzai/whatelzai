@@ -21,7 +21,7 @@ export async function ensureEventTicket(session: Stripe.Checkout.Session) {
           ? session.payment_intent
           : (session.payment_intent?.id ?? null),
       attendee_name: details.name,
-      email: details.email,
+      email: details.email.trim().toLowerCase(),
       phone: details.phone,
     },
     { onConflict: "stripe_checkout_session_id", ignoreDuplicates: true },
