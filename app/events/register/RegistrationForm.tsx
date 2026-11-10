@@ -165,9 +165,10 @@ export default function RegistrationForm({
         <p>
           We store your registration in Whatelz’s database, hosted by Supabase.
           Resend receives your email address and ticket for confirmation. For
-          paid tickets, Stripe collects payment and required billing details; we
-          don’t send it your registration name or phone. Free-code registrations
-          stay on Whatelz. Registration does not subscribe you to marketing.
+          paid tickets, we share your email with Stripe to prefill payment.
+          Stripe collects required payment and billing details; we don’t send it
+          your registration name or phone. Free-code registrations stay on
+          Whatelz. Registration does not subscribe you to marketing.
         </p>
       </details>
       {error && <p role="alert">{error}</p>}

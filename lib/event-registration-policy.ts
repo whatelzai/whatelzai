@@ -41,14 +41,16 @@ export function platformSessionMatches(session: {
 }
 
 // Only opaque references and event/payment data leave Whatelz. Attendee contact
-// fields are deliberately absent, including customer_email and customer metadata.
+// name and phone are deliberately absent. Email is shared only to prefill payment,
+// explicitly requested by the organizer.
 export function platformCheckoutParams(
-  attempt: { id: string; created_at: string },
+  attempt: { id: string; created_at: string; email: string },
   origin: string,
 ): Stripe.Checkout.SessionCreateParams {
   return {
     mode: "payment",
     client_reference_id: attempt.id,
+    customer_email: attempt.email,
     metadata: { whatelz_event_id: PLATFORM_EVENT_MARKER },
     line_items: [{ price: "price_1UZvRuPA71qp9sGS6HIJUA8N", quantity: 1 }],
     expires_at: Math.floor(Date.parse(attempt.created_at) / 1000) + 3600,
