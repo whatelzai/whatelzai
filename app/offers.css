@@ -740,7 +740,7 @@
 }
 .event-promo-row button {
   background: var(--accent);
-  color: var(--ink);
+  color: var(--brand-ink);
   padding: 12px 20px;
   font: inherit;
   border: 0;
@@ -758,7 +758,8 @@
 .payment-status {
   margin-block: 32px;
   padding: clamp(24px, 4vw, 36px);
-  background: var(--panel, #f2f0e4);
+  background: var(--surface);
+  color: var(--ink);
 }
 .payment-status-heading {
   display: flex;

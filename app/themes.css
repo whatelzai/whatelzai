@@ -376,3 +376,58 @@
     font-size: 18px;
   }
 }
+
+/* Public surfaces must switch background and text together. Keep intentional
+   yellow and status indicators paired with their existing dark foreground. */
+[data-theme="dark"]
+  .public-site
+  :is(
+    .field-hero,
+    .thesis-strip,
+    .continue-exploring,
+    .note-card,
+    .note-card:nth-child(3n + 2),
+    .note-card:nth-child(3n),
+    .note-top,
+    .note-bottom,
+    .portrait-story > div
+  ) {
+  background: var(--surface);
+  color: var(--ink);
+}
+[data-theme="dark"]
+  .public-site
+  :is(
+    .hero-copy h1 em,
+    .section-heading h2 em,
+    .playbook-feature h2 em,
+    .quiz-invitation h2 em,
+    .continue-row h2 em,
+    .footer-top h2 em,
+    .note-spark,
+    .pillar-copy li span,
+    .margin-note,
+    .field-index > span
+  ) {
+  color: var(--muted);
+}
+[data-theme="dark"] .public-site .quiz-circle {
+  color: var(--brand-ink);
+}
+[data-theme="dark"] .public-site .portrait-story {
+  border-color: var(--surface-raised);
+}
+
+:root[data-theme="dark"]
+  .public-site
+  :is(.public-yellow-surface, .public-keyword-filter[aria-pressed="true"]),
+:root[data-theme="dark"]
+  .public-site
+  .public-keyword-filter[aria-pressed="true"]
+  :is(span, p),
+:root[data-theme="dark"]
+  .public-site
+  .about-quote
+  :is(.field-eyebrow, .field-wrap > span) {
+  color: var(--brand-ink);
+}
