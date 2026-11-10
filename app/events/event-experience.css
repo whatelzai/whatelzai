@@ -1,0 +1,741 @@
+/* A shared event invitation and signup, scoped away from other public offers. */
+.event-detail-v2,
+.event-signup-v2 {
+  --event-panel: #f1efe7;
+  --event-input-border: #d6d3c7;
+  --event-round: 24px;
+  width: 100%;
+  max-width: 1200px;
+  padding-inline: 32px;
+  color: var(--ink);
+}
+.event-back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  text-decoration: none;
+  margin-top: 24px;
+}
+.event-back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.event-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+  grid-template-areas: "poster intro" "poster booking";
+  column-gap: clamp(40px, 6vw, 88px);
+  row-gap: 28px;
+  align-items: start;
+  padding-block: 28px 80px;
+}
+.event-hero-intro {
+  grid-area: intro;
+  padding-top: 12px;
+}
+.event-hero-intro h1 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(42px, 4.8vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+  font-weight: 500;
+  margin: 0;
+}
+.event-hero-description {
+  font-size: 18px;
+  line-height: 1.65;
+  max-width: 43ch;
+  margin: 24px 0 0;
+}
+.event-hero-poster {
+  grid-area: poster;
+  position: sticky;
+  top: 112px;
+  margin: 0;
+}
+.event-hero-poster img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--event-round);
+}
+.event-hero-poster figcaption {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 14px;
+  color: var(--muted);
+}
+.event-hero-booking {
+  grid-area: booking;
+  min-width: 0;
+}
+.event-facts {
+  margin: 0;
+}
+.event-facts > div {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 20px;
+  padding-block: 12px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.event-facts dt {
+  color: var(--muted);
+}
+.event-facts dd {
+  margin: 0;
+}
+.event-facts dd small {
+  display: block;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 4px;
+}
+.event-facts a {
+  text-underline-offset: 4px;
+}
+.event-book-ticket {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  margin-top: 24px;
+  background: var(--event-panel);
+  border-radius: var(--event-round);
+}
+.event-book-ticket .map-price {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.04em;
+}
+.event-book-ticket .map-price strong {
+  font-size: 1.55em;
+}
+.event-book-ticket .map-price del {
+  font-size: 18px;
+  margin-right: 6px;
+}
+.event-book-ticket .map-price span {
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 23ch;
+  margin-top: 5px;
+}
+.event-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 18px 26px;
+  min-height: 56px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+.event-primary-button:hover {
+  transform: translateY(-2px);
+  background: #f3c300;
+}
+.event-ticket-note {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.event-schedule-link {
+  display: inline-block;
+  padding: 18px 0 0;
+  font-size: 14px;
+  text-underline-offset: 5px;
+}
+.event-detail-v2 .event-writeup-with-agenda {
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 80px;
+  padding-block: 64px 80px;
+}
+.event-detail-v2 .event-writeup h2,
+.event-book-story h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(30px, 3vw, 40px);
+  letter-spacing: -0.04em;
+  font-weight: 500;
+  line-height: 1.12;
+  margin: 0 0 28px;
+}
+.event-detail-v2 .event-writeup-copy p {
+  font-size: 17px;
+  line-height: 1.8;
+  margin: 0 0 20px;
+}
+.event-detail-v2 .event-agenda {
+  margin: 0;
+  background: var(--event-panel);
+  padding: 32px;
+  border-radius: var(--event-round);
+  align-self: start;
+}
+.event-detail-v2 .event-agenda h3 {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+.event-detail-v2 .event-agenda p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+.event-detail-v2 .event-agenda dl {
+  margin: 24px 0;
+}
+.event-detail-v2 .event-agenda dl > div {
+  display: block;
+  padding-block: 10px;
+}
+.event-detail-v2 .event-agenda dt {
+  font-size: 14px;
+  color: var(--muted);
+}
+.event-detail-v2 .event-agenda dd {
+  font-size: 17px;
+  margin: 4px 0 0;
+}
+.event-detail-v2 .event-agenda-reminder strong {
+  font-weight: 500;
+}
+.event-detail-v2 .past-events {
+  margin-top: 24px;
+  padding-block: 40px 64px;
+}
+.event-detail-v2 .past-events > .offer-label {
+  display: none;
+}
+.event-detail-v2 .past-events h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 40px;
+  font-weight: 500;
+  margin: 0 0 32px;
+}
+.event-detail-v2 .past-event-link {
+  border: 0;
+  box-shadow: none; /* taste-skill-ignore: removes the inherited shadow */
+}
+.event-detail-v2 .past-event-link img {
+  border-radius: 20px;
+  transition: transform 0.4s ease;
+}
+.event-detail-v2 .past-event-link:hover img {
+  transform: translateY(-4px);
+}
+.event-detail-v2 .past-event-copy {
+  padding-inline: 0;
+}
+.event-detail-v2 .past-event-copy .offer-label {
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.event-book-story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  padding: 48px;
+  margin-block: 24px 80px;
+  background: var(--event-panel);
+  border-radius: var(--event-round);
+}
+.event-book-story p {
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0;
+}
+.event-book-story p a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.event-story-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-top: 24px;
+  font-size: 14px;
+}
+.event-story-links a {
+  text-underline-offset: 5px;
+}
+.event-signup-v2 {
+  padding-bottom: 80px;
+}
+.event-signup-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(48px, 7vw, 100px);
+  align-items: start;
+  padding-top: 28px;
+}
+.event-signup-summary {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 24px;
+  position: sticky;
+  top: 120px;
+  padding-top: 24px;
+}
+.event-signup-summary > img {
+  width: 140px;
+  height: auto;
+  border-radius: 16px;
+}
+.event-signup-summary h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 29px;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  font-weight: 500;
+  margin: 0 0 24px;
+}
+.event-signup-summary-copy > p:not(.map-price) {
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0 0 20px;
+}
+.event-signup-summary-copy > p span {
+  font-size: 14px;
+}
+.event-signup-summary .map-price {
+  font-size: 28px;
+  margin: 24px 0 0;
+}
+.event-signup-summary .map-price span {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+.event-signup-ticket-note {
+  grid-column: 1 / -1;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+  margin: 36px 0 0;
+}
+.event-signup-panel {
+  min-width: 0;
+  background: #fffef9;
+  padding: 40px;
+  border-radius: 28px;
+}
+.event-signup-panel h1 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 42px;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+.event-signup-panel header > p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+.event-signup-v2 .event-registration-form {
+  margin: 32px 0 0;
+  gap: 24px;
+}
+.event-signup-v2 .event-registration-form label {
+  font-size: 15px;
+  font-weight: 500;
+  gap: 9px;
+}
+.event-signup-v2 .event-registration-form input {
+  border: 1px solid var(--event-input-border);
+  border-radius: 12px;
+  background: var(--paper);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 54px;
+  padding: 14px 16px;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+.event-signup-v2 .event-registration-form input::placeholder {
+  color: #79796e;
+  opacity: 1;
+}
+.event-signup-v2 .event-registration-form input:hover {
+  border-color: #8c8a7d;
+}
+.event-signup-v2 .event-registration-form input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-color: var(--ink);
+  background: #fff;
+}
+.event-signup-v2 .event-registration-form .event-input-hint {
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--muted);
+}
+.event-signup-v2 .event-promo-field label {
+  display: block;
+}
+.event-signup-v2 .event-promo-row {
+  gap: 10px;
+}
+.event-signup-v2 .event-promo-row button {
+  border-radius: 12px;
+  font-size: 15px;
+  padding-inline: 20px;
+  background: var(--event-panel);
+  color: var(--ink);
+}
+.event-signup-v2 .event-promo-field p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.event-signup-v2 .registration-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 18px 20px;
+  background: var(--event-panel);
+  border-radius: 12px;
+  font-size: 15px;
+}
+.event-signup-v2 .registration-total strong {
+  font-size: 24px;
+  font-weight: 600;
+}
+.event-signup-v2 .registration-privacy {
+  font-size: 13px;
+  color: var(--muted);
+}
+.event-signup-v2 .registration-privacy summary {
+  cursor: pointer;
+  padding-block: 4px;
+}
+.event-signup-v2 .registration-privacy p {
+  color: var(--ink);
+  font-size: 14px;
+}
+.event-signup-v2 .event-registration-form > .field-button {
+  border: 0;
+  border-radius: 999px;
+  box-shadow: none; /* taste-skill-ignore: removes the inherited shadow */
+  min-height: 56px;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 20px;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+.event-signup-v2 .event-registration-form > .field-button:hover {
+  transform: translateY(-1px);
+  background: #f3c300;
+}
+.event-signup-v2 .event-registration-form > .field-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+.event-signup-v2 .payment-status {
+  padding: 24px;
+  border-radius: 20px;
+  margin-bottom: 0;
+}
+.event-signup-v2 .payment-status h2 {
+  font-size: 24px;
+}
+.event-signup-v2 .payment-status-heading {
+  flex-direction: column;
+}
+.event-signup-v2 .payment-status .field-button {
+  border: 0;
+  border-radius: 999px;
+  box-shadow: none; /* taste-skill-ignore: removes the inherited shadow */
+  font-size: 15px;
+}
+.event-primary-button:focus-visible,
+.event-detail-v2 a:focus-visible,
+.event-signup-v2 button:focus-visible,
+.event-signup-v2 summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .event-detail-v2,
+  .event-signup-v2 {
+    padding-inline: 28px;
+  }
+  .event-hero {
+    column-gap: 36px;
+  }
+  .event-hero-intro h1 {
+    font-size: 44px;
+  }
+  .event-book-ticket {
+    flex-wrap: wrap;
+    padding: 22px;
+  }
+  .event-primary-button {
+    width: 100%;
+  }
+  .event-detail-v2 .event-writeup-with-agenda {
+    gap: 36px;
+  }
+  .event-signup-grid {
+    gap: 36px;
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+  .event-signup-summary {
+    grid-template-columns: 1fr;
+  }
+  .event-signup-summary h2 {
+    font-size: 28px;
+  }
+  .event-signup-summary > img {
+    width: 100px;
+  }
+  .event-signup-panel {
+    padding: 28px;
+  }
+}
+@media (max-width: 760px) {
+  .event-detail-v2,
+  .event-signup-v2 {
+    padding-inline: 20px;
+  }
+  .event-back-link {
+    margin-top: 12px;
+  }
+  .event-hero {
+    grid-template-columns: 1fr;
+    grid-template-areas: "intro" "poster" "booking";
+    row-gap: 28px;
+    padding-block: 24px 40px;
+  }
+  .event-hero-intro {
+    padding-top: 0;
+  }
+  .event-hero-intro h1 {
+    font-size: clamp(36px, 9.8vw, 58px);
+  }
+  .event-hero-description {
+    font-size: 16px;
+    margin-top: 20px;
+    max-width: none;
+  }
+  .event-hero-poster {
+    position: static;
+    max-width: 500px;
+    width: 100%;
+    justify-self: center;
+  }
+  .event-hero-poster img {
+    border-radius: 20px;
+  }
+  .event-facts > div {
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+  }
+  .event-book-ticket {
+    margin-top: 20px;
+    padding: 22px;
+    gap: 16px;
+  }
+  .event-primary-button {
+    padding-inline: 22px;
+    gap: 20px;
+  }
+  .event-detail-v2 .event-writeup-with-agenda {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-block: 40px;
+  }
+  .event-detail-v2 .event-writeup h2 {
+    font-size: 32px;
+  }
+  .event-detail-v2 .event-agenda {
+    padding: 28px;
+  }
+  .event-detail-v2 .past-events {
+    padding-block: 32px;
+  }
+  .event-detail-v2 .past-events h2 {
+    font-size: 32px;
+  }
+  .event-book-story {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 28px;
+    margin-block: 24px 48px;
+  }
+  .event-book-story h2 {
+    font-size: 32px;
+  }
+  .event-book-story p {
+    font-size: 16px;
+  }
+  .event-signup-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-top: 20px;
+  }
+  .event-signup-summary {
+    position: static;
+    grid-template-columns: 88px 1fr;
+    gap: 20px;
+    padding-top: 0;
+  }
+  .event-signup-summary > img {
+    width: 88px;
+    border-radius: 10px;
+  }
+  .event-signup-summary h2 {
+    font-size: 26px;
+    margin-bottom: 14px;
+  }
+  .event-signup-summary-copy > p:not(.map-price) {
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .event-signup-summary-copy > p span {
+    font-size: 13px;
+  }
+  .event-signup-summary .map-price {
+    font-size: 24px;
+    margin-top: 14px;
+  }
+  .event-signup-ticket-note {
+    display: none;
+  }
+  .event-signup-panel {
+    padding: 28px 24px;
+    border-radius: 24px;
+  }
+  .event-signup-panel h1 {
+    font-size: 36px;
+  }
+  .event-signup-v2 .event-registration-form {
+    margin-top: 28px;
+  }
+}
+@media (max-width: 365px) {
+  .event-book-ticket {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .event-primary-button {
+    width: 100%;
+  }
+  .event-signup-panel {
+    padding-inline: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .event-detail-v2 *,
+  .event-signup-v2 * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.event-signup-v2 .event-form-field {
+  display: grid;
+  gap: 9px;
+}
+.event-detail-v2 #event-writeup-heading {
+  scroll-margin-top: 120px;
+}
+@media (max-width: 760px) {
+  .event-signup-summary .map-price {
+    font-size: 19px;
+    margin-top: 8px;
+  }
+  .event-signup-summary .map-price span {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes event-arrive {
+    from {
+      opacity: 0.5;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .event-hero-intro,
+  .event-hero-poster,
+  .event-signup-summary,
+  .event-signup-panel {
+    animation: event-arrive 0.55s ease-out both;
+  }
+  .event-hero-poster {
+    animation-delay: 0.08s;
+  }
+  .event-facts > div {
+    animation: event-arrive 0.5s ease-out both;
+  }
+  .event-facts > div:nth-child(2) {
+    animation-delay: 0.08s;
+  }
+  .event-facts > div:nth-child(3) {
+    animation-delay: 0.16s;
+  }
+  .event-book-ticket {
+    animation: event-arrive 0.5s 0.2s ease-out both;
+  }
+}
+
+.event-mobile-action {
+  display: none;
+}
+.event-book-story h2 {
+  align-self: start;
+}
+@media (max-width: 760px) {
+  .event-mobile-action {
+    display: block;
+    margin-top: 24px;
+  }
+  .event-mobile-action p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 14px;
+  }
+  .event-mobile-action .event-primary-button {
+    width: 100%;
+  }
+}
+.event-detail-v2 .past-events,
+.event-detail-v2 .past-events li {
+  border: 0;
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .event-signup-ticket-note {
+    font-size: 26px;
+  }
+}
+.event-detail-v2 .past-event-copy .text-link {
+  border: 0;
+}

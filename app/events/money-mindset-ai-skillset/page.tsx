@@ -8,6 +8,7 @@ import PastEvents from "@/components/events/PastEvents";
 import { ArrowUpRight } from "lucide-react";
 import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
 import "../../offers.css";
+import "../event-experience.css";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Money Mindset × AI Skillset",
@@ -20,49 +21,58 @@ export const metadata: Metadata = {
 export default function MapPage() {
   const open = isMapRegistrationOpen();
   return (
-    <main className="map-detail field-wrap">
-      <Link href="/events" className="text-link">
+    <main className="field-wrap event-detail-v2">
+      <Link href="/events" className="event-back-link">
         ← All events
       </Link>
-      <div className="map-detail-grid">
-        <header>
-          <p className="offer-label">Thursdays with Edmund · {mapEvent.id}</p>
+      <div className="event-hero">
+        <header className="event-hero-intro">
           <h1>
             Money Mindset
-            <br />× AI Skillset.
+            <br />× AI Skillset
           </h1>
+          <p className="event-hero-description">
+            A Thursday evening with Edmund. Practical AI learning, a fresh
+            perspective on money, and ideas to put to work.
+          </p>
+          {open && (
+            <div className="event-mobile-action">
+              <p>12 November · 7:30 PM · The Vibe</p>
+              <Link
+                className="event-primary-button"
+                href={
+                  platformRegistrationEnabled()
+                    ? "/events/register"
+                    : mapEvent.checkoutUrl
+                }
+              >
+                Register · S$7 <ArrowUpRight size={20} />
+              </Link>
+            </div>
+          )}
+        </header>
+        <figure className="event-hero-poster">
           <Image
-            className="map-detail-poster"
             src="/images/events/money-mindset-ai-skillset-nov12-offer.png"
             alt="Money Mindset × AI Skillset with Edmund, 12 November 2026 at The Vibe. Original S$97 crossed out, now S$7."
             width={1024}
             height={1536}
-            sizes="(max-width: 700px) 100vw, 430px"
+            sizes="(max-width: 760px) 100vw, (max-width: 1100px) 44vw, 500px"
             priority
           />
-          <p className="map-deck">
-            Two hours. A small room.
-            <br />
-            Ideas to put into practice.
-          </p>
-          <p>
-            A weekly Thursday seminar with Edmund, bringing money mindset and
-            practical AI learning into the same conversation.
-          </p>
-          <p>After three 10-person sessions, the next session has 20 places.</p>
-        </header>
-        <section className="map-booking" aria-labelledby="registration-heading">
-          <h2 id="registration-heading">
-            {open ? "Join the next session" : "Registration closed"}
-          </h2>
-          <dl>
+          <figcaption>Thursdays with Edmund · {mapEvent.id}</figcaption>
+        </figure>
+        <section
+          className="event-hero-booking"
+          aria-label="Event details and registration"
+        >
+          <dl className="event-facts">
             <div>
               <dt>When</dt>
-              <dd>{mapEvent.dateLabel}</dd>
-            </div>
-            <div>
-              <dt>Time</dt>
-              <dd>{mapEvent.timeLabel}</dd>
+              <dd>
+                Thursday, 12 November 2026
+                <small>7:30–9:30 PM · Singapore time</small>
+              </dd>
             </div>
             <div>
               <dt>Where</dt>
@@ -72,7 +82,7 @@ export default function MapPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {mapEvent.venue} ↗
+                  The Vibe ↗
                 </a>
                 <small>{mapEvent.address}</small>
               </dd>
@@ -82,40 +92,50 @@ export default function MapPage() {
               <dd>20 participants maximum</dd>
             </div>
           </dl>
-          <EventPrice />
-          {open && (
-            <>
-              <a
+          <div className="event-book-ticket">
+            <EventPrice />
+            {open ? (
+              <Link
                 href={
                   platformRegistrationEnabled()
                     ? "/events/register"
                     : mapEvent.checkoutUrl
                 }
-                className="field-button"
+                className="event-primary-button"
               >
                 Register <ArrowUpRight size={20} />
-              </a>
-              <p className="booking-note">
-                Name, phone number and email are required to register. Your QR
-                ticket will be sent by email.
-              </p>
-            </>
-          )}
+              </Link>
+            ) : (
+              <p>Registration closed</p>
+            )}
+          </div>
+          <p className="event-ticket-note">
+            Your QR ticket, delivered to your inbox.
+          </p>
+          <a className="event-schedule-link" href="#event-writeup-heading">
+            Explore the evening ↓
+          </a>
         </section>
       </div>
       <EventWriteup eventId={mapEvent.id} />
       <PastEvents />
-      <section className="map-learning">
-        <h2>A seminar that becomes a book.</h2>
-        <p>
-          Each Thursday is a place to teach, ask questions and develop ideas.
-          Those lessons will feed into{" "}
-          <Link href="/playbook">The Money & AI Playbook</Link>, bringing what
-          happens in the room onto the page.
-        </p>
-        <div className="map-related">
-          <Link href="/about">Meet Edmund and read his why ↗</Link>
-          <Link href="/testimonials">Hear from people who know his work ↗</Link>
+      <section className="event-book-story">
+        <h2>
+          From the room
+          <br />
+          to the page.
+        </h2>
+        <div>
+          <p>
+            Each Thursday is a place to teach, ask questions and develop ideas.
+            Those lessons will feed into{" "}
+            <Link href="/playbook">The Money & AI Playbook</Link>.
+          </p>
+          <div className="event-story-links">
+            <Link href="/about">Edmund’s why</Link>
+            <Link href="/testimonials">In their words</Link>
+            <Link href="/playbook">Explore the book →</Link>
+          </div>
         </div>
       </section>
     </main>
