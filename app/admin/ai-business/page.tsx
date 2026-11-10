@@ -1,3 +1,4 @@
+import EventSummary from "@/components/admin/event-admin/EventSummary";
 import { Suspense } from "react";
 import { SprintFocus } from "@/components/admin/SprintFocus";
 import type { Metadata } from "next";
@@ -6,6 +7,11 @@ import { AdminArea } from "@/components/admin/AdminArea";
 export const metadata: Metadata = { title: "AI Business — Admin" };
 
 const links = [
+  {
+    href: "/admin/event-checkin",
+    label: "Event registrations",
+    description: "People, payments, ticket emails and check-in.",
+  },
   {
     href: "/admin/ai-business/operations",
     label: "Product health",
@@ -89,22 +95,33 @@ export default function AIBusinessPage() {
       title="AI Business"
       description="One useful outcome for this work block."
       intro={
-        <Suspense
-          fallback={
-            <p className="text-sm text-zinc-500">Reading your focus…</p>
-          }
-        >
-          <SprintFocus lane="ai-business" />
-        </Suspense>
+        <>
+          <Suspense
+            fallback={<p role="status">Reading event registrations…</p>}
+          >
+            <EventSummary />
+          </Suspense>
+          <Suspense
+            fallback={
+              <p className="text-sm text-zinc-500">Reading your focus…</p>
+            }
+          >
+            <SprintFocus lane="ai-business" />
+          </Suspense>
+        </>
       }
       links={[]}
       groups={[
         {
           label: "Writing & conversations",
           links: links.filter((link) =>
-            ["Blog", "Newsletter", "Testimonials", "Events"].includes(
-              link.label,
-            ),
+            [
+              "Event registrations",
+              "Blog",
+              "Newsletter",
+              "Testimonials",
+              "Events",
+            ].includes(link.label),
           ),
         },
         {

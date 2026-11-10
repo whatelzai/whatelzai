@@ -1,55 +1,54 @@
-import Link from "next/link";
-import { requireAdmin } from "@/lib/users";
+import { Suspense } from "react";
+import Link from "@/components/admin/AdminLink";
+import { adminUrl } from "@/lib/admin-url";
+import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { EVENT_KEY } from "@/lib/event-tickets";
+import AttendeeList from "@/components/admin/event-admin/AttendeeList";
 import {
   grantEventStaff,
   revokeEventStaff,
   saveEventPromo,
   closeLegacyEventCheckouts,
-  retryEventTicketEmail,
 } from "./actions";
 export const dynamic = "force-dynamic";
-export default async function EventCheckinAdmin() {
-  await requireAdmin();
-  const [{ data: registrations, error }, { data: staff, error: staffError }] =
-    await Promise.all([
-      supabaseAdmin
-        .from("event_registrations")
-        .select(
-          "id,attendee_name,email,phone,status,email_sent_at,checked_in_at",
-        )
-        .eq("event_key", EVENT_KEY)
-        .order("created_at"),
-      supabaseAdmin
-        .from("event_staff")
-        .select("user_id,users!event_staff_user_id_fkey(email)")
-        .eq("event_key", EVENT_KEY),
-    ]);
-  if (error || staffError)
-    throw new Error("Event registration storage is not ready");
+export const metadata = {
+  title: "Registrations — Admin",
+  robots: { index: false, follow: false },
+};
+export default async function Page() {
+  await dailyOwner();
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">
-        Event registrations &amp; check-in
-      </h1>
-      <p>
-        {registrations.length} registrations ·{" "}
-        {registrations.filter((r) => r.checked_in_at).length} checked in
+    <div className="event-admin">
+      <AttendeeList />
+      <Suspense
+        fallback={
+          <p className="event-loading" role="status">
+            Loading event controls…
+          </p>
+        }
+      >
+        <EventControls />
+      </Suspense>
+    </div>
+  );
+}
+async function EventControls() {
+  const { data: staff, error } = await supabaseAdmin
+    .from("event_staff")
+    .select("user_id,users!event_staff_user_id_fkey(email)")
+    .eq("event_key", EVENT_KEY);
+  if (error)
+    return (
+      <p className="event-error">
+        Event controls unavailable. Refresh to retry.
       </p>
-      <Link href="https://whatelz.ai/event-checkin" className="underline">
-        Open staff scanner →
-      </Link>
-      <p>
-        <Link href="/admin/calendar-access" className="underline">
-          Manage Guest / Spark / Catalyst membership →
-        </Link>
-      </p>
-      <p>
-        Event registrations do not grant app access or upgrade FC membership.
-      </p>
-      <section>
-        <h2 className="text-lg font-semibold">Event staff</h2>
+    );
+  return (
+    <section className="event-controls" aria-label="Event controls">
+      <Link href={adminUrl("/admin/calendar-access")}>Membership access →</Link>
+      <details className="event-control">
+        <summary>Event staff</summary>
         <p>
           Staff can scan tickets for this event. This does not grant website
           administration.
@@ -82,9 +81,9 @@ export default async function EventCheckinAdmin() {
             <button>Remove event access</button>
           </form>
         ))}
-      </section>
-      <section>
-        <h2 className="text-lg font-semibold">On-site free admission code</h2>
+      </details>
+      <details className="event-control">
+        <summary>On-site free admission code</summary>
         <p>
           Codes apply only to this event’s on-site form. They are stored as
           hashes and expire when the event starts. Enter an existing code to
@@ -119,9 +118,9 @@ export default async function EventCheckinAdmin() {
           </label>
           <button type="submit">Save code</button>
         </form>
-      </section>
-      <section>
-        <h2 className="text-lg font-semibold">Registration cutover</h2>
+      </details>
+      <details className="event-control">
+        <summary>Registration cutover</summary>
         <p>
           Disable both legacy November 12 Payment Links in Stripe before using
           this. It closes only unfinished checkouts from those links; completed
@@ -130,48 +129,7 @@ export default async function EventCheckinAdmin() {
         <form action={closeLegacyEventCheckouts}>
           <button type="submit">Close unfinished legacy checkouts</button>
         </form>
-      </section>
-      <section className="overflow-x-auto">
-        <h2 className="text-lg font-semibold">Attendees</h2>
-        <table>
-          <thead>
-            <tr>
-              {["Name", "Email", "Phone", "Ticket", "Email", "Check-in"].map(
-                (s, i) => (
-                  <th className="p-2 text-left" key={i}>
-                    {s}
-                  </th>
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {registrations.map((r) => (
-              <tr key={r.id}>
-                <td className="p-2">{r.attendee_name}</td>
-                <td className="p-2">{r.email}</td>
-                <td className="p-2">{r.phone}</td>
-                <td className="p-2">{r.status}</td>
-                <td className="p-2">
-                  {r.email_sent_at ? (
-                    "Sent"
-                  ) : r.status === "confirmed" ? (
-                    <form action={retryEventTicketEmail}>
-                      <input type="hidden" name="ticket_id" value={r.id} />
-                      <button type="submit">Retry ticket email</button>
-                    </form>
-                  ) : (
-                    "Cancelled"
-                  )}
-                </td>
-                <td className="p-2">
-                  {r.checked_in_at ? "Checked in" : "Not checked in"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-    </div>
+      </details>
+    </section>
   );
 }
