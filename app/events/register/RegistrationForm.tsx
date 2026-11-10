@@ -42,7 +42,7 @@ export default function RegistrationForm({
       const data = await response.json();
       if (!response.ok) throw Error(data.error || "Code could not be checked.");
       setApplied(code.trim().toUpperCase());
-      setCodeMessage("Applied — free admission. No payment required.");
+      setCodeMessage("Code applied. No payment required.");
     } catch (e) {
       setCodeMessage(
         (e instanceof Error ? e.message : "Code not applied.") +
@@ -158,7 +158,7 @@ export default function RegistrationForm({
         </label>
       </div>
       <p className="registration-total">
-        Your ticket: <strong>{applied ? "Free · S$0" : "S$7"}</strong>
+        Your ticket: <strong>{applied ? "S$0" : "S$7"}</strong>
       </p>
       <details className="registration-privacy">
         <summary>How we use your details</summary>
@@ -167,8 +167,8 @@ export default function RegistrationForm({
           Resend receives your email address and ticket for confirmation. For
           paid tickets, we share your email with Stripe to prefill payment.
           Stripe collects required payment and billing details; we don’t send it
-          your registration name or phone. Free-code registrations stay on
-          Whatelz. Registration does not subscribe you to marketing.
+          your registration name or phone. Registration does not subscribe you
+          to marketing.
         </p>
       </details>
       {error && <p role="alert">{error}</p>}
