@@ -14,8 +14,9 @@ export const mapEvent = {
   address: "Paya Lebar Square #07-16, Singapore 409051",
   venueUrl: "https://thevibe.sg",
   capacity: 20,
-  price: "S$97",
-  checkoutUrl: "https://buy.stripe.com/14AfZj8SR5os9tCeGyafS02",
+  originalPrice: "S$97",
+  price: "S$7",
+  checkoutUrl: "https://buy.stripe.com/3cIdRbedbeZ27luaqiafS04",
 } as const;
 export function isMapRegistrationOpen(now = Date.now()) {
   return now < Date.parse(mapEvent.startsAt);

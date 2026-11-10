@@ -4,6 +4,7 @@ import PastEvents from "@/components/events/PastEvents";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
+import { EventPrice } from "@/components/events/EventPrice";
 import "../offers.css";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export default function EventsPage() {
       <section className="event-listing" aria-labelledby="next-talk">
         <Image
           className="map-poster-photo"
-          src="/images/events/money-mindset-ai-skillset-editorial.png"
+          src="/images/events/money-mindset-ai-skillset-nov12-offer.png"
           alt="Money Mindset × AI Skillset seminar poster featuring Edmund speaking."
           width={1024}
           height={1536}
@@ -45,12 +46,13 @@ export default function EventsPage() {
           <p>
             7:30–9:30 PM · UTC+8
             <br />
-            20 participants maximum · S$97
+            20 participants maximum
             <br />
             {mapEvent.venue}
             <br />
             {mapEvent.address}
           </p>
+          <EventPrice />
           <Link className="field-button" href={mapEvent.path}>
             {open ? "Details & registration" : "About the seminar"}
             <ArrowUpRight size={20} />

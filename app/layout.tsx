@@ -1,3 +1,4 @@
+import { THEME_INIT_SCRIPT } from "@/lib/theme-preference";
 import { getMemberLanguage } from "@/lib/fcos/language-server";
 import { MemberLanguageProvider } from "@/components/fcos/MemberLanguage";
 import type { Metadata, Viewport } from "next";
@@ -230,6 +231,7 @@ export default async function RootLayout({
 
   return (
     <html
+      data-theme="light"
       lang={memberLanguage === "zh" ? "zh-Hans" : "en"}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
@@ -237,7 +239,7 @@ export default async function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var t;try{t=localStorage.getItem('whatelz-theme-v1')}catch(e){}document.documentElement.dataset.theme=t==='light'||t==='dark'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()`,
+            __html: THEME_INIT_SCRIPT,
           }}
         />
         {jsonLd && (

@@ -2,13 +2,19 @@ import type Stripe from "stripe";
 import { canFulfillCheckout } from "./stripe-fulfillment";
 import { mapEvent } from "./public-events/map";
 
-export const MAP_PAYMENT_LINK = "plink_1UZAmbPA71qp9sGSkqgyUEvw";
+export const MAP_PAYMENT_LINK = "plink_1UZvSJPA71qp9sGS9gBTQzhO";
+// Retain fulfilment for existing tickets and delayed legacy checkout events.
+export const LEGACY_MAP_PAYMENT_LINK = "plink_1UZAmbPA71qp9sGSkqgyUEvw";
 export function mapConfirmation(session: Stripe.Checkout.Session) {
   const link =
     typeof session.payment_link === "string"
       ? session.payment_link
       : session.payment_link?.id;
-  if (link !== MAP_PAYMENT_LINK || !canFulfillCheckout(session)) return null;
+  if (
+    (link !== MAP_PAYMENT_LINK && link !== LEGACY_MAP_PAYMENT_LINK) ||
+    !canFulfillCheckout(session)
+  )
+    return null;
   const email = session.customer_details?.email ?? session.customer_email;
   if (!email) throw new Error("Event registration has no email");
   const name = session.customer_details?.name?.trim() || "there";

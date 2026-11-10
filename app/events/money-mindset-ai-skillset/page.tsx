@@ -1,3 +1,5 @@
+import EventWriteup from "@/components/events/EventWriteup";
+import { EventPrice } from "@/components/events/EventPrice";
 import type { Metadata } from "next";
 import Link from "next/link";
 import PastEvents from "@/components/events/PastEvents";
@@ -8,7 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Money Mindset × AI Skillset",
   description:
-    "AI Skillset × Money Mindset. A two-hour Thursday seminar with Edmund. S$97, limited to 20 participants. At The Vibe, Paya Lebar Square.",
+    "AI Skillset × Money Mindset. Join Edmund on 12 November for S$7 (originally S$97), limited to 20 participants. At The Vibe, Paya Lebar Square.",
   alternates: {
     canonical: "https://whatelz.ai/events/money-mindset-ai-skillset",
   },
@@ -69,9 +71,7 @@ export default function MapPage() {
               <dd>20 participants maximum</dd>
             </div>
           </dl>
-          <p className="map-price">
-            S$97 <span>per person · final price</span>
-          </p>
+          <EventPrice />
           {open && (
             <>
               <a href={mapEvent.checkoutUrl} className="field-button">
@@ -79,12 +79,14 @@ export default function MapPage() {
               </a>
               <p className="booking-note">
                 Name, phone number and email are required at checkout. Have a
-                code from Edmund? Enter it for complimentary admission.
+                first-time joiner code from Edmund? Enter it for free admission
+                (S$0).
               </p>
             </>
           )}
         </section>
       </div>
+      <EventWriteup eventId={mapEvent.id} />
       <PastEvents />
       <section className="map-learning">
         <h2>A seminar that becomes a book.</h2>
