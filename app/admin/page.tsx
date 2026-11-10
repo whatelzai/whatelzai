@@ -1,3 +1,4 @@
+import EventSummary from "@/components/admin/event-admin/EventSummary";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "@/components/admin/AdminLink";
@@ -38,6 +39,11 @@ export default async function OverviewPage() {
           <AdminText text="This week" /> · {date(week.start)}–{date(week.end)}
         </p>
       </header>
+      <Suspense
+        fallback={<AdminSectionLoading label="Reading event registrations…" />}
+      >
+        <EventSummary />
+      </Suspense>
       <div className="overview-week-layout">
         <Suspense
           fallback={

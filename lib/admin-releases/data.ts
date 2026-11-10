@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-10-event-operations",
+    date: "2026-11-10",
+    title: "Event signups, at a glance",
+    titleZh: "活动报名，一眼看清",
+    items: [
+      {
+        en: "Overview and AI Business bring event registrations forward. Open the list for people, payments, ticket emails and check-in.",
+        zh: "总览与 AI 业务优先显示活动报名；打开名单查看人员、付款、票券邮件与签到。",
+      },
+      {
+        en: "Search attendees on phone or desktop. Pending payments stay separate from confirmed tickets; amounts not recorded remain clearly marked.",
+        zh: "手机和桌面都可搜索报名者。待付款与已确认票券分开显示；未记录的金额会明确标注。",
+      },
+    ],
+  },
+  {
     id: "2026-10-28-personal-tools",
     date: "2026-10-28",
     title: "Small tools for everyday life",

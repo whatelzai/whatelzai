@@ -1,3 +1,4 @@
+import "@/components/admin/event-admin/events.css";
 import { AdminPreferencesProvider } from "@/components/admin/AdminPreferences";
 import { AdminFocusProvider } from "@/components/admin/AdminFocus";
 import "./admin.css";
