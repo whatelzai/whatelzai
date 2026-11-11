@@ -450,3 +450,108 @@
     font-size: 1.6rem;
   }
 }
+.event-poster-tools {
+  margin: 18px 0;
+  border-bottom: 1px solid var(--ea-line);
+  padding-bottom: 10px;
+}
+.event-poster-tools > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  min-height: 44px;
+  font-size: 0.85rem;
+  width: fit-content;
+  padding: 8px 4px;
+  list-style: none;
+}
+.event-poster-tools > summary:after {
+  content: "+";
+  margin-left: 8px;
+}
+.event-poster-tools[open] > summary:after {
+  content: "−";
+}
+.event-poster-tools > summary::-webkit-details-marker {
+  display: none;
+}
+.event-poster-body {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr;
+  gap: 28px;
+  padding: 12px 0 20px;
+}
+.event-poster-preview img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+.event-poster-actions {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+.event-poster-actions > a,
+.event-poster-actions > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--ea-line);
+  border-radius: 12px;
+  min-height: 44px;
+  padding: 10px 13px;
+  font-size: 0.85rem;
+}
+.event-poster-actions .event-poster-download {
+  background: #ffe135;
+  color: #202217;
+  border-color: transparent;
+  font-weight: 550;
+}
+.event-poster-actions label {
+  display: grid;
+  gap: 7px;
+  flex-basis: 100%;
+  font-size: 0.78rem;
+  color: var(--ea-muted);
+}
+.event-poster-actions :is(textarea, input) {
+  background: transparent;
+  border: 1px solid var(--ea-line);
+  border-radius: 10px;
+  color: var(--ea-ink);
+  font: inherit;
+  padding: 12px;
+  width: 100%;
+  min-width: 0;
+}
+.event-poster-actions textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+.event-poster-actions :is(p, small) {
+  flex-basis: 100%;
+  font-size: 0.75rem;
+  color: var(--ea-muted);
+  line-height: 1.5;
+}
+.event-poster-actions [role="alert"] {
+  border-left: 2px solid currentColor;
+  padding-left: 10px;
+}
+@media (max-width: 650px) {
+  .event-poster-body {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .event-poster-preview {
+    max-width: 180px;
+  }
+  .event-poster-actions {
+    gap: 8px;
+  }
+}

@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-11-poster-sharing",
+    date: "2026-11-11",
+    title: "Take your event poster with you",
+    titleZh: "活动海报，随手分享",
+    items: [
+      {
+        en: "Open Poster & share in Registrations to download the original image and copy an editable caption or event link.",
+        zh: "在报名页打开海报与分享，下载原图并复制可编辑文案或活动链接。",
+      },
+      {
+        en: "Supported devices can hand the image to their share sheet. Choose an app and finish editing there; nothing posts automatically.",
+        zh: "支持的设备可通过系统分享面板发送图片，选择应用后继续编辑，不会自动发布。",
+      },
+    ],
+  },
+  {
     id: "2026-11-10-event-operations",
     date: "2026-11-10",
     title: "Event signups, at a glance",

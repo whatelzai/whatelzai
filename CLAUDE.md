@@ -731,3 +731,7 @@ The attendee-facing flow is email-based signup and QR ticket delivery only.
 Do not advertise free admission, S$0 or first-time-joiner discounts in public
 event marketing copy. Keep promotion codes private; the adjusted total and
 payment requirement may be shown after an attendee applies a valid code.
+
+## Event poster sharing
+
+Registrations has a lazy Poster & share disclosure using the same mapEvent.poster as the public event page. Original PNG download works independently of native sharing; native Share image is enabled only after a prepared file passes canShare, and invokes share on the next explicit click. OS/receiving app selects destinations and editing; never promise posting, Instagram Story/Feed targeting or caption transfer. Copy caption/link/manual upload remain. Public media only, no attendee data, social credentials, API inference or automatic publication. See docs/admin-event-operations.md.
