@@ -15,7 +15,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 // Notification text is deliberately generic; private routine content never leaves Admin.
-const adminPushPaths = new Set(["/today", "/today/weekly", "/settings", "/", "/personal", "/ai-business", "/network-marketing", "/day-job"]);
+const adminPushPaths = new Set(["/event-checkin","/today", "/today/weekly", "/settings", "/", "/personal", "/ai-business", "/network-marketing", "/day-job"]);
 function adminPushUrl(value) {
   try {
     const url = new URL(value || "/today", self.location.origin);
@@ -27,9 +27,9 @@ function adminPushUrl(value) {
 self.addEventListener("push", (event) => {
   let notice = {};
   try { notice = event.data?.json() || {}; } catch {}
-  const titles = new Set(["Your morning brief is ready", "Your evening debrief is ready", "Your weekly closeout is ready", "Whatelz Admin is connected", "Time for Overview", "Time for Personal", "Time for AI Business", "Time for Network Marketing", "Time for Day Job"]);
+  const titles = new Set(["New event registration confirmed","Your morning brief is ready", "Your evening debrief is ready", "Your weekly closeout is ready", "Whatelz Admin is connected", "Time for Overview", "Time for Personal", "Time for AI Business", "Time for Network Marketing", "Time for Day Job"]);
   event.waitUntil(self.registration.showNotification(titles.has(notice.title) ? notice.title : "Whatelz Admin", {
-    body: typeof notice.title === "string" && titles.has(notice.title) && notice.title.startsWith("Time for ") ? "Open your scheduled space." : "Open Whatelz Admin to read it.",
+    body: notice.title === "New event registration confirmed" ? "Open registrations in Whatelz Admin." : typeof notice.title === "string" && titles.has(notice.title) && notice.title.startsWith("Time for ") ? "Open your scheduled space." : "Open Whatelz Admin to read it.",
     icon: "/admin-pwa/icon-192-v2.png",
     badge: "/admin-pwa/icon-192-v2.png",
     tag: typeof notice.tag === "string" ? notice.tag.slice(0, 80) : "whatelz-admin",
