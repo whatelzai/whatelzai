@@ -1,6 +1,7 @@
 // The series is weekly; only this occurrence has a confirmed venue.
 export const mapEvent = {
   id: "ELZ-EVT-0004",
+  poster: "/images/events/money-mindset-ai-skillset-nov12-offer.png",
   key: "ai-skillset-money-mindset-20261112",
   title: "Money Mindset × AI Skillset",
   shortName: "Money Mindset × AI Skillset",

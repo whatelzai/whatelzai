@@ -53,7 +53,7 @@ export default function MapPage() {
         </header>
         <figure className="event-hero-poster">
           <Image
-            src="/images/events/money-mindset-ai-skillset-nov12-offer.png"
+            src={mapEvent.poster}
             alt="Money Mindset × AI Skillset with Edmund, 12 November 2026 at The Vibe. Original S$97 crossed out, now S$7."
             width={1024}
             height={1536}

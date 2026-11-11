@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState, useTransition } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -23,6 +24,9 @@ import {
 } from "@/lib/event-admin/model";
 import { mapEvent } from "@/lib/public-events/map";
 import { retryEventTicketEmail } from "@/app/admin/event-checkin/actions";
+const PosterTools = dynamic(() => import("./PosterTools"), {
+  loading: () => <p role="status">Opening poster tools…</p>,
+});
 const icons: Record<Payment, typeof Check> = {
   paid: Check,
   free: Gift,
@@ -117,6 +121,7 @@ export default function AttendeeList() {
           <RefreshCw size={18} className={refreshing ? "event-spin" : ""} />
         </button>
       </div>
+      <PosterTools />
       {loading ? (
         <div className="event-loading" role="status">
           Loading registrations…
