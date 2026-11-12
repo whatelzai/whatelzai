@@ -201,3 +201,17 @@ test("server guard runs before any database access and errors never become zero 
   await assert.rejects(() => mod.exports.eventAdminData(), /Forbidden/);
   assert.equal(reads, 0);
 });
+
+test("default attendee filter hides failed/released and cancelled records without losing audit access", () => {
+  const d = eventView(
+    [ticket("active"), ticket("cancelled", { status: "cancelled" })],
+    [attempt("pending"), attempt("failed", { state: "released" })],
+    [],
+    [],
+  );
+  const active = filterAttendees(d.rows, "", "active");
+  assert.equal(active.length, 2);
+  assert.ok(active.every((r) => !["released", "cancelled"].includes(r.status)));
+  assert.equal(filterAttendees(d.rows, "", "all").length, 4);
+  assert.equal(filterAttendees(d.rows, "", "cancelled").length, 2);
+});

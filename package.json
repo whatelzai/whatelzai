@@ -24,6 +24,7 @@
     "framer-motion": "^12.40.0",
     "gray-matter": "^4.0.3",
     "ical.js": "2.2.1",
+    "jsqr": "1.4.0",
     "lucide-react": "^1.25.0",
     "marked": "^18.0.3",
     "next": "16.2.4",
