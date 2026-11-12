@@ -735,3 +735,7 @@ payment requirement may be shown after an attendee applies a valid code.
 ## Event poster sharing
 
 Registrations has a lazy Poster & share disclosure using the same mapEvent.poster as the public event page. Original PNG download works independently of native sharing; native Share image is enabled only after a prepared file passes canShare, and invokes share on the next explicit click. OS/receiving app selects destinations and editing; never promise posting, Instagram Story/Feed targeting or caption transfer. Copy caption/link/manual upload remain. Public media only, no attendee data, social credentials, API inference or automatic publication. See docs/admin-event-operations.md.
+
+## Confirmed signup push alerts
+
+The existing production one-minute owner push cron also checks confirmed event registrations, independent of email delivery and focus/routine checks. Reuse encrypted owner devices and private claim_admin_push receipts with event-registration/<ticket> keys; only new tickets since request/opt-in within seven days, bounded queries/batches and existing three-attempt retries. Generic notification with hashed tag opens /event-checkin; no contacts, amounts or raw ticket capabilities in push payload. Reopen installed Admin after release for the updated worker title/path. No new schema, credentials, inference, checkout writes or historical alert burst. See docs/admin-push.md.
