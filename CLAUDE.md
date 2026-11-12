@@ -743,3 +743,7 @@ Registrations includes adjacent Poster & share / Scan QR code controls with lazy
 ## Confirmed signup push alerts
 
 The existing production one-minute owner push cron also checks confirmed event registrations, independent of email delivery and focus/routine checks. Reuse encrypted owner devices and private claim_admin_push receipts with event-registration/<ticket> keys; only new tickets since request/opt-in within seven days, bounded queries/batches and existing three-attempt retries. Generic notification with hashed tag opens /event-checkin; no contacts, amounts or raw ticket capabilities in push payload. Reopen installed Admin after release for the updated worker title/path. No new schema, credentials, inference, checkout writes or historical alert burst. See docs/admin-push.md.
+
+## Check-in visual feedback
+
+Attendee Checked in includes a green circular tick. Scanner uses structured receipts rendered above camera with a prominent name: success green/tick, duplicate amber/clock, errors red/alert; labels/shapes remain meaningful in greyscale. No dismiss-to-continue popup. New messages clear stale receipts. Validate receipt name/time before success. Existing automatic scanning, duplicate suppression and authorization remain. See docs/admin-event-operations.md.

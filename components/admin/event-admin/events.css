@@ -607,3 +607,15 @@
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
+
+.event-checked-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #15803d;
+  color: #fff;
+}

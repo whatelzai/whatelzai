@@ -38,3 +38,7 @@ Stop camera to use QR image for an email on the same phone. Choose QR image (PNG
 The existing endpoint still requires same-origin authenticated owner/event staff, confirmed current-event ticket and an atomic empty-check-in update. Cancelled/unknown tickets cannot check in. No database migration or new credentials. Physical phone camera scanning still requires a device trial; synthetic QR images and endpoint protections are covered separately.
 
 Attendees is the default filter: released and cancelled records are hidden, retained under All records / Cancelled or released. The attendee region scrolls independently within a bounded height with keyboard access. No attempt data is deleted.
+
+### Clear attendance feedback
+
+Confirmed attendees show a small green circular tick beside Checked in. Scanner results appear above the camera: a green success panel with the name in large text, an amber clock panel for Already checked in (original timestamp preserved), or a red alert for invalid/cancelled tickets and request failures. Icons, labels and shapes preserve meaning in greyscale. Results remain until the next operation; scanning continues without a popup to dismiss. Any new message clears the prior receipt, so errors cannot retain an old success tick. Server receipt name and timestamp must be valid before success is shown. No attendance or authorization changes.

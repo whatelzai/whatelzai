@@ -8,7 +8,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { Camera, ImagePlus, CheckCircle2, ScanLine } from "lucide-react";
+import { Camera, ImagePlus, ScanLine } from "lucide-react";
+import ScanFeedback, { type CheckinReceipt } from "./ScanFeedback";
 import { parseTicket } from "@/lib/event-checkin-policy";
 import { decodeQrSource } from "@/lib/event-qr";
 type Detector = {
@@ -26,10 +27,16 @@ export default function Scanner({
   autoCheckIn?: boolean;
 }) {
   const [ticket, setTicket] = useState(initialTicket),
-    [message, setMessage] = useState(""),
+    [message, setMessageState] = useState(""),
     [busy, setBusy] = useState(false),
     [camera, setCamera] = useState(false),
-    [success, setSuccess] = useState(false);
+    [receipt, setReceipt] = useState<CheckinReceipt | null>(null),
+    [tone, setTone] = useState<"info" | "error">("info");
+  function setMessage(value: string, kind: "info" | "error" = "info") {
+    setMessageState(value);
+    setReceipt(null);
+    setTone(kind);
+  }
   const video = useRef<HTMLVideoElement>(null),
     stream = useRef<MediaStream | null>(null),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null),
@@ -61,12 +68,11 @@ export default function Scanner({
   async function submitTicket(value: string) {
     if (pending.current) return;
     if (!parseTicket(value)) {
-      setMessage("Enter a valid Whatelz ticket link or ID.");
+      setMessage("Enter a valid Whatelz ticket link or ID.", "error");
       return;
     }
     pending.current = true;
     setBusy(true);
-    setSuccess(false);
     if (!autoCheckIn) stop();
     const run = generation.current;
     setMessage("Checking in…");
@@ -82,16 +88,17 @@ export default function Scanner({
       if (
         !response.ok ||
         !["checked_in", "already_checked_in"].includes(result.status) ||
-        !result.at
+        typeof result.name !== "string" ||
+        !result.name.trim() ||
+        typeof result.at !== "string" ||
+        !Number.isFinite(Date.parse(result.at))
       )
         throw Error(
           result.error || "Check-in could not be confirmed. Please retry.",
         );
       if (run !== generation.current) return;
-      setMessage(
-        `${result.status === "checked_in" ? "Checked in" : "Already checked in"}: ${result.name} · ${new Date(result.at).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "2-digit", minute: "2-digit" })}`,
-      );
-      setSuccess(true);
+      setMessage("");
+      setReceipt({ status: result.status, name: result.name, at: result.at });
       setTicket("");
       onCheckedIn?.();
     } catch (error) {
@@ -101,6 +108,7 @@ export default function Scanner({
         error instanceof Error
           ? error.message
           : "Connection failed. Please retry.",
+        "error",
       );
     } finally {
       pending.current = false;
@@ -110,7 +118,7 @@ export default function Scanner({
   async function accept(raw: string) {
     const parsed = parseTicket(raw);
     if (!parsed) {
-      setMessage("This is not a Whatelz ticket. Try another QR code.");
+      setMessage("This is not a Whatelz ticket. Try another QR code.", "error");
       return false;
     }
     if (autoCheckIn) {
@@ -124,13 +132,11 @@ export default function Scanner({
       return false; // keep the camera ready for the next attendee
     }
     setTicket(parsed);
-    setSuccess(false);
     setMessage("Ticket ready. Confirm check-in below.");
     return true;
   }
   async function start() {
     stop();
-    setSuccess(false);
     setTicket("");
     setCamera(true);
     setMessage("Opening camera…");
@@ -216,7 +222,6 @@ export default function Scanner({
     const run = generation.current;
     pending.current = true;
     setBusy(true);
-    setSuccess(false);
     setTicket("");
     setMessage("Reading QR image…");
     let bitmap: ImageBitmap | undefined;
@@ -234,6 +239,7 @@ export default function Scanner({
           error instanceof Error
             ? error.message
             : "Image unavailable. Try PNG or JPEG.",
+          "error",
         );
     } finally {
       bitmap?.close();
@@ -279,6 +285,7 @@ export default function Scanner({
           />
         </label>
       </div>
+      <ScanFeedback receipt={receipt} message={message} tone={tone} />
       <video
         ref={video}
         muted
@@ -304,7 +311,6 @@ export default function Scanner({
             maxLength={512}
             onChange={(e) => {
               setTicket(e.target.value);
-              setSuccess(false);
             }}
             autoComplete="off"
             autoCapitalize="none"
@@ -317,9 +323,6 @@ export default function Scanner({
           </button>
         </form>
       </details>
-      <p role="status" aria-live="polite" className="ticket-scan-status">
-        {success && <CheckCircle2 size={22} />} {message}
-      </p>
     </section>
   );
 }
