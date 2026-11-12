@@ -150,6 +150,9 @@ export function filterAttendees(rows: Attendee[], q: string, filter: string) {
           v.toLowerCase().includes(term),
         )) &&
       (filter === "all" ||
+        (filter === "active" &&
+          r.status !== "released" &&
+          r.status !== "cancelled") ||
         (filter === "confirmed" && r.status === "confirmed") ||
         (filter === "pending" && r.status === "pending") ||
         (filter === "attention" &&

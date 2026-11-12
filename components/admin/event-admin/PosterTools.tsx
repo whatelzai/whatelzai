@@ -16,8 +16,13 @@ import {
   posterFilename,
   sharePoster,
 } from "@/lib/event-admin/sharing";
-export default function PosterTools() {
-  const [open, setOpen] = useState(false),
+export default function PosterTools({
+  embedded = false,
+}: {
+  embedded?: boolean;
+}) {
+  const Container = embedded ? "section" : "details";
+  const [open, setOpen] = useState(embedded),
     [file, setFile] = useState<File | null>(null),
     [shareable, setShareable] = useState(false),
     [busy, setBusy] = useState(false),
@@ -58,14 +63,20 @@ export default function PosterTools() {
     }
   }
   return (
-    <details
+    <Container
       className="event-poster-tools"
-      onToggle={(e) => setOpen(e.currentTarget.open)}
+      onToggle={
+        embedded
+          ? undefined
+          : (e) => setOpen((e.currentTarget as HTMLDetailsElement).open)
+      }
     >
-      <summary>
-        <ImageIcon size={17} />
-        Poster & share
-      </summary>
+      {!embedded && (
+        <summary>
+          <ImageIcon size={17} />
+          Poster & share
+        </summary>
+      )}
       {open && (
         <div className="event-poster-body">
           <a
@@ -174,6 +185,6 @@ export default function PosterTools() {
           </div>
         </div>
       )}
-    </details>
+    </Container>
   );
 }

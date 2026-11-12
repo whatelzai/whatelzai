@@ -1,26 +1,48 @@
 "use client";
-import { useState } from "react";
+import { useId, useState } from "react";
 import dynamic from "next/dynamic";
-import { ScanLine } from "lucide-react";
+import { Image as ImageIcon, ScanLine } from "lucide-react";
 const Scanner = dynamic(() => import("@/app/event-checkin/Scanner"), {
-  loading: () => <p role="status">Opening scanner…</p>,
+  loading: () => <p role="status">Opening camera…</p>,
 });
-export default function ScanTickets({
+const PosterTools = dynamic(() => import("./PosterTools"), {
+  loading: () => <p role="status">Opening poster…</p>,
+});
+export default function EventTools({
   onCheckedIn,
 }: {
   onCheckedIn: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState<"poster" | "scan" | null>(null);
+  const id = useId();
   return (
-    <details
-      className="event-scan-tools"
-      onToggle={(e) => setOpen(e.currentTarget.open)}
-    >
-      <summary>
-        <ScanLine size={20} />
-        Check in attendees
-      </summary>
-      {open && <Scanner onCheckedIn={onCheckedIn} />}
-    </details>
+    <div className="event-tools">
+      <div className="event-tool-tabs" aria-label="Event tools">
+        <button
+          type="button"
+          aria-expanded={active === "poster"}
+          aria-controls={id}
+          onClick={() => setActive(active === "poster" ? null : "poster")}
+        >
+          <ImageIcon size={19} />
+          Poster & share
+        </button>
+        <button
+          type="button"
+          aria-expanded={active === "scan"}
+          aria-controls={id}
+          onClick={() => setActive(active === "scan" ? null : "scan")}
+        >
+          <ScanLine size={19} />
+          Scan QR code
+        </button>
+      </div>
+      <div id={id}>
+        {active === "poster" && <PosterTools embedded />}
+        {active === "scan" && (
+          <Scanner autoStart autoCheckIn onCheckedIn={onCheckedIn} />
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -11,7 +10,6 @@ import {
   Mail,
   UserRound,
   ChevronDown,
-  ArrowUpRight,
   Ban,
   Gift,
   CircleHelp,
@@ -25,9 +23,6 @@ import {
 import { mapEvent } from "@/lib/public-events/map";
 import { retryEventTicketEmail } from "@/app/admin/event-checkin/actions";
 import ScanTickets from "./ScanTickets";
-const PosterTools = dynamic(() => import("./PosterTools"), {
-  loading: () => <p role="status">Opening poster tools…</p>,
-});
 const icons: Record<Payment, typeof Check> = {
   paid: Check,
   free: Gift,
@@ -42,7 +37,7 @@ export default function AttendeeList() {
     [loading, setLoading] = useState(true),
     [refreshing, setRefreshing] = useState(true),
     [q, setQ] = useState(""),
-    [filter, setFilter] = useState("all"),
+    [filter, setFilter] = useState("active"),
     [revision, refresh] = useState(0),
     [page, setPage] = useState(0),
     [busy, start] = useTransition();
@@ -128,7 +123,6 @@ export default function AttendeeList() {
           router.refresh();
         }}
       />
-      <PosterTools />
       {loading ? (
         <div className="event-loading" role="status">
           Loading registrations…
@@ -212,7 +206,8 @@ export default function AttendeeList() {
             setPage(0);
           }}
         >
-          <option value="all">Everyone</option>
+          <option value="active">Attendees</option>
+          <option value="all">All records</option>
           <option value="confirmed">Confirmed</option>
           <option value="pending">Pending</option>
           <option value="attention">Needs attention</option>
@@ -226,7 +221,13 @@ export default function AttendeeList() {
         <span>Ticket email</span>
         <span>Check-in</span>
       </div>
-      <div aria-busy={refreshing}>
+      <div
+        className="event-attendee-scroll"
+        role="region"
+        aria-label="Attendee list"
+        tabIndex={0}
+        aria-busy={refreshing}
+      >
         {rows.slice(activePage * 25, (activePage + 1) * 25).map((r) => {
           const Icon = icons[r.payment];
           return (
@@ -393,9 +394,6 @@ export default function AttendeeList() {
             ? `Updated ${new Date(data.asOf).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "2-digit", minute: "2-digit", second: "2-digit" })} SGT · refreshes every 30s while visible`
             : ""}
         </small>
-        <a href="https://whatelz.ai/event-checkin">
-          Staff scanner <ArrowUpRight size={14} />
-        </a>
       </footer>
     </section>
   );

@@ -176,3 +176,107 @@ test("duplicate check-in retains time; cancelled and unknown tickets rejected", 
     409,
   );
 });
+
+test("Admin scan opens camera and checks in automatically; repeated frames do not resubmit", async () => {
+  const effects: (() => void | (() => void))[] = [],
+    frames: (() => void)[] = [],
+    ticks: (() => void)[] = [];
+  let refs = 0,
+    cameraStarts = 0,
+    posts = 0,
+    refreshed = 0,
+    stops = 0;
+  const video = { srcObject: null, play: async () => {} };
+  const mod = { exports: {} as { default: (props: unknown) => unknown } };
+  const code = ts.transpileModule(
+    readFileSync(
+      new URL("../app/event-checkin/Scanner.tsx", import.meta.url),
+      "utf8",
+    ),
+    {
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS,
+        target: ts.ScriptTarget.ES2022,
+        jsx: ts.JsxEmit.ReactJSX,
+      },
+    },
+  ).outputText;
+  vm.runInNewContext(code, {
+    module: mod,
+    exports: mod.exports,
+    Date,
+    Error,
+    AbortSignal,
+    requestAnimationFrame: (fn: () => void) => {
+      frames.push(fn);
+      return 1;
+    },
+    cancelAnimationFrame: () => {},
+    setTimeout: (fn: () => void) => {
+      ticks.push(fn);
+      return ticks.length;
+    },
+    clearTimeout: () => {},
+    document: { addEventListener: () => {}, removeEventListener: () => {} },
+    navigator: {
+      mediaDevices: {
+        getUserMedia: async () => {
+          cameraStarts++;
+          return { getTracks: () => [{ stop: () => stops++ }] };
+        },
+      },
+    },
+    window: {
+      BarcodeDetector: class {
+        async detect() {
+          return [{ rawValue: `https://whatelz.ai/tickets/${id}` }];
+        }
+      },
+    },
+    fetch: async (_url: string, options: { body: string }) => {
+      posts++;
+      assert.equal(JSON.parse(options.body).ticket, id);
+      return {
+        ok: true,
+        json: async () => ({
+          status: "checked_in",
+          name: "Synthetic attendee",
+          at: "2026-11-12T11:00:00Z",
+        }),
+      };
+    },
+    require: (name: string) =>
+      ({
+        react: {
+          useState: (v: unknown) => [v, () => {}],
+          useRef: (v: unknown) => ({ current: refs++ === 0 ? video : v }),
+          useId: () => "ticket",
+          useCallback: (fn: unknown) => fn,
+          useEffect: (fn: () => void) => effects.push(fn),
+          useEffectEvent: (fn: unknown) => fn,
+        },
+        "react/jsx-runtime": { jsx: () => ({}), jsxs: () => ({}) },
+        "lucide-react": {},
+        "./scanner.css": {},
+        "@/lib/event-checkin-policy": { parseTicket },
+        "@/lib/event-qr": {},
+      })[name],
+  });
+  mod.exports.default({
+    autoStart: true,
+    autoCheckIn: true,
+    onCheckedIn: () => refreshed++,
+  });
+  const cleanups = effects.map((effect) => effect());
+  frames.forEach((fn) => fn());
+  for (let n = 0; n < 20; n++) await Promise.resolve();
+  assert.equal(cameraStarts, 1);
+  assert.equal(posts, 1);
+  assert.equal(refreshed, 1);
+  assert.equal(stops, 0, "keep camera ready for next attendee");
+  ticks.shift()?.();
+  for (let n = 0; n < 20; n++) await Promise.resolve();
+  assert.equal(posts, 1, "suppress repeated frames of the same ticket");
+  cleanups.forEach((cleanup) => cleanup?.());
+  assert.equal(stops, 1, "release camera when panel unmounts");
+});

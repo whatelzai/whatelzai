@@ -31,8 +31,10 @@ Poster follow-up browser QA: original PNG downloaded on desktop as elz-evt-0004-
 
 ## QR check-in inside Admin
 
-Open Registrations → Check in attendees → Scan QR. Camera access is requested only on that click; rear camera is preferred. Scan the QR in the attendee's email, then Confirm check-in. The attendee name and check-in time appear, and the list/counts refresh. Repeat scans return Already checked in without changing the original timestamp.
+Open Registrations → Scan QR code, beside Poster & share. This starts the rear camera and scanning immediately; camera permission may be requested. Scan the QR in the attendee's email to check in automatically, with no confirmation button. The attendee name and check-in time appear, and the list/counts refresh. Repeated frames of the same QR are suppressed for eight seconds; later repeat scans return Already checked in without changing the original timestamp. The camera remains ready for another attendee.
 
-For an email on the same phone, choose QR image (PNG/JPEG screenshot, up to 15 MB), or paste the ticket link. Images and camera frames are decoded locally and never uploaded or retained. Native BarcodeDetector falls back to lazy jsQR. Camera tracks stop when the scanner is closed, the page is hidden or the component unmounts. Only Whatelz ticket links/UUIDv4 are accepted; decoded URLs are never followed.
+Stop camera to use QR image for an email on the same phone. Choose QR image (PNG/JPEG screenshot, up to 15 MB), or open Ticket link instead and paste the ticket link. Decoded images also check in automatically; pasted links use a Check in button. Images and camera frames are decoded locally and never uploaded or retained. Native BarcodeDetector falls back to lazy jsQR. Camera tracks stop when the scanner is closed, the page is hidden or the component unmounts. Only Whatelz ticket links/UUIDv4 are accepted; decoded URLs are never followed.
 
 The existing endpoint still requires same-origin authenticated owner/event staff, confirmed current-event ticket and an atomic empty-check-in update. Cancelled/unknown tickets cannot check in. No database migration or new credentials. Physical phone camera scanning still requires a device trial; synthetic QR images and endpoint protections are covered separately.
+
+Attendees is the default filter: released and cancelled records are hidden, retained under All records / Cancelled or released. The attendee region scrolls independently within a bounded height with keyboard access. No attempt data is deleted.

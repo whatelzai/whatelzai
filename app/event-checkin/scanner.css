@@ -58,3 +58,13 @@
 .ticket-scan-status svg {
   flex-shrink: 0;
 }
+.ticket-manual {
+  margin-top: 12px;
+}
+.ticket-manual > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}

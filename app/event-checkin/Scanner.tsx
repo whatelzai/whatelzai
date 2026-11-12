@@ -1,6 +1,13 @@
 "use client";
 import "./scanner.css";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useId,
+  useRef,
+  useState,
+} from "react";
 import { Camera, ImagePlus, CheckCircle2, ScanLine } from "lucide-react";
 import { parseTicket } from "@/lib/event-checkin-policy";
 import { decodeQrSource } from "@/lib/event-qr";
@@ -10,9 +17,13 @@ type Detector = {
 export default function Scanner({
   initialTicket = "",
   onCheckedIn,
+  autoStart = false,
+  autoCheckIn = false,
 }: {
   initialTicket?: string;
   onCheckedIn?: () => void;
+  autoStart?: boolean;
+  autoCheckIn?: boolean;
 }) {
   const [ticket, setTicket] = useState(initialTicket),
     [message, setMessage] = useState(""),
@@ -23,7 +34,8 @@ export default function Scanner({
     stream = useRef<MediaStream | null>(null),
     timer = useRef<ReturnType<typeof setTimeout> | null>(null),
     generation = useRef(0),
-    pending = useRef(false);
+    pending = useRef(false),
+    lastScan = useRef({ id: "", at: 0 });
   const id = useId();
   const release = useCallback(() => {
     generation.current++;
@@ -46,11 +58,70 @@ export default function Scanner({
       document.removeEventListener("visibilitychange", hidden);
     };
   }, [release, stop]);
-  function accept(raw: string) {
+  async function submitTicket(value: string) {
+    if (pending.current) return;
+    if (!parseTicket(value)) {
+      setMessage("Enter a valid Whatelz ticket link or ID.");
+      return;
+    }
+    pending.current = true;
+    setBusy(true);
+    setSuccess(false);
+    if (!autoCheckIn) stop();
+    const run = generation.current;
+    setMessage("Checking in…");
+    try {
+      const response = await fetch("/api/event-checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticket: value }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(15000),
+      });
+      const result = await response.json();
+      if (
+        !response.ok ||
+        !["checked_in", "already_checked_in"].includes(result.status) ||
+        !result.at
+      )
+        throw Error(
+          result.error || "Check-in could not be confirmed. Please retry.",
+        );
+      if (run !== generation.current) return;
+      setMessage(
+        `${result.status === "checked_in" ? "Checked in" : "Already checked in"}: ${result.name} · ${new Date(result.at).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "2-digit", minute: "2-digit" })}`,
+      );
+      setSuccess(true);
+      setTicket("");
+      onCheckedIn?.();
+    } catch (error) {
+      if (run !== generation.current) return;
+      setTicket(value);
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Connection failed. Please retry.",
+      );
+    } finally {
+      pending.current = false;
+      setBusy(false);
+    }
+  }
+  async function accept(raw: string) {
     const parsed = parseTicket(raw);
     if (!parsed) {
       setMessage("This is not a Whatelz ticket. Try another QR code.");
       return false;
+    }
+    if (autoCheckIn) {
+      if (
+        lastScan.current.id === parsed &&
+        Date.now() - lastScan.current.at < 8000
+      )
+        return false;
+      lastScan.current = { id: parsed, at: Date.now() };
+      await submitTicket(parsed);
+      return false; // keep the camera ready for the next attendee
     }
     setTicket(parsed);
     setSuccess(false);
@@ -108,7 +179,7 @@ export default function Scanner({
               video.current.videoHeight,
             );
           if (run !== generation.current) return;
-          if (raw && accept(raw)) {
+          if (raw && (await accept(raw))) {
             stop();
             return;
           }
@@ -131,6 +202,14 @@ export default function Scanner({
       );
     }
   }
+  const startOnOpen = useEffectEvent(() => {
+    void start();
+  });
+  useEffect(() => {
+    if (!autoStart) return;
+    const frame = requestAnimationFrame(() => startOnOpen());
+    return () => cancelAnimationFrame(frame);
+  }, [autoStart]);
   async function image(file?: File) {
     if (!file || pending.current) return;
     stop();
@@ -141,15 +220,14 @@ export default function Scanner({
     setTicket("");
     setMessage("Reading QR image…");
     let bitmap: ImageBitmap | undefined;
+    let raw: string | null = null;
     try {
       if (!file.type.startsWith("image/") || file.size > 15 * 1024 * 1024)
         throw Error("Choose an image smaller than 15 MB.");
       bitmap = await createImageBitmap(file);
-      const raw = await decodeQrSource(bitmap, bitmap.width, bitmap.height);
-      if (run !== generation.current) return;
+      raw = await decodeQrSource(bitmap, bitmap.width, bitmap.height);
       if (!raw)
         throw Error("No QR found. Crop closer to the QR code and try again.");
-      accept(raw);
     } catch (error) {
       if (run === generation.current)
         setMessage(
@@ -162,55 +240,27 @@ export default function Scanner({
       pending.current = false;
       setBusy(false);
     }
+    if (raw && run === generation.current) await accept(raw);
   }
   async function checkin(e: React.FormEvent) {
     e.preventDefault();
-    if (pending.current) return;
-    if (!parseTicket(ticket)) {
-      setMessage("Enter a valid Whatelz ticket link or ID.");
-      return;
-    }
-    pending.current = true;
-    setBusy(true);
-    setSuccess(false);
-    stop();
-    try {
-      const response = await fetch("/api/event-checkin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticket }),
-        cache: "no-store",
-      });
-      const result = await response.json();
-      if (
-        !response.ok ||
-        !["checked_in", "already_checked_in"].includes(result.status) ||
-        !result.at
-      )
-        throw Error(
-          result.error || "Check-in could not be confirmed. Please retry.",
-        );
-      setMessage(
-        `${result.status === "checked_in" ? "Checked in" : "Already checked in"}: ${result.name} · ${new Date(result.at).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "2-digit", minute: "2-digit" })}`,
-      );
-      setSuccess(true);
-      setTicket("");
-      onCheckedIn?.();
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "Connection failed. Please retry.",
-      );
-    } finally {
-      pending.current = false;
-      setBusy(false);
-    }
+    await submitTicket(ticket);
   }
   return (
     <section className="ticket-scanner" aria-label="Ticket scanner">
       <div className="ticket-scan-actions">
-        <button type="button" disabled={busy} onClick={camera ? stop : start}>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => {
+            if (camera) {
+              stop();
+              setMessage("Camera stopped.");
+            } else {
+              void start();
+            }
+          }}
+        >
           <Camera size={20} />
           {camera ? "Stop camera" : "Scan QR"}
         </button>
@@ -243,27 +293,30 @@ export default function Scanner({
           marginBlock: camera ? 16 : 0,
         }}
       />
-      <form onSubmit={checkin}>
-        <label htmlFor={id}>Ticket link or ID</label>
-        <input
-          id={id}
-          value={ticket}
-          disabled={busy || camera}
-          maxLength={512}
-          onChange={(e) => {
-            setTicket(e.target.value);
-            setSuccess(false);
-          }}
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          placeholder="Paste ticket link"
-        />
-        <button disabled={busy || camera || !ticket.trim()} type="submit">
-          <ScanLine size={18} />
-          {busy ? "Checking…" : "Confirm check-in"}
-        </button>
-      </form>
+      <details className="ticket-manual">
+        <summary>Ticket link instead</summary>
+        <form onSubmit={checkin}>
+          <label htmlFor={id}>Ticket link or ID</label>
+          <input
+            id={id}
+            value={ticket}
+            disabled={busy || camera}
+            maxLength={512}
+            onChange={(e) => {
+              setTicket(e.target.value);
+              setSuccess(false);
+            }}
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            placeholder="Paste ticket link"
+          />
+          <button disabled={busy || camera || !ticket.trim()} type="submit">
+            <ScanLine size={18} />
+            {busy ? "Checking…" : autoCheckIn ? "Check in" : "Confirm check-in"}
+          </button>
+        </form>
+      </details>
       <p role="status" aria-live="polite" className="ticket-scan-status">
         {success && <CheckCircle2 size={22} />} {message}
       </p>
