@@ -127,6 +127,27 @@ test("worker shows generic notifications and confines clicks to Admin destinatio
   assert.equal(shown.title, "Time for Personal");
   assert.equal(shown.data.url, "https://admin.whatelz.ai/personal");
   assert.equal(shown.body, "Open your scheduled space.");
+  handlers.push({
+    data: {
+      json: () => ({
+        title: "New event registration confirmed",
+        url: "/event-checkin",
+        tag: "event-hash",
+        body: "PRIVATE PERSON",
+      }),
+    },
+    waitUntil: (p) => (wait = p),
+  });
+  await wait;
+  assert.equal(shown.title, "New event registration confirmed");
+  assert.equal(shown.body, "Open registrations in Whatelz Admin.");
+  assert.equal(shown.data.url, "https://admin.whatelz.ai/event-checkin");
+  handlers.notificationclick({
+    notification: { close() {}, data: { url: "/event-checkin" } },
+    waitUntil: (p) => (wait = p),
+  });
+  await wait;
+  assert.equal(opened, "https://admin.whatelz.ai/event-checkin");
   handlers.notificationclick({
     notification: { close() {}, data: { url: "/api/admin/tokens" } },
     waitUntil: (p: Promise<unknown>) => (wait = p),

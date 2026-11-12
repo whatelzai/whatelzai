@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-11-event-push",
+    date: "2026-11-11",
+    title: "A notification for new registrations",
+    titleZh: "新报名，及时提醒",
+    items: [
+      {
+        en: "New confirmed event tickets can alert your enabled Admin devices. Tap the notification to open Registrations.",
+        zh: "新确认的活动票券可提醒已开启通知的管理设备，点击即可打开报名名单。",
+      },
+      {
+        en: "Enable Push notifications in Settings on your phone. Alerts use the existing one-minute check and keep attendee details off the lock screen.",
+        zh: "请在手机设置页开启推送通知。系统每分钟检查一次，锁屏通知不会显示报名者资料。",
+      },
+    ],
+  },
+  {
     id: "2026-11-11-poster-sharing",
     date: "2026-11-11",
     title: "Take your event poster with you",

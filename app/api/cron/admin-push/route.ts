@@ -1,3 +1,4 @@
+import { checkEventPush } from "@/lib/admin-push/event-server";
 import { validPushCronBearer } from "@/lib/admin-push/cron-auth";
 import { checkRoutinePush, checkFocusPush } from "@/lib/admin-push/server";
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
     const now = new Date();
     const results = await Promise.allSettled([
       checkFocusPush(now),
+      checkEventPush(now),
       now.getUTCMinutes() % 5 === 0
         ? checkRoutinePush()
         : Promise.resolve({ skipped: true }),
@@ -27,7 +29,8 @@ export async function GET(request: Request) {
     return Response.json(
       {
         focus: results[0].status === "fulfilled" ? results[0].value : null,
-        routines: results[1].status === "fulfilled" ? results[1].value : null,
+        events: results[1].status === "fulfilled" ? results[1].value : null,
+        routines: results[2].status === "fulfilled" ? results[2].value : null,
       },
       { headers },
     );
