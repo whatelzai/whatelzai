@@ -265,7 +265,13 @@ export default function AttendeeList() {
                       : "—"}
                 </span>
                 <span className="event-checkin-state">
-                  {r.checkedIn ? <Check size={14} /> : <Clock3 size={14} />}
+                  {r.checkedIn ? (
+                    <span className="event-checked-icon" aria-hidden="true">
+                      <Check size={12} strokeWidth={3} />
+                    </span>
+                  ) : (
+                    <Clock3 size={14} aria-hidden="true" />
+                  )}
                   {r.checkedIn
                     ? "Checked in"
                     : r.status === "confirmed"

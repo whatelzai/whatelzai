@@ -258,6 +258,7 @@ test("Admin scan opens camera and checks in automatically; repeated frames do no
         "react/jsx-runtime": { jsx: () => ({}), jsxs: () => ({}) },
         "lucide-react": {},
         "./scanner.css": {},
+        "./ScanFeedback": { default: () => ({}) },
         "@/lib/event-checkin-policy": { parseTicket },
         "@/lib/event-qr": {},
       })[name],

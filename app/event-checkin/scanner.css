@@ -47,17 +47,6 @@
   background: transparent;
   color: inherit;
 }
-.ticket-scan-status {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-weight: 550;
-  overflow-wrap: anywhere;
-  margin-top: 16px;
-}
-.ticket-scan-status svg {
-  flex-shrink: 0;
-}
 .ticket-manual {
   margin-top: 12px;
 }
@@ -67,4 +56,88 @@
   display: flex;
   align-items: center;
   font-size: 0.875rem;
+}
+
+.ticket-scan-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  overflow-wrap: anywhere;
+  margin: 12px 0;
+  font-size: 0.9rem;
+}
+.ticket-scan-feedback:empty {
+  display: none;
+}
+.ticket-scan-feedback > svg {
+  flex-shrink: 0;
+}
+.ticket-scan-feedback:is(.is-success, .is-duplicate, .is-error) {
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid;
+}
+.ticket-scan-feedback.is-success {
+  background: #edf9ef;
+  border-color: #93cfa3;
+  color: #14532d;
+}
+.ticket-scan-feedback.is-duplicate {
+  background: #fff7df;
+  border-color: #ddc27b;
+  color: #684b12;
+}
+.ticket-scan-feedback.is-error {
+  background: #fff1ef;
+  border-color: #e5aaa3;
+  color: #8e2720;
+}
+.ticket-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 50%;
+  background: #15803d;
+  color: white;
+}
+.is-duplicate .ticket-result-icon {
+  background: #85621b;
+}
+.ticket-result-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.ticket-result-label {
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+.ticket-result-name {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 750;
+}
+.ticket-result-time {
+  font-size: 0.8rem;
+  margin-top: 3px;
+}
+.admin-shell[data-admin-theme="dark"] .ticket-scan-feedback.is-success {
+  background: #153322;
+  border-color: #4f9867;
+  color: #d6f3df;
+}
+.admin-shell[data-admin-theme="dark"] .ticket-scan-feedback.is-duplicate {
+  background: #352d19;
+  border-color: #a78a4d;
+  color: #fae8b6;
+}
+.admin-shell[data-admin-theme="dark"] .ticket-scan-feedback.is-error {
+  background: #3c2220;
+  border-color: #b46a62;
+  color: #ffd8d3;
 }
