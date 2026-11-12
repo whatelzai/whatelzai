@@ -24,6 +24,7 @@ import {
 } from "@/lib/event-admin/model";
 import { mapEvent } from "@/lib/public-events/map";
 import { retryEventTicketEmail } from "@/app/admin/event-checkin/actions";
+import ScanTickets from "./ScanTickets";
 const PosterTools = dynamic(() => import("./PosterTools"), {
   loading: () => <p role="status">Opening poster tools…</p>,
 });
@@ -121,6 +122,12 @@ export default function AttendeeList() {
           <RefreshCw size={18} className={refreshing ? "event-spin" : ""} />
         </button>
       </div>
+      <ScanTickets
+        onCheckedIn={() => {
+          reload();
+          router.refresh();
+        }}
+      />
       <PosterTools />
       {loading ? (
         <div className="event-loading" role="status">

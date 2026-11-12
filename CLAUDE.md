@@ -735,3 +735,7 @@ payment requirement may be shown after an attendee applies a valid code.
 ## Event poster sharing
 
 Registrations has a lazy Poster & share disclosure using the same mapEvent.poster as the public event page. Original PNG download works independently of native sharing; native Share image is enabled only after a prepared file passes canShare, and invokes share on the next explicit click. OS/receiving app selects destinations and editing; never promise posting, Instagram Story/Feed targeting or caption transfer. Copy caption/link/manual upload remain. Public media only, no attendee data, social credentials, API inference or automatic publication. See docs/admin-event-operations.md.
+
+## Admin ticket scanner
+
+Registrations includes a lazy Check in attendees disclosure, reusing the staff scanner and authorized atomic check-in endpoint. Camera decoding uses BarcodeDetector where available, with lazy local jsQR fallback; QR image selection is processed only on device. Only canonical Whatelz ticket links/UUIDv4 are accepted. Explicit confirmation, duplicate-aware feedback and attendee/count refresh. Camera stops on collapse, hidden page and unmount; late camera permissions cannot restart a stopped scan. No new schema, paid inference or image storage. See docs/admin-event-operations.md.

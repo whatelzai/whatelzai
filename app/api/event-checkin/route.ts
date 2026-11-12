@@ -60,6 +60,11 @@ export async function POST(req: Request) {
       { error: "Ticket invalid or cancelled" },
       { status: 404 },
     );
+  if (!existing.checked_in_at)
+    return NextResponse.json(
+      { error: "Ticket changed. Please try again." },
+      { status: 409 },
+    );
   return NextResponse.json({
     status: "already_checked_in",
     name: existing.attendee_name,

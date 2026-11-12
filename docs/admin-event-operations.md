@@ -28,3 +28,11 @@ Caption is editable in memory, with separate Copy caption / Copy event link and 
 Validation: poster signature/path, public-only caption, file capability rejection/throws, file-only handoff, quiet cancellation and blocked-share fallback tests, plus existing event model/privacy tests. Production webpack build/type/lint checked; native Instagram/Xiaohongshu editing requires user testing on the installed phone apps.
 
 Poster follow-up browser QA: original PNG downloaded on desktop as elz-evt-0004-poster.png and SHA256 matched the source; Copy event link and edited Copy caption showed success feedback.390px phone and1440px desktop, light/dark and no phone overflow verified in public-poster-only production fixture. Native file capability was available in desktop Chrome; no social target selected and no post sent. Installed mobile share destinations remain user verification. Temporary preview removed.
+
+## QR check-in inside Admin
+
+Open Registrations → Check in attendees → Scan QR. Camera access is requested only on that click; rear camera is preferred. Scan the QR in the attendee's email, then Confirm check-in. The attendee name and check-in time appear, and the list/counts refresh. Repeat scans return Already checked in without changing the original timestamp.
+
+For an email on the same phone, choose QR image (PNG/JPEG screenshot, up to 15 MB), or paste the ticket link. Images and camera frames are decoded locally and never uploaded or retained. Native BarcodeDetector falls back to lazy jsQR. Camera tracks stop when the scanner is closed, the page is hidden or the component unmounts. Only Whatelz ticket links/UUIDv4 are accepted; decoded URLs are never followed.
+
+The existing endpoint still requires same-origin authenticated owner/event staff, confirmed current-event ticket and an atomic empty-check-in update. Cancelled/unknown tickets cannot check in. No database migration or new credentials. Physical phone camera scanning still requires a device trial; synthetic QR images and endpoint protections are covered separately.

@@ -555,3 +555,20 @@
     gap: 8px;
   }
 }
+
+.event-scan-tools {
+  margin: 16px 0;
+  max-width: 640px;
+}
+.event-scan-tools > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 650;
+  min-height: 48px;
+}
+.event-scan-tools[open] {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ea-line);
+}
