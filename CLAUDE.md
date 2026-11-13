@@ -766,3 +766,7 @@ service-worker, cookie, CSS and internal tool names. This is a branding change,
 not a data or authorization migration. Founder’s Club remains a community name
 in actual team/event/culture content. See docs/weos-identity.md.
 — codex, 2026-11-13
+
+## Historical event backfill and draft posters
+
+Private event_attendance records historical presence separately from live tickets, with attendance date, nullable unknown exact scan time, actual import actor/time and idempotent source_key. Admin Events streams past events plus unpublished drafts. June28 ASR sharing backfilled from explicit owner facts; no fake email/phone/checkout or ticket delivery. Poster variants are private object paths, exposed only through owner/Admin-host event-poster signed redirects with variant/path validation. November19 art is3:4 and9:16, S$8/30 places, confirmed timing and provisional The Vibe venue. It does not activate next-event checkout or replace current EVENT_KEY. See docs/admin-event-operations.md.

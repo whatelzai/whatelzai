@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import HistoricalEvents from "@/components/admin/event-admin/HistoricalEvents";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { adminUrl } from "@/lib/admin-url";
@@ -29,7 +31,7 @@ export default async function AdminEventsPage() {
     listServiceEvents(),
     supabaseAdmin
       .from("events")
-      .select("id,name,date,location,notes")
+      .select("id,name,date,location,notes,metadata")
       .eq("published", false)
       .contains("metadata", { planning: true })
       .order("date")
@@ -86,13 +88,46 @@ export default async function AdminEventsPage() {
               <p className="text-xs">Draft · {formatDate(d.date)}</p>
               <h3 className="font-semibold">{d.name}</h3>
               <p className="text-sm">
-                {d.location || "Venue to confirm"} · Time to confirm
+                {d.location || "Venue to confirm"}
+                {d.metadata?.venue_status === "provisional"
+                  ? " (provisional)"
+                  : ""}{" "}
+                ·{" "}
+                {d.metadata?.starts_at && d.metadata?.ends_at
+                  ? `${new Date(d.metadata.starts_at).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "numeric", minute: "2-digit" })}–${new Date(d.metadata.ends_at).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "numeric", minute: "2-digit" })}`
+                  : "Time to confirm"}
               </p>
+              {typeof d.metadata?.price_minor === "number" && (
+                <p className="text-sm">
+                  S${(d.metadata.price_minor / 100).toFixed(0)} ·{" "}
+                  {d.metadata.capacity} places · Online registration not
+                  activated
+                </p>
+              )}
+              {d.metadata?.poster_files && (
+                <div className="draft-poster-links">
+                  {["post", "story"]
+                    .filter((f) => d.metadata.poster_files[f])
+                    .map((f) => (
+                      <a
+                        key={f}
+                        href={`/api/admin/event-poster?event=${d.id}&format=${f}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {f === "post" ? "Post 3:4" : "Story 9:16"} →
+                      </a>
+                    ))}
+                </div>
+              )}
             </article>
           ))
         )}
       </section>
 
+      <Suspense fallback={<p role="status">Loading past events…</p>}>
+        <HistoricalEvents />
+      </Suspense>
       {events.length === 0 ? (
         <div className="rounded border border-dashed border-zinc-200 px-6 py-12 text-center">
           <p className="text-sm text-zinc-500">No events yet.</p>
