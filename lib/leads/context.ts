@@ -96,6 +96,10 @@ export async function readLeadContext(query: string) {
         goal: lead.goal,
         is_priority: lead.is_priority,
         access: lead.access,
+        relationship:
+          typeof lead.relationship === "string"
+            ? lead.relationship.slice(0, 1200)
+            : "",
         story: lead.story.slice(0, 1200),
         interests: lead.interests.slice(0, 400),
         concerns: lead.concerns.slice(0, 400),

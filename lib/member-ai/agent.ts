@@ -1,3 +1,4 @@
+import { fitHqhContext } from "./hqh-context-budget";
 import { hqhDiscoveryQuery } from "./hqh-discovery";
 import { readSse } from "./stream";
 import { sourceQuerySchema } from "@/lib/fcos/model";
@@ -173,7 +174,7 @@ export async function runMemberAgent(options: {
           "Saved HQH lookup failed. Explain the temporary lookup problem rather than claiming there are no saved profiles.",
       };
     }
-    const output = JSON.stringify(context);
+    const output = JSON.stringify(fitHqhContext(context));
     if (Buffer.byteLength(output) > 48000)
       throw Error("Saved HQH context is too large. Choose a smaller group.");
     input.push(
@@ -188,7 +189,7 @@ export async function runMemberAgent(options: {
     hqhRead = true;
   }
   for (let step = 0; step < MAX_CALLS; step++) {
-    const body = JSON.stringify({
+    const payload = {
       model,
       store: false,
       ...(options.onText ? { stream: true } : {}),
@@ -199,7 +200,30 @@ export async function runMemberAgent(options: {
       tools,
       tool_choice: step === MAX_CALLS - 1 ? "none" : "auto",
       parallel_tool_calls: false,
-    });
+    };
+    let body = JSON.stringify(payload);
+    if (
+      hqhRead &&
+      Buffer.byteLength(body, "utf8") - imageBytes > MAX_PAYLOAD_BYTES
+    ) {
+      // Saved person context is current; avoid replaying entire old generated HQHs.
+      // Stored conversations are preserved unchanged.
+      for (let i = 0; i < input.length; i++) {
+        const item = input[i] as { role?: string; content?: unknown };
+        if (
+          item.role === "assistant" &&
+          typeof item.content === "string" &&
+          item.content.length > 1200
+        )
+          input[i] = {
+            ...item,
+            content:
+              item.content.slice(0, 1200) +
+              "\n[Earlier Chat draft excerpt; current saved person context follows.]",
+          };
+      }
+      body = JSON.stringify(payload);
+    }
     if (
       Buffer.byteLength(body, "utf8") - imageBytes > MAX_PAYLOAD_BYTES ||
       Buffer.byteLength(body, "utf8") > 850000
@@ -296,7 +320,12 @@ export async function runMemberAgent(options: {
           requires_member_acceptance: true,
         };
       } else throw Error("This tool is unavailable.");
-      const output = JSON.stringify(result);
+      const output = JSON.stringify(
+        item.name === "read_fcos" &&
+          ["hqh", "hqh_discover"].includes(args.source)
+          ? fitHqhContext(result)
+          : result,
+      );
       if (
         Buffer.byteLength(output) >
         (item.name === "read_fcos" &&

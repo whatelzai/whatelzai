@@ -62,7 +62,6 @@ export async function readHqhDiscoveryContext(query: string) {
         person: x.person,
         currentHqh: x.currentHqh,
         history: x.history,
-        coverage: x.coverage,
       })),
       format: contexts.find((x) => x.format)?.format,
       coverage:
@@ -110,7 +109,6 @@ export async function readHqhDiscoveryContext(query: string) {
       person: x.person,
       currentHqh: x.currentHqh,
       history: x.history,
-      coverage: x.coverage,
     })),
     format: contexts.find((x) => x.format)?.format,
     coverage:
