@@ -3,6 +3,8 @@ import test from "node:test";
 import { readFile } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
 import {
+  contactInput,
+  matchesInviteLocation,
   type TicketEvidence,
   attendanceFor,
   inviteWriteInput,
@@ -180,12 +182,34 @@ test("private schema denies browser roles and prevents cross-owner invitation li
         "utf8",
       ),
     );
+    await db.exec(
+      await readFile(
+        new URL(
+          "../supabase/migrations/20261113152311_ai_invite_locations.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
     const access = await db.query<{ allowed: boolean }>(
       `select has_table_privilege('anon','public.ai_business_contacts','select') or has_table_privilege('authenticated','public.ai_business_invitations','insert') as allowed`,
     );
     assert.equal(access.rows[0].allowed, false);
     await db.exec(
       `insert into public.users values('${owner}'),('${other}');insert into public.ai_business_contacts(id,owner_id,source_key,name) values('${id}','${owner}','test','Test contact');`,
+    );
+    const loc = await db.query<{ location: string | null }>(
+      `select location from public.ai_business_contacts where id='${id}'`,
+    );
+    assert.equal(loc.rows[0].location, null);
+    await db.exec(
+      `update public.ai_business_contacts set location='SG' where id='${id}'`,
+    );
+    await assert.rejects(
+      db.exec(
+        `update public.ai_business_contacts set location='XX' where id='${id}'`,
+      ),
+      /check constraint/,
     );
     await assert.rejects(
       db.exec(
@@ -235,4 +259,60 @@ test("preview writes only allow this deployment's exact configured host", () => 
     if (oldUrl === undefined) delete process.env.VERCEL_URL;
     else process.env.VERCEL_URL = oldUrl;
   }
+});
+
+test("invite locations filter explicitly without assigning unknown contacts to SG", () => {
+  const contacts = [
+    { location: "SG" as const },
+    { location: "KL" as const },
+    { location: "PG" as const },
+    { location: null },
+  ];
+  assert.equal(
+    contacts.filter((c) => matchesInviteLocation(c, "all")).length,
+    4,
+  );
+  assert.equal(
+    contacts.filter((c) => matchesInviteLocation(c, "SG")).length,
+    1,
+  );
+  assert.equal(
+    contacts.filter((c) => matchesInviteLocation(c, "KL")).length,
+    1,
+  );
+  assert.equal(
+    contacts.filter((c) => matchesInviteLocation(c, "PG")).length,
+    1,
+  );
+  assert.equal(
+    contacts.filter((c) => matchesInviteLocation(c, "unset")).length,
+    1,
+  );
+});
+
+test("location edits accept only supported codes and old clients cannot clear a stored location", () => {
+  const input = {
+    action: "contact",
+    id,
+    revision: 1,
+    name: "Person",
+    email: null,
+    phone: "",
+    interests: "",
+    context: "",
+    collaboration: "",
+    next_step: "",
+    follow_up_on: null,
+    relationship: "getting_to_know",
+    status: "active",
+    priority: false,
+  };
+  const legacy = contactInput.parse(input);
+  assert.equal(Object.hasOwn(legacy, "location"), false);
+  for (const location of ["SG", "KL", "PG", null])
+    assert.ok(contactInput.safeParse({ ...input, location }).success);
+  assert.equal(
+    contactInput.safeParse({ ...input, location: "MY" }).success,
+    false,
+  );
 });

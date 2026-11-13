@@ -795,3 +795,7 @@ This supersedes SPR-195's shared install-icon colours, not the shared vector.
 ### AI Business Invite List (SPR-198)
 
 `/admin/ai-business/invites` is sole-owner private contact context, independent of member leads and access tiers. Initial import uses the two actual 5/13-attendee events: 16 people / 18 attended visits, with explicit overlap resolution and no invented invitation history. Owner records interests, collaboration, priority and next follow-up manually. Attendance requires checked-in source evidence; future tickets can match existing canonical IDs/exact emails. Browser-denied RLS tables, same-origin Admin JSON writes and revision guards protect changes. Invitation logging sends nothing. Do not contact blocks new logs; corrections remain visible when removed from counts. No public account/membership flow is added. Migration 20261113145620 applied; details and rollback in `docs/ai-business-invites.md`.
+
+### Invite List locations (SPR-200)
+
+AI Business contacts have nullable owner-assigned SG/KL/PG locations (Singapore/Kuala Lumpur/Penang), shown as a list column/profile/editor and independent composable filter. Totals follow the selected location. The current authorized 16-person cohort is SG; future contacts default to Not set. Location is an invitation market, not nationality or membership. Older clients omitting location preserve the stored value. Migration 20261113152311 applied; owner-scoped revision backfill verified 16 SG and repeat-safe. Contact identity, attendance, permissions and other leads remain unchanged.

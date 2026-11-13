@@ -96,7 +96,7 @@
 .invite-column-head,
 .invite-people li > button {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 95px 70px;
+  grid-template-columns: minmax(0, 1fr) 60px 85px 65px;
   gap: 12px;
   align-items: center;
 }
@@ -422,7 +422,7 @@
     display: none;
   }
   .invite-people li > button {
-    grid-template-columns: minmax(0, 1fr) 64px 58px;
+    grid-template-columns: minmax(0, 1fr) 45px 58px 52px;
     gap: 8px;
     padding-inline: 8px;
   }
@@ -481,4 +481,25 @@
   .invite-toolbar > label {
     width: 100%;
   }
+}
+
+.invite-location {
+  font-size: 13px;
+  text-align: right;
+  font-weight: 550;
+}
+.invite-location-filter {
+  margin: -4px 0 20px;
+}
+.invite-location-filter label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--invite-muted);
+}
+.invite-location-filter select {
+  width: auto;
+  max-width: 100%;
+  color: var(--invite-ink);
 }

@@ -1,4 +1,19 @@
 import { z } from "zod";
+export const locations = {
+  SG: "Singapore",
+  KL: "Kuala Lumpur",
+  PG: "Penang",
+} as const;
+export type InviteLocation = keyof typeof locations;
+export function matchesInviteLocation(
+  contact: { location?: InviteLocation | null },
+  location: string,
+) {
+  return (
+    location === "all" ||
+    (location === "unset" ? !contact.location : contact.location === location)
+  );
+}
 export const relationships = {
   getting_to_know: "Getting to know",
   interested: "Interested",
@@ -45,6 +60,7 @@ export const contactInput = z
       .transform((s) => s.toLowerCase())
       .nullable(),
     phone: z.string().trim().max(40),
+    location: z.enum(["SG", "KL", "PG"]).nullable().optional(),
     interests: z.string().trim().max(2000),
     context: z.string().trim().max(4000),
     collaboration: z.string().trim().max(2000),
@@ -84,7 +100,11 @@ export const inviteWriteInput = z.discriminatedUnion("action", [
   contactInput,
   invitationInput,
 ]);
-export type Contact = Omit<z.infer<typeof contactInput>, "action"> & {
+export type Contact = Omit<
+  z.infer<typeof contactInput>,
+  "action" | "location"
+> & {
+  location: InviteLocation | null;
   event_person_id: string | null;
   created_at: string;
   updated_at: string;

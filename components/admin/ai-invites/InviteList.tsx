@@ -10,6 +10,8 @@ import {
   Star,
 } from "lucide-react";
 import {
+  locations,
+  matchesInviteLocation,
   channels,
   responses,
   relationships,
@@ -51,6 +53,7 @@ export default function InviteList({
   const router = useRouter(),
     [search, setSearch] = useState(""),
     [filter, setFilter] = useState("all"),
+    [location, setLocation] = useState("all"),
     [selected, setSelected] = useState<string | null>(null),
     [contactForm, setContactForm] = useState<Contact | null | undefined>(
       undefined,
@@ -59,11 +62,15 @@ export default function InviteList({
       person: InviteContact;
       entry: Invitation | null;
     } | null>(null);
-  const today = singaporeToday(),
-    person = initial.find((c) => c.id === selected);
+  const today = singaporeToday();
+  const scoped = useMemo(
+    () => initial.filter((c) => matchesInviteLocation(c, location)),
+    [initial, location],
+  );
+  const person = scoped.find((c) => c.id === selected);
   const filtered = useMemo(
     () =>
-      initial
+      scoped
         .filter((c) =>
           [c.name, c.email, c.phone, c.interests, c.next_step, c.collaboration]
             .join(" ")
@@ -89,9 +96,9 @@ export default function InviteList({
             ) ||
             a.name.localeCompare(b.name),
         ),
-    [initial, search, filter, today],
+    [scoped, search, filter, today],
   );
-  const due = initial.filter(
+  const due = scoped.filter(
     (c) => c.status === "active" && c.follow_up_on && c.follow_up_on <= today,
   ).length;
   const refresh = () => router.refresh();
@@ -99,10 +106,9 @@ export default function InviteList({
     <>
       <div className="invite-overview">
         <p>
-          <strong>{initial.length}</strong> people <span>·</span>{" "}
-          <strong>
-            {initial.reduce((n, c) => n + c.attendance.length, 0)}
-          </strong>{" "}
+          <strong>{scoped.length}</strong>{" "}
+          {scoped.length === 1 ? "person" : "people"} <span>·</span>{" "}
+          <strong>{scoped.reduce((n, c) => n + c.attendance.length, 0)}</strong>{" "}
           attended visits <span>·</span> <strong>{due}</strong> follow-ups due
         </p>
         <button className="invite-primary" onClick={() => setContactForm(null)}>
@@ -135,8 +141,30 @@ export default function InviteList({
               </select>
             </label>
           </div>
+          <div className="invite-location-filter">
+            <label>
+              <span>Location</span>
+              <select
+                value={location}
+                onChange={(e) => {
+                  setLocation(e.target.value);
+                  setSelected(null);
+                }}
+                aria-label="Filter by location"
+              >
+                <option value="all">All locations</option>
+                {Object.entries(locations).map(([code, label]) => (
+                  <option key={code} value={code}>
+                    {code} · {label}
+                  </option>
+                ))}
+                <option value="unset">Not set</option>
+              </select>
+            </label>
+          </div>
           <div className="invite-column-head" aria-hidden="true">
             <span>Person / next step</span>
+            <span>Location</span>
             <span>Invites logged</span>
             <span>Attended</span>
           </div>
@@ -169,6 +197,10 @@ export default function InviteList({
                         {date(c.follow_up_on)}
                       </small>
                     )}
+                  </span>
+                  <span className="invite-location">
+                    <span className="invite-mobile-label">Location</span>
+                    {c.location || "—"}
                   </span>
                   <span className="invite-count">
                     <span className="invite-mobile-label">Invites logged</span>
@@ -207,6 +239,12 @@ export default function InviteList({
                   <p>
                     {relationships[person.relationship]} ·{" "}
                     {statuses[person.status]}
+                    {person.location && (
+                      <>
+                        {" "}
+                        · {person.location} · {locations[person.location]}
+                      </>
+                    )}
                   </p>
                 </div>
                 <button
@@ -422,6 +460,7 @@ function ContactEditor({
           .trim()
           .toLowerCase(),
         phone: f.get("phone"),
+        location: f.get("location") || null,
         interests: f.get("interests"),
         context: f.get("context"),
         collaboration: f.get("collaboration"),
@@ -472,6 +511,17 @@ function ContactEditor({
             />
           </label>
         </div>
+        <label>
+          Location
+          <select name="location" defaultValue={contact?.location || ""}>
+            <option value="">Not set</option>
+            {Object.entries(locations).map(([code, label]) => (
+              <option key={code} value={code}>
+                {code} · {label}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="invite-form-pair">
           <label>
             Relationship
