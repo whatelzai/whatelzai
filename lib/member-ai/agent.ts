@@ -223,6 +223,27 @@ export async function runMemberAgent(options: {
           };
       }
       body = JSON.stringify(payload);
+      if (Buffer.byteLength(body, "utf8") - imageBytes > MAX_PAYLOAD_BYTES) {
+        for (let i = 0; i < input.length; i++) {
+          const item = input[i] as {
+            type?: string;
+            call_id?: string;
+            output?: string;
+          };
+          if (
+            item.type === "function_call_output" &&
+            item.call_id === "hqh_discovery" &&
+            item.output
+          )
+            input[i] = {
+              ...item,
+              output: JSON.stringify(
+                fitHqhContext(JSON.parse(item.output), 22000),
+              ),
+            };
+        }
+        body = JSON.stringify(payload);
+      }
     }
     if (
       Buffer.byteLength(body, "utf8") - imageBytes > MAX_PAYLOAD_BYTES ||
