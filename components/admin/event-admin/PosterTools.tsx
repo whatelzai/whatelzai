@@ -48,7 +48,6 @@ export default function PosterTools({
         <div className="event-poster-body">
           <a
             href={mapEvent.poster}
-            target="_blank"
             rel="noreferrer"
             className="event-poster-preview"
             aria-label="Open full-size event poster"

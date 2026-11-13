@@ -336,7 +336,7 @@ export function HackathonForm({ hackathon, onSave, onDelete }: Props) {
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => router.push(adminUrl("/admin/hackathons"))}
             className="border border-zinc-200 px-4 py-2 font-mono text-xs uppercase tracking-widest text-zinc-500 transition-colors hover:border-zinc-400 hover:text-zinc-900"
           >
             Cancel

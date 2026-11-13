@@ -113,7 +113,6 @@ export default async function TemplateDetailPage({
             <CopyButton text={publicUrl} label="Copy link" />
             <Link
               href={publicUrl}
-              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-zinc-300 px-4 py-2 font-mono text-xs uppercase tracking-widest text-zinc-700 hover:border-zinc-900 hover:text-zinc-900"
             >

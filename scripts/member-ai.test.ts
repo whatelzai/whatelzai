@@ -281,3 +281,71 @@ test("natural HQH request receives saved people before the first model response"
   });
   assert.match(result.body, /1\. A/);
 });
+
+test("an explicit HQH re-read replaces automatic context instead of doubling the request", async () => {
+  let calls = 0,
+    reads = 0;
+  const config = options();
+  config.history = [
+    {
+      id: "request",
+      role: "user",
+      body: "Write HQH for my six people",
+      proposals: [],
+    },
+  ];
+  const context = {
+    resolved: true,
+    people: Array.from({ length: 6 }, (_, i) => ({
+      person: { name: `Person ${i}`, story: "x".repeat(1200) },
+      currentHqh: {
+        intake: { raw_input: "x".repeat(900), objective: "Meet people" },
+        invitation_context: "x".repeat(1300),
+      },
+      history: { notes: [{ body: "x".repeat(1500) }] },
+    })),
+  };
+  await runMemberAgent({
+    ...config,
+    readFcos: async () => {
+      reads++;
+      return context;
+    },
+    request: async (_url, init) => {
+      calls++;
+      const body = JSON.parse(String(init?.body));
+      assert.ok(Buffer.byteLength(String(init?.body)) <= 60000);
+      if (calls === 1)
+        return reply([
+          {
+            type: "function_call",
+            name: "read_fcos",
+            arguments: JSON.stringify({
+              source: "hqh",
+              query: "Person 0|Person 1|Person 2|Person 3|Person 4|Person 5",
+            }),
+            call_id: "fresh_hqh",
+          },
+        ]);
+      assert.equal(
+        body.input.some(
+          (x: { call_id?: string }) => x.call_id === "hqh_discovery",
+        ),
+        false,
+      );
+      return reply([
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "HQH\n1. Person 0 > Objective > Meet people",
+            },
+          ],
+        },
+      ]);
+    },
+  });
+  assert.equal(reads, 2);
+  assert.equal(calls, 2);
+});

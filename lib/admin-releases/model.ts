@@ -2,6 +2,8 @@ import { cleanAdminPath } from "@/lib/admin-navigation";
 export type AdminRelease = {
   id: string;
   date: string;
+  /** Release-note publication instant; legacy entries use their introducing commit. */
+  publishedAt?: string;
   title: string;
   titleZh: string;
   items: { en: string; zh: string }[];

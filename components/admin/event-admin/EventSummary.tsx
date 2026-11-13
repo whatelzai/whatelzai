@@ -1,52 +1,50 @@
-import { CreditCard } from "lucide-react";
-import { CalendarDays, ChevronRight, Users, Clock3, Check } from "lucide-react";
+import { CalendarDays, ChevronRight } from "lucide-react";
 import Link from "@/components/admin/AdminLink";
 import { adminUrl } from "@/lib/admin-url";
-import { eventAdminData } from "@/lib/event-admin/server";
-import { mapEvent } from "@/lib/public-events/map";
+import { loadEventPortfolio } from "@/lib/event-portfolio/server";
+import { nextPortfolioEvent } from "@/lib/event-portfolio";
+import { singaporeDay } from "@/lib/daily/model";
 export default async function EventSummary() {
-  let d;
+  let events;
   try {
-    d = await eventAdminData();
+    events = await loadEventPortfolio();
   } catch {
     return (
-      <Link className="event-pulse" href={adminUrl("/admin/event-checkin")}>
-        <CalendarDays size={22} />
+      <Link
+        className="event-pulse"
+        href={adminUrl("/admin/ai-business/events")}
+      >
+        <CalendarDays size={24} />
         <span>
-          <strong>Event registrations</strong>
-          <small>Status unavailable · open to retry</small>
+          <strong>Events unavailable</strong>
+          <small>Open events to retry</small>
         </span>
         <ChevronRight size={18} />
       </Link>
     );
   }
-  const c = d.counts;
+  const next = nextPortfolioEvent(events, singaporeDay());
   return (
-    <Link href={adminUrl("/admin/event-checkin")} className="event-pulse">
+    <Link
+      className="event-pulse"
+      href={adminUrl("/admin/ai-business/events" + (next ? "/" + next.id : ""))}
+    >
       <CalendarDays size={24} />
       <span className="event-pulse-title">
         <strong>
-          {new Date(mapEvent.startsAt).toLocaleDateString("en-SG", {
-            day: "numeric",
-            month: "short",
-            timeZone: "Asia/Singapore",
-          })}{" "}
-          · {mapEvent.shortName}
+          {next
+            ? `${new Date(next.date + "T12:00:00+08:00").toLocaleDateString("en-SG", { day: "numeric", month: "short", timeZone: "Asia/Singapore" })} · ${next.name}`
+            : "Plan the next event"}
         </strong>
         <small>
-          <Users size={13} />
-          {c.confirmed}/{mapEvent.capacity} confirmed <Clock3 size={13} />
-          {c.pending} pending <CreditCard size={13} />
-          {c.paid} paid · {c.free} free <Check size={13} />
-          {c.checkedIn} checked in
+          {next
+            ? next.metadata.registration_status === "not_activated"
+              ? "Draft · registration not activated"
+              : next.published
+                ? "Upcoming event"
+                : "Draft event"
+            : "No upcoming event recorded"}
         </small>
-      </span>
-      <span className="event-pulse-attention">
-        {c.emailPending > 0
-          ? `${c.emailPending} ticket email${c.emailPending === 1 ? "" : "s"} pending`
-          : c.review > 0
-            ? `${c.review} to review`
-            : "View people"}
       </span>
       <ChevronRight size={18} />
     </Link>

@@ -47,7 +47,12 @@ export function hqhFacts(value: unknown) {
       objective: text(intake.organizer_objective, 700),
     },
     invitation_context: text(invitation?.text, 2000),
-    familiarity_context: text(familiarity?.text, 1700),
+    familiarity_context: text(
+      typeof familiarity?.text === "string" && familiarity.text.includes("\n\n")
+        ? familiarity.text.split("\n\n").slice(1).join("\n\n")
+        : familiarity?.text,
+      1700,
+    ),
     social_comfort: {
       level: text(social.level, 40),
       certainty: text(social.certainty, 200),

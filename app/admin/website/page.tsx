@@ -61,8 +61,7 @@ export default async function WebsitePage() {
                 <p className="font-mono text-xs text-zinc-400">{path}</p>
               </div>
               <a
-                href={`https://whatelz.vercel.app${path}`}
-                target="_blank"
+                href={adminUrl(`/admin/preview${path}`)}
                 rel="noopener noreferrer"
                 className="font-mono text-xs text-zinc-400 hover:text-zinc-900 transition-colors"
               >
@@ -120,8 +119,7 @@ export default async function WebsitePage() {
                 <div className="flex items-center gap-3 ml-4 shrink-0">
                   {h.published && (
                     <a
-                      href={`https://whatelz.vercel.app/hackathons/${h.slug}`}
-                      target="_blank"
+                      href={adminUrl(`/admin/preview/hackathons/${h.slug}`)}
                       rel="noopener noreferrer"
                       className="font-mono text-xs text-zinc-400 hover:text-zinc-900"
                     >
@@ -187,8 +185,7 @@ export default async function WebsitePage() {
                 </div>
                 {c.published && (
                   <a
-                    href={`https://whatelz.vercel.app/career/${c.slug}`}
-                    target="_blank"
+                    href={adminUrl(`/admin/preview/career/${c.slug}`)}
                     rel="noopener noreferrer"
                     className="font-mono text-xs text-zinc-400 hover:text-zinc-900 ml-4 shrink-0"
                   >
@@ -245,8 +242,7 @@ export default async function WebsitePage() {
                 <div className="flex items-center gap-3 ml-4 shrink-0">
                   {p.status === "published" && (
                     <a
-                      href={`https://whatelz.vercel.app/blog/${p.slug}`}
-                      target="_blank"
+                      href={adminUrl(`/admin/preview/blog/${p.slug}`)}
                       rel="noopener noreferrer"
                       className="font-mono text-xs text-zinc-400 hover:text-zinc-900"
                     >

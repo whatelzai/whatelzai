@@ -3,7 +3,7 @@ import { supabaseAdmin as db } from "@/lib/supabase-server";
 import { dailyOwner } from "@/lib/daily/server";
 import { mapEvent } from "@/lib/public-events/map";
 import { eventView, type Ticket, type Attempt } from "./model";
-export async function eventAdminData() {
+export async function eventAdminData(eventKey: string = mapEvent.key) {
   await dailyOwner();
   const [tickets, attempts] = await Promise.all([
     db
@@ -12,7 +12,7 @@ export async function eventAdminData() {
         "id,signup_attempt_id,person_id,attendee_name,email,phone,status,email_sent_at,checked_in_at,created_at,stripe_payment_intent_id",
         { count: "exact" },
       )
-      .eq("event_key", mapEvent.key)
+      .eq("event_key", eventKey)
       .order("created_at", { ascending: false })
       .range(0, 999),
     db
@@ -21,7 +21,7 @@ export async function eventAdminData() {
         "id,attendee_name,email,phone,amount,state,created_at,payment_started_at",
         { count: "exact" },
       )
-      .eq("event_key", mapEvent.key)
+      .eq("event_key", eventKey)
       .order("created_at", { ascending: false })
       .range(0, 999),
   ]);

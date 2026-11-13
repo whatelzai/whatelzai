@@ -1,3 +1,4 @@
+import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Presence — whatelz.ai" };
@@ -50,8 +51,7 @@ export default function PresencePage() {
           </h1>
         </div>
         <a
-          href="/"
-          target="_blank"
+          href={adminUrl("/admin/preview")}
           rel="noopener noreferrer"
           className="font-mono text-xs text-zinc-400 hover:text-zinc-900 transition-colors"
         >
@@ -93,8 +93,7 @@ export default function PresencePage() {
           {SECTIONS.map(({ name, anchor, desc }) => (
             <a
               key={anchor}
-              href={`/${anchor}`}
-              target="_blank"
+              href={adminUrl(`/admin/preview/${anchor}`)}
               rel="noopener noreferrer"
               className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50 transition-colors"
             >

@@ -76,11 +76,10 @@ export function ProductWidget({
         {adminHref.startsWith("http") ? (
           <a
             href={adminHref}
-            target="_blank"
             rel="noopener"
             className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 hover:text-zinc-900"
           >
-            Open admin ↗
+            Service address
           </a>
         ) : (
           <Link
