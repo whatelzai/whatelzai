@@ -2,6 +2,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { saveMemberLanguage } from "@/app/profile/language-actions";
 import { memberText, type MemberLanguage } from "@/lib/fcos/language";
+import { WeosBrand } from "@/components/brand/WeosBrand";
 
 export function LanguageWelcome() {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -30,7 +31,7 @@ export function LanguageWelcome() {
       className="fcos-language-welcome fixed inset-0 m-auto max-h-[calc(100dvh-32px)] w-[calc(100%_-_32px)] max-w-sm overflow-y-auto rounded-3xl border-0 bg-white p-6 text-zinc-950 shadow-2xl backdrop:bg-zinc-950/30"
     >
       <p className="mb-5 text-lg font-bold tracking-tight">
-        fc<span className="text-yellow-500">OS</span>
+        <WeosBrand />
       </p>
       <h2
         id="language-welcome-title"

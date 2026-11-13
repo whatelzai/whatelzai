@@ -16,7 +16,7 @@ import { MemberNav } from "@/components/culture/MemberNav";
 import { dateLabel } from "@/lib/leads/model";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "HQH / HHH note · fcOS",
+  title: "HQH / HHH note · weOS",
   robots: { index: false, follow: false },
 };
 export default async function BriefingPage({

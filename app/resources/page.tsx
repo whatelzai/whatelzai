@@ -19,7 +19,7 @@ import { isOwnerUser } from "@/lib/admin-policy";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Resources · fcOS",
+  title: "Resources · weOS",
   robots: { index: false, follow: false },
 };
 

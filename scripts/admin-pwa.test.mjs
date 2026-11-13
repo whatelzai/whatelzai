@@ -42,6 +42,26 @@ test("admin installation identity and every shortcut stay on the private admin o
     ),
   );
   assert.equal(member.id, "https://app.whatelz.ai/");
+  assert.equal(member.name, "weOS — Whatelz OS");
+  assert.equal(member.short_name, "weOS");
+  assert.equal(member.start_url, "https://app.whatelz.ai/");
+  assert.equal(member.scope, "https://app.whatelz.ai/");
+  assert.deepEqual(member.icons, manifest.icons);
+  for (const icon of member.icons) {
+    const current = await readFile(
+      new URL("../public" + icon.src, import.meta.url),
+    );
+    const legacyPath = icon.src
+      .replace("/admin-pwa/", "/fcos/")
+      .replace("-v2.png", ".png");
+    const legacy = await readFile(
+      new URL("../public" + legacyPath, import.meta.url),
+    );
+    assert.ok(
+      current.equals(legacy),
+      "existing member icon URLs share the Admin artwork",
+    );
+  }
 });
 async function worker(fetch) {
   const handlers = {};

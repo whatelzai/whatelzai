@@ -24,7 +24,7 @@ import { ResetCreditButton } from "./ResetCreditButton";
 import { availableReset, expiredReset } from "@/lib/profile/usage";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Profile · fcOS",
+  title: "Profile · weOS",
   robots: { index: false, follow: false },
 };
 const date = (value: string, language: string) =>
@@ -294,8 +294,8 @@ export default async function Profile({
             />
             <div className="relative flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/80">
-                  fcOS · Founder’s Club OS
+                <p className="text-[11px] font-bold tracking-[0.12em] text-white/80">
+                  weOS · Whatelz OS
                 </p>
                 <h2 className="mt-2 text-2xl font-bold">{t("Member Pass")}</h2>
               </div>

@@ -32,7 +32,7 @@ export function MemberNav({
   const orange = accent === "orange";
   return (
     <nav
-      aria-label={t("fcOS workspace")}
+      aria-label={t("weOS workspace")}
       data-fcos-nav
       data-fcos-persistent-nav={persistent || undefined}
       className={

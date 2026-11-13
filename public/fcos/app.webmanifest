@@ -1,16 +1,31 @@
 {
   "id": "https://app.whatelz.ai/",
-  "name": "fcOS — Founder’s Club Operating System",
-  "short_name": "fcOS",
-  "description": "Prepare, connect and grow with your personal fcOS workspace.",
+  "name": "weOS — Whatelz OS",
+  "short_name": "weOS",
+  "description": "Your personal Whatelz OS workspace. Prepare, connect and grow.",
   "start_url": "https://app.whatelz.ai/",
   "scope": "https://app.whatelz.ai/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
-    { "src": "/fcos/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/fcos/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/fcos/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/admin-pwa/icon-192-v2.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/admin-pwa/icon-512-v2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/admin-pwa/icon-maskable-512-v2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

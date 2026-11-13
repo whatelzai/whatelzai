@@ -7,7 +7,7 @@ import {
 import { ConnectionView } from "./View";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Connections · fcOS",
+  title: "Connections · weOS",
   robots: { index: false, follow: false },
   referrer: "no-referrer" as const,
 };

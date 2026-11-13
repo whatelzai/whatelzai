@@ -10,7 +10,7 @@ import { Chat } from "./Chat";
 import { ChatViewport } from "./ChatViewport";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Chat · fcOS",
+  title: "Chat · weOS",
   robots: { index: false, follow: false },
 };
 export default async function AssistantPage({
@@ -39,7 +39,7 @@ export default async function AssistantPage({
       <main className="fcos-tab-page mx-auto max-w-5xl px-5 py-10">
         <AppHeader title="Chat" />
         <MemberNav current="/assistant" compact persistent />
-        <h1 className="mt-10 text-3xl font-semibold">fcOS Chat</h1>
+        <h1 className="mt-10 text-3xl font-semibold">weOS Chat</h1>
         <p className="mt-4">
           Chat is available to activated members. Your workspace could not be
           loaded right now. Please refresh or ask Edmund to check your account.

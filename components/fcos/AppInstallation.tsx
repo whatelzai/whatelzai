@@ -27,7 +27,7 @@ const Installation = createContext<{
   installed: false,
   ios: false,
   clear: () => {},
-  name: "fcOS",
+  name: "weOS",
 });
 
 function browserInstalled() {
@@ -51,7 +51,7 @@ function browserIos() {
 }
 export function AppInstallationProvider({
   children,
-  name = "fcOS",
+  name = "weOS",
   worker = "/fcos-sw.js",
 }: {
   children: ReactNode;

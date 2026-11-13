@@ -7,7 +7,7 @@ import { MemberNav } from "@/components/culture/MemberNav";
 import { dateLabel } from "@/lib/leads/model";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "HQH & HHH · fcOS",
+  title: "HQH & HHH · weOS",
   robots: { index: false, follow: false },
 };
 export default async function BriefingsPage({
@@ -26,8 +26,8 @@ export default async function BriefingsPage({
     <main className="mx-auto max-w-4xl space-y-6 px-5 py-8">
       <MemberNav current="/briefings" />
       <header>
-        <p className="text-xs uppercase tracking-widest text-zinc-500">
-          fcOS · Resources · Notebook
+        <p className="text-xs tracking-wide text-zinc-500">
+          weOS · Resources · Notebook
         </p>
         <h1 className="mt-2 text-3xl font-semibold">HQH & HHH</h1>
         <p className="mt-3 text-zinc-600">

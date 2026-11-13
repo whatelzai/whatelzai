@@ -5,7 +5,7 @@ import { CompleteTask } from "../CompleteTask";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Commitments · fcOS",
+  title: "Commitments · weOS",
   robots: { index: false, follow: false },
 };
 
