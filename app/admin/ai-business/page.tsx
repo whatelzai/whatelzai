@@ -102,9 +102,7 @@ export default function AIBusinessPage() {
       description="Events, relationships and paid offers."
       intro={
         <>
-          <Suspense
-            fallback={<p role="status">Reading next event…</p>}
-          >
+          <Suspense fallback={<p role="status">Reading next event…</p>}>
             <EventSummary />
           </Suspense>
           <Suspense
