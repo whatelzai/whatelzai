@@ -31,12 +31,7 @@ export function RouteLoading({
   return (
     <main className="fcos-tab-page mx-auto max-w-5xl space-y-5 px-5 py-8 sm:px-8">
       <AppHeader title={title} chat={current === "/assistant"} />
-      <MemberNav
-        current={current}
-        compact
-        persistent
-        accent={current === "/profile" ? "orange" : "yellow"}
-      />
+      <MemberNav current={current} compact persistent />
       <LoadingRows label={`Loading ${title.toLowerCase()}…`} />
     </main>
   );

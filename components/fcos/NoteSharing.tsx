@@ -76,7 +76,7 @@ export function NoteSharing({
           </label>
           <button
             disabled={pending}
-            className="min-h-12 rounded-xl bg-yellow-300 px-5 font-semibold"
+            className="min-h-12 rounded-xl bg-weos-yellow px-5 font-semibold"
           >
             Allow team access
           </button>

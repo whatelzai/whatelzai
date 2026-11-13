@@ -220,7 +220,7 @@ export function BriefingEditor({
       </p>
       <button
         disabled={pending}
-        className="min-h-12 rounded-xl bg-yellow-300 px-6 font-semibold disabled:opacity-50"
+        className="min-h-12 rounded-xl bg-weos-yellow px-6 font-semibold disabled:opacity-50"
       >
         {pending ? "Saving…" : "Save note"}
       </button>

@@ -44,7 +44,7 @@ export default async function LeadPage({
       <Link href="/leads" className="inline-block py-2 text-sm text-zinc-500">
         ← Baobeis
       </Link>
-      <header className="rounded-3xl bg-gradient-to-br from-amber-50/80 via-orange-50/40 to-white p-6 sm:p-8">
+      <header className="rounded-3xl bg-yellow-50 p-6 sm:p-8">
         <div className="flex items-center gap-5">
           <LeadAvatar lead={lead} large />
           <div className="min-w-0">
@@ -74,7 +74,7 @@ export default async function LeadPage({
             <div>
               <p className="text-sm font-medium">{plan.title}</p>
               <p
-                className={`mt-1 text-xs ${plan.start === today ? "text-orange-600" : "text-zinc-500"}`}
+                className={`mt-1 text-xs ${plan.start === today ? "font-semibold text-weos-ink" : "text-zinc-500"}`}
               >
                 {planDate(plan, today)}
               </p>

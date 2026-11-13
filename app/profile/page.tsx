@@ -1,3 +1,4 @@
+import { MemberPass } from "@/components/fcos/MemberPass";
 import { memberTranslator } from "@/lib/fcos/language-server";
 import { isOwnerUser } from "@/lib/admin-policy";
 import { LanguageSwitch } from "./LanguageSwitch";
@@ -56,7 +57,7 @@ export default async function Profile({
   const observedAt = usage ? Date.parse(usage.observedAt) : 0;
   const firstName = user.name?.split(" ")[0] || "friend";
   return (
-    <main className="fcos-tab-page fcos-profile-page mx-auto min-h-dvh max-w-5xl space-y-6 bg-[#f7f6f4] px-5 pb-8 pt-6 text-zinc-950 sm:px-8">
+    <main className="fcos-tab-page fcos-profile-page mx-auto min-h-dvh max-w-5xl space-y-6 bg-weos-paper px-5 pb-8 pt-6 text-zinc-950 sm:px-8">
       <AppHeader
         title={releasesTab ? "Release notes" : "Profile"}
         end={
@@ -70,11 +71,11 @@ export default async function Profile({
           </SignOutButton>
         }
       />
-      <MemberNav current="/profile" compact persistent accent="orange" />
+      <MemberNav current="/profile" compact persistent />
       {!usageTab && !releasesTab && <LanguageSwitch />}
       {!usageTab && !releasesTab && (
         <section className="flex items-center gap-4 py-3 sm:gap-6">
-          <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full border-4 border-orange-100 bg-orange-50 text-3xl font-semibold text-orange-600 sm:h-28 sm:w-28">
+          <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full border-4 border-yellow-100 bg-yellow-50 text-3xl font-semibold text-weos-ink sm:h-28 sm:w-28">
             {user.image_url ? (
               <Image
                 src={user.image_url}
@@ -100,7 +101,7 @@ export default async function Profile({
                 {persona ?? t("Unavailable")}
               </strong>
             </p>
-            <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1 text-[11px] font-semibold text-orange-600">
+            <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-3 py-1 text-[11px] font-semibold text-weos-ink">
               <Sparkles size={13} aria-hidden="true" />
               {t("Prepare · connect · grow")}
             </span>
@@ -124,7 +125,7 @@ export default async function Profile({
               key={item.label}
               href={item.href}
               aria-current={item.selected ? "page" : undefined}
-              className={`flex-1 whitespace-nowrap rounded-xl px-3 py-3 text-center text-sm font-semibold ${item.selected ? "bg-white text-orange-600 shadow-sm" : "text-zinc-500"}`}
+              className={`flex-1 whitespace-nowrap rounded-xl px-3 py-3 text-center text-sm font-semibold ${item.selected ? "bg-white text-weos-ink shadow-sm" : "text-zinc-500"}`}
             >
               {t(item.label)}
             </Link>
@@ -287,31 +288,12 @@ export default async function Profile({
         </div>
       ) : (
         <div className="space-y-5">
-          <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 p-6 text-white shadow-[0_12px_30px_rgba(249,115,22,0.16)] sm:p-8">
-            <div
-              className="absolute -right-8 -top-12 h-44 w-44 rounded-full border-[28px] border-white/10"
-              aria-hidden="true"
-            />
-            <div className="relative flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-bold tracking-[0.12em] text-white/80">
-                  weOS · Whatelz OS
-                </p>
-                <h2 className="mt-2 text-2xl font-bold">{t("Member Pass")}</h2>
-              </div>
-              <span className="rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase">
-                {persona ?? t("Unverified")}
-              </span>
-            </div>
-            <div className="relative mt-9">
-              <p className="text-lg font-semibold">
-                {user.name || t("Your account")}
-              </p>
-              <p className="mt-1 break-all text-xs text-white/80">
-                {user.email}
-              </p>
-            </div>
-          </section>
+          <MemberPass
+            name={user.name || t("Your account")}
+            email={user.email}
+            persona={persona ?? t("Unverified")}
+            title={t("Member Pass")}
+          />
           <section className={`${card} space-y-5`}>
             <Link
               href="/team"
@@ -320,7 +302,7 @@ export default async function Profile({
               <span className="flex items-center gap-3">
                 <UsersRound
                   size={20}
-                  className="text-orange-500"
+                  className="text-weos-ink"
                   aria-hidden="true"
                 />
                 {t("View my team")}
@@ -328,7 +310,7 @@ export default async function Profile({
               <ArrowUpRight size={17} aria-hidden="true" />
             </Link>
             <div className="border-t border-zinc-100 pt-5">
-              <InstallAppButton accent="orange" language={language} />
+              <InstallAppButton language={language} />
             </div>
             {isOwnerUser(user) && (
               <Link

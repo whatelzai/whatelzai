@@ -99,7 +99,7 @@ export function ChatMenu({
           <button
             type="button"
             onClick={newChat}
-            className="flex min-h-12 shrink-0 items-center gap-3 rounded-xl bg-yellow-300 px-4 py-3 font-semibold"
+            className="flex min-h-12 shrink-0 items-center gap-3 rounded-xl bg-weos-yellow px-4 py-3 font-semibold"
           >
             <SquarePen size={20} aria-hidden="true" />
             New chat

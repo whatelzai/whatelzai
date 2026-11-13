@@ -766,3 +766,14 @@ service-worker, cookie, CSS and internal tool names. This is a branding change,
 not a data or authorization migration. Founder’s Club remains a community name
 in actual team/event/culture content. See docs/weos-identity.md.
 — codex, 2026-11-13
+
+## weOS palette (SPR-196)
+
+Member ShellProvider reads the reviewed Whatelz identity JSON into app-only
+weos theme variables: yellow #FACC15, ink #18181B and paper #FFFCF5. Tailwind
+weos colour utilities use those variables with reviewed fallbacks. Member Profile,
+Baobei cards, navigation/loading, installation and Chat actions share this palette;
+there is no orange Profile variant. The member pass is flat yellow with ink text
+and the shared Whatelz mark. Usage uses ink for a clearly visible progress bar.
+Actual warning/error colours remain semantic. Public/Admin theme scope remains
+separate. — codex, 2026-11-13
