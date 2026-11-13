@@ -2,6 +2,7 @@
 export function fitHqhContext(value: unknown, limit = 36000): unknown {
   if (Buffer.byteLength(JSON.stringify(value)) <= limit) return value;
   const copy = JSON.parse(JSON.stringify(value));
+  const scale = limit < 32000 ? 0.5 : 1;
   const caps: Record<string, number> = {
     body: 500,
     story: 500,
@@ -10,6 +11,8 @@ export function fitHqhContext(value: unknown, limit = 36000): unknown {
     familiarity_context: 1200,
     coverage: 180,
   };
+  for (const key of Object.keys(caps))
+    caps[key] = Math.floor(caps[key] * scale);
   const visit = (item: unknown) => {
     if (Array.isArray(item)) {
       item.forEach(visit);
