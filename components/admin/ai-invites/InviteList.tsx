@@ -164,7 +164,7 @@ export default function InviteList({
           </div>
           <div className="invite-column-head" aria-hidden="true">
             <span>Person / next step</span>
-            <span>Location</span>
+            <span>Locations</span>
             <span>Invites logged</span>
             <span>Attended</span>
           </div>
@@ -199,8 +199,16 @@ export default function InviteList({
                     )}
                   </span>
                   <span className="invite-location">
-                    <span className="invite-mobile-label">Location</span>
-                    {c.location || "—"}
+                    <span className="invite-mobile-label">Locations</span>
+                    <span className="invite-location-codes">
+                      {c.locations.length
+                        ? c.locations.map((code) => (
+                            <span key={code} title={locations[code]}>
+                              {code}
+                            </span>
+                          ))
+                        : "—"}
+                    </span>
                   </span>
                   <span className="invite-count">
                     <span className="invite-mobile-label">Invites logged</span>
@@ -239,10 +247,13 @@ export default function InviteList({
                   <p>
                     {relationships[person.relationship]} ·{" "}
                     {statuses[person.status]}
-                    {person.location && (
+                    {person.locations.length > 0 && (
                       <>
                         {" "}
-                        · {person.location} · {locations[person.location]}
+                        ·{" "}
+                        {person.locations
+                          .map((code) => `${code} · ${locations[code]}`)
+                          .join(" / ")}
                       </>
                     )}
                   </p>
@@ -467,7 +478,7 @@ function ContactEditor({
           .trim()
           .toLowerCase(),
         phone: f.get("phone"),
-        location: f.get("location") || null,
+        locations: f.getAll("locations"),
         interests: f.get("interests"),
         context: f.get("context"),
         collaboration: f.get("collaboration"),
@@ -518,17 +529,27 @@ function ContactEditor({
             />
           </label>
         </div>
-        <label>
-          Location
-          <select name="location" defaultValue={contact?.location || ""}>
-            <option value="">Not set</option>
+        <fieldset className="invite-location-picker">
+          <legend>Locations</legend>
+          <p className="invite-helper">Choose every applicable location.</p>
+          <div>
             {Object.entries(locations).map(([code, label]) => (
-              <option key={code} value={code}>
+              <label className="invite-check" key={code}>
+                <input
+                  type="checkbox"
+                  name="locations"
+                  value={code}
+                  defaultChecked={
+                    contact?.locations.includes(
+                      code as keyof typeof locations,
+                    ) || false
+                  }
+                />
                 {code} · {label}
-              </option>
+              </label>
             ))}
-          </select>
-        </label>
+          </div>
+        </fieldset>
         <div className="invite-form-pair">
           <label>
             Relationship

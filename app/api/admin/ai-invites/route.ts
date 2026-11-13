@@ -36,6 +36,15 @@ export async function POST(req: Request) {
   if (!input.success)
     return json({ error: "Check the names, dates and field lengths." }, 400);
   const { action, revision, ...values } = input.data;
+  if (
+    action === "contact" &&
+    input.data.locations === undefined &&
+    input.data.location !== undefined
+  )
+    return json(
+      { error: "Refresh this page to use location tags. Your text is kept." },
+      409,
+    );
   const table =
     action === "contact" ? "ai_business_contacts" : "ai_business_invitations";
   if (action === "invitation") {
@@ -76,6 +85,8 @@ export async function POST(req: Request) {
       ? { source_key: `manual:${values.id}` }
       : {}),
   };
+  if (action === "contact" && input.data.locations !== undefined)
+    payload.location = input.data.locations[0] ?? null;
   const query =
     revision === 0
       ? db.from(table).insert(payload)
