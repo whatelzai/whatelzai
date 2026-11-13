@@ -6,7 +6,7 @@ import InviteList from "@/components/admin/ai-invites/InviteList";
 import "@/components/admin/ai-invites/invites.css";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Invite List — AI Business",
+  title: "People — AI Business",
   robots: { index: false, follow: false },
 };
 export default function Page() {
@@ -15,8 +15,8 @@ export default function Page() {
       <header className="invite-page-heading">
         <div>
           <Link href={adminUrl("/admin/ai-business")}>AI Business</Link>
-          <h1>Invite List</h1>
-          <p>People, conversations and the next useful connection.</p>
+          <h1>People</h1>
+          <p>One profile for names, contact details and follow-up history.</p>
         </div>
       </header>
       <Suspense fallback={<p role="status">Reading your Invite List…</p>}>
