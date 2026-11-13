@@ -8,6 +8,11 @@ export const metadata: Metadata = { title: "AI Business — Admin" };
 
 const links = [
   {
+    href: "/admin/ai-business/invites",
+    label: "Invite List",
+    description: "Invitation history, attendance and your next conversation.",
+  },
+  {
     href: "/admin/event-checkin",
     label: "Event registrations",
     description: "People, payments, ticket emails and check-in.",
@@ -116,6 +121,7 @@ export default function AIBusinessPage() {
           label: "Writing & conversations",
           links: links.filter((link) =>
             [
+              "Invite List",
               "Event registrations",
               "Blog",
               "Newsletter",
