@@ -81,7 +81,7 @@ export function LanguageWelcome() {
         <button
           type="submit"
           disabled={pending}
-          className="mt-5 min-h-12 w-full rounded-2xl bg-yellow-300 px-4 py-3 text-base font-semibold text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-600 disabled:opacity-60"
+          className="mt-5 min-h-12 w-full rounded-2xl bg-weos-yellow px-4 py-3 text-base font-semibold text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-600 disabled:opacity-60"
         >
           {t(pending ? "Saving…" : "Continue")}
         </button>

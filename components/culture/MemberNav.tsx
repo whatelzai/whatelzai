@@ -8,6 +8,7 @@ import {
   Library,
   UserRound,
 } from "lucide-react";
+import { WeosBrand } from "@/components/brand/WeosBrand";
 import { memberTab } from "@/lib/fcos/navigation";
 const items = [
   { href: "/leads", label: "Baobeis", icon: UsersRound },
@@ -19,17 +20,14 @@ const items = [
 export function MemberNav({
   current,
   compact = false,
-  accent = "yellow",
   persistent = false,
 }: {
   current: string;
   compact?: boolean;
-  accent?: "yellow" | "orange";
   persistent?: boolean;
 }) {
   const { t } = useMemberLanguage();
   const selected = memberTab(current);
-  const orange = accent === "orange";
   return (
     <nav
       aria-label={t("weOS workspace")}
@@ -47,10 +45,7 @@ export function MemberNav({
         }
       >
         <Link href="/" className="text-xl font-bold tracking-tight">
-          fc
-          <span className={orange ? "text-orange-500" : "text-yellow-500"}>
-            OS
-          </span>
+          <WeosBrand />
         </Link>
         <span className="text-xs text-zinc-500">
           {t("Prepare · connect · grow")}
@@ -64,13 +59,13 @@ export function MemberNav({
             key={item.href}
             href={item.href}
             aria-current={selected === item.href ? "page" : undefined}
-            className={`flex min-h-[76px] min-w-0 flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium focus-visible:outline-2 focus-visible:outline-yellow-600 md:min-h-14 md:flex-row md:gap-2 md:rounded-xl md:px-2 md:text-sm ${selected === item.href ? (orange ? "text-orange-600 md:bg-orange-50" : "text-zinc-950 md:bg-yellow-100") : "text-zinc-500 hover:text-zinc-950"}`}
+            className={`flex min-h-[76px] min-w-0 flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium focus-visible:outline-2 focus-visible:outline-yellow-600 md:min-h-14 md:flex-row md:gap-2 md:rounded-xl md:px-2 md:text-sm ${selected === item.href ? "text-weos-ink md:bg-yellow-100" : "text-zinc-500 hover:text-zinc-950"}`}
           >
             <span
               className={
                 item.href === "/"
-                  ? `-mt-6 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white ${orange ? "bg-orange-500 text-white" : "bg-yellow-300 text-zinc-950"} shadow-md md:mt-0 md:h-auto md:w-auto md:border-0 md:bg-transparent md:text-inherit md:shadow-none ${selected === "/" ? "ring-2 ring-yellow-500 md:ring-0" : ""}`
-                  : `flex h-8 w-10 items-center justify-center rounded-xl md:h-auto md:w-auto ${selected === item.href ? (orange ? "bg-orange-50 text-orange-600 md:bg-transparent" : "bg-yellow-100 text-zinc-950 md:bg-transparent") : ""}`
+                  ? `-mt-6 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-weos-yellow text-weos-ink shadow-md md:mt-0 md:h-auto md:w-auto md:border-0 md:bg-transparent md:text-inherit md:shadow-none ${selected === "/" ? "ring-2 ring-yellow-500 md:ring-0" : ""}`
+                  : `flex h-8 w-10 items-center justify-center rounded-xl md:h-auto md:w-auto ${selected === item.href ? "bg-yellow-100 text-weos-ink md:bg-transparent" : ""}`
               }
             >
               <item.icon

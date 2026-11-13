@@ -100,16 +100,11 @@ export function AppInstallationProvider({
 }
 
 export function InstallAppButton({
-  accent = "yellow",
   language = "en",
 }: {
-  accent?: "yellow" | "orange";
   language?: "en" | "zh";
 }) {
-  const buttonTone =
-    accent === "orange"
-      ? "bg-orange-500 text-white"
-      : "bg-yellow-300 text-zinc-950";
+  const buttonTone = "bg-weos-yellow text-weos-ink";
   const { prompt, installed, ios, clear, name } = useContext(Installation);
   const helpId = useId();
   const [busy, setBusy] = useState(false);

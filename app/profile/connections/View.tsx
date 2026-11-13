@@ -6,7 +6,7 @@ import { callbackUrl, type SocialProvider } from "@/lib/social/model";
 import { configure, connect, disconnect, sync } from "./actions";
 import { Submit } from "./Submit";
 const field =
-  "mt-2 min-h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-base outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100";
+  "mt-2 min-h-12 w-full rounded-2xl border border-zinc-200 bg-white px-4 text-base outline-none focus:border-zinc-400 focus:ring-2 focus:ring-yellow-100";
 const labels = { instagram: "Instagram", linkedin: "LinkedIn" };
 export function ConnectionView({
   apps,
@@ -19,9 +19,9 @@ export function ConnectionView({
 }) {
   // Messages are plain text; never render provider error HTML or supplied URLs.
   return (
-    <main className="fcos-tab-page mx-auto min-h-dvh max-w-3xl space-y-6 bg-[#f7f6f4] px-5 pb-8 pt-6 text-zinc-950">
+    <main className="fcos-tab-page mx-auto min-h-dvh max-w-3xl space-y-6 bg-weos-paper px-5 pb-8 pt-6 text-zinc-950">
       <AppHeader title="Connections" />
-      <MemberNav current="/profile" compact persistent accent="orange" />
+      <MemberNav current="/profile" compact persistent />
       <Link
         href="/profile"
         className="inline-flex min-h-11 items-center text-sm text-zinc-500"

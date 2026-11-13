@@ -61,7 +61,7 @@ export default async function Commitments() {
       )}
       <Link
         href="/assistant"
-        className="inline-block rounded-xl bg-yellow-300 px-5 py-3 font-medium"
+        className="inline-block rounded-xl bg-weos-yellow px-5 py-3 font-medium"
       >
         Open chat →
       </Link>

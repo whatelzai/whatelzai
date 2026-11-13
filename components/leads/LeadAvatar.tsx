@@ -15,7 +15,7 @@ export function LeadAvatar({
     .toUpperCase();
   return (
     <span
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-amber-50 to-orange-100 font-medium text-amber-900 ring-4 ring-white ${large ? "h-24 w-24 text-3xl" : "h-14 w-14 text-lg"}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-yellow-50 font-medium text-weos-ink ring-4 ring-white ${large ? "h-24 w-24 text-3xl" : "h-14 w-14 text-lg"}`}
     >
       {lead.has_photo /* eslint-disable-next-line @next/next/no-img-element */ ? (
         <img

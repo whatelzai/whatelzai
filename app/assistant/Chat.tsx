@@ -205,7 +205,7 @@ export function Chat({
           <div className="grid min-h-full place-items-center">
             <div className="max-w-xs pb-10 text-center">
               <span
-                className="mx-auto mb-5 block h-3 w-3 rounded-full bg-yellow-300"
+                className="mx-auto mb-5 block h-3 w-3 rounded-full bg-weos-yellow"
                 aria-hidden="true"
               />
               <h2 className="text-2xl font-medium leading-snug tracking-tight">
@@ -284,7 +284,7 @@ export function Chat({
                   <button
                     disabled={busy}
                     onClick={() => accept(message.id, proposal.id)}
-                    className="mt-3 min-h-11 rounded-lg bg-yellow-300 px-4 py-2 text-sm font-semibold disabled:opacity-50"
+                    className="mt-3 min-h-11 rounded-lg bg-weos-yellow px-4 py-2 text-sm font-semibold disabled:opacity-50"
                   >
                     Accept commitment
                   </button>
@@ -459,7 +459,7 @@ export function Chat({
               text.length > 6000 ||
               (!text.trim() && !images.length)
             }
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-yellow-300 text-zinc-950 disabled:bg-zinc-100 disabled:text-zinc-400"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-weos-yellow text-zinc-950 disabled:bg-zinc-100 disabled:text-zinc-400"
           >
             {busy ? (
               <LoaderCircle
