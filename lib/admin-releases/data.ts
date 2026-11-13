@@ -6,6 +6,7 @@ import type { AdminRelease } from "./model";
 export const adminReleases: AdminRelease[] = [
   {
     id: "2026-11-14-event-portfolio",
+    publishedAt: "2026-11-14T01:21:25+08:00",
     date: "2026-11-14",
     title: "Next event, with history intact",
     titleZh: "聚焦下一场，保留活动记录",
@@ -22,6 +23,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-14-contained-navigation",
+    publishedAt: "2026-11-14T00:58:02+08:00",
     date: "2026-11-14",
     title: "Stay inside Admin",
     titleZh: "留在Admin内操作",
@@ -38,6 +40,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-14-visual-overview",
+    publishedAt: "2026-11-14T00:18:29+08:00",
     date: "2026-11-14",
     title: "A more visual Overview",
     titleZh: "更直观的总览",
@@ -54,6 +57,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-13-focused-workspaces",
+    publishedAt: "2026-11-14T00:07:23+08:00",
     date: "2026-11-13",
     title: "Less clutter, clearer workspaces",
     titleZh: "更精简，更清晰的工作空间",
@@ -70,6 +74,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-13-visual-media",
+    publishedAt: "2026-11-13T14:36:52+08:00",
     date: "2026-11-13",
     title: "Browse, describe and reuse event media",
     titleZh: "浏览、记录、复用活动影像",
@@ -86,6 +91,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-13-event-followup",
+    publishedAt: "2026-11-13T11:43:22+08:00",
     date: "2026-11-13",
     title: "Attendance and event memories",
     titleZh: "签到与活动影像",
@@ -102,6 +108,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-11-event-push",
+    publishedAt: "2026-11-12T10:07:50+08:00",
     date: "2026-11-11",
     title: "A notification for new registrations",
     titleZh: "新报名，及时提醒",
@@ -118,6 +125,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-11-poster-sharing",
+    publishedAt: "2026-11-11T19:52:28+08:00",
     date: "2026-11-11",
     title: "Take your event poster with you",
     titleZh: "活动海报，随手分享",
@@ -134,6 +142,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-11-10-event-operations",
+    publishedAt: "2026-11-10T22:08:34+08:00",
     date: "2026-11-10",
     title: "Event signups, at a glance",
     titleZh: "活动报名，一眼看清",
@@ -150,6 +159,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-10-28-personal-tools",
+    publishedAt: "2026-10-28T21:03:01+08:00",
     date: "2026-10-28",
     title: "Small tools for everyday life",
     titleZh: "日常生活的小工具",
@@ -166,6 +176,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-10-28-visual-money",
+    publishedAt: "2026-10-28T19:53:43+08:00",
     date: "2026-10-28",
     title: "Money at a glance",
     titleZh: "财务，一眼看清",
@@ -182,6 +193,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-10-28-entry-date",
+    publishedAt: "2026-10-28T13:48:33+08:00",
     date: "2026-10-28",
     title: "Correct an entry’s date",
     titleZh: "修改账目日期",
@@ -198,6 +210,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-10-28-simple-income",
+    publishedAt: "2026-10-28T08:27:37+08:00",
     date: "2026-10-28",
     title: "Income, without the expense fields",
     titleZh: "收入记录，更简单",
@@ -214,6 +227,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-10-27-admin-release-history",
+    publishedAt: "2026-10-27T23:15:58+08:00",
     date: "2026-10-27",
     title: "A quieter way to catch up",
     titleZh: "轻松了解最新更新",
@@ -230,6 +244,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-10-27-personal-home",
+    publishedAt: "2026-10-27T23:15:58+08:00",
     date: "2026-10-27",
     title: "Personal, built around your week",
     titleZh: "围绕每一周的个人空间",
@@ -246,6 +261,7 @@ export const adminReleases: AdminRelease[] = [
   },
   {
     id: "2026-10-27-personal-money",
+    publishedAt: "2026-10-27T23:15:58+08:00",
     date: "2026-10-27",
     title: "Every dollar. Every ringgit.",
     titleZh: "每一元，每一令吉，都有记录",
