@@ -4,6 +4,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 import ts from "typescript";
 import { whatsappHref } from "../lib/fcos/whatsapp";
+import { boundedFollowupNotes } from "../lib/leads/hqh-history";
 import { hqhFacts } from "../lib/leads/hqh-model";
 test("WhatsApp handoff preserves Chinese, emoji, indentation, newlines and separators without recipient/send parameters", () => {
   const message =
@@ -64,6 +65,9 @@ test("HQH extra context is never queried for hidden or ambiguous matches", async
       "server-only": {},
       "./context": { readLeadContext: async () => ({ items }) },
       "./hqh-model": { hqhFacts },
+      "./server": { leadOwner: async () => "viewer" },
+      "@/lib/fcos/sharing": { sharedBriefingIds: async () => [] },
+      "./hqh-history": { boundedFollowupNotes },
       "@/lib/supabase-server": {
         supabaseAdmin: {
           from: () => {
@@ -105,12 +109,21 @@ test("batch HQH lookup keeps requested order and one shared format", async () =>
       }),
     },
     "./hqh-model": { hqhFacts },
+    "./server": { leadOwner: async () => "viewer" },
+    "@/lib/fcos/sharing": { sharedBriefingIds: async () => [] },
+    "./hqh-history": { boundedFollowupNotes },
     "@/lib/supabase-server": {
       supabaseAdmin: {
         from: (table: string) => {
           const q = {
             select: () => q,
             eq: () => q,
+            or: () => q,
+            contains: () => q,
+            order: () => q,
+            limit: () => q,
+            then: (resolve: (value: unknown) => unknown) =>
+              Promise.resolve({ error: null, data: [] }).then(resolve),
             maybeSingle: async () => ({
               error: null,
               data:

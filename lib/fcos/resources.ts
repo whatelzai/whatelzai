@@ -1,3 +1,4 @@
+import { readHqhDiscoveryContext } from "@/lib/leads/hqh-discover";
 import { readHqhContext } from "@/lib/leads/hqh";
 import "server-only";
 import { loadCommunities } from "@/lib/communities/server";
@@ -14,6 +15,7 @@ import { loadCulture } from "@/lib/knowledge/server";
 export async function readFcosResource(input: unknown) {
   const { source, query } = sourceQuerySchema.parse(input);
   const owner = await fcosOwner();
+  if (source === "hqh_discover") return readHqhDiscoveryContext(query);
   if (source === "hqh") return readHqhContext(query);
   if (source === "communities") {
     const data = await loadCommunities();

@@ -1,11 +1,15 @@
 import "server-only";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
 import { readLeadContext } from "./context";
+import { sharedBriefingIds } from "@/lib/fcos/sharing";
+import { leadOwner } from "./server";
+import { boundedFollowupNotes } from "./hqh-history";
 import { hqhFacts } from "./hqh-model";
 
 /** Resolve through the existing privacy gate before reading extra context. */
 export async function readHqhContext(
   query: string,
+  noteBudget = 8000,
 ): Promise<Record<string, unknown>> {
   const names = query
     .split("|")
@@ -15,12 +19,15 @@ export async function readHqhContext(
     throw Error("Request up to six Baobeis per HQH lookup.");
   if (names.length > 1) {
     const results = await Promise.all(
-      names.map((name) => readHqhContext(name)),
+      names.map((name) =>
+        readHqhContext(name, Math.floor(10000 / names.length)),
+      ),
     );
     return {
       people: results.map((result) => ({
         person: result.person,
         currentHqh: result.currentHqh,
+        history: result.history,
         items: result.items,
         coverage: result.coverage,
       })),
@@ -57,6 +64,27 @@ export async function readHqhContext(
       .maybeSingle(),
   ]);
   if (profile.error || format.error) throw Error("HQH context unavailable.");
+  const viewer = await leadOwner();
+  const permitted = await sharedBriefingIds(viewer);
+  const followups = await db
+    .from("member_briefings")
+    .select(
+      "id,title,kind,status,occurred_on,updated_at,observations,reflections,next_steps",
+    )
+    .or(
+      `owner_id.eq.${viewer},id.in.(${
+        permitted
+          .slice(0, 500)
+          .map((x) => x.id)
+          .join(",") || "00000000-0000-0000-0000-000000000000"
+      })`,
+    )
+    .contains("lead_ids", [person.id])
+    .order("updated_at", { ascending: false })
+    .limit(20);
+  if (followups.error) throw Error("Follow-up notes unavailable.");
+  const history = boundedFollowupNotes(followups.data ?? [], noteBudget);
+
   return {
     person: {
       id: person.id,
@@ -72,10 +100,11 @@ export async function readHqhContext(
       url: person.url,
     },
     currentHqh: hqhFacts(profile.data?.metadata),
+    history,
     format:
       format.data?.body ??
       "No saved HQH format available; follow the user's requested layout.",
     coverage:
-      "Current permitted profile and selected HQH intake fields. Linked notes retain the excerpt coverage shown above; this is not a full historical HHH review. Retrieve another person in a separate call; multiple calls can be made together.",
+      "Person-based current profile and dated linked follow-up notes. Treat previous HQHs as preparation, HHHs as attributed reflections, and past event plans as history. Follow the explicit history coverage; do not claim every note was read. Event context is optional.",
   };
 }
