@@ -191,6 +191,15 @@ test("private schema denies browser roles and prevents cross-owner invitation li
         "utf8",
       ),
     );
+    await db.exec(
+      await readFile(
+        new URL(
+          "../supabase/migrations/20261113154122_ai_invitation_unknown_details.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
     const access = await db.query<{ allowed: boolean }>(
       `select has_table_privilege('anon','public.ai_business_contacts','select') or has_table_privilege('authenticated','public.ai_business_invitations','insert') as allowed`,
     );
@@ -210,6 +219,45 @@ test("private schema denies browser roles and prevents cross-owner invitation li
         `update public.ai_business_contacts set location='XX' where id='${id}'`,
       ),
       /check constraint/,
+    );
+    await db.exec(
+      await readFile(
+        new URL(
+          "../supabase/migrations/20261113154752_ai_invite_location_tags.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+    const carried = await db.query<{ locations: string[] }>(
+      `select locations from public.ai_business_contacts where id='${id}'`,
+    );
+    assert.deepEqual(carried.rows[0].locations, ["SG"]);
+    await db.exec(
+      `update public.ai_business_contacts set locations=array['SG','KL'] where id='${id}'`,
+    );
+    for (const tags of ["array['SG','SG']", "array['XX']", "array['SG',null]"])
+      await assert.rejects(
+        db.exec(
+          `update public.ai_business_contacts set locations=${tags} where id='${id}'`,
+        ),
+        /check constraint/,
+      );
+    await db.exec(
+      `insert into public.ai_business_contacts(id,owner_id,source_key,name) values('00000000-0000-4000-8000-000000000004','${owner}','unknown','Unknown region')`,
+    );
+    const unknown = await db.query<{ locations: string[] }>(
+      "select locations from public.ai_business_contacts where source_key='unknown'",
+    );
+    assert.deepEqual(unknown.rows[0].locations, []);
+    await db.exec(
+      `insert into public.ai_business_invitations(id,owner_id,contact_id,invited_on,channel,response,source_key) values('${id}','${owner}','${id}',null,null,'unavailable','import:test')`,
+    );
+    await assert.rejects(
+      db.exec(
+        `insert into public.ai_business_invitations(id,owner_id,contact_id,response,source_key) values('${other}','${owner}','${id}','declined','import:test')`,
+      ),
+      /unique constraint/,
     );
     await assert.rejects(
       db.exec(
@@ -307,6 +355,18 @@ test("location edits accept only supported codes and old clients cannot clear a 
     status: "active",
     priority: false,
   };
+  assert.ok(
+    contactInput.safeParse({ ...input, locations: ["SG", "KL"] }).success,
+  );
+  assert.ok(contactInput.safeParse({ ...input, locations: [] }).success);
+  assert.equal(
+    contactInput.safeParse({ ...input, locations: ["SG", "SG"] }).success,
+    false,
+  );
+  assert.equal(
+    contactInput.safeParse({ ...input, locations: ["XX"] }).success,
+    false,
+  );
   const legacy = contactInput.parse(input);
   assert.equal(Object.hasOwn(legacy, "location"), false);
   for (const location of ["SG", "KL", "PG", null])
@@ -314,5 +374,46 @@ test("location edits accept only supported codes and old clients cannot clear a 
   assert.equal(
     contactInput.safeParse({ ...input, location: "MY" }).success,
     false,
+  );
+});
+
+test("historical outcomes preserve unknown date/channel and distinguish unavailable from declined", () => {
+  const input = {
+    action: "invitation",
+    id,
+    contact_id: other,
+    revision: 0,
+    invited_on: null,
+    event_label: "A past session",
+    channel: null,
+    response: "unavailable",
+    notes: "Could not make the date.",
+    voided: false,
+  };
+  assert.ok(inviteWriteInput.safeParse(input).success);
+  assert.ok(
+    inviteWriteInput.safeParse({ ...input, response: "declined" }).success,
+  );
+  assert.equal(
+    inviteWriteInput.safeParse({ ...input, source_key: "injected" }).success,
+    false,
+  );
+});
+
+test("multi-location tags overlap without duplicating contacts or treating an empty selection as SG", () => {
+  const people = [
+    { locations: ["SG", "KL"] as ("SG" | "KL")[] },
+    { locations: ["SG"] as "SG"[] },
+  ];
+  assert.equal(people.filter((c) => matchesInviteLocation(c, "SG")).length, 2);
+  assert.equal(people.filter((c) => matchesInviteLocation(c, "KL")).length, 1);
+  assert.equal(people.filter((c) => matchesInviteLocation(c, "all")).length, 2);
+  assert.equal(
+    matchesInviteLocation({ locations: [], location: "SG" }, "SG"),
+    false,
+  );
+  assert.equal(
+    matchesInviteLocation({ locations: [], location: "SG" }, "unset"),
+    true,
   );
 });

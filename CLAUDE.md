@@ -813,3 +813,11 @@ A plan never creates an ABO node or registers an ABO. Joint accounts stay joint.
 ### Invite List locations (SPR-200)
 
 AI Business contacts have nullable owner-assigned SG/KL/PG locations (Singapore/Kuala Lumpur/Penang), shown as a list column/profile/editor and independent composable filter. Totals follow the selected location. The current authorized 16-person cohort is SG; future contacts default to Not set. Location is an invitation market, not nationality or membership. Older clients omitting location preserve the stored value. Migration 20261113152311 applied; owner-scoped revision backfill verified 16 SG and repeat-safe. Contact identity, attendance, permissions and other leads remain unchanged.
+
+### Historical invitation outcomes (SPR-201)
+
+Invite dates/channels may be null and must remain explicit unknowns, including after editing. Couldn’t attend (`unavailable`) is separate from Declined/attendance and never implies a lost lead. The event label contains its event date/ID; do not substitute that date for when outreach occurred. Owner/source uniqueness protects repeat-safe private imports, with source keys excluded from form input. Authorized Nov12 intake adds16 outcomes/15 new contacts:31 contacts,18 attended visits preserved. Referral reasons stay private; no invented dates, channels, contact details or follow-ups. The owner explicitly confirmed SG for the15 new contacts, giving31 SG contacts. Migration20261113154122 applied. See docs/ai-business-invites.md.
+
+### Overlapping Invite List locations (SPR-201)
+
+Supersedes SPR-200's single selector: canonical `locations` is a bounded unique SG/KL/PG array, empty means Not set. Multi-select checkboxes and every-tag row/profile rendering preserve one contact/history across regions. Filters match any assigned tag. Legacy scalar `location` is retained and mirrored from the first submitted tag for rollback; pre-tag forms carrying only scalar location must refresh (409), so they cannot replace multi-tags. Migration20261113154752 copies existing locations. Current31 unique people retainSG; two owner-confirmed contacts alsoKL (SG31/KL2/PG0, not33 people). No invitation reasons or attendance changed.

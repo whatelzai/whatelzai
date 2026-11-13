@@ -17,7 +17,7 @@ export async function loadInviteList() {
       db
         .from("ai_business_contacts")
         .select(
-          "id,revision,name,email,phone,location,event_person_id,interests,context,collaboration,next_step,follow_up_on,relationship,status,priority,created_at,updated_at",
+          "id,revision,name,email,phone,location,locations,event_person_id,interests,context,collaboration,next_step,follow_up_on,relationship,status,priority,created_at,updated_at",
           { count: "exact" },
         )
         .eq("owner_id", owner)
@@ -30,7 +30,7 @@ export async function loadInviteList() {
           { count: "exact" },
         )
         .eq("owner_id", owner)
-        .order("invited_on", { ascending: false })
+        .order("invited_on", { ascending: false, nullsFirst: false })
         .range(0, 999),
       db
         .from("ai_business_attendance_links")
