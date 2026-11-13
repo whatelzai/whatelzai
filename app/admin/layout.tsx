@@ -2,6 +2,7 @@ import "@/components/admin/event-admin/events.css";
 import { AdminPreferencesProvider } from "@/components/admin/AdminPreferences";
 import { AdminFocusProvider } from "@/components/admin/AdminFocus";
 import "./admin.css";
+import { AdminWorkspaceTheme } from "@/components/admin/AdminWorkspaceTheme";
 import "@/components/admin/releases/releases.css";
 import AdminReleaseNotice from "@/components/admin/releases/AdminReleaseNotice";
 import { adminReleases } from "@/lib/admin-releases/data";
@@ -21,7 +22,7 @@ export default async function AdminLayout({
   return (
     <AdminPreferencesProvider owner={user.id}>
       <AdminFocusProvider owner={user.id}>
-        <div className="min-h-dvh bg-white">
+        <AdminWorkspaceTheme>
           <AdminNavigation />
           <AdminReleaseNotice
             owner={user.id}
@@ -32,7 +33,7 @@ export default async function AdminLayout({
               {children}
             </div>
           </main>
-        </div>
+        </AdminWorkspaceTheme>
       </AdminFocusProvider>
     </AdminPreferencesProvider>
   );

@@ -1,7 +1,15 @@
 "use client";
 import { useAdminPreferences } from "./AdminPreferences";
 import Link from "@/components/admin/AdminLink";
+import { CalendarDays, UsersRound, Quote, BookOpen } from "lucide-react";
 import { adminUrl } from "@/lib/admin-url";
+
+const groupIcons = {
+  Events: CalendarDays,
+  People: UsersRound,
+  Proof: Quote,
+  Products: BookOpen,
+};
 
 export function AdminArea({
   title,
@@ -10,12 +18,14 @@ export function AdminArea({
   children,
   intro,
   groups,
+  secondary,
 }: {
   title: string;
   description: string;
   links: readonly { href: string; label: string; description: string }[];
   children?: React.ReactNode;
   intro?: React.ReactNode;
+  secondary?: readonly { href: string; label: string; description: string }[];
   groups?: readonly {
     label: string;
     links: readonly { href: string; label: string; description: string }[];
@@ -54,13 +64,27 @@ export function AdminArea({
       )}
       {groups && (
         <div className="ledger-tool-directory">
-          {groups.map((group) => (
-            <section key={group.label} aria-label={t(group.label)}>
-              <h2>{t(group.label)}</h2>
-              <div>{group.links.map(renderLink)}</div>
-            </section>
-          ))}
+          {groups.map((group) => {
+            const Icon = groupIcons[group.label as keyof typeof groupIcons];
+            return (
+              <section key={group.label} aria-label={t(group.label)}>
+                <h2>
+                  {Icon && <Icon size={17} aria-hidden="true" />}
+                  {t(group.label)}
+                </h2>
+                <div>{group.links.map(renderLink)}</div>
+              </section>
+            );
+          })}
         </div>
+      )}
+      {secondary && secondary.length > 0 && (
+        <details className="workspace-secondary">
+          <summary>{t("More tools")}</summary>
+          <div className="ledger-tool-directory">
+            {secondary.map(renderLink)}
+          </div>
+        </details>
       )}
       {children}
     </div>

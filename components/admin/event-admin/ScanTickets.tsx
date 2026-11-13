@@ -1,6 +1,7 @@
 "use client";
 import { useId, useState } from "react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import { Image as ImageIcon, ScanLine, Images } from "lucide-react";
 const Scanner = dynamic(() => import("@/app/event-checkin/Scanner"), {
   loading: () => <p role="status">Opening camera…</p>,
@@ -16,10 +17,11 @@ export default function EventTools({
 }: {
   onCheckedIn: () => void;
 }) {
+  const initialMedia = useSearchParams().get("tool") === "media";
   const [active, setActive] = useState<"poster" | "scan" | "media" | null>(
-    null,
+    initialMedia ? "media" : null,
   );
-  const [mediaOpened, setMediaOpened] = useState(false);
+  const [mediaOpened, setMediaOpened] = useState(initialMedia);
   const id = useId();
   return (
     <div className="event-tools">

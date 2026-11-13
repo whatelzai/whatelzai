@@ -6,9 +6,25 @@ import Link from "@/components/admin/AdminLink";
 import { WhatelzMark } from "@/components/brand/WhatelzMark";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { Check, ChevronDown, House, Settings2, UserRound } from "lucide-react";
+import {
+  Bot,
+  Check,
+  ChevronDown,
+  House,
+  Network,
+  Settings2,
+  Sun,
+  UserRound,
+} from "lucide-react";
 import { adminUrl } from "@/lib/admin-url";
 import { adminNavigation, adminWorkstreams } from "@/lib/admin-navigation";
+
+const workspaceIcons = {
+  Overview: House,
+  "AI Business": Bot,
+  "Network Marketing": Network,
+  "Day Job": Sun,
+} as const;
 
 const tabs = [
   {
@@ -35,6 +51,8 @@ export function AdminNavigation() {
   const activeLabel =
     current.workstream ??
     (current.tab === "personal" ? "Personal" : "Settings");
+  const ActiveIcon =
+    workspaceIcons[current.workstream as keyof typeof workspaceIcons] ?? House;
   useEffect(() => {
     const closeOutside = (event: PointerEvent) => {
       if (
@@ -119,6 +137,7 @@ export function AdminNavigation() {
                   }}
                   className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-full px-4 text-sm font-medium text-zinc-950 transition focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
                 >
+                  <ActiveIcon size={19} aria-hidden="true" />
                   {t(activeLabel)}
                   <ChevronDown
                     size={16}
@@ -132,6 +151,7 @@ export function AdminNavigation() {
                 >
                   {adminWorkstreams.map((item) => {
                     const active = current.workstream === item.label;
+                    const Icon = workspaceIcons[item.label];
                     return (
                       <Link
                         key={item.path}
@@ -145,7 +165,10 @@ export function AdminNavigation() {
                         }}
                         className={`flex min-h-12 items-center justify-between gap-4 rounded-xl px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${active ? "bg-zinc-100" : "hover:bg-zinc-100"}`}
                       >
-                        {t(item.label)}
+                        <span className="flex items-center gap-3">
+                          <Icon size={18} aria-hidden="true" />
+                          {t(item.label)}
+                        </span>
                         {active && <Check size={16} aria-hidden="true" />}
                       </Link>
                     );
@@ -184,11 +207,7 @@ export function AdminNavigation() {
                   </div>
                 </nav>
               </details>
-            ) : (
-              <span className="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-zinc-950">
-                {t(activeLabel)}
-              </span>
-            )}
+            ) : null}
           </div>
         </div>
       </header>

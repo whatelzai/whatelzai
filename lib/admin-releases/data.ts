@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-13-focused-workspaces",
+    date: "2026-11-13",
+    title: "Less clutter, clearer workspaces",
+    titleZh: "更精简，更清晰的工作空间",
+    items: [
+      {
+        en: "AI Business now centres on Events, People, Proof and Products. Occasional tools sit under More tools.",
+        zh: "AI业务聚焦活动、人脉、口碑与产品，其他工具收在更多工具中。",
+      },
+      {
+        en: "Robot and yellow for AI, purple network for relationships, orange sun for Day Job. Personal and Settings have a quieter header.",
+        zh: "AI使用黄色机器人，人脉使用紫色网络，工作使用橙色太阳；个人与设置页的页头更简洁。",
+      },
+    ],
+  },
+  {
     id: "2026-11-13-visual-media",
     date: "2026-11-13",
     title: "Browse, describe and reuse event media",

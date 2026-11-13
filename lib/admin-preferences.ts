@@ -18,6 +18,17 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "More tools": "更多工具",
+  "Events, relationships and paid offers.": "活动、人脉与付费产品。",
+  "Attendees & sales": "报名与签到",
+  "Plan an event": "策划活动",
+  "Invites & follow-ups": "邀请与跟进",
+  Proof: "口碑",
+  "Event photos & videos": "活动照片与视频",
+  "The playbook": "实战手册",
+  "Offers & services": "产品与服务",
+  "Activities & products": "活动与产品",
+  "Member administration": "会员管理",
   Payday: "发薪",
   Meditate: "静心",
   Train: "训练",

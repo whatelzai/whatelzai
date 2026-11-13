@@ -98,7 +98,7 @@ export default function AIBusinessPage() {
   return (
     <AdminArea
       title="AI Business"
-      description="One useful outcome for this work block."
+      description="Events, relationships and paid offers."
       intro={
         <>
           <Suspense
@@ -118,47 +118,77 @@ export default function AIBusinessPage() {
       links={[]}
       groups={[
         {
-          label: "Writing & conversations",
-          links: links.filter((link) =>
-            [
-              "Invite List",
-              "Event registrations",
-              "Blog",
-              "Newsletter",
-              "Testimonials",
-              "Events",
-            ].includes(link.label),
-          ),
+          label: "Events",
+          links: [
+            {
+              href: "/admin/event-checkin",
+              label: "Attendees & sales",
+              description: "Sign-ups, payments, posters and event photos.",
+            },
+            {
+              href: "/admin/events",
+              label: "Plan an event",
+              description: "Upcoming sessions and past events.",
+            },
+          ],
         },
         {
-          label: "Website & identity",
-          links: links.filter((link) =>
-            [
-              "Product health",
-              "My profile",
-              "Brand & design system",
-              "Website dashboard",
-              "Homepage",
-            ].includes(link.label),
-          ),
+          label: "People",
+          links: [
+            {
+              href: "/admin/ai-business/invites",
+              label: "Invites & follow-ups",
+              description: "Your next conversation.",
+            },
+            {
+              href: "/admin/newsletter",
+              label: "Newsletter",
+              description: "Stay in touch with your audience.",
+            },
+          ],
         },
         {
-          label: "Offers",
-          links: links.filter((link) => link.label === "Services"),
+          label: "Proof",
+          links: [
+            {
+              href: "/admin/testimonials",
+              label: "Testimonials",
+              description: "Participant and client feedback.",
+            },
+            {
+              href: "/admin/event-checkin?tool=media",
+              label: "Event photos & videos",
+              description: "Open the event media library.",
+            },
+          ],
         },
         {
-          label: "Portfolio",
-          links: links.filter((link) =>
-            [
-              "Projects",
-              "Career",
-              "Hackathons",
-              "Leadership",
-              "Mentorship",
-            ].includes(link.label),
-          ),
+          label: "Products",
+          links: [
+            {
+              href: "https://whatelz.ai/playbook",
+              label: "The playbook",
+              description: "View your digital product.",
+            },
+            {
+              href: "/admin/services",
+              label: "Offers & services",
+              description: "Your paid offers.",
+            },
+          ],
         },
       ]}
+      secondary={links.filter(
+        (link) =>
+          ![
+            "Invite List",
+            "Event registrations",
+            "Newsletter",
+            "Testimonials",
+            "Events",
+            "Services",
+          ].includes(link.label),
+      )}
     />
   );
 }
