@@ -34,7 +34,7 @@ export function LanguageSwitch() {
               value={value}
               disabled={pending || language === value}
               aria-pressed={language === value}
-              className={`min-h-11 rounded-full px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-orange-500 ${language === value ? "bg-white text-zinc-950 shadow-sm" : "text-zinc-500 hover:text-zinc-950"} disabled:cursor-default`}
+              className={`min-h-11 rounded-full px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-weos-ink ${language === value ? "bg-white text-zinc-950 shadow-sm" : "text-zinc-500 hover:text-zinc-950"} disabled:cursor-default`}
             >
               {label}
             </button>

@@ -9,6 +9,9 @@
 }
 
 @theme inline {
+  --color-weos-yellow: var(--weos-yellow, #facc15);
+  --color-weos-ink: var(--weos-ink, #18181b);
+  --color-weos-paper: var(--weos-paper, #fffcf5);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
@@ -16,6 +19,12 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-fraunces);
+}
+
+.weos-theme {
+  min-height: 100dvh;
+  color: var(--weos-ink);
+  background: var(--weos-paper);
 }
 
 /* ── Tier-1 display treatment (Fraunces variable axes) ────────────── */

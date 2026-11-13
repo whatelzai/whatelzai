@@ -60,7 +60,7 @@ export default async function ConnectionPage({
             keeps the identity record.
           </p>
           <form action={confirm}>
-            <button className="mt-5 rounded-xl bg-yellow-300 px-5 py-3 font-semibold">
+            <button className="mt-5 rounded-xl bg-weos-yellow px-5 py-3 font-semibold">
               Yes, this is my vault
             </button>
           </form>
@@ -88,7 +88,7 @@ export default async function ConnectionPage({
             ask you to approve vault read access. Whatelzai limits the assistant
             to this collection.
           </p>
-          <button className="mt-5 rounded-xl bg-yellow-300 px-5 py-3 font-semibold">
+          <button className="mt-5 rounded-xl bg-weos-yellow px-5 py-3 font-semibold">
             Continue to EMDEE
           </button>
         </form>

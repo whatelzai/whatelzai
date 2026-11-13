@@ -41,7 +41,7 @@ export function LeadCard({
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{plan.title}</p>
                 <p
-                  className={`mt-0.5 text-xs ${plan.start === today ? "font-semibold text-orange-600" : "text-zinc-500"}`}
+                  className={`mt-0.5 text-xs ${plan.start === today ? "font-semibold text-weos-ink" : "text-zinc-500"}`}
                 >
                   {planDate(plan, today)}
                 </p>

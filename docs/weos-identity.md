@@ -24,3 +24,13 @@ accounts, team links, preferences, private data or AI budgets are migrated.
 Verification: existing PWA checks validate stable member app identity and shared
 icons; language, routing and assistant checks cover the touched paths. Inspect
 the actual mobile header/Profile/Chat and browser metadata after deployment.
+
+## Palette
+
+The app uses yellow **#FACC15**, ink **#18181B** and paper **#FFFCF5** from the
+same identity JSON as Whatelz Admin's artwork. The member shell scopes these
+values to `.weos-theme`; shared utilities have the same reviewed fallback values.
+Profile and Baobei surfaces no longer introduce an orange brand variant.
+The member pass uses a flat yellow field and ink lettering. Navigation, install
+and Chat actions share the yellow; the usage bar uses ink for clear contrast.
+Warning/error statuses retain their semantic colours.

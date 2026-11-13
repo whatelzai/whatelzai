@@ -57,7 +57,7 @@ export function UsageLimit({
         className="mt-3 h-2.5 overflow-hidden rounded-full bg-zinc-100"
       >
         <div
-          className="h-full rounded-full bg-orange-500"
+          className="h-full rounded-full bg-weos-ink"
           style={{ width: `${left}%` }}
         />
       </div>

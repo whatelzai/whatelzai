@@ -6,7 +6,7 @@ export function WeosBrand() {
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap font-bold tracking-tight">
       <WhatelzMark className="w-6 shrink-0" />
       <span>
-        we<span className="text-yellow-500">OS</span>
+        we<span className="text-weos-yellow">OS</span>
       </span>
     </span>
   );
