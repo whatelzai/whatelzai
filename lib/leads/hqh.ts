@@ -95,8 +95,6 @@ export async function readHqhContext(
       interests: person.interests,
       concerns: person.concerns,
       community: person.community,
-      linkedNotes: person.linkedNotes,
-      noteCoverage: person.noteCoverage,
       url: person.url,
     },
     currentHqh: hqhFacts(profile.data?.metadata),
