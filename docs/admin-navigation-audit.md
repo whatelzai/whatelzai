@@ -25,3 +25,5 @@ The source scan found new-window affordances in ProductWidget, Presence, resume 
 ## Evidence and limits
 
 Unit tests exercise URL routing, hostile lookalike domains/protocols, parent fallback, nested overlays, explicit close, refused cancel and preservation of Next history fields. CUA verified dialog Back, external-link containment, protected cancel, mobile reader contents Back, page turning and ebook mode using a temporary fixture containing only synthetic text; removed before build. New owner reader, public-preview and member-view paths returned 307 to sign-in when unauthenticated. Actual author data and native Vivo installed-PWA Back were not manually exercised. Existing server-side owner/member permissions remain the authority, and no live data was changed for testing.
+
+Explicit authentication/connection actions are an exception to browsing containment: the existing Connect EMDEE server action intentionally redirects to EMDEE OAuth authorization and returns to Admin. It is already labelled as authorization; this audit does not embed, bypass or disable provider consent. Likewise, deliberate OS share/download actions remain user-initiated.

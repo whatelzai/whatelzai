@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { VoiceInput } from "./VoiceInput";
 import { imageDraft } from "./image-draft";
+import { WhatsAppShare } from "@/components/fcos/WhatsAppShare";
 import { ChatMarkdown } from "./ChatMarkdown";
 import { readReply } from "@/lib/member-ai/stream";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
@@ -245,7 +246,10 @@ export function Chat({
                 </div>
               )}
               {message.role === "assistant" ? (
-                <ChatMarkdown body={message.body} />
+                <>
+                  <ChatMarkdown body={message.body} />
+                  <WhatsAppShare text={message.body} />
+                </>
               ) : (
                 <div className="whitespace-pre-wrap break-words text-[15px] leading-7">
                   {message.body}

@@ -187,3 +187,47 @@ test("GPT-6.1 Sol uses Responses with supported reasoning and its own usage rate
   assert.equal(result.body, "Ready.");
   assert.equal(config.receipt.charge, 400);
 });
+
+test("group HQH tool context can exceed ordinary snippets and gets enough output room", async () => {
+  let calls = 0;
+  const result = await runMemberAgent({
+    ...options(),
+    readFcos: async () => ({
+      format: "One combined message",
+      people: ["One", "Two", "Three", "Four", "Five", "Six"],
+      context: "x".repeat(13000),
+    }),
+    request: async (_url, init) => {
+      const body = JSON.parse(String(init?.body));
+      calls++;
+      if (calls === 1) {
+        assert.equal(body.max_output_tokens, 1024);
+        return reply([
+          {
+            type: "function_call",
+            name: "read_fcos",
+            arguments: JSON.stringify({
+              source: "hqh",
+              query: "One|Two|Three|Four|Five|Six",
+            }),
+            call_id: "hqh",
+          },
+        ]);
+      }
+      assert.equal(body.max_output_tokens, 4096);
+      return reply([
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "1. One > ❌ Not 破题\n2. Two > ❌ Not 破题",
+            },
+          ],
+        },
+      ]);
+    },
+  });
+  assert.equal(calls, 2);
+  assert.ok(result.body.includes("❌"));
+});

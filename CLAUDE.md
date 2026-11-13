@@ -833,3 +833,17 @@ Supersedes the orange/sun Day Job identity: brown work bag throughout Admin. Ove
 ### Contained Admin navigation
 
 AdminAppBoundary owns modal/menu/reader-drawer history and first-party link containment. Back closes the top overlay before navigating, respects existing cancel guards, and uses known Admin parents on fresh launches rather than auth/referrer history. Preserve Next state when touching history. Author /admin/playbook imports chapters only after dailyOwner; the public entitlement gate is unchanged. Owner-only public previews are allowlisted and read-only; member readers reuse existing access checks under /admin/network-marketing/app. External providers show a Copy-address notice, not a fake integration. Native downloads/OS shares remain deliberate actions. See docs/admin-navigation-audit.md.
+
+## Bilingual HQH and WhatsApp handoff (SPR-202)
+
+Chat read_fcos source hqh resolves one named Baobei through existing readable
+profile gates before projecting explicitly allowlisted intake/disclosure/social/
+logistics metadata. The shared writing format is Supabase knowledge entry
+weos-hqh-whatsapp-format-v1, not hardcoded people or business prose. User-requested
+HQHs are one numbered message with indented continuation lines and inline >
+separators, in English or Simplified Chinese. Unknown disclosure stays unknown;
+FC membership/payment never proves 破题. Completed Chat replies and the current
+BriefingEditor draft expose a WhatsApp prepared-message link plus copy fallback.
+The user selects the recipient and sends; no server message API, recipient,
+tracking call, automatic send or sharing-permission change is introduced.
+— codex, 2026-11-14

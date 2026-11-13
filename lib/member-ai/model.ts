@@ -4,7 +4,8 @@ export const modelSchema = z.enum(["gpt-6-luna", "gpt-6.1-sol"]);
 export type MemberModel = z.infer<typeof modelSchema>;
 export const MAX_CALLS = 4;
 export const MAX_PAYLOAD_BYTES = 60000;
-export const MAX_OUTPUT_TOKENS = 1024;
+export const DEFAULT_OUTPUT_TOKENS = 1024;
+export const MAX_OUTPUT_TOKENS = 4096;
 // USD micro-units per token, standard short-context pricing, checked 2026-10-21.
 export const rates = {
   "gpt-6-luna": { input: 0.1, output: 0.5 },
