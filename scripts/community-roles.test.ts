@@ -51,7 +51,7 @@ test("schema isolates teams, protects identities, and leaves sponsorship unchang
     uid,
   ]);
   await db.query(
-    "insert into weos_communities(id,team_id,slug,name) values ($1,$2,'example','Example')",
+    "insert into weos_communities(id,team_id,slug,name) values ($1,$2,'founders-club','Example')",
     [community, team],
   );
   await db.query(
@@ -96,6 +96,32 @@ test("schema isolates teams, protects identities, and leaves sponsorship unchang
       )
     ).rows[0].allowed,
     false,
+  );
+  await db.query(
+    "insert into weos_community_roles values ($1,'spark','Spark','Test',1)",
+    [community],
+  );
+  await db.query("update member_leads set membership='Spark'");
+  assert.deepEqual(
+    (await db.query("select role_code,status from weos_community_memberships"))
+      .rows[0],
+    { role_code: "spark", status: "active" },
+  );
+  await db.query("update member_leads set membership='Unknown'");
+  assert.deepEqual(
+    (await db.query("select role_code,status from weos_community_memberships"))
+      .rows[0],
+    { role_code: "guest", status: "proposed" },
+  );
+  const foreignPerson = "00000000-0000-4000-8000-000000000007";
+  await db.query(
+    "insert into business_team_people(id,team_id) values ($1,$2)",
+    [foreignPerson, other],
+  );
+  await assert.rejects(
+    db.query("update member_leads set planned_sponsor_person_id=$1", [
+      foreignPerson,
+    ]),
   );
   await db.close();
 });

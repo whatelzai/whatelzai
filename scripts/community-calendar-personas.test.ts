@@ -86,3 +86,8 @@ test("a currently running event remains relevant until its end", () => {
   assert.equal(eventHasEnded(e, "2026-10-10T13:00:00Z"), false);
   assert.equal(eventHasEnded(e, "2026-10-10T14:00:00Z"), true);
 });
+
+test("FC Architect can see business activities but unknown events remain Oracle-only", () => {
+  assert.equal(canViewEvent("Monday OPP Class", "Architect"), true);
+  assert.equal(canViewEvent("Unknown event", "Architect"), false);
+});
