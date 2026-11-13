@@ -30,7 +30,7 @@ export async function loadInviteList() {
           { count: "exact" },
         )
         .eq("owner_id", owner)
-        .order("invited_on", { ascending: false })
+        .order("invited_on", { ascending: false, nullsFirst: false })
         .range(0, 999),
       db
         .from("ai_business_attendance_links")

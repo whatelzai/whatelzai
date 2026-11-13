@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     action === "contact" ? "ai_business_contacts" : "ai_business_invitations";
   if (action === "invitation") {
     const f = input.data;
-    if (f.invited_on > singaporeToday())
+    if (f.invited_on && f.invited_on > singaporeToday())
       return json(
         {
           error:

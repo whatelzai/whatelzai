@@ -37,6 +37,7 @@ export const responses = {
   interested: "Interested",
   maybe: "Maybe",
   declined: "Declined",
+  unavailable: "Couldn’t attend",
   no_reply: "No reply",
 } as const;
 export function singaporeToday(now = new Date()) {
@@ -82,14 +83,17 @@ export const invitationInput = z
     id: z.uuid(),
     contact_id: z.uuid(),
     revision,
-    invited_on: day,
+    invited_on: day.nullable(),
     event_label: z.string().trim().max(200),
-    channel: z.enum(["whatsapp", "in_person", "email", "phone", "other"]),
+    channel: z
+      .enum(["whatsapp", "in_person", "email", "phone", "other"])
+      .nullable(),
     response: z.enum([
       "awaiting_reply",
       "interested",
       "maybe",
       "declined",
+      "unavailable",
       "no_reply",
     ]),
     notes: z.string().trim().max(2000),

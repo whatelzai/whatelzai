@@ -328,7 +328,14 @@ export default function InviteList({
                         </button>
                       </div>
                       <p>
-                        {date(i.invited_on)} · {channels[i.channel]} ·{" "}
+                        {i.invited_on
+                          ? date(i.invited_on)
+                          : "Invitation date not recorded"}{" "}
+                        ·{" "}
+                        {i.channel
+                          ? channels[i.channel]
+                          : "Channel not recorded"}{" "}
+                        ·{" "}
                         {i.voided
                           ? "Removed from count"
                           : responses[i.response]}
@@ -639,9 +646,9 @@ function InvitationEditor({
         id: id.current,
         contact_id: person.id,
         revision: entry?.revision || 0,
-        invited_on: f.get("invited_on"),
+        invited_on: f.get("invited_on") || null,
         event_label: f.get("event_label"),
-        channel: f.get("channel"),
+        channel: f.get("channel") || null,
         response: f.get("response"),
         notes: f.get("notes"),
         voided: f.get("voided") === "on",
@@ -658,13 +665,12 @@ function InvitationEditor({
     <Editor title={`Invitation · ${person.name}`} close={close}>
       <form onSubmit={submit}>
         <label>
-          Date invited
+          Date invited (optional)
           <input
             name="invited_on"
             type="date"
-            required
             max={singaporeToday()}
-            defaultValue={entry?.invited_on || singaporeToday()}
+            defaultValue={entry?.invited_on || ""}
           />
         </label>
         <label>
@@ -679,7 +685,8 @@ function InvitationEditor({
         <div className="invite-form-pair">
           <label>
             How I invited
-            <select name="channel" defaultValue={entry?.channel || "whatsapp"}>
+            <select name="channel" defaultValue={entry?.channel || ""}>
+              <option value="">Not recorded</option>
               {Object.entries(channels).map(([k, v]) => (
                 <option key={k} value={k}>
                   {v}
@@ -721,7 +728,8 @@ function InvitationEditor({
           </label>
         )}
         <p className="invite-helper">
-          Logging an invitation does not send a message.
+          Leave the date or channel blank if unknown. Logging does not send a
+          message.
         </p>
         {error && <p role="alert">{error}</p>}
         <footer>
