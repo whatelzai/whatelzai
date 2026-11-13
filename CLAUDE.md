@@ -830,6 +830,10 @@ Supersedes SPR-200's single selector: canonical `locations` is a bounded unique 
 
 Supersedes the orange/sun Day Job identity: brown work bag throughout Admin. Overview workspace links are three icon shortcuts side by side, with real accepted task titles when present and no repeated empty-state paragraphs. Rhythm uses orange sun (morning), blue moon (night) and teal 7 (weekly). Keep short labels, data-unavailable states, accessible link names, streaming and greyscale-distinct shapes.
 
+### Contained Admin navigation
+
+AdminAppBoundary owns modal/menu/reader-drawer history and first-party link containment. Back closes the top overlay before navigating, respects existing cancel guards, and uses known Admin parents on fresh launches rather than auth/referrer history. Preserve Next state when touching history. Author /admin/playbook imports chapters only after dailyOwner; the public entitlement gate is unchanged. Owner-only public previews are allowlisted and read-only; member readers reuse existing access checks under /admin/network-marketing/app. External providers show a Copy-address notice, not a fake integration. Native downloads/OS shares remain deliberate actions. See docs/admin-navigation-audit.md.
+
 ## Bilingual HQH and WhatsApp handoff (SPR-202)
 
 Chat read_fcos source hqh resolves one named Baobei through existing readable

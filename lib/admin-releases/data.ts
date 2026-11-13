@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-14-contained-navigation",
+    date: "2026-11-14",
+    title: "Stay inside Admin",
+    titleZh: "留在Admin内操作",
+    items: [
+      {
+        en: "The Playbook opens your owner-only flipbook, with reading mode. Website previews and supported team resources stay inside Admin.",
+        zh: "手册直接打开作者专属翻页阅读器，也可切换阅读模式；网站预览与支持的团队资源留在Admin内。",
+      },
+      {
+        en: "Back closes dialogs and book contents first. Other services show an address to copy instead of launching a browser.",
+        zh: "返回优先关闭弹窗和目录；外部服务显示可复制地址，不再直接打开浏览器。",
+      },
+    ],
+  },
+  {
     id: "2026-11-14-visual-overview",
     date: "2026-11-14",
     title: "A more visual Overview",

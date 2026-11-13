@@ -10,12 +10,12 @@ const links = [
     description: "Activation, account assignment and AI credits.",
   },
   {
-    href: "https://app.whatelz.ai/leads",
+    href: "/admin/network-marketing/app/leads",
     label: "Leads",
     description: "Open your private prospect profiles and next follow-ups.",
   },
   {
-    href: "https://app.whatelz.ai/culture",
+    href: "/admin/network-marketing/app/culture",
     label: "Culture",
     description:
       "Explore 超凡 sayings and future 顺育 and Founder’s Club teachings.",
@@ -27,12 +27,12 @@ const links = [
       "Confirm club personas and manage who can see each calendar activity.",
   },
   {
-    href: "https://app.whatelz.ai/calendar",
+    href: "/admin/network-marketing/app/calendar",
     label: "Founder’s Club calendar",
     description: "See imported community events and plan the next invitation.",
   },
   {
-    href: "https://app.whatelz.ai/catalogue",
+    href: "/admin/network-marketing/app/catalogue",
     label: "Product catalogue",
     description:
       "Browse Malaysia and Singapore price references and source-backed PV/BV explanations.",
@@ -44,7 +44,7 @@ const links = [
       "Explore relationships and update member details, current levels and goals.",
   },
   {
-    href: "https://app.whatelz.ai",
+    href: "/admin/network-marketing/app",
     label: "Member workspace",
     description:
       "Open the community app. Each member sees the team information their account is permitted to access.",

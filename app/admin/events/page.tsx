@@ -112,7 +112,6 @@ export default async function AdminEventsPage() {
                       <a
                         key={f}
                         href={`/api/admin/event-poster?event=${d.id}&format=${f}`}
-                        target="_blank"
                         rel="noreferrer"
                       >
                         {f === "post" ? "Post 3:4" : "Story 9:16"} →

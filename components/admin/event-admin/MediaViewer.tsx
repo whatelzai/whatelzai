@@ -333,12 +333,7 @@ export default function MediaViewer({
         />
       )}
       {url && (
-        <a
-          className="media-original-link"
-          href={url}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a className="media-original-link" href={url} rel="noreferrer">
           Open original
         </a>
       )}

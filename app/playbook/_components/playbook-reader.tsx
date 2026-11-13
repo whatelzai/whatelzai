@@ -98,14 +98,20 @@ function PageContent({
   );
 }
 
-export function PlaybookReader({ chapters }: { chapters: PlaybookChapter[] }) {
+export function PlaybookReader({
+  chapters,
+  initiallyOpened = false,
+}: {
+  chapters: PlaybookChapter[];
+  initiallyOpened?: boolean;
+}) {
   const pages = useMemo(() => paginateChapters(chapters), [chapters]);
   const compact = useSyncExternalStore(
     subscribeViewport,
     getCompact,
     serverCompact,
   );
-  const [opened, setOpened] = useState(false);
+  const [opened, setOpened] = useState(initiallyOpened);
   const [mode, setMode] = useState<"book" | "read">("book");
   const [index, setIndex] = useState(0);
   const [contentsOpen, setContentsOpen] = useState(false);
@@ -116,6 +122,15 @@ export function PlaybookReader({ chapters }: { chapters: PlaybookChapter[] }) {
   } | null>(null);
   const readerRef = useRef<HTMLDivElement>(null);
   const contentsRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = contentsRef.current;
+    const close = (event: Event) => {
+      event.preventDefault();
+      setContentsOpen(false);
+    };
+    element?.addEventListener("cancel", close);
+    return () => element?.removeEventListener("cancel", close);
+  }, []);
   const touchStart = useRef<{ x: number; y: number; pointerId: number } | null>(
     null,
   );
@@ -273,6 +288,7 @@ export function PlaybookReader({ chapters }: { chapters: PlaybookChapter[] }) {
           ref={contentsRef}
           className={`${styles.contents} ${contentsOpen ? styles.contentsExpanded : ""}`}
           aria-label="Table of contents"
+          data-admin-overlay={contentsOpen ? "open" : undefined}
         >
           <div className={styles.contentsHeading}>
             <span className={styles.eyebrow}>Inside the playbook</span>

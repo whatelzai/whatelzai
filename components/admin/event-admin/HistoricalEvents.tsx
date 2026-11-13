@@ -64,7 +64,6 @@ export default async function HistoricalEvents() {
               <a
                 className="history-poster-link"
                 href={`/api/admin/event-poster?event=${event.id}&format=original`}
-                target="_blank"
                 rel="noreferrer"
               >
                 Original poster →
