@@ -89,7 +89,7 @@ const links = [
   },
   {
     href: "/admin/events",
-    label: "Events",
+    label: "Event records",
     description: "Manage public event content.",
   },
 ];
@@ -102,7 +102,7 @@ export default function AIBusinessPage() {
       intro={
         <>
           <Suspense
-            fallback={<p role="status">Reading event registrations…</p>}
+            fallback={<p role="status">Reading next event…</p>}
           >
             <EventSummary />
           </Suspense>
@@ -121,13 +121,13 @@ export default function AIBusinessPage() {
           label: "Events",
           links: [
             {
-              href: "/admin/event-checkin",
-              label: "Attendees & sales",
+              href: "/admin/ai-business/events",
+              label: "All events",
               description: "Sign-ups, payments, posters and event photos.",
             },
             {
-              href: "/admin/events",
-              label: "Plan an event",
+              href: "/admin/ai-business/events#past-events",
+              label: "Past events",
               description: "Upcoming sessions and past events.",
             },
           ],
@@ -141,9 +141,9 @@ export default function AIBusinessPage() {
               description: "Your next conversation.",
             },
             {
-              href: "/admin/newsletter",
-              label: "Newsletter",
-              description: "Stay in touch with your audience.",
+              href: "/admin/ai-business/people",
+              label: "People overview",
+              description: "Distinct and returning attendees.",
             },
           ],
         },
@@ -156,7 +156,7 @@ export default function AIBusinessPage() {
               description: "Participant and client feedback.",
             },
             {
-              href: "/admin/event-checkin?tool=media",
+              href: "/admin/ai-business/events#past-events",
               label: "Event photos & videos",
               description: "Open the event media library.",
             },
@@ -183,7 +183,6 @@ export default function AIBusinessPage() {
           ![
             "Invite List",
             "Event registrations",
-            "Newsletter",
             "Testimonials",
             "Events",
             "Services",
