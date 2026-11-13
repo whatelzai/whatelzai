@@ -46,6 +46,9 @@ async function EventControls() {
     );
   return (
     <section className="event-controls" aria-label="Event controls">
+      <Link href={adminUrl("/admin/events#draft-events")}>
+        Upcoming event drafts →
+      </Link>
       <Link href={adminUrl("/admin/calendar-access")}>Membership access →</Link>
       <details className="event-control">
         <summary>Event staff</summary>

@@ -1,3 +1,5 @@
+import { dailyOwner } from "@/lib/daily/server";
+import { supabaseAdmin } from "@/lib/supabase-server";
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
 import Link from "@/components/admin/AdminLink";
@@ -22,7 +24,17 @@ function formatDate(d: string | null): string {
 }
 
 export default async function AdminEventsPage() {
-  const events = await listServiceEvents();
+  await dailyOwner();
+  const [events, drafts] = await Promise.all([
+    listServiceEvents(),
+    supabaseAdmin
+      .from("events")
+      .select("id,name,date,location,notes")
+      .eq("published", false)
+      .contains("metadata", { planning: true })
+      .order("date")
+      .limit(25),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -57,6 +69,29 @@ export default async function AdminEventsPage() {
           + New event
         </Link>
       </div>
+
+      <section
+        id="draft-events"
+        aria-label="Draft events"
+        className="space-y-3"
+      >
+        <h2 className="text-lg font-semibold">Draft events</h2>
+        {drafts.error ? (
+          <p role="alert">Drafts unavailable. Refresh to retry.</p>
+        ) : !drafts.data?.length ? (
+          <p className="text-sm">No draft events.</p>
+        ) : (
+          drafts.data.map((d) => (
+            <article key={d.id} className="border-b border-zinc-200 py-3">
+              <p className="text-xs">Draft · {formatDate(d.date)}</p>
+              <h3 className="font-semibold">{d.name}</h3>
+              <p className="text-sm">
+                {d.location || "Venue to confirm"} · Time to confirm
+              </p>
+            </article>
+          ))
+        )}
+      </section>
 
       {events.length === 0 ? (
         <div className="rounded border border-dashed border-zinc-200 px-6 py-12 text-center">

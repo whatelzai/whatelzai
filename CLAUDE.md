@@ -747,3 +747,7 @@ The existing production one-minute owner push cron also checks confirmed event r
 ## Check-in visual feedback
 
 Attendee Checked in includes a green circular tick. Scanner uses structured receipts rendered above camera with a prominent name: success green/tick, duplicate amber/clock, errors red/alert; labels/shapes remain meaningful in greyscale. No dismiss-to-continue popup. New messages clear stale receipts. Validate receipt name/time before success. Existing automatic scanning, duplicate suppression and authorization remain. See docs/admin-event-operations.md.
+
+## Manual check-in and event media
+
+Confirmed unchecked attendee rows support named native confirmation and the existing atomic check-in API; pending/cancelled/checked-in rows cannot manually check in. Media upload is a lazy inline tool kept mounted while changing tabs. Owner-only Admin-host/no-store signing/list API, same-origin POST, private event-media-private bucket, direct signed uploads with random event-prefixed keys,50 MB maximum and restricted photo/video MIME types. Explicit short-lived previews, paginated25 listing, no public policy/publication/inference/deletion UI. Admin Events surfaces unpublished planning drafts;19 November placeholder has no confirmed venue/time or registration offer. See docs/admin-event-operations.md.

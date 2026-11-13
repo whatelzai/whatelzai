@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-13-event-followup",
+    date: "2026-11-13",
+    title: "Attendance and event memories",
+    titleZh: "签到与活动影像",
+    items: [
+      {
+        en: "Manually check in a confirmed attendee after a named confirmation. QR scanning remains automatic.",
+        zh: "确认姓名后可手动签到，二维码扫描仍自动完成签到。",
+      },
+      {
+        en: "Media upload stores event photos and videos privately. Upcoming placeholders appear under Events → Draft events.",
+        zh: "活动照片和视频可私密上传，下一场活动占位草稿位于活动页。",
+      },
+    ],
+  },
+  {
     id: "2026-11-11-event-push",
     date: "2026-11-11",
     title: "A notification for new registrations",
