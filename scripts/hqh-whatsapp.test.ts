@@ -85,3 +85,60 @@ test("HQH extra context is never queried for hidden or ambiguous matches", async
     assert.equal(result.items.length, 0);
   }
 });
+
+test("batch HQH lookup keeps requested order and one shared format", async () => {
+  const code = ts.transpileModule(
+    fs.readFileSync(new URL("../lib/leads/hqh.ts", import.meta.url), "utf8"),
+    {
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS,
+        target: ts.ScriptTarget.ES2022,
+      },
+    },
+  ).outputText;
+  const mod = { exports: {} };
+  const mocks: Record<string, unknown> = {
+    "server-only": {},
+    "./context": {
+      readLeadContext: async (name: string) => ({
+        items: [{ id: name, name, story: "Background" }],
+      }),
+    },
+    "./hqh-model": { hqhFacts },
+    "@/lib/supabase-server": {
+      supabaseAdmin: {
+        from: (table: string) => {
+          const q = {
+            select: () => q,
+            eq: () => q,
+            maybeSingle: async () => ({
+              error: null,
+              data:
+                table === "member_leads"
+                  ? { metadata: { poti_status: "not_yet" } }
+                  : { body: "Format" },
+            }),
+          };
+          return q;
+        },
+      },
+    },
+  };
+  vm.runInNewContext(code, {
+    module: mod,
+    exports: mod.exports,
+    require: (name: string) => mocks[name],
+  });
+  const result = await (
+    mod.exports as {
+      readHqhContext: (
+        q: string,
+      ) => Promise<{ people: { person: { name: string } }[]; format: string }>;
+    }
+  ).readHqhContext("Second | First");
+  assert.equal(
+    result.people.map((x) => x.person.name).join(","),
+    "Second,First",
+  );
+  assert.equal(result.format, "Format");
+});

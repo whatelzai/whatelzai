@@ -4,7 +4,32 @@ import { readLeadContext } from "./context";
 import { hqhFacts } from "./hqh-model";
 
 /** Resolve through the existing privacy gate before reading extra context. */
-export async function readHqhContext(query: string) {
+export async function readHqhContext(
+  query: string,
+): Promise<Record<string, unknown>> {
+  const names = query
+    .split("|")
+    .map((x) => x.trim())
+    .filter(Boolean);
+  if (names.length > 6)
+    throw Error("Request up to six Baobeis per HQH lookup.");
+  if (names.length > 1) {
+    const results = await Promise.all(
+      names.map((name) => readHqhContext(name)),
+    );
+    return {
+      people: results.map((result) => ({
+        person: result.person,
+        currentHqh: result.currentHqh,
+        items: result.items,
+        coverage: result.coverage,
+      })),
+      format: results.find((x) => typeof x.format === "string")?.format,
+      coverage:
+        "Requested order retained. Each person is independently permission-checked; unresolved names are explicitly unavailable. Per-person history coverage is shown in each result.",
+    };
+  }
+  query = names[0] ?? "";
   if (!query.trim()) throw Error("Provide one Baobei name for HQH context.");
   const context = await readLeadContext(query);
   const exact = context.items.filter(
