@@ -172,7 +172,7 @@ body::after {
   background-size: 256px 256px;
 }
 
-/* Only fcOS pages reserve space for the mobile bottom navigation. */
+/* Only weOS pages reserve space for the mobile bottom navigation. */
 @media (max-width: 767px) {
   body:has([data-fcos-nav]) {
     padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
@@ -229,7 +229,7 @@ body:has(.fcos-chat-page) {
   }
 }
 
-/* fcOS lead forms: soft, local focus feedback; no public-site gold rectangle. */
+/* weOS lead forms: soft, local focus feedback; no public-site gold rectangle. */
 .fcos-lead-controls
   :is(input:not([type="hidden"]):not([type="checkbox"]), textarea) {
   border: 1px solid #e4e4e7;
@@ -307,7 +307,7 @@ body:has(.fcos-chat-page) {
   box-shadow: none;
 }
 
-/* The five fcOS tabs share one pinned header and persistent navigation. */
+/* The five weOS tabs share one pinned header and persistent navigation. */
 .fcos-app-header {
   position: fixed;
   inset: 0 0 auto;
@@ -355,7 +355,7 @@ body:has([data-fcos-persistent-nav]):not(:has(.fcos-chat-page)) {
   flex-shrink: 0;
 }
 
-/* fcOS router state: no timers or simulated progress. */
+/* weOS router state: no timers or simulated progress. */
 .fcos-navigation-hint {
   position: absolute;
   top: 8px;

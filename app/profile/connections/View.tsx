@@ -29,7 +29,7 @@ export function ConnectionView({
         ← Profile
       </Link>
       <p className="text-sm leading-6 text-zinc-500">
-        Your accounts, connected privately to fcOS. Read your own recent posts
+        Your accounts, connected privately to weOS. Read your own recent posts
         in Chat. No posting or messages.
       </p>
       {message && (
@@ -253,7 +253,7 @@ export function ConnectionView({
       <p className="text-xs leading-5 text-zinc-500">
         No paid connector has been added. Refreshing uses hosting and database
         resources; asking Chat to analyse posts uses your normal AI allowance.
-        Disconnecting removes fcOS access and cached posts. You can also revoke
+        Disconnecting removes weOS access and cached posts. You can also revoke
         access in the provider’s settings.
       </p>
     </main>

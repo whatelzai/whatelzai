@@ -6,7 +6,7 @@ import { MemberNav } from "@/components/culture/MemberNav";
 import { ContextNotes } from "@/components/fcos/ContextNotes";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Event notes · fcOS",
+  title: "Event notes · weOS",
   robots: { index: false, follow: false },
 };
 export default async function EventPage({

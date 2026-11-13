@@ -755,3 +755,14 @@ Confirmed unchecked attendee rows support named native confirmation and the exis
 ## Visual media browser and social sizes
 
 Event tools use Poster | Scan | Media. Media has lazy thumbnails, list/swipe views and a native popup with fresh private URL resolution,1–5× image zoom/pinch/bounded drag, video controls and metadata editing. Private event_media_assets stores title/description/manual people tags with owner-only API, current-object validation and optimistic revisions. Migration20261113060000 applied in isolation; no browser-role access. No automatic face recognition/inference. Upload styling is independent of Scan. Export prepared photos/posters as1080×1440 Post3:4,1080×1920 Story9:16 or Original; contain full art without cropping, manual share/download only. Future poster art direction is3:4 plus a distinct Story version. See docs/admin-event-operations.md and docs/brand-identity.md.
+
+## weOS identity (SPR-195)
+
+The member app is **weOS — Whatelz OS**, superseding the historical fcOS product
+name. Shared headers and first-login welcome use the same WhatelzMark vector as
+Admin; install metadata and icons reuse Admin's versioned PWA assets. Preserve
+the existing app manifest ID/start URL/scope and compatibility /fcos asset,
+service-worker, cookie, CSS and internal tool names. This is a branding change,
+not a data or authorization migration. Founder’s Club remains a community name
+in actual team/event/culture content. See docs/weos-identity.md.
+— codex, 2026-11-13

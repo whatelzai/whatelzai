@@ -47,7 +47,7 @@ export function ReleasePopup({ releases }: { releases: ReleaseNote[] }) {
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-100 px-5 py-4">
           <div>
             <p className="text-xs font-medium text-zinc-500">
-              {t("fcOS updates")}
+              {t("weOS updates")}
             </p>
             <h2 id="release-popup-title" className="mt-1 text-xl font-semibold">
               {t("What’s new")}

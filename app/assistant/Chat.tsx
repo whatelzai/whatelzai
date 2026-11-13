@@ -221,7 +221,7 @@ export function Chat({
               className={`min-w-0 ${message.role === "user" ? "ml-10 rounded-3xl bg-zinc-100 px-4 py-3" : "px-1 py-2"}`}
             >
               <p className="sr-only">
-                {message.role === "user" ? "You" : "fcOS"}
+                {message.role === "user" ? "You" : "weOS"}
               </p>
               {!!message.images?.length && (
                 <div className="mb-2 flex flex-wrap gap-2">
@@ -402,7 +402,7 @@ export function Chat({
             <Plus size={22} aria-hidden="true" />
           </button>
           <label htmlFor="member-message" className="sr-only">
-            Message fcOS
+            Message weOS
           </label>
           <textarea
             ref={textarea}
@@ -437,7 +437,7 @@ export function Chat({
             rows={1}
             disabled={busy || mediaBusy || !enabled}
             className="fcos-chat-input max-h-36 min-h-11 min-w-0 flex-1 resize-none bg-transparent px-3 py-2.5 text-base leading-6 outline-none disabled:opacity-60"
-            placeholder="Message fcOS…"
+            placeholder="Message weOS…"
           />
           <VoiceInput
             disabled={busy || mediaBusy || !enabled}

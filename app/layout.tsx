@@ -46,17 +46,27 @@ export async function generateMetadata(): Promise<Metadata> {
   const surface = siteSurface(requestHeaders.get("host") ?? "");
   if (surface !== "public") {
     return {
-      title: surface === "admin" ? "Whatelz Admin" : "fcOS",
+      title: surface === "admin" ? "Whatelz Admin" : "weOS",
       ...(surface === "app"
         ? {
-            applicationName: "fcOS",
+            applicationName: "weOS",
             manifest: "/fcos/app.webmanifest",
             appleWebApp: {
               capable: true,
-              title: "fcOS",
+              title: "weOS",
               statusBarStyle: "default" as const,
             },
-            icons: { icon: "/fcos/icon-192.png", apple: "/fcos/icon-180.png" },
+            icons: {
+              icon: [
+                { url: "/brand/icon.svg", type: "image/svg+xml" },
+                {
+                  url: "/admin-pwa/icon-192-v2.png",
+                  sizes: "192x192",
+                  type: "image/png",
+                },
+              ],
+              apple: "/admin-pwa/icon-180-v2.png",
+            },
           }
         : {
             applicationName: "Whatelz Admin",
@@ -252,7 +262,7 @@ export default async function RootLayout({
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <ShellProvider
           isAdmin={isAdmin}
-          ownerName={s?.owner_name ?? "fcOS"}
+          ownerName={s?.owner_name ?? "weOS"}
           surface={surface}
         >
           {surface === "app" ? (

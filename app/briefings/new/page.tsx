@@ -13,7 +13,7 @@ import { BriefingEditor } from "@/components/fcos/BriefingEditor";
 import { MemberNav } from "@/components/culture/MemberNav";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "New note · fcOS",
+  title: "New note · weOS",
   robots: { index: false, follow: false },
 };
 export default async function NewBriefing({

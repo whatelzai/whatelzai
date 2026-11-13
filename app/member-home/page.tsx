@@ -20,7 +20,7 @@ import { dateLabel, todayUtc8 } from "@/lib/leads/model";
 import { MemberNav } from "@/components/culture/MemberNav";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Today · fcOS",
+  title: "Today · weOS",
   robots: { index: false, follow: false },
 };
 const card = "rounded-3xl border border-zinc-200 bg-white p-5 sm:p-6";
