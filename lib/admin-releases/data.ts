@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-14-event-portfolio",
+    date: "2026-11-14",
+    title: "Next event, with history intact",
+    titleZh: "聚焦下一场，保留活动记录",
+    items: [
+      {
+        en: "AI Business highlights your next event. Browse upcoming and past sessions in All events.",
+        zh: "AI业务突出下一场活动；全部活动中可查看未来与过往场次。",
+      },
+      {
+        en: "People overview separates unique attendees, returning attendees and total visits.",
+        zh: "人脉总览区分独立参与者、回访参与者与总参与人次。",
+      },
+    ],
+  },
+  {
     id: "2026-11-14-contained-navigation",
     date: "2026-11-14",
     title: "Stay inside Admin",
