@@ -1,10 +1,17 @@
 "use client";
+import { Bot, Network, BriefcaseBusiness } from "lucide-react";
 import { useState } from "react";
 import { useAdminPreferences } from "./AdminPreferences";
 import Link from "./AdminLink";
 import { adminUrl } from "@/lib/admin-url";
 import { weeklyWork, workLanes } from "@/lib/admin-week";
 import type { Task } from "@/lib/daily/model";
+const laneIcons = {
+  "ai-business": Bot,
+  "network-marketing": Network,
+  "day-job": BriefcaseBusiness,
+};
+
 export function WeeklyFocus({
   tasks,
   day,
@@ -79,37 +86,33 @@ export function WeeklyFocus({
       </section>
       {!focusing && (
         <section aria-labelledby="week-work-heading" className="week-work">
-          <h2 id="week-work-heading">{t("Accepted for this week")}</h2>
-          {(work?.lanes ?? workLanes.map((l) => ({ ...l, task: null }))).map(
-            (l) => (
-              <Link key={l.lane} href={adminUrl(l.path)} className="week-lane">
-                <span className="week-lane-name">{t(l.label)}</span>
-                <span className="week-lane-work">
-                  {l.task
-                    ? l.task.title
-                    : t(
-                        tasks
-                          ? "No accepted commitment due this week."
-                          : "Commitments unavailable.",
-                      )}
-                  <small>
-                    {l.task
-                      ? t(
-                          l.task.status === "blocked"
-                            ? "Blocked"
-                            : l.task.status === "waiting"
-                              ? "Waiting"
-                              : l.task.due_on < day
-                                ? "Carried forward"
-                                : "Accepted",
-                        )
-                      : t("Open workspace")}
-                  </small>
-                </span>
-                <span aria-hidden="true">›</span>
-              </Link>
-            ),
-          )}
+          <h2 id="week-work-heading">{t("Workspaces")}</h2>
+          <div className="workspace-icon-grid">
+            {(work?.lanes ?? workLanes.map((l) => ({ ...l, task: null }))).map(
+              (l) => {
+                const Icon = laneIcons[l.lane];
+                return (
+                  <Link
+                    key={l.lane}
+                    href={adminUrl(l.path)}
+                    className="workspace-shortcut"
+                    data-lane={l.lane}
+                  >
+                    <span className="workspace-shortcut-icon">
+                      <Icon size={29} strokeWidth={1.7} aria-hidden="true" />
+                    </span>
+                    <span className="workspace-shortcut-label">
+                      {t(l.label)}
+                    </span>
+                    {l.task && (
+                      <small title={l.task.title}>{l.task.title}</small>
+                    )}
+                    {!tasks && <small>{t("Unavailable")}</small>}
+                  </Link>
+                );
+              },
+            )}
+          </div>
           <details className="week-source">
             <summary>{t("About this week")}</summary>
             <p>

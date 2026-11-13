@@ -825,3 +825,7 @@ Invite dates/channels may be null and must remain explicit unknowns, including a
 ### Overlapping Invite List locations (SPR-201)
 
 Supersedes SPR-200's single selector: canonical `locations` is a bounded unique SG/KL/PG array, empty means Not set. Multi-select checkboxes and every-tag row/profile rendering preserve one contact/history across regions. Filters match any assigned tag. Legacy scalar `location` is retained and mirrored from the first submitted tag for rollback; pre-tag forms carrying only scalar location must refresh (409), so they cannot replace multi-tags. Migration20261113154752 copies existing locations. Current31 unique people retainSG; two owner-confirmed contacts alsoKL (SG31/KL2/PG0, not33 people). No invitation reasons or attendance changed.
+
+### Visual Overview shortcuts
+
+Supersedes the orange/sun Day Job identity: brown work bag throughout Admin. Overview workspace links are three icon shortcuts side by side, with real accepted task titles when present and no repeated empty-state paragraphs. Rhythm uses orange sun (morning), blue moon (night) and teal 7 (weekly). Keep short labels, data-unavailable states, accessible link names, streaming and greyscale-distinct shapes.

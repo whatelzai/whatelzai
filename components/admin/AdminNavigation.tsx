@@ -13,7 +13,7 @@ import {
   House,
   Network,
   Settings2,
-  Sun,
+  BriefcaseBusiness,
   UserRound,
 } from "lucide-react";
 import { adminUrl } from "@/lib/admin-url";
@@ -23,7 +23,7 @@ const workspaceIcons = {
   Overview: House,
   "AI Business": Bot,
   "Network Marketing": Network,
-  "Day Job": Sun,
+  "Day Job": BriefcaseBusiness,
 } as const;
 
 const tabs = [

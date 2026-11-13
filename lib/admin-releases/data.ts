@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-14-visual-overview",
+    date: "2026-11-14",
+    title: "A more visual Overview",
+    titleZh: "更直观的总览",
+    items: [
+      {
+        en: "Three workspace icons replace repeated rows. Day Job now uses a brown work bag.",
+        zh: "三个工作空间图标取代重复列表，工作采用棕色公文包。",
+      },
+      {
+        en: "Rhythm uses an orange sun, blue moon and teal 7 for morning, night and weekly reflections.",
+        zh: "节奏采用橙色太阳、蓝色月亮与青绿色7，分别代表早晨、夜晚和每周回顾。",
+      },
+    ],
+  },
+  {
     id: "2026-11-13-focused-workspaces",
     date: "2026-11-13",
     title: "Less clutter, clearer workspaces",
