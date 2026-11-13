@@ -65,26 +65,27 @@ export default function NetworkMarketingPage() {
         </Suspense>
       }
       links={links.filter((link) =>
-        ["People", "Leads", "Member workspace"].includes(link.label),
+        ["Leads", "Team management"].includes(link.label),
       )}
       groups={[
         {
-          label: "People & access",
+          label: "Activities & products",
           links: links.filter((link) =>
-            ["Team management", "Founder’s Club access"].includes(link.label),
+            ["Founder’s Club calendar", "Product catalogue"].includes(
+              link.label,
+            ),
           ),
         },
         {
-          label: "Community & references",
+          label: "Member administration",
           links: links.filter((link) =>
-            [
-              "Culture",
-              "Founder’s Club calendar",
-              "Product catalogue",
-            ].includes(link.label),
+            ["People", "Member workspace"].includes(link.label),
           ),
         },
       ]}
+      secondary={links.filter((link) =>
+        ["Culture", "Founder’s Club access"].includes(link.label),
+      )}
     />
   );
 }

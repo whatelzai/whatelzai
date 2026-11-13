@@ -813,3 +813,7 @@ A plan never creates an ABO node or registers an ABO. Joint accounts stay joint.
 ### Invite List locations (SPR-200)
 
 AI Business contacts have nullable owner-assigned SG/KL/PG locations (Singapore/Kuala Lumpur/Penang), shown as a list column/profile/editor and independent composable filter. Totals follow the selected location. The current authorized 16-person cohort is SG; future contacts default to Not set. Location is an invitation market, not nationality or membership. Older clients omitting location preserve the stored value. Migration 20261113152311 applied; owner-scoped revision backfill verified 16 SG and repeat-safe. Contact identity, attendance, permissions and other leads remain unchanged.
+
+### Focused Admin workspaces
+
+Admin AI Business centres on Events, People, Proof and Products; remaining website/portfolio tools are retained under More tools. Network Marketing leads with Leads and Team management. Overview keeps weekly focus and daily routines without repeating the event summary. AdminWorkspaceTheme scopes pathname-derived yellow robot / purple network / orange sun accents to Admin only, with neutral reading surfaces and dark-mode tokens. Personal and Settings show no redundant workspace label in the header. Event media is directly reachable via /admin/event-checkin?tool=media; that opens media only, never the scanner. Preserve lazy tools, streaming focus, permissions, timetable rules and the yellow brand mark. See docs/design/admin-focused-workspaces.md.

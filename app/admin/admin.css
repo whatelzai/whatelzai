@@ -1277,3 +1277,137 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   svg {
   display: none;
 }
+
+/* Workspace identity: one accent per lane; text and icons preserve meaning in greyscale. */
+.admin-workspace-shell {
+  --admin-accent: #facc15;
+  --admin-accent-ink: #765600;
+  --admin-accent-soft: #fff9db;
+  background: #fff;
+}
+.admin-workspace-shell[data-admin-workspace="network"] {
+  --admin-accent: #a777e2;
+  --admin-accent-ink: #7041a5;
+  --admin-accent-soft: #f5effc;
+}
+.admin-workspace-shell[data-admin-workspace="day-job"] {
+  --admin-accent: #f59a42;
+  --admin-accent-ink: #9b4a08;
+  --admin-accent-soft: #fff3e6;
+}
+.admin-shell[data-admin-theme="dark"] .admin-workspace-shell {
+  --admin-accent-ink: #f5d867;
+  --admin-accent-soft: #302b1b;
+  background: #191919;
+}
+.admin-shell[data-admin-theme="dark"] [data-admin-workspace="network"] {
+  --admin-accent-ink: #d1b4f2;
+  --admin-accent-soft: #2c2338;
+}
+.admin-shell[data-admin-theme="dark"] [data-admin-workspace="day-job"] {
+  --admin-accent-ink: #ffbd83;
+  --admin-accent-soft: #34271c;
+}
+.admin-workspace-shell .admin-nav-header {
+  border-top: 3px solid var(--admin-accent);
+}
+.admin-workspace-shell .admin-space-switcher > summary,
+.admin-workspace-shell .admin-space-switcher > summary:hover {
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent-ink);
+}
+.admin-workspace-shell .admin-space-switcher nav > a[aria-current],
+.admin-workspace-shell .admin-nav-header [data-ledger-tabs] a[aria-current] {
+  background: var(--admin-accent-soft);
+}
+.admin-workspace-shell .admin-space-switcher nav > a[aria-current] svg,
+.admin-workspace-shell [data-ledger-tabs] a[aria-current] svg,
+.admin-workspace-shell [data-ledger-dock] a[aria-current] svg {
+  color: var(--admin-accent-ink);
+}
+.admin-workspace-shell [data-ledger-dock] a[aria-current]::after,
+.admin-workspace-shell .admin-loading-dot {
+  background: var(--admin-accent);
+}
+.admin-workspace-shell .admin-ledger .admin-workspace-focus {
+  border: 0;
+  padding: 0;
+  display: grid;
+  gap: 24px;
+}
+.admin-workspace-shell .admin-sprint-focus {
+  border-color: var(--admin-accent);
+}
+.admin-workspace-shell
+  .admin-ledger
+  :is(a, button, summary, select):focus-visible {
+  outline-color: var(--admin-accent-ink);
+}
+.admin-workspace-shell a[data-admin-link]:has([data-navigation-pending]) {
+  outline-color: var(--admin-accent-ink);
+}
+.admin-workspace-shell .lane-ledger {
+  max-width: 1040px;
+  gap: 24px;
+}
+.admin-workspace-shell .ledger-tool-directory {
+  gap: 24px 40px;
+}
+.admin-workspace-shell .ledger-tool-directory > section {
+  min-width: 0;
+}
+.admin-workspace-shell .ledger-tool-directory h2 {
+  color: var(--admin-accent-ink);
+  font-size: 14px;
+  border: 0;
+  padding-bottom: 4px;
+}
+.admin-workspace-shell .ledger-tool-directory .admin-workspace-link {
+  min-height: 48px;
+}
+.admin-workspace-shell .admin-workspace-link:hover {
+  color: var(--admin-accent-ink);
+}
+.workspace-secondary {
+  border-top: 1px solid var(--ledger-rule);
+  padding-top: 8px;
+}
+.workspace-secondary > summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 12px;
+  font-size: 14px;
+}
+.workspace-secondary > div {
+  padding-top: 8px;
+}
+.admin-workspace-shell .event-pulse {
+  background: var(--admin-accent-soft);
+}
+@media (max-width: 600px) {
+  /* 2 equal columns + 20px gutter = full canvas; short link labels wrap naturally. */
+  .admin-workspace-shell .lane-ledger > .ledger-tool-directory {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 20px;
+  }
+  .admin-workspace-shell .lane-ledger .admin-workspace-link {
+    font-size: 14px;
+    gap: 6px;
+  }
+  .admin-workspace-shell .workspace-secondary > .ledger-tool-directory {
+    grid-template-columns: 1fr;
+  }
+}
+.admin-workspace-shell .ledger-tool-directory h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 480px) {
+  [data-admin-workspace="network"]
+    .admin-nav-header
+    a[aria-label="Whatelz Admin overview"]
+    > span:last-child {
+    display: none;
+  }
+}
