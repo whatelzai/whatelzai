@@ -1,7 +1,8 @@
 // Regenerate all Whatelz identity assets from the reviewed vector + palette.
-// weOS and Whatelz Admin share this identity. Legacy /fcos paths stay compatible.
+// weOS shares the vector and palette, with reversed app-icon colours.
 import { readFile, writeFile } from "node:fs/promises";
 import sharp from "sharp";
+import "./generate-weos-icons.mjs";
 const brand = JSON.parse(
   await readFile(
     new URL("../public/brand/identity.json", import.meta.url),
@@ -22,7 +23,6 @@ for (const [name, color] of Object.entries(brand.colors))
   await save(`public/brand/mark-${name}.svg`, svg(mark(color)));
 await save("public/brand/icon.svg", icon());
 await save("public/admin-pwa/icon.svg", icon());
-await save("public/fcos/icon.svg", icon());
 for (const size of [32, 180, 192, 512]) {
   const png = await sharp(Buffer.from(icon()))
     .resize(size, size)
@@ -31,7 +31,6 @@ for (const size of [32, 180, 192, 512]) {
   await save(`public/brand/icon-${size}.png`, png);
   if (size !== 32) {
     await save(`public/admin-pwa/icon-${size}.png`, png);
-    await save(`public/fcos/icon-${size}.png`, png);
     await save(`public/admin-pwa/icon-${size}-v2.png`, png);
   }
 }
@@ -40,7 +39,6 @@ const maskable = await sharp(Buffer.from(icon(true)))
   .png()
   .toBuffer();
 await save("public/admin-pwa/icon-maskable-512.png", maskable);
-await save("public/fcos/icon-maskable-512.png", maskable);
 await save("public/admin-pwa/icon-maskable-512-v2.png", maskable);
 // ICO directory with PNG entries; modern browsers support PNG-compressed ICO.
 const sizes = [16, 32, 48];

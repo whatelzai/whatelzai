@@ -58,14 +58,14 @@ export async function generateMetadata(): Promise<Metadata> {
             },
             icons: {
               icon: [
-                { url: "/brand/icon.svg", type: "image/svg+xml" },
+                { url: "/weos/icon-v1.svg", type: "image/svg+xml" },
                 {
-                  url: "/admin-pwa/icon-192-v2.png",
+                  url: "/weos/icon-192-v1.png",
                   sizes: "192x192",
                   type: "image/png",
                 },
               ],
-              apple: "/admin-pwa/icon-180-v2.png",
+              apple: "/weos/icon-180-v1.png",
             },
           }
         : {

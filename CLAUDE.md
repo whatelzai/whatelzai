@@ -781,3 +781,13 @@ there is no orange Profile variant. The member pass is flat yellow with ink text
 and the shared Whatelz mark. Usage uses ink for a clearly visible progress bar.
 Actual warning/error colours remain semantic. Public/Admin theme scope remains
 separate. — codex, 2026-11-13
+
+## Inverted weOS app icon (SPR-197)
+
+weOS keeps the reviewed W shape but uses brand ink #18181B behind a yellow
+#FACC15 W for its installed icon, distinct from Admin. Member manifest/browser/
+Apple icons use versioned /weos assets; legacy /fcos icons match the inverted
+variant. Preserve manifest identity and Admin's yellow-background icon. Generate
+with scripts/generate-weos-icons.mjs, also invoked by the full asset generator.
+This supersedes SPR-195's shared install-icon colours, not the shared vector.
+— codex, 2026-11-13
