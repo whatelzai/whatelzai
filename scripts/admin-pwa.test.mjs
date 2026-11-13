@@ -46,20 +46,41 @@ test("admin installation identity and every shortcut stay on the private admin o
   assert.equal(member.short_name, "weOS");
   assert.equal(member.start_url, "https://app.whatelz.ai/");
   assert.equal(member.scope, "https://app.whatelz.ai/");
-  assert.deepEqual(member.icons, manifest.icons);
+  assert.ok(member.icons.every((icon) => icon.src.startsWith("/weos/")));
   for (const icon of member.icons) {
     const current = await readFile(
       new URL("../public" + icon.src, import.meta.url),
     );
     const legacyPath = icon.src
-      .replace("/admin-pwa/", "/fcos/")
-      .replace("-v2.png", ".png");
+      .replace("/weos/", "/fcos/")
+      .replace("-v1.png", ".png");
     const legacy = await readFile(
       new URL("../public" + legacyPath, import.meta.url),
     );
+    const { data, info } = await sharp(current)
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    assert.deepEqual(
+      [...data.subarray(0, 3)],
+      [24, 24, 27],
+      "weOS background is brand black",
+    );
+    let yellow = false;
+    for (let offset = 0; offset < data.length; offset += info.channels) {
+      if (
+        data[offset] === 250 &&
+        data[offset + 1] === 204 &&
+        data[offset + 2] === 21
+      ) {
+        yellow = true;
+        break;
+      }
+    }
+    assert.ok(yellow, "weOS mark is brand yellow");
     assert.ok(
       current.equals(legacy),
-      "existing member icon URLs share the Admin artwork",
+      "existing member icon URLs share the inverted weOS artwork",
     );
   }
 });
