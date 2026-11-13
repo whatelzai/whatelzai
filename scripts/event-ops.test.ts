@@ -118,6 +118,7 @@ test("media endpoints reject wrong host, origin and non-owner before storage acc
     exports: {} as {
       GET: (r: Request) => Promise<Response>;
       POST: (r: Request) => Promise<Response>;
+      PATCH: (r: Request) => Promise<Response>;
     },
   };
   const code = ts.transpileModule(
@@ -190,5 +191,17 @@ test("media endpoints reject wrong host, origin and non-owner before storage acc
     403,
   );
   assert.equal(authCalls, before);
+  assert.equal(
+    (
+      await mod.exports.PATCH(
+        new Request("https://admin.whatelz.ai/api/admin/event-media", {
+          method: "PATCH",
+          headers: { origin: "https://evil.test" },
+          body: "{}",
+        }),
+      )
+    ).status,
+    403,
+  );
   assert.equal(reads, 0);
 });
