@@ -22,6 +22,7 @@ import {
 } from "@/lib/event-admin/model";
 import { mapEvent } from "@/lib/public-events/map";
 import { retryEventTicketEmail } from "@/app/admin/event-checkin/actions";
+import ManualCheckin from "./ManualCheckin";
 import ScanTickets from "./ScanTickets";
 const icons: Record<Payment, typeof Check> = {
   paid: Check,
@@ -231,139 +232,148 @@ export default function AttendeeList() {
         {rows.slice(activePage * 25, (activePage + 1) * 25).map((r) => {
           const Icon = icons[r.payment];
           return (
-            <details className="event-person" key={r.id}>
-              <summary>
-                <span className="event-person-name">
-                  <strong>{r.name}</strong>
-                  <small>
-                    {r.status === "needs-review"
-                      ? "Confirmation needs review"
-                      : r.status === "cancelled"
-                        ? "Cancelled ticket"
-                        : r.status === "released"
-                          ? "Reservation released"
-                          : r.ticket
-                            ? "Registered"
-                            : "Signup started"}
-                  </small>
-                </span>
-                <span className={`event-payment event-payment-${r.payment}`}>
-                  <Icon size={15} />
-                  {paymentNames[r.payment]}
-                  {r.amount !== null &&
-                    r.amount > 0 &&
-                    r.payment !== "refunded" && (
-                      <small>S${(r.amount / 100).toFixed(2)}</small>
+            <div className="event-person-row" key={r.id}>
+              <details className="event-person">
+                <summary>
+                  <span className="event-person-name">
+                    <strong>{r.name}</strong>
+                    <small>
+                      {r.status === "needs-review"
+                        ? "Confirmation needs review"
+                        : r.status === "cancelled"
+                          ? "Cancelled ticket"
+                          : r.status === "released"
+                            ? "Reservation released"
+                            : r.ticket
+                              ? "Registered"
+                              : "Signup started"}
+                    </small>
+                  </span>
+                  <span className={`event-payment event-payment-${r.payment}`}>
+                    <Icon size={15} />
+                    {paymentNames[r.payment]}
+                    {r.amount !== null &&
+                      r.amount > 0 &&
+                      r.payment !== "refunded" && (
+                        <small>S${(r.amount / 100).toFixed(2)}</small>
+                      )}
+                  </span>
+                  <span className="event-email-state">
+                    <Mail size={14} />
+                    {r.emailSent
+                      ? "Sent"
+                      : r.status === "confirmed"
+                        ? "Pending"
+                        : "—"}
+                  </span>
+                  <span className="event-checkin-state">
+                    {r.checkedIn ? (
+                      <span className="event-checked-icon" aria-hidden="true">
+                        <Check size={12} strokeWidth={3} />
+                      </span>
+                    ) : (
+                      <Clock3 size={14} aria-hidden="true" />
                     )}
-                </span>
-                <span className="event-email-state">
-                  <Mail size={14} />
-                  {r.emailSent
-                    ? "Sent"
-                    : r.status === "confirmed"
-                      ? "Pending"
-                      : "—"}
-                </span>
-                <span className="event-checkin-state">
-                  {r.checkedIn ? (
-                    <span className="event-checked-icon" aria-hidden="true">
-                      <Check size={12} strokeWidth={3} />
-                    </span>
-                  ) : (
-                    <Clock3 size={14} aria-hidden="true" />
-                  )}
-                  {r.checkedIn
-                    ? "Checked in"
-                    : r.status === "confirmed"
-                      ? "Not checked in"
-                      : "—"}
-                </span>
-                <ChevronDown size={15} className="event-person-chevron" />
-              </summary>
-              <div className="event-person-detail">
-                <dl>
-                  <div>
-                    <dt>Email</dt>
-                    <dd>
-                      <a href={`mailto:${r.email}`}>{r.email}</a>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Phone</dt>
-                    <dd>
-                      <a href={`tel:${r.phone}`}>{r.phone || "—"}</a>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Registered</dt>
-                    <dd>
-                      {new Date(r.createdAt).toLocaleString("en-SG", {
-                        timeZone: "Asia/Singapore",
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      SGT
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Account</dt>
-                    <dd>
-                      {r.accountLinked
-                        ? "Linked to verified sign-in"
-                        : "Not linked / not recorded"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Source</dt>
-                    <dd>
-                      {r.source === "platform"
-                        ? "Whatelz form"
-                        : "Earlier Stripe checkout"}
-                    </dd>
-                  </div>
-                  {r.checkedIn && (
+                    {r.checkedIn
+                      ? "Checked in"
+                      : r.status === "confirmed"
+                        ? "Not checked in"
+                        : "—"}
+                  </span>
+                  <ChevronDown size={15} className="event-person-chevron" />
+                </summary>
+                <div className="event-person-detail">
+                  <dl>
                     <div>
-                      <dt>Checked in</dt>
+                      <dt>Email</dt>
                       <dd>
-                        {new Date(r.checkedIn).toLocaleString("en-SG", {
-                          timeZone: "Asia/Singapore",
-                        })}
+                        <a href={`mailto:${r.email}`}>{r.email}</a>
                       </dd>
                     </div>
+                    <div>
+                      <dt>Phone</dt>
+                      <dd>
+                        <a href={`tel:${r.phone}`}>{r.phone || "—"}</a>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Registered</dt>
+                      <dd>
+                        {new Date(r.createdAt).toLocaleString("en-SG", {
+                          timeZone: "Asia/Singapore",
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        SGT
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Account</dt>
+                      <dd>
+                        {r.accountLinked
+                          ? "Linked to verified sign-in"
+                          : "Not linked / not recorded"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Source</dt>
+                      <dd>
+                        {r.source === "platform"
+                          ? "Whatelz form"
+                          : "Earlier Stripe checkout"}
+                      </dd>
+                    </div>
+                    {r.checkedIn && (
+                      <div>
+                        <dt>Checked in</dt>
+                        <dd>
+                          {new Date(r.checkedIn).toLocaleString("en-SG", {
+                            timeZone: "Asia/Singapore",
+                          })}
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                  {r.ticket && r.status === "confirmed" && !r.emailSent && (
+                    <button
+                      disabled={busy}
+                      onClick={() =>
+                        start(async () => {
+                          try {
+                            const form = new FormData();
+                            form.set("ticket_id", r.ticket!);
+                            await retryEventTicketEmail(form);
+                            reload();
+                          } catch {
+                            setError(
+                              "Ticket email could not be sent. Refresh and retry.",
+                            );
+                          }
+                        })
+                      }
+                    >
+                      <Mail size={15} />
+                      {busy ? "Sending…" : "Retry ticket email"}
+                    </button>
                   )}
-                </dl>
-                {r.ticket && r.status === "confirmed" && !r.emailSent && (
-                  <button
-                    disabled={busy}
-                    onClick={() =>
-                      start(async () => {
-                        try {
-                          const form = new FormData();
-                          form.set("ticket_id", r.ticket!);
-                          await retryEventTicketEmail(form);
-                          reload();
-                        } catch {
-                          setError(
-                            "Ticket email could not be sent. Refresh and retry.",
-                          );
-                        }
-                      })
-                    }
-                  >
-                    <Mail size={15} />
-                    {busy ? "Sending…" : "Retry ticket email"}
-                  </button>
-                )}
-                {r.source === "legacy" && r.payment === "unknown" && (
-                  <p>
-                    Payment amount wasn’t stored for this earlier checkout.
-                    Verify in Stripe; it is excluded from the recorded total.
-                  </p>
-                )}
-              </div>
-            </details>
+                  {r.source === "legacy" && r.payment === "unknown" && (
+                    <p>
+                      Payment amount wasn’t stored for this earlier checkout.
+                      Verify in Stripe; it is excluded from the recorded total.
+                    </p>
+                  )}
+                </div>
+              </details>
+              <ManualCheckin
+                person={r}
+                onCheckedIn={() => {
+                  reload();
+                  router.refresh();
+                }}
+              />
+            </div>
           );
         })}
       </div>

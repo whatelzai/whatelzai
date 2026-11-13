@@ -42,3 +42,17 @@ Attendees is the default filter: released and cancelled records are hidden, reta
 ### Clear attendance feedback
 
 Confirmed attendees show a small green circular tick beside Checked in. Scanner results appear above the camera: a green success panel with the name in large text, an amber clock panel for Already checked in (original timestamp preserved), or a red alert for invalid/cancelled tickets and request failures. Icons, labels and shapes preserve meaning in greyscale. Results remain until the next operation; scanning continues without a popup to dismiss. Any new message clears the prior receipt, so errors cannot retain an old success tick. Server receipt name and timestamp must be valid before success is shown. No attendance or authorization changes.
+
+## Manual attendance and post-event media
+
+Each confirmed, unchecked attendee has a Check in action outside the expandable summary. The native confirmation names that person; cancellation performs no request. The same atomic staff/owner endpoint handles both QR and manual check-in, including concurrent duplicate scans. Cancelled/pending/checked-in rows have no manual action. Success refreshes attendance; errors remain on the row.
+
+Media upload sits beside Scan QR code. Owner-only metadata/signing API is restricted to the Admin host and same-origin writes, with private/no-store responses. Files upload directly to the private `event-media-private` Supabase bucket: 50 MB/file, JPEG/PNG/WebP/HEIC/HEIF, MP4/QuickTime/WebM; up to20 selected at once, sequential uploads. Each object has a random UUID prefix under the current event key. Bucket MIME/size restrictions enforce the actual uploaded payload; no public policies are added. No backend media proxy, inference or automatic publication.
+
+The panel remains mounted when changing tools, preserving upload state. Keep the PWA open during transfer. Failed files are named and can be selected again; no silent success. Listing is paginated25; originals load only on explicit preview using10-minute signed URLs. Refresh renews expired previews. This is Admin ingestion, not an attendee-facing upload link or a public content gallery. No deletion UI in this first version.
+
+Bucket provisioning verified on13 November2026: private, max52428800bytes, restricted MIME types; synthetic signed upload/read passed and anonymous list/download denied. Only the synthetic object was removed after verification.
+
+## Next-event planning
+
+Admin Events includes an owner-only Draft events section. An unpublished `events` placeholder exists for Thursday19 November2026 (`map-2026-11-19-placeholder`); venue/time/topic/capacity/pricing remain unconfirmed. It does not create a registration offer, change current EVENT_KEY or publish a new seminar. A Registrations control links to these drafts. Anonymous API access to the placeholder was verified empty. It is intentionally separate from legacy service-event testimonial attribution.
