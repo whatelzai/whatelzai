@@ -1291,9 +1291,9 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   --admin-accent-soft: #f5effc;
 }
 .admin-workspace-shell[data-admin-workspace="day-job"] {
-  --admin-accent: #f59a42;
-  --admin-accent-ink: #9b4a08;
-  --admin-accent-soft: #fff3e6;
+  --admin-accent: #a47b58;
+  --admin-accent-ink: #795539;
+  --admin-accent-soft: #f6eee7;
 }
 .admin-shell[data-admin-theme="dark"] .admin-workspace-shell {
   --admin-accent-ink: #f5d867;
@@ -1305,8 +1305,8 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   --admin-accent-soft: #2c2338;
 }
 .admin-shell[data-admin-theme="dark"] [data-admin-workspace="day-job"] {
-  --admin-accent-ink: #ffbd83;
-  --admin-accent-soft: #34271c;
+  --admin-accent-ink: #dec1a5;
+  --admin-accent-soft: #30271f;
 }
 .admin-workspace-shell .admin-nav-header {
   border-top: 3px solid var(--admin-accent);
@@ -1410,4 +1410,130 @@ html:has(.admin-shell[data-admin-size="larger"]) {
     > span:last-child {
     display: none;
   }
+}
+
+/* Visual Overview: identities carry the scan; words support them. */
+.workspace-icon-grid,
+.routine-rail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.workspace-shortcut,
+.rhythm-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  gap: 10px;
+  padding: 12px 4px;
+  border-radius: 16px;
+}
+.workspace-shortcut-icon,
+.rhythm-shortcut-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--shortcut-bg);
+  color: var(--shortcut-ink);
+}
+[data-lane="ai-business"] {
+  --shortcut-bg: #fff4be;
+  --shortcut-ink: #725500;
+}
+[data-lane="network-marketing"] {
+  --shortcut-bg: #f0e6fa;
+  --shortcut-ink: #7041a5;
+}
+[data-lane="day-job"] {
+  --shortcut-bg: #efe5dc;
+  --shortcut-ink: #795539;
+}
+[data-rhythm="morning"] {
+  --shortcut-bg: #fff0df;
+  --shortcut-ink: #a34d08;
+}
+[data-rhythm="evening"] {
+  --shortcut-bg: #e7edf8;
+  --shortcut-ink: #274575;
+}
+[data-rhythm="weekly"] {
+  --shortcut-bg: #e0f3ee;
+  --shortcut-ink: #17675e;
+}
+.workspace-shortcut-label,
+.rhythm-shortcut-label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.workspace-shortcut small,
+.rhythm-shortcut small {
+  font-size: 12px;
+  color: var(--ledger-muted);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.workspace-shortcut:hover,
+.rhythm-shortcut:hover {
+  background: var(--shortcut-bg);
+}
+.admin-shell[data-admin-theme="dark"] [data-lane="ai-business"] {
+  --shortcut-bg: #332d16;
+  --shortcut-ink: #f5d867;
+}
+.admin-shell[data-admin-theme="dark"] [data-lane="network-marketing"] {
+  --shortcut-bg: #2c2338;
+  --shortcut-ink: #d1b4f2;
+}
+.admin-shell[data-admin-theme="dark"] [data-lane="day-job"] {
+  --shortcut-bg: #30271f;
+  --shortcut-ink: #dec1a5;
+}
+.admin-shell[data-admin-theme="dark"] [data-rhythm="morning"] {
+  --shortcut-bg: #34271c;
+  --shortcut-ink: #ffbd83;
+}
+.admin-shell[data-admin-theme="dark"] [data-rhythm="evening"] {
+  --shortcut-bg: #1d293d;
+  --shortcut-ink: #b6cdf2;
+}
+.admin-shell[data-admin-theme="dark"] [data-rhythm="weekly"] {
+  --shortcut-bg: #18352f;
+  --shortcut-ink: #91dbcb;
+}
+.rhythm-seven {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+}
+.routine-rail {
+  border: 0;
+  padding: 0;
+  align-content: start;
+}
+.routine-rail > h2 {
+  grid-column: 1/-1;
+}
+.overview-week-layout {
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+@media (min-width: 1100px) {
+  .overview-week-layout {
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 1fr);
+    gap: 40px;
+  }
+  .routine-rail {
+    padding-top: 4px;
+  }
+}
+.workspace-shortcut small {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
