@@ -10,6 +10,10 @@ export function hqhDiscoveryQuery(history: ChatMessage[]) {
     /^(thanks?|thank you|谢谢)[!.\s]*$/i.test(users.at(-1)?.body.trim() ?? "")
   )
     return null;
+  const simple = users
+    .at(-1)
+    ?.body.match(/^Create HQH for: ([^\n]+)\nLanguage:/i);
+  if (simple) return { source: "hqh" as const, query: simple[1] };
   const selected = users
     .at(-1)
     ?.body.match(/selected Baobeis, in this order: ([^\n]+)\.\nLanguage:/i);
