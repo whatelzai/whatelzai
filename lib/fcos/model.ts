@@ -39,6 +39,7 @@ export const sourceQuerySchema = z
       "briefings",
       "social",
       "communities",
+      "hqh",
     ]),
     query: z.string().trim().max(100),
   })
