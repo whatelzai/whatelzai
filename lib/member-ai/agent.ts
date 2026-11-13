@@ -1,3 +1,4 @@
+import { fitHqhContext } from "./hqh-context-budget";
 import { hqhDiscoveryQuery } from "./hqh-discovery";
 import { readSse } from "./stream";
 import { sourceQuerySchema } from "@/lib/fcos/model";
@@ -173,7 +174,7 @@ export async function runMemberAgent(options: {
           "Saved HQH lookup failed. Explain the temporary lookup problem rather than claiming there are no saved profiles.",
       };
     }
-    const output = JSON.stringify(context);
+    const output = JSON.stringify(fitHqhContext(context));
     if (Buffer.byteLength(output) > 48000)
       throw Error("Saved HQH context is too large. Choose a smaller group.");
     input.push(
@@ -296,7 +297,12 @@ export async function runMemberAgent(options: {
           requires_member_acceptance: true,
         };
       } else throw Error("This tool is unavailable.");
-      const output = JSON.stringify(result);
+      const output = JSON.stringify(
+        item.name === "read_fcos" &&
+          ["hqh", "hqh_discover"].includes(args.source)
+          ? fitHqhContext(result)
+          : result,
+      );
       if (
         Buffer.byteLength(output) >
         (item.name === "read_fcos" &&

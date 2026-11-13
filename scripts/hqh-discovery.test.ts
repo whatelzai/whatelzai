@@ -128,3 +128,30 @@ test("saving a chat note can preselect only permitted named people for ongoing f
     [],
   );
 });
+
+test("large group context retains six people and current facts inside the request budget", async () => {
+  const { fitHqhContext } = await import("../lib/member-ai/hqh-context-budget");
+  const people = Array.from({ length: 6 }, (_, i) => ({
+    person: { name: `Person ${i}`, story: "x".repeat(1400) },
+    currentHqh: {
+      poti_status: "not_yet",
+      intake: {
+        objective: "Meet people",
+        age_as_reported: 23,
+        raw_input: "x".repeat(1000),
+      },
+      invitation_context: "x".repeat(2000),
+      familiarity_context: "x".repeat(1700),
+    },
+    history: { notes: [{ body: "x".repeat(8000), kind: "HHH" }] },
+  }));
+  const result = fitHqhContext({ people }) as {
+    people: typeof people;
+    contextCoverage: string;
+  };
+  assert.ok(Buffer.byteLength(JSON.stringify(result)) <= 32000);
+  assert.equal(result.people.length, 6);
+  assert.equal(result.people[0].currentHqh.poti_status, "not_yet");
+  assert.equal(result.people[5].currentHqh.intake.objective, "Meet people");
+  assert.match(result.contextCoverage, /shortened/);
+});

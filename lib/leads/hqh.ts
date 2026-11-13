@@ -29,7 +29,6 @@ export async function readHqhContext(
         currentHqh: result.currentHqh,
         history: result.history,
         items: result.items,
-        coverage: result.coverage,
       })),
       format: results.find((x) => typeof x.format === "string")?.format,
       coverage:
@@ -91,7 +90,8 @@ export async function readHqhContext(
       name: person.name,
       membership: person.membership,
       access: person.access,
-      story: person.story,
+      relationship: person.relationship,
+      story: person.story.slice(0, noteBudget < 8000 ? 700 : 1200),
       interests: person.interests,
       concerns: person.concerns,
       community: person.community,

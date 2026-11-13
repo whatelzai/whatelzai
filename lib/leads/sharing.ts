@@ -11,7 +11,7 @@ export type Visibility = {
   revision: number;
 };
 export const sharedLeadColumns =
-  "id,name,referrer_person_id,planned_sponsor_person_id,region,membership,stage,goal,story,interests,concerns,next_action,follow_up_on,is_priority,photo_path,updated_at";
+  "id,name,referrer_person_id,planned_sponsor_person_id,region,membership,stage,goal,relationship,story,interests,concerns,next_action,follow_up_on,is_priority,photo_path,updated_at";
 export async function sharedLeadIds(viewer: string) {
   const r = await supabaseAdmin.rpc("shared_member_lead_ids", {
     p_recipient: viewer,
