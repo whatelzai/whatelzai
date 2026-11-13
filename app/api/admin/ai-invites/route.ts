@@ -1,3 +1,4 @@
+import { primaryName } from "@/lib/ai-invites/identity";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
 import {
@@ -87,6 +88,51 @@ export async function POST(req: Request) {
   };
   if (action === "contact" && input.data.locations !== undefined)
     payload.location = input.data.locations[0] ?? null;
+  if (action === "contact") {
+    const current =
+      revision > 0
+        ? await db
+            .from("ai_business_contacts")
+            .select(
+              "name,invite_name,registration_name,testimonial_name,primary_email",
+            )
+            .eq("id", values.id)
+            .eq("owner_id", owner)
+            .eq("revision", revision)
+            .maybeSingle()
+        : null;
+    if (current?.error)
+      return json(
+        { error: "Person sources could not be checked. Your text is kept." },
+        503,
+      );
+    if (revision > 0 && !current?.data)
+      return json(
+        { error: "This person changed elsewhere. Refresh before saving." },
+        409,
+      );
+    const source = current?.data;
+    const registeredEmail = source?.primary_email ?? null;
+    if ((input.data.email || null) !== registeredEmail)
+      return json(
+        {
+          error:
+            "Primary email comes from registration. Refresh this page before editing.",
+        },
+        409,
+      );
+    const inviteName =
+      input.data.invite_name ?? source?.invite_name ?? input.data.name;
+    payload.invite_name = inviteName;
+    payload.name = primaryName({
+      name: input.data.name,
+      invite_name: inviteName,
+      registration_name: source?.registration_name ?? null,
+      testimonial_name: source?.testimonial_name ?? null,
+    });
+    payload.email = registeredEmail;
+    payload.primary_email = registeredEmail;
+  }
   const query =
     revision === 0
       ? db.from(table).insert(payload)

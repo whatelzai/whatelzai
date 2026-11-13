@@ -10,6 +10,11 @@ import {
   inviteWriteInput,
   inviteAdminHost,
 } from "../lib/ai-invites/model";
+import {
+  primaryName,
+  otherNames,
+  nameSource,
+} from "../lib/ai-invites/identity";
 import { seedPlan } from "../lib/ai-invites/seed";
 const id = "00000000-0000-4000-8000-000000000001",
   owner = "00000000-0000-4000-8000-000000000002",
@@ -171,7 +176,7 @@ test("private schema denies browser roles and prevents cross-owner invitation li
   const db = new PGlite();
   try {
     await db.exec(
-      `create role anon;create role authenticated;create role service_role;create table public.users(id uuid primary key);create table public.event_people(id uuid primary key);create table public.event_registrations(id uuid primary key);create table public.event_attendance(id uuid primary key);`,
+      `create role anon;create role authenticated;create role service_role;create table public.users(id uuid primary key);create table public.event_people(id uuid primary key);create table public.event_registrations(id uuid primary key);create table public.event_attendance(id uuid primary key);create table public.testimonials(id uuid primary key);`,
     );
     await db.exec(
       await readFile(
@@ -200,12 +205,31 @@ test("private schema denies browser roles and prevents cross-owner invitation li
         "utf8",
       ),
     );
+    await db.exec(
+      await readFile(
+        new URL(
+          "../supabase/migrations/20261113165712_ai_invite_how_we_met.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
     const access = await db.query<{ allowed: boolean }>(
       `select has_table_privilege('anon','public.ai_business_contacts','select') or has_table_privilege('authenticated','public.ai_business_invitations','insert') as allowed`,
     );
     assert.equal(access.rows[0].allowed, false);
     await db.exec(
       `insert into public.users values('${owner}'),('${other}');insert into public.ai_business_contacts(id,owner_id,source_key,name) values('${id}','${owner}','test','Test contact');`,
+    );
+    const origin = await db.query<{ how_met: string }>(
+      `select how_met from public.ai_business_contacts where id='${id}'`,
+    );
+    assert.equal(origin.rows[0].how_met, "");
+    await assert.rejects(
+      db.exec(
+        `update public.ai_business_contacts set how_met=repeat('x',2001) where id='${id}'`,
+      ),
+      /check constraint/,
     );
     const loc = await db.query<{ location: string | null }>(
       `select location from public.ai_business_contacts where id='${id}'`,
@@ -250,6 +274,68 @@ test("private schema denies browser roles and prevents cross-owner invitation li
       "select locations from public.ai_business_contacts where source_key='unknown'",
     );
     assert.deepEqual(unknown.rows[0].locations, []);
+    await db.exec(
+      await readFile(
+        new URL(
+          "../supabase/migrations/20261113172107_ai_people_source_identity.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
+    const identity = await db.query<{
+      invite_name: string;
+      primary_email: string | null;
+    }>(
+      `select invite_name,primary_email from public.ai_business_contacts where id='${id}'`,
+    );
+    assert.deepEqual(identity.rows[0], {
+      invite_name: "Test contact",
+      primary_email: null,
+    });
+    await db.exec(
+      `update public.ai_business_contacts set testimonial_name='Full Name',name='Full Name',email2='secondary@example.com' where id='${id}'`,
+    );
+    await assert.rejects(
+      db.exec(
+        `update public.ai_business_contacts set name='Old nickname' where id='${id}'`,
+      ),
+      /check constraint/,
+    );
+    await db.exec(
+      `update public.ai_business_contacts set registration_name='Signup Name',name='Signup Name',email='signup@example.com',primary_email='signup@example.com' where id='${id}'`,
+    );
+    await assert.rejects(
+      db.exec(
+        `update public.ai_business_contacts set name='Full Name' where id='${id}'`,
+      ),
+      /check constraint/,
+    );
+    await assert.rejects(
+      db.exec(
+        `update public.ai_business_contacts set email='secondary@example.com' where id='${id}'`,
+      ),
+      /check constraint/,
+    );
+    const privateLinks = await db.query<{ allowed: boolean }>(
+      `select has_table_privilege('anon','public.ai_business_testimonial_links','select') or has_table_privilege('authenticated','public.ai_business_testimonial_links','insert') as allowed`,
+    );
+    assert.equal(privateLinks.rows[0].allowed, false);
+    await db.exec(
+      `insert into public.testimonials values('${id}');insert into public.ai_business_testimonial_links(owner_id,contact_id,testimonial_id,match_method,confirmed_by) values('${owner}','${id}','${id}','owner_confirmed','${owner}')`,
+    );
+    await assert.rejects(
+      db.exec(
+        `insert into public.ai_business_testimonial_links(owner_id,contact_id,testimonial_id,match_method,confirmed_by) values('${owner}','${id}','${id}','testimonial_only','${owner}')`,
+      ),
+      /unique constraint/,
+    );
+    await assert.rejects(
+      db.exec(
+        `insert into public.ai_business_testimonial_links(owner_id,contact_id,testimonial_id,match_method,confirmed_by) values('${other}','${id}','${id}','owner_confirmed','${other}')`,
+      ),
+      /foreign key/,
+    );
     await db.exec(
       `insert into public.ai_business_invitations(id,owner_id,contact_id,invited_on,channel,response,source_key) values('${id}','${owner}','${id}',null,null,'unavailable','import:test')`,
     );
@@ -367,8 +453,16 @@ test("location edits accept only supported codes and old clients cannot clear a 
     contactInput.safeParse({ ...input, locations: ["XX"] }).success,
     false,
   );
+  assert.ok(
+    contactInput.safeParse({ ...input, how_met: "University mate" }).success,
+  );
+  assert.equal(
+    contactInput.safeParse({ ...input, how_met: "x".repeat(2001) }).success,
+    false,
+  );
   const legacy = contactInput.parse(input);
   assert.equal(Object.hasOwn(legacy, "location"), false);
+  assert.equal(Object.hasOwn(legacy, "how_met"), false);
   for (const location of ["SG", "KL", "PG", null])
     assert.ok(contactInput.safeParse({ ...input, location }).success);
   assert.equal(
@@ -415,5 +509,56 @@ test("multi-location tags overlap without duplicating contacts or treating an em
   assert.equal(
     matchesInviteLocation({ locations: [], location: "SG" }, "unset"),
     true,
+  );
+});
+
+test("registration identity wins, testimonial fills missing name and aliases remain searchable", () => {
+  const person = {
+    name: "Signup Name",
+    registration_name: "Signup Name",
+    testimonial_name: "Full Name",
+    invite_name: "Nickname",
+    primary_email: "signup@example.com",
+    email2: "other@example.com",
+  };
+  assert.equal(primaryName(person), "Signup Name");
+  assert.equal(
+    primaryName({ ...person, registration_name: null }),
+    "Full Name",
+  );
+  assert.equal(
+    primaryName({ ...person, registration_name: null, testimonial_name: null }),
+    "Nickname",
+  );
+  assert.deepEqual(otherNames(person), ["Nickname", "Full Name"]);
+  assert.equal(nameSource(person), "Registration");
+  const input = {
+    action: "contact",
+    id,
+    revision: 1,
+    name: "Signup Name",
+    email: "signup@example.com",
+    phone: "",
+    interests: "",
+    context: "",
+    collaboration: "",
+    next_step: "",
+    follow_up_on: null,
+    relationship: "getting_to_know",
+    status: "active",
+    priority: false,
+  };
+  for (const field of [
+    "primary_email",
+    "email2",
+    "registration_name",
+    "testimonial_name",
+  ])
+    assert.equal(
+      contactInput.safeParse({ ...input, [field]: "injected" }).success,
+      false,
+    );
+  assert.ok(
+    contactInput.safeParse({ ...input, invite_name: "New nickname" }).success,
   );
 });

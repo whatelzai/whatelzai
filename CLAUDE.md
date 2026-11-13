@@ -869,3 +869,11 @@ prioritise linked HHH bodies with explicit byte/history coverage; old event plan
 remain dated history, not current logistics. WhatsApp action is shown for an
 actual briefing rather than intake questions. App/DB sharing gates are unchanged.
 — codex, 2026-11-14
+
+## Invite List How we met (SPR-204)
+
+Owner-private `how_met` holds supplied connection origin/relationship text, bounded at2000 chars. Profile/editor/search expose it; rows use it if no next step. Blank is unknown; old clients omitting it preserve it. It remains separate from conversation notes, locations, event history and business assessments. Migration20261113165712 applied;53 supplied facts saved against54 existing identities, one omitted record blank. Batch junior means relative intake-cohort gap, never current study year or age; preserve unspecified schools/gaps and month-only dates. No inferred relationship graph, membership, contact or follow-up writes. See docs/ai-business-invites.md.
+
+## People source identity (SPR-205)
+
+The owner-private Invite List is labelled People. Canonical name precedence is registration, confirmed testimonial, then invite nickname; preserve source aliases and search them. primary_email is registration-only and mirrored to legacy email; email2 is testimonial-only, never auth proof or newsletter consent. Both source emails are read-only in forms; strict input/server reads/revision guards prevent source override. Private ai_business_testimonial_links has per-owner testimonial uniqueness, composite owner/contact FK and browser-denied grants/RLS. Migration20261113172107 applied. Confirmed22 matches remain existing identities;28 new profiles (8incomplete) have no location. Verified82people/13primary/38secondary/51source links, with existing histories/tags/origins preserved and repeat import zero writes. No auth/tier/automatic future signup reconciliation. Locations to label opens Not set; status distinguishes incomplete sources. See docs/ai-business-invites.md.
