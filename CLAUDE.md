@@ -817,3 +817,11 @@ AI Business contacts have nullable owner-assigned SG/KL/PG locations (Singapore/
 ### Focused Admin workspaces
 
 Admin AI Business centres on Events, People, Proof and Products; remaining website/portfolio tools are retained under More tools. Network Marketing leads with Leads and Team management. Overview keeps weekly focus and daily routines without repeating the event summary. AdminWorkspaceTheme scopes pathname-derived yellow robot / purple network / orange sun accents to Admin only, with neutral reading surfaces and dark-mode tokens. Personal and Settings show no redundant workspace label in the header. Event media is directly reachable via /admin/event-checkin?tool=media; that opens media only, never the scanner. Preserve lazy tools, streaming focus, permissions, timetable rules and the yellow brand mark. See docs/design/admin-focused-workspaces.md.
+
+### Historical invitation outcomes (SPR-201)
+
+Invite dates/channels may be null and must remain explicit unknowns, including after editing. Couldn’t attend (`unavailable`) is separate from Declined/attendance and never implies a lost lead. The event label contains its event date/ID; do not substitute that date for when outreach occurred. Owner/source uniqueness protects repeat-safe private imports, with source keys excluded from form input. Authorized Nov12 intake adds16 outcomes/15 new contacts:31 contacts,18 attended visits preserved. Referral reasons stay private; no invented dates, channels, contact details or follow-ups. The owner explicitly confirmed SG for the15 new contacts, giving31 SG contacts. Migration20261113154122 applied. See docs/ai-business-invites.md.
+
+### Overlapping Invite List locations (SPR-201)
+
+Supersedes SPR-200's single selector: canonical `locations` is a bounded unique SG/KL/PG array, empty means Not set. Multi-select checkboxes and every-tag row/profile rendering preserve one contact/history across regions. Filters match any assigned tag. Legacy scalar `location` is retained and mirrored from the first submitted tag for rollback; pre-tag forms carrying only scalar location must refresh (409), so they cannot replace multi-tags. Migration20261113154752 copies existing locations. Current31 unique people retainSG; two owner-confirmed contacts alsoKL (SG31/KL2/PG0, not33 people). No invitation reasons or attendance changed.

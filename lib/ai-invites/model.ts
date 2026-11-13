@@ -6,12 +6,16 @@ export const locations = {
 } as const;
 export type InviteLocation = keyof typeof locations;
 export function matchesInviteLocation(
-  contact: { location?: InviteLocation | null },
+  contact: { locations?: InviteLocation[]; location?: InviteLocation | null },
   location: string,
 ) {
+  const tags =
+    contact.locations ?? (contact.location ? [contact.location] : []);
   return (
     location === "all" ||
-    (location === "unset" ? !contact.location : contact.location === location)
+    (location === "unset"
+      ? tags.length === 0
+      : tags.some((tag) => tag === location))
   );
 }
 export const relationships = {
@@ -37,6 +41,7 @@ export const responses = {
   interested: "Interested",
   maybe: "Maybe",
   declined: "Declined",
+  unavailable: "Couldn’t attend",
   no_reply: "No reply",
 } as const;
 export function singaporeToday(now = new Date()) {
@@ -61,6 +66,14 @@ export const contactInput = z
       .nullable(),
     phone: z.string().trim().max(40),
     location: z.enum(["SG", "KL", "PG"]).nullable().optional(),
+    locations: z
+      .array(z.enum(["SG", "KL", "PG"]))
+      .max(3)
+      .refine(
+        (tags) => new Set(tags).size === tags.length,
+        "Choose each location once",
+      )
+      .optional(),
     interests: z.string().trim().max(2000),
     context: z.string().trim().max(4000),
     collaboration: z.string().trim().max(2000),
@@ -82,14 +95,17 @@ export const invitationInput = z
     id: z.uuid(),
     contact_id: z.uuid(),
     revision,
-    invited_on: day,
+    invited_on: day.nullable(),
     event_label: z.string().trim().max(200),
-    channel: z.enum(["whatsapp", "in_person", "email", "phone", "other"]),
+    channel: z
+      .enum(["whatsapp", "in_person", "email", "phone", "other"])
+      .nullable(),
     response: z.enum([
       "awaiting_reply",
       "interested",
       "maybe",
       "declined",
+      "unavailable",
       "no_reply",
     ]),
     notes: z.string().trim().max(2000),
@@ -102,9 +118,10 @@ export const inviteWriteInput = z.discriminatedUnion("action", [
 ]);
 export type Contact = Omit<
   z.infer<typeof contactInput>,
-  "action" | "location"
+  "action" | "location" | "locations"
 > & {
   location: InviteLocation | null;
+  locations: InviteLocation[];
   event_person_id: string | null;
   created_at: string;
   updated_at: string;
