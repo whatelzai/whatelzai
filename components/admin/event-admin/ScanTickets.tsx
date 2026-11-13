@@ -31,7 +31,7 @@ export default function EventTools({
           onClick={() => setActive(active === "poster" ? null : "poster")}
         >
           <ImageIcon size={19} />
-          Poster & share
+          Poster
         </button>
         <button
           type="button"
@@ -40,7 +40,7 @@ export default function EventTools({
           onClick={() => setActive(active === "scan" ? null : "scan")}
         >
           <ScanLine size={19} />
-          Scan QR code
+          Scan
         </button>
         <button
           type="button"
@@ -52,7 +52,7 @@ export default function EventTools({
           }}
         >
           <Images size={19} />
-          Media upload
+          Media
         </button>
       </div>
       <div id={id}>

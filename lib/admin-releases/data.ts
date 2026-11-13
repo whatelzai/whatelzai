@@ -5,6 +5,22 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-13-visual-media",
+    date: "2026-11-13",
+    title: "Browse, describe and reuse event media",
+    titleZh: "浏览、记录、复用活动影像",
+    items: [
+      {
+        en: "Poster, Scan and Media are now compact tabs. Browse thumbnails or swipe, then open a zoomable photo viewer.",
+        zh: "海报、扫描、影像三个简洁入口；列表缩略图或滑动浏览，点击打开可缩放图片。",
+      },
+      {
+        en: "Add descriptions and confirmed people tags. Export posters or photos as 3:4 posts or 9:16 Stories; originals stay private.",
+        zh: "添加描述与手动确认的人物标签，可导出3:4帖子图或9:16限时动态；原始影像保持私密。",
+      },
+    ],
+  },
+  {
     id: "2026-11-13-event-followup",
     date: "2026-11-13",
     title: "Attendance and event memories",

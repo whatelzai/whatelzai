@@ -1,35 +1,28 @@
 "use client";
-/* eslint-disable @next/next/no-img-element -- private originals load only on explicit preview, with short-lived signed URLs. */
+import dynamic from "next/dynamic";
+import MediaCollection from "./MediaCollection";
+import type { EventMediaFile } from "@/lib/event-admin/media-policy";
+import { List, GalleryHorizontal } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Upload,
-  Image as ImageIcon,
-  Film,
-  RefreshCw,
-  Check,
-  CircleAlert,
-} from "lucide-react";
+import { Upload, RefreshCw, Check, CircleAlert } from "lucide-react";
 import {
   EVENT_MEDIA_BUCKET,
   EVENT_MEDIA_TYPES,
   mediaInput,
 } from "@/lib/event-admin/media-policy";
-type FileRow = {
-  path: string;
-  name: string;
-  size: number;
-  type: string;
-  url: string;
-};
+const MediaViewer = dynamic(() => import("./MediaViewer"), {
+  loading: () => <p role="status">Opening viewer…</p>,
+});
 export default function EventMedia() {
-  const [rows, setRows] = useState<FileRow[]>([]),
+  const [rows, setRows] = useState<EventMediaFile[]>([]),
     [offset, setOffset] = useState(0),
     [more, setMore] = useState(false),
     [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
     [error, setError] = useState(""),
-    [preview, setPreview] = useState<FileRow | null>(null),
+    [preview, setPreview] = useState<number | null>(null),
+    [view, setView] = useState<"list" | "swipe">("list"),
     [revision, setRevision] = useState(0);
   const pending = useRef(false);
   const reload = useCallback(() => {
@@ -118,9 +111,9 @@ export default function EventMedia() {
   return (
     <section className="event-media" aria-label="Event media">
       <div className="event-media-heading">
-        <label className="ticket-image-button">
+        <label className="event-media-upload">
           <Upload size={18} />
-          {busy ? "Uploading…" : "Add photos & videos"}
+          {busy ? "Uploading…" : "Upload"}
           <input
             aria-label="Upload event photos and videos"
             type="file"
@@ -145,9 +138,33 @@ export default function EventMedia() {
           <RefreshCw size={18} />
         </button>
       </div>
-      <p className="event-media-note">
-        Private · up to 50 MB per file. Keep this app open while uploading.
-      </p>
+      <div className="media-view-options" aria-label="Media view">
+        <button
+          type="button"
+          aria-label="List view"
+          aria-pressed={view === "list"}
+          onClick={() => setView("list")}
+        >
+          <List size={18} />
+          List
+        </button>
+        <button
+          type="button"
+          aria-label="Swipe view"
+          aria-pressed={view === "swipe"}
+          onClick={() => {
+            setView("swipe");
+          }}
+        >
+          <GalleryHorizontal size={18} />
+          Swipe
+        </button>
+      </div>
+      <small className="event-media-note">
+        {busy
+          ? "Keep this app open until uploads finish."
+          : "Private · 50 MB/file"}
+      </small>
       <p role="status" className="event-media-status">
         {message && (
           <>
@@ -167,48 +184,32 @@ export default function EventMedia() {
       ) : !rows.length ? (
         <p className="event-media-note">No photos or videos uploaded yet.</p>
       ) : (
-        <div className="event-media-files">
-          {rows.map((f) => (
-            <button
-              key={f.path}
-              type="button"
-              onClick={() => setPreview(preview?.path === f.path ? null : f)}
-              aria-expanded={preview?.path === f.path}
-            >
-              {f.type.startsWith("video/") ? (
-                <Film size={24} />
-              ) : (
-                <ImageIcon size={24} />
-              )}
-              <span>
-                {f.name}
-                <small>{(f.size / 1024 / 1024).toFixed(1)} MB</small>
-              </span>
-            </button>
-          ))}
-        </div>
+        <MediaCollection
+          key={`${view}-${offset}`}
+          files={rows}
+          view={view}
+          onSelect={setPreview}
+        />
       )}
-      {preview && (
-        <div className="event-media-preview">
-          <button type="button" onClick={() => setPreview(null)}>
-            Close preview
-          </button>
-          {preview.type.startsWith("video/") ? (
-            <video
-              key={preview.path}
-              src={preview.url}
-              controls
-              playsInline
-              preload="metadata"
-            />
-          ) : (
-            <img src={preview.url} alt={preview.name} />
-          )}
-          <a href={preview.url} target="_blank" rel="noreferrer">
-            Open original
-          </a>
-          <small>Preview expired? Refresh media.</small>
-        </div>
+      {preview !== null && rows[preview] && (
+        <MediaViewer
+          file={rows[preview]}
+          index={preview}
+          total={rows.length}
+          onClose={() => setPreview(null)}
+          onNavigate={(direction) =>
+            setPreview((i) =>
+              i === null
+                ? null
+                : Math.max(0, Math.min(rows.length - 1, i + direction)),
+            )
+          }
+          onSaved={(file) =>
+            setRows((current) =>
+              current.map((r) => (r.path === file.path ? file : r)),
+            )
+          }
+        />
       )}
       {(offset > 0 || more) && (
         <div className="event-pagination">
