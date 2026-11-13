@@ -4,7 +4,7 @@ import {
   hqhDiscoveryQuery,
   discoverHqhEvent,
 } from "../lib/member-ai/hqh-discovery";
-import { hqhRequest } from "../lib/fcos/hqh-request";
+import { hqhRequest, mentionedLeadIds } from "../lib/fcos/hqh-request";
 import { isShareableHqh } from "../lib/fcos/whatsapp";
 import { boundedFollowupNotes } from "../lib/leads/hqh-history";
 const message = (body: string) => ({
@@ -109,5 +109,22 @@ test("an HHH follow-up is not turned into another HQH request", () => {
       message("Now help me write their HHH"),
     ]),
     null,
+  );
+});
+
+test("saving a chat note can preselect only permitted named people for ongoing follow-up", () => {
+  assert.deepEqual(
+    mentionedLeadIds("Create latest HQH for Example Person | Another Person", [
+      { id: "a", name: "Example Person" },
+      { id: "b", name: "Another Person" },
+      { id: "c", name: "Other Person" },
+    ]),
+    ["a", "b"],
+  );
+  assert.deepEqual(
+    mentionedLeadIds("Example PersonExtra", [
+      { id: "a", name: "Example Person" },
+    ]),
+    [],
   );
 });
