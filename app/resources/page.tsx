@@ -152,6 +152,12 @@ export default async function Resources() {
             icon={BookOpen}
           />
           <ResourceRow
+            href="/communities"
+            title="Communities"
+            description="Memberships, roles & people"
+            icon={UsersRound}
+          />
+          <ResourceRow
             href="/team"
             title="My team"
             description="Uplines, downlines & connections"

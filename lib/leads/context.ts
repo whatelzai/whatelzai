@@ -1,4 +1,5 @@
 import "server-only";
+import { leadCommunityContext } from "@/lib/communities/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { leadOwner } from "./server";
 import { sharedLeadIds, sharedLeadColumns } from "./sharing";
@@ -86,6 +87,11 @@ export async function readLeadContext(query: string) {
         name: lead.name,
         region: lead.region,
         membership: lead.membership,
+        community: await leadCommunityContext(
+          lead.id,
+          raw.referrer_person_id,
+          raw.planned_sponsor_person_id,
+        ),
         stage: lead.stage,
         goal: lead.goal,
         is_priority: lead.is_priority,

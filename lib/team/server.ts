@@ -41,7 +41,7 @@ export async function loadTeamView(
   const { data, error: peopleError } = await supabaseAdmin
     .from("business_team_people")
     .select(
-      "id,team_id,display_name,sponsor_person_id,context,email,abo_number,current_level,next_goal,progress_notes",
+      "id,team_id,display_name,sponsor_person_id,abo_status,context,email,abo_number,current_level,next_goal,progress_notes",
     )
     .eq("team_id", team.id)
     .order("created_at")

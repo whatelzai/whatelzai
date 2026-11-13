@@ -1,8 +1,15 @@
 import type { CalendarOccurrence } from "./model";
-export const personas = ["Oracle", "Catalyst", "Spark", "Guest"] as const;
+export const personas = [
+  "Oracle",
+  "Architect",
+  "Catalyst",
+  "Spark",
+  "Guest",
+] as const;
 export type Persona = (typeof personas)[number];
 export const personaDescriptions: Record<Persona, string> = {
-  Oracle: "Dick Lim alone · Founder of Founder’s Club",
+  Oracle: "Founder’s Club founders",
+  Architect: "Founding pillars of Founder’s Club",
   Catalyst: "Has an ABO account",
   Spark: "Paid Founder’s Club membership · No ABO account yet",
   Guest: "Not a Founder’s Club member yet · Getting to know the community",
@@ -19,7 +26,7 @@ export type EventAudience = {
 export function eventAudience(title: string): EventAudience {
   if (/^(badminton|captain ball)$/i.test(title.trim()))
     return {
-      members: ["Oracle", "Catalyst", "Spark"],
+      members: ["Oracle", "Architect", "Catalyst", "Spark"],
       guestInvitation: true,
       confirmed: true,
     };
@@ -30,7 +37,7 @@ export function eventAudience(title: string): EventAudience {
     )
   )
     return {
-      members: ["Oracle", "Catalyst"],
+      members: ["Oracle", "Architect", "Catalyst"],
       guestInvitation: false,
       confirmed: true,
     };

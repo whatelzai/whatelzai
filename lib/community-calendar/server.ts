@@ -1,3 +1,5 @@
+import { myCommunityRoles } from "@/lib/communities/server";
+import { founderPersona } from "@/lib/communities/model";
 import { isOwnerUser } from "@/lib/admin-policy";
 import "server-only";
 import { requireAssignedUser } from "@/lib/app-access";
@@ -18,9 +20,10 @@ export async function loadCommunityCalendar(month: string, preview?: string) {
     .eq("user_id", user.id)
     .maybeSingle();
   if (membershipError) throw new Error("Calendar membership unavailable");
-  const persona: Persona = isPersona(membership?.persona)
-    ? membership.persona
-    : "Guest";
+  const scopedPersona = founderPersona(await myCommunityRoles());
+  const persona: Persona =
+    scopedPersona ??
+    (isPersona(membership?.persona) ? membership.persona : "Guest");
   const canManage = isOwnerUser(user);
   const viewingAs = calendarView(persona, canManage, preview);
   const access = { persona, viewingAs, canManage };

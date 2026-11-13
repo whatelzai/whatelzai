@@ -115,7 +115,7 @@ export async function loadLead(id: string) {
       .from("member_leads")
       .select(
         access.canEdit
-          ? "id,name,region,membership,stage,goal,email,phone,birthday,zodiac,relationship,story,interests,concerns,notes,next_action,follow_up_on,is_priority,revision,updated_at,photo_path,visibility"
+          ? "id,name,referrer_person_id,planned_sponsor_person_id,region,membership,stage,goal,email,phone,birthday,zodiac,relationship,story,interests,concerns,notes,next_action,follow_up_on,is_priority,revision,updated_at,photo_path,visibility"
           : sharedLeadColumns,
       )
       .eq("owner_id", access.owner_id)

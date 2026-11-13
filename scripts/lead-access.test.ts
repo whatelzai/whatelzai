@@ -61,6 +61,13 @@ test("Chat reads priority profiles and actual activities; shared context omits p
       q: string,
     ) => Promise<{ items: Record<string, unknown>[]; coverage: string }>;
   }>("lib/leads/context.ts", {
+    "@/lib/communities/server": {
+      leadCommunityContext: async (id: string) => ({
+        roles: [],
+        referrer: id === "own" ? "Introducer" : null,
+        planned_sponsor: null,
+      }),
+    },
     "@/lib/fcos/sharing": {
       sharedBriefingIds: async () => [{ id: "team-note", owner_id: "other" }],
     },
@@ -118,6 +125,10 @@ test("Chat reads priority profiles and actual activities; shared context omits p
   const r = await context.readLeadContext("Fixture");
   assert.equal(r.items.length, 2);
   assert.equal(r.items[0].notes, "PRIVATE");
+  assert.equal(
+    (r.items[0].community as { referrer: string }).referrer,
+    "Introducer",
+  );
   assert.equal(r.items[1].notes, undefined);
   for (const item of r.items) {
     assert.equal(item.email, undefined);
