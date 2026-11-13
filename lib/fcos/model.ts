@@ -40,10 +40,17 @@ export const sourceQuerySchema = z
       "social",
       "communities",
       "hqh",
+      "hqh_discover",
     ]),
-    query: z.string().trim().max(100),
+    query: z.string().trim().max(1100),
   })
-  .strict();
+  .strict()
+  .refine(
+    (input) =>
+      ["hqh", "hqh_discover"].includes(input.source) ||
+      input.query.length <= 100,
+    "Search query is too long.",
+  );
 
 export function futureEvents<T extends { end: string }>(
   events: T[],

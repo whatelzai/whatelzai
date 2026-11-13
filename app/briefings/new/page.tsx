@@ -1,3 +1,4 @@
+import { mentionedLeadIds } from "@/lib/fcos/hqh-request";
 import { randomUUID } from "node:crypto";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
@@ -55,13 +56,31 @@ export default async function NewBriefing({
   if (q.message && z.uuid().safeParse(q.message).success) {
     const { data, error } = await supabaseAdmin
       .from("member_ai_messages")
-      .select("body")
+      .select("body,conversation_id,request_id")
       .eq("user_id", user.id)
       .eq("id", q.message)
       .eq("role", "assistant")
       .maybeSingle();
     if (error) throw Error("Chat draft unavailable.");
     reflections = data?.body.slice(0, 12000) ?? "";
+    if (data) {
+      const request = data.request_id
+        ? await supabaseAdmin
+            .from("member_ai_messages")
+            .select("body")
+            .eq("user_id", user.id)
+            .eq("conversation_id", data.conversation_id)
+            .eq("request_id", data.request_id)
+            .eq("role", "user")
+            .maybeSingle()
+        : { data: null, error: null };
+      if (request.error) throw Error("Chat context unavailable.");
+      for (const id of mentionedLeadIds(
+        `${request.data?.body ?? ""}\n${data.body}`,
+        leads,
+      ))
+        if (!leadIds.includes(id)) leadIds.push(id);
+    }
   }
   return (
     <main className="mx-auto max-w-3xl space-y-6 px-5 py-8">

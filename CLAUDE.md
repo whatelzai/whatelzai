@@ -843,3 +843,17 @@ BriefingEditor draft expose a WhatsApp prepared-message link plus copy fallback.
 The user selects the recipient and sends; no server message API, recipient,
 tracking call, automatic send or sharing-permission change is introduced.
 — codex, 2026-11-14
+
+## Person-first HQH follow-up and discovery (SPR-203)
+
+HQH is anchored to the Baobei; events/dates are optional context. Chat preloads
+permission-checked saved context before the first model reply to an HQH request,
+so saved names or dates are not requested again. Explicit checkbox selections
+resolve directly and preserve order. Natural requests discover named people or
+an unambiguous saved cohort; ambiguous cohorts receive a narrow clarification.
+Create HQH opens a searchable one-to-six-person checklist with English/Chinese
+and optional context, then sends through the normal private Chat API. HQH reads
+prioritise linked HHH bodies with explicit byte/history coverage; old event plans
+remain dated history, not current logistics. WhatsApp action is shown for an
+actual briefing rather than intake questions. App/DB sharing gates are unchanged.
+— codex, 2026-11-14

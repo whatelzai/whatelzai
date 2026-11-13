@@ -1,8 +1,10 @@
 "use client";
+import { CreateHqh } from "@/components/fcos/CreateHqh";
 import Link from "next/link";
 import Image from "next/image";
 import { VoiceInput } from "./VoiceInput";
 import { imageDraft } from "./image-draft";
+import { isShareableHqh } from "@/lib/fcos/whatsapp";
 import { WhatsAppShare } from "@/components/fcos/WhatsAppShare";
 import { ChatMarkdown } from "./ChatMarkdown";
 import { readReply } from "@/lib/member-ai/stream";
@@ -17,8 +19,10 @@ export function Chat({
   enabled,
   initialPrompt = "",
   name = "",
+  hqhPeople = [],
 }: {
   messages: ChatMessage[];
+  hqhPeople?: { id: string; name: string }[];
   conversationId: string | null;
   enabled: boolean;
   initialPrompt?: string;
@@ -63,6 +67,9 @@ export function Chat({
   }, [lastMessage, busy, streamed]);
   async function send(event: React.FormEvent) {
     event.preventDefault();
+    await sendText(text);
+  }
+  async function sendText(text: string) {
     if (
       sending.current ||
       busy ||
@@ -248,7 +255,9 @@ export function Chat({
               {message.role === "assistant" ? (
                 <>
                   <ChatMarkdown body={message.body} />
-                  <WhatsAppShare text={message.body} />
+                  {isShareableHqh(message.body) && (
+                    <WhatsAppShare text={message.body} />
+                  )}
                 </>
               ) : (
                 <div className="whitespace-pre-wrap break-words text-[15px] leading-7">
@@ -345,6 +354,14 @@ export function Chat({
           )}
         </div>
       </div>
+      <CreateHqh
+        people={hqhPeople}
+        disabled={busy || mediaBusy || !enabled || images.length > 0}
+        onCreate={(prompt) => {
+          setText(prompt);
+          void sendText(prompt);
+        }}
+      />
       <form
         onSubmit={send}
         className="fcos-chat-composer shrink-0 bg-white px-1 pt-3 md:px-5"

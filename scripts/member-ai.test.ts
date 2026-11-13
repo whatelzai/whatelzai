@@ -231,3 +231,53 @@ test("group HQH tool context can exceed ordinary snippets and gets enough output
   assert.equal(calls, 2);
   assert.ok(result.body.includes("❌"));
 });
+
+test("natural HQH request receives saved people before the first model response", async () => {
+  let lookedUp = false;
+  const config = options();
+  config.history = [
+    {
+      id: "hqh",
+      role: "user",
+      body: "Can you help me write the HQH for my 6 baobeis for this JB trip?",
+      proposals: [],
+    },
+  ];
+  const result = await runMemberAgent({
+    ...config,
+    readFcos: async (input) => {
+      assert.equal((input as { source: string }).source, "hqh_discover");
+      lookedUp = true;
+      return {
+        resolved: true,
+        names: ["A", "B", "C", "D", "E", "F"],
+        format: "One numbered message",
+      };
+    },
+    request: async (_url, init) => {
+      assert.equal(lookedUp, true);
+      const body = JSON.parse(String(init?.body));
+      assert.equal(body.max_output_tokens, 4096);
+      const saved = body.input.find(
+        (x: { type: string }) => x.type === "function_call_output",
+      );
+      assert.deepEqual(JSON.parse(saved.output).names, [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+      ]);
+      return reply([
+        {
+          type: "message",
+          content: [
+            { type: "output_text", text: "HQH\n1. A > Objective > Welcome" },
+          ],
+        },
+      ]);
+    },
+  });
+  assert.match(result.body, /1\. A/);
+});
