@@ -166,7 +166,7 @@ export default function AIBusinessPage() {
           label: "Products",
           links: [
             {
-              href: "https://whatelz.ai/playbook",
+              href: "/admin/playbook",
               label: "The playbook",
               description: "View your digital product.",
             },

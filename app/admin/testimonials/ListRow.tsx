@@ -89,7 +89,6 @@ export function ListRow({
             <a
               key={s.url}
               href={s.url}
-              target="_blank"
               rel="noopener noreferrer"
               className="underline underline-offset-2 hover:text-zinc-700"
             >
