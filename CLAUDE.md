@@ -791,3 +791,7 @@ variant. Preserve manifest identity and Admin's yellow-background icon. Generate
 with scripts/generate-weos-icons.mjs, also invoked by the full asset generator.
 This supersedes SPR-195's shared install-icon colours, not the shared vector.
 — codex, 2026-11-13
+
+### AI Business Invite List (SPR-198)
+
+`/admin/ai-business/invites` is sole-owner private contact context, independent of member leads and access tiers. Initial import uses the two actual 5/13-attendee events: 16 people / 18 attended visits, with explicit overlap resolution and no invented invitation history. Owner records interests, collaboration, priority and next follow-up manually. Attendance requires checked-in source evidence; future tickets can match existing canonical IDs/exact emails. Browser-denied RLS tables, same-origin Admin JSON writes and revision guards protect changes. Invitation logging sends nothing. Do not contact blocks new logs; corrections remain visible when removed from counts. No public account/membership flow is added. Migration 20261113145620 applied; details and rollback in `docs/ai-business-invites.md`.
