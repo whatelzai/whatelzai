@@ -1,3 +1,4 @@
+import { leadCommunityContext } from "@/lib/communities/server";
 import { ContextNotes } from "@/components/fcos/ContextNotes";
 import { Suspense } from "react";
 import { LoadingRows } from "@/components/fcos/RouteLoading";
@@ -36,6 +37,11 @@ export default async function LeadPage({
   const data = await loadLead(id);
   if (!data) notFound();
   const { lead, activities, canEdit } = data;
+  const community = await leadCommunityContext(
+    lead.id,
+    lead.referrer_person_id,
+    lead.planned_sponsor_person_id,
+  );
   const today = todayUtc8();
   const plans = groupPlans(activities.filter((a) => a.activity_on >= today));
   return (
@@ -64,6 +70,33 @@ export default async function LeadPage({
             : "Team profile · read only"}
         </p>
       </header>
+      {(community.roles.length > 0 ||
+        community.referrer ||
+        community.planned_sponsor) && (
+        <section className="space-y-2 rounded-3xl bg-white p-5 text-sm">
+          <h2 className="font-semibold">Community & referral</h2>
+          {community.roles.map((r, i) => (
+            <p key={i}>
+              {r.community} · {r.role}
+              {r.status === "proposed" ? " (proposed)" : ""}
+            </p>
+          ))}
+          {community.referrer && (
+            <p className="text-zinc-500">Referred by {community.referrer}</p>
+          )}
+          {community.planned_sponsor && (
+            <p className="text-zinc-500">
+              Planned ABO sponsor: {community.planned_sponsor} · Planned only
+            </p>
+          )}
+          <Link
+            href="/communities"
+            className="inline-flex min-h-11 items-center text-xs text-zinc-500 underline"
+          >
+            View communities
+          </Link>
+        </section>
+      )}
       <section className="space-y-4 rounded-3xl bg-white p-5 sm:p-6">
         <h2 className="text-base font-semibold">Coming up</h2>
         {plans.slice(0, 3).map((plan) => (

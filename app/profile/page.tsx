@@ -1,3 +1,4 @@
+import { myCommunityRoles } from "@/lib/communities/server";
 import { MemberPass } from "@/components/fcos/MemberPass";
 import { memberTranslator } from "@/lib/fcos/language-server";
 import { isOwnerUser } from "@/lib/admin-policy";
@@ -54,6 +55,9 @@ export default async function Profile({
   const { persona, usage } = releasesTab
     ? { persona: null, usage: null }
     : await loadProfileData();
+  const communityRoles =
+    !usageTab && !releasesTab ? await myCommunityRoles() : [];
+  const whatelzRole = communityRoles.find((x) => x.slug === "whatelz");
   const observedAt = usage ? Date.parse(usage.observedAt) : 0;
   const firstName = user.name?.split(" ")[0] || "friend";
   return (
@@ -96,9 +100,9 @@ export default async function Profile({
               {firstName}.
             </h2>
             <p className="mt-2 text-sm leading-6 text-zinc-500">
-              {t("Current tier:")}{" "}
+              {whatelzRole ? "Whatelz role:" : t("Current tier:")}{" "}
               <strong className="font-semibold uppercase text-zinc-600">
-                {persona ?? t("Unavailable")}
+                {whatelzRole?.label ?? persona ?? t("Unavailable")}
               </strong>
             </p>
             <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-3 py-1 text-[11px] font-semibold text-weos-ink">
@@ -291,9 +295,24 @@ export default async function Profile({
           <MemberPass
             name={user.name || t("Your account")}
             email={user.email}
-            persona={persona ?? t("Unverified")}
+            persona={whatelzRole?.label ?? persona ?? t("Unverified")}
             title={t("Member Pass")}
           />
+          {communityRoles.length > 0 && (
+            <section className={`${card} space-y-3`}>
+              <h2 className="text-base font-semibold">Community roles</h2>
+              {communityRoles.map((role) => (
+                <Link
+                  key={role.communityId}
+                  href={`/communities?community=${role.communityId}`}
+                  className="flex min-h-11 items-center justify-between gap-3 text-sm"
+                >
+                  <span>{role.community}</span>
+                  <strong className="font-medium">{role.label}</strong>
+                </Link>
+              ))}
+            </section>
+          )}
           <section className={`${card} space-y-5`}>
             <Link
               href="/team"

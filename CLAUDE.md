@@ -791,3 +791,17 @@ variant. Preserve manifest identity and Admin's yellow-background icon. Generate
 with scripts/generate-weos-icons.mjs, also invoked by the full asset generator.
 This supersedes SPR-195's shared install-icon colours, not the shared vector.
 — codex, 2026-11-13
+
+## Community roles and planned placement (SPR-199)
+
+weos_communities, weos_community_roles and weos_community_memberships hold
+community definitions and active/proposed assignments in Supabase. People and
+role descriptions are operational data, never migration seeds. Whatelz roles do
+not grant FC calendar access, app administration, AI access or ABO sponsorship.
+Only founders-club-scoped active roles resolve calendar personas. Linked Baobei
+FC status follows the existing membership editor; community-only leadership is
+owner-editable with revision checks. Rosters and Chat obey hidden-lead sharing.
+member_leads.referrer_person_id and planned_sponsor_person_id distinguish an
+introduction and intended future placement from actual sponsor_person_id edges.
+A plan never creates an ABO node or registers an ABO. Joint accounts stay joint.
+— codex, 2026-11-13

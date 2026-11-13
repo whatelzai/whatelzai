@@ -79,6 +79,8 @@ export const activityUpdateSchema = z.object({
 export type Lead = Omit<z.infer<typeof leadUpdateSchema>, "id"> & {
   id: string;
   updated_at: string;
+  referrer_person_id?: string | null;
+  planned_sponsor_person_id?: string | null;
   is_priority: boolean;
   visibility?: "team" | "private";
   has_photo?: boolean;

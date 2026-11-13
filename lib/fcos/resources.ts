@@ -1,4 +1,5 @@
 import "server-only";
+import { loadCommunities } from "@/lib/communities/server";
 import { readSocialPosts } from "@/lib/social/server";
 import { readLeadContext } from "@/lib/leads/context";
 import { sourceQuerySchema } from "./model";
@@ -12,6 +13,29 @@ import { loadCulture } from "@/lib/knowledge/server";
 export async function readFcosResource(input: unknown) {
   const { source, query } = sourceQuerySchema.parse(input);
   const owner = await fcosOwner();
+  if (source === "communities") {
+    const data = await loadCommunities();
+    return {
+      communities: data.communities,
+      roles: data.roles,
+      members: data.members
+        .filter((x) => x.name.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 20)
+        .map((x) => ({
+          community_id: x.community_id,
+          person_id: x.person_id,
+          lead_id: x.lead_id,
+          role_code: x.role_code,
+          status: x.status,
+          name: x.name,
+          introducer: x.introducer,
+          url: x.url,
+        })),
+      coverage:
+        "Permitted community roles only. Role is community-scoped; neither referral nor planned placement is actual ABO sponsorship. No automatic promotions or app-admin grants.",
+      url: "/communities",
+    };
+  }
   if (source === "social") return readSocialPosts(owner, query);
   const match = (value: string) =>
     value.toLocaleLowerCase().includes(query.toLocaleLowerCase());
