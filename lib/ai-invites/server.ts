@@ -17,7 +17,7 @@ export async function loadInviteList() {
       db
         .from("ai_business_contacts")
         .select(
-          "id,revision,name,email,phone,event_person_id,interests,context,collaboration,next_step,follow_up_on,relationship,status,priority,created_at,updated_at",
+          "id,revision,name,email,phone,location,event_person_id,interests,context,collaboration,next_step,follow_up_on,relationship,status,priority,created_at,updated_at",
           { count: "exact" },
         )
         .eq("owner_id", owner)
