@@ -189,7 +189,7 @@ export async function runMemberAgent(options: {
     hqhRead = true;
   }
   for (let step = 0; step < MAX_CALLS; step++) {
-    const body = JSON.stringify({
+    const payload = {
       model,
       store: false,
       ...(options.onText ? { stream: true } : {}),
@@ -200,7 +200,30 @@ export async function runMemberAgent(options: {
       tools,
       tool_choice: step === MAX_CALLS - 1 ? "none" : "auto",
       parallel_tool_calls: false,
-    });
+    };
+    let body = JSON.stringify(payload);
+    if (
+      hqhRead &&
+      Buffer.byteLength(body, "utf8") - imageBytes > MAX_PAYLOAD_BYTES
+    ) {
+      // Saved person context is current; avoid replaying entire old generated HQHs.
+      // Stored conversations are preserved unchanged.
+      for (let i = 0; i < input.length; i++) {
+        const item = input[i] as { role?: string; content?: unknown };
+        if (
+          item.role === "assistant" &&
+          typeof item.content === "string" &&
+          item.content.length > 1200
+        )
+          input[i] = {
+            ...item,
+            content:
+              item.content.slice(0, 1200) +
+              "\n[Earlier Chat draft excerpt; current saved person context follows.]",
+          };
+      }
+      body = JSON.stringify(payload);
+    }
     if (
       Buffer.byteLength(body, "utf8") - imageBytes > MAX_PAYLOAD_BYTES ||
       Buffer.byteLength(body, "utf8") > 850000

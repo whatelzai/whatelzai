@@ -1,5 +1,5 @@
 /** Keep the current person facts while shortening duplicate narrative excerpts. */
-export function fitHqhContext(value: unknown, limit = 32000): unknown {
+export function fitHqhContext(value: unknown, limit = 36000): unknown {
   if (Buffer.byteLength(JSON.stringify(value)) <= limit) return value;
   const copy = JSON.parse(JSON.stringify(value));
   const caps: Record<string, number> = {
