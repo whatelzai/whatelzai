@@ -133,6 +133,7 @@ export async function runMemberAgent(options: {
   images?: { requestId: string; url: string }[];
 }) {
   const { model, receipt } = options;
+  const deadline = Date.now() + 150000;
   const input: unknown[] = options.history.slice(-20).map((m) => ({
     role: m.role,
     content:
@@ -250,13 +251,18 @@ export async function runMemberAgent(options: {
       Buffer.byteLength(body, "utf8") > 850000
     )
       throw Error("This conversation is too large. Start a new chat.");
+    const remaining = deadline - Date.now();
+    if (remaining <= 0)
+      throw Error("Preparation took too long. Try a smaller group.");
     receipt.uncertain = true;
     const response = await (options.request ?? fetch)(
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
         redirect: "error",
-        signal: AbortSignal.timeout(25000),
+        signal: AbortSignal.timeout(
+          Math.max(1, Math.min(hqhRead ? 90000 : 25000, remaining)),
+        ),
         headers: {
           Authorization: `Bearer ${options.key}`,
           "Content-Type": "application/json",

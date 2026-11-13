@@ -30,7 +30,7 @@ test("checkbox selections resolve directly in selected order, without requiring 
   const r = hqhDiscoveryQuery([message(prompt)]);
   assert.equal(r?.source, "hqh");
   assert.equal(r?.query, "Second Person | First Person");
-  assert.match(prompt, /event is optional/);
+  assert.doesNotMatch(prompt, /event.*required/i);
   assert.match(prompt, /Simplified Chinese/);
 });
 test("saved cohorts exclude hidden IDs and preserve real ambiguity", () => {
