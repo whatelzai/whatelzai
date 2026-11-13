@@ -1,4 +1,5 @@
 "use client";
+import { WhatsAppShare } from "./WhatsAppShare";
 import { MobilePicker } from "@/components/leads/MobilePicker";
 import { useActionState, useState } from "react";
 import { saveBriefing } from "@/app/briefings/actions";
@@ -224,6 +225,16 @@ export function BriefingEditor({
       >
         {pending ? "Saving…" : "Save note"}
       </button>
+      <WhatsAppShare
+        text={[
+          draft.title,
+          draft.observations,
+          draft.reflections,
+          draft.next_steps,
+        ]
+          .filter(Boolean)
+          .join("\n\n")}
+      />
     </form>
   );
 }

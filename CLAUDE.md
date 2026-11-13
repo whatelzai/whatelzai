@@ -829,3 +829,17 @@ Supersedes SPR-200's single selector: canonical `locations` is a bounded unique 
 ### Visual Overview shortcuts
 
 Supersedes the orange/sun Day Job identity: brown work bag throughout Admin. Overview workspace links are three icon shortcuts side by side, with real accepted task titles when present and no repeated empty-state paragraphs. Rhythm uses orange sun (morning), blue moon (night) and teal 7 (weekly). Keep short labels, data-unavailable states, accessible link names, streaming and greyscale-distinct shapes.
+
+## Bilingual HQH and WhatsApp handoff (SPR-202)
+
+Chat read_fcos source hqh resolves one named Baobei through existing readable
+profile gates before projecting explicitly allowlisted intake/disclosure/social/
+logistics metadata. The shared writing format is Supabase knowledge entry
+weos-hqh-whatsapp-format-v1, not hardcoded people or business prose. User-requested
+HQHs are one numbered message with indented continuation lines and inline >
+separators, in English or Simplified Chinese. Unknown disclosure stays unknown;
+FC membership/payment never proves 破题. Completed Chat replies and the current
+BriefingEditor draft expose a WhatsApp prepared-message link plus copy fallback.
+The user selects the recipient and sends; no server message API, recipient,
+tracking call, automatic send or sharing-permission change is introduced.
+— codex, 2026-11-14
