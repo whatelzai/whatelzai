@@ -72,7 +72,15 @@ export default function InviteList({
     () =>
       scoped
         .filter((c) =>
-          [c.name, c.email, c.phone, c.interests, c.next_step, c.collaboration]
+          [
+            c.name,
+            c.email,
+            c.phone,
+            c.how_met,
+            c.interests,
+            c.next_step,
+            c.collaboration,
+          ]
             .join(" ")
             .toLowerCase()
             .includes(search.toLowerCase().trim()),
@@ -124,7 +132,7 @@ export default function InviteList({
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name, interests or next step"
+                placeholder="Search name, how we met or next step"
               />
             </label>
             <label>
@@ -183,7 +191,7 @@ export default function InviteList({
                     <small>
                       {c.status !== "active"
                         ? statuses[c.status]
-                        : c.next_step || "Add a next step"}
+                        : c.next_step || c.how_met || "Add a next step"}
                     </small>
                     {c.follow_up_on && (
                       <small
@@ -284,6 +292,10 @@ export default function InviteList({
                 </small>
               </section>
               <dl className="invite-context">
+                <div>
+                  <dt>How we met</dt>
+                  <dd>{person.how_met || "Not recorded yet"}</dd>
+                </div>
                 <div>
                   <dt>Interests / what they need</dt>
                   <dd>{person.interests || "Not noted yet"}</dd>
@@ -479,6 +491,7 @@ function ContactEditor({
           .toLowerCase(),
         phone: f.get("phone"),
         locations: f.getAll("locations"),
+        how_met: f.get("how_met"),
         interests: f.get("interests"),
         context: f.get("context"),
         collaboration: f.get("collaboration"),
@@ -575,6 +588,15 @@ function ContactEditor({
             </select>
           </label>
         </div>
+        <label>
+          How we met
+          <textarea
+            name="how_met"
+            rows={2}
+            maxLength={2000}
+            defaultValue={contact?.how_met || ""}
+          />
+        </label>
         <label>
           Interests / what they need
           <textarea

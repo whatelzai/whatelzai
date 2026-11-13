@@ -200,12 +200,31 @@ test("private schema denies browser roles and prevents cross-owner invitation li
         "utf8",
       ),
     );
+    await db.exec(
+      await readFile(
+        new URL(
+          "../supabase/migrations/20261113165712_ai_invite_how_we_met.sql",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    );
     const access = await db.query<{ allowed: boolean }>(
       `select has_table_privilege('anon','public.ai_business_contacts','select') or has_table_privilege('authenticated','public.ai_business_invitations','insert') as allowed`,
     );
     assert.equal(access.rows[0].allowed, false);
     await db.exec(
       `insert into public.users values('${owner}'),('${other}');insert into public.ai_business_contacts(id,owner_id,source_key,name) values('${id}','${owner}','test','Test contact');`,
+    );
+    const origin = await db.query<{ how_met: string }>(
+      `select how_met from public.ai_business_contacts where id='${id}'`,
+    );
+    assert.equal(origin.rows[0].how_met, "");
+    await assert.rejects(
+      db.exec(
+        `update public.ai_business_contacts set how_met=repeat('x',2001) where id='${id}'`,
+      ),
+      /check constraint/,
     );
     const loc = await db.query<{ location: string | null }>(
       `select location from public.ai_business_contacts where id='${id}'`,
@@ -367,8 +386,16 @@ test("location edits accept only supported codes and old clients cannot clear a 
     contactInput.safeParse({ ...input, locations: ["XX"] }).success,
     false,
   );
+  assert.ok(
+    contactInput.safeParse({ ...input, how_met: "University mate" }).success,
+  );
+  assert.equal(
+    contactInput.safeParse({ ...input, how_met: "x".repeat(2001) }).success,
+    false,
+  );
   const legacy = contactInput.parse(input);
   assert.equal(Object.hasOwn(legacy, "location"), false);
+  assert.equal(Object.hasOwn(legacy, "how_met"), false);
   for (const location of ["SG", "KL", "PG", null])
     assert.ok(contactInput.safeParse({ ...input, location }).success);
   assert.equal(

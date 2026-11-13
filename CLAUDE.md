@@ -857,3 +857,7 @@ prioritise linked HHH bodies with explicit byte/history coverage; old event plan
 remain dated history, not current logistics. WhatsApp action is shown for an
 actual briefing rather than intake questions. App/DB sharing gates are unchanged.
 — codex, 2026-11-14
+
+## Invite List How we met (SPR-204)
+
+Owner-private `how_met` holds supplied connection origin/relationship text, bounded at2000 chars. Profile/editor/search expose it; rows use it if no next step. Blank is unknown; old clients omitting it preserve it. It remains separate from conversation notes, locations, event history and business assessments. Migration20261113165712 applied;53 supplied facts saved against54 existing identities, one omitted record blank. Batch junior means relative intake-cohort gap, never current study year or age; preserve unspecified schools/gaps and month-only dates. No inferred relationship graph, membership, contact or follow-up writes. See docs/ai-business-invites.md.

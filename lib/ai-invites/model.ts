@@ -74,6 +74,7 @@ export const contactInput = z
         "Choose each location once",
       )
       .optional(),
+    how_met: z.string().trim().max(2000).optional(),
     interests: z.string().trim().max(2000),
     context: z.string().trim().max(4000),
     collaboration: z.string().trim().max(2000),
@@ -118,8 +119,9 @@ export const inviteWriteInput = z.discriminatedUnion("action", [
 ]);
 export type Contact = Omit<
   z.infer<typeof contactInput>,
-  "action" | "location" | "locations"
+  "action" | "location" | "locations" | "how_met"
 > & {
+  how_met: string;
   location: InviteLocation | null;
   locations: InviteLocation[];
   event_person_id: string | null;
