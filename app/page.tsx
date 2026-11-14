@@ -6,7 +6,10 @@ import { getSiteIdentity } from "@/lib/site-identity";
 import { listFeaturedTestimonials, testimonialSlug } from "@/lib/testimonials";
 import { BookObject } from "@/components/editorial/FieldElements";
 import { ReaderVoices } from "@/components/editorial/ReaderVoices";
-import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
+import {
+  currentEvent as mapEvent,
+  isSeminarOpen,
+} from "@/lib/public-events/map";
 import { EventPrice } from "@/components/events/EventPrice";
 import "./offers.css";
 
@@ -53,10 +56,10 @@ export default async function Home() {
         <div className="field-wrap map-feature-grid">
           <Image
             className="map-poster-photo"
-            src="/images/events/money-mindset-ai-skillset-nov12-offer.png"
-            alt="Money Mindset × AI Skillset with Edmund Lin Zhenming: 12 November, 7:30–9:30 PM, 20 people, originally S$97, now S$7."
-            width={1024}
-            height={1536}
+            src={mapEvent.poster}
+            alt={`${mapEvent.title} with Edmund, ${mapEvent.dateLabel}, ${mapEvent.price}, ${mapEvent.capacity} places.`}
+            width={1080}
+            height={1440}
             sizes="(max-width:700px) 100vw, 50vw"
           />
           <div className="offer-copy">
@@ -70,17 +73,17 @@ export default async function Home() {
               room, with space for questions.
             </p>
             <p className="offer-event-facts">
-              {isMapRegistrationOpen()
-                ? "Thursday, 12 November"
+              {isSeminarOpen(mapEvent)
+                ? mapEvent.dateLabel
                 : "Next date to be announced"}
               <br />
-              7:30–9:30 PM · 20 people
+              7:30–9:30 PM · {mapEvent.capacity} people
               <br />
               {mapEvent.venue}
               <br />
               {mapEvent.address}
             </p>
-            <EventPrice />
+            <EventPrice event={mapEvent} />
             <Link className="field-button" href={mapEvent.path}>
               See the seminar <ArrowUpRight size={20} />
             </Link>

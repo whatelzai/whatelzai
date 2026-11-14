@@ -869,3 +869,7 @@ prioritise linked HHH bodies with explicit byte/history coverage; old event plan
 remain dated history, not current logistics. WhatsApp action is shown for an
 actual briefing rather than intake questions. App/DB sharing gates are unchanged.
 — codex, 2026-11-14
+
+## November19 event publication (SPR-206)
+
+ELZ-EVT-0005 has `/events/2026-11-19`, S$8/30places, The Vibe confirmed,19:30–21:30 SGT/registration19:00. mapEvent remains immutable Nov12; currentEvent drives current Admin/tools. Registration accepts explicit event ID, scoped cookies/status/token storage, private event_signup_offers and reserve_event_signup_for_event inventory lock. Legacy cached forms defaultNov12closed. Fulfillment validates occurrence marker, exact amount, stored event/session; ticket/email resolve stored event key. Preserve Nov12 page/prices/delayed fulfillment; no oldpromo copied. Migration20261114071547 applied; additive800amount/privateoffer/RPC changes, legacyfunction retained. Activate offer and publish existing event row only during authorized release. Existing Stripe account has dedicatedS$8price; dynamic Dashboard methods unchanged. See docs/admin-event-operations.md.

@@ -1,7 +1,7 @@
 import "server-only";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
 import { dailyOwner } from "@/lib/daily/server";
-import { mapEvent } from "@/lib/public-events/map";
+import { currentEvent as mapEvent } from "@/lib/public-events/map";
 import { eventView, type Ticket, type Attempt } from "./model";
 export async function eventAdminData(eventKey: string = mapEvent.key) {
   await dailyOwner();

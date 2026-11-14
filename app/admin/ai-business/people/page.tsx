@@ -3,7 +3,7 @@ import { loadInviteList } from "@/lib/ai-invites/server";
 import { PeopleOverview } from "@/components/admin/event-admin/PortfolioViews";
 import { singaporeDay } from "@/lib/daily/model";
 import { eventAdminData } from "@/lib/event-admin/server";
-import { mapEvent } from "@/lib/public-events/map";
+import { currentEvent as mapEvent } from "@/lib/public-events/map";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "People overview — Admin" };
 export default async function Page() {

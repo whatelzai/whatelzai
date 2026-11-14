@@ -1,10 +1,10 @@
 import "server-only";
+import { seminarById, currentEvent } from "./public-events/map";
 import { createHash } from "node:crypto";
 import type Stripe from "stripe";
 import { supabaseAdmin } from "./supabase-server";
 import { getStripe } from "./stripe-server";
 import {
-  PLATFORM_EVENT_MARKER,
   platformSessionMatches,
   platformCheckoutParams,
 } from "./event-registration-policy";
@@ -43,8 +43,7 @@ export async function finishPlatformSignup(
 export async function fulfillPlatformSession(
   session: Stripe.Checkout.Session,
 ): Promise<boolean> {
-  if (session.metadata?.whatelz_event_id !== PLATFORM_EVENT_MARKER)
-    return false;
+  if (!seminarById(session.metadata?.whatelz_event_id || "")) return false;
   if (!platformSessionMatches(session)) {
     if (session.status === "complete" && session.payment_status === "unpaid")
       return true;
@@ -58,7 +57,9 @@ export async function fulfillPlatformSession(
   if (
     error ||
     !data ||
-    data.amount !== 700 ||
+    data.event_key !==
+      seminarById(session.metadata?.whatelz_event_id || "")?.key ||
+    data.amount !== (data.event_key === currentEvent.key ? 800 : 700) ||
     data.stripe_session_id !== session.id
   )
     throw Error("Event payment registration mismatch");
@@ -69,7 +70,7 @@ export async function releasePlatformSession(
   session: Stripe.Checkout.Session,
   failed = false,
 ) {
-  if (session.metadata?.whatelz_event_id !== PLATFORM_EVENT_MARKER) return;
+  if (!seminarById(session.metadata?.whatelz_event_id || "")) return;
   if (
     session.status !== "expired" &&
     !(

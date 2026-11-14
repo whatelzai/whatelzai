@@ -3,9 +3,14 @@ import { useRef, useState, type FormEvent } from "react";
 import PaymentStatus from "./PaymentStatus";
 export default function RegistrationForm({
   checkExisting = false,
+  eventId = "ELZ-EVT-0004",
+  price = "S$7",
 }: {
   checkExisting?: boolean;
+  eventId?: string;
+  price?: string;
 }) {
+  const storageKey = `whatelz-event-signup-token:${eventId}`;
   const token = useRef<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [applying, setApplying] = useState(false);
@@ -17,11 +22,11 @@ export default function RegistrationForm({
   function requestToken() {
     if (!token.current) {
       try {
-        token.current = sessionStorage.getItem("whatelz-event-signup-token");
+        token.current = sessionStorage.getItem(storageKey);
       } catch {}
       token.current ??= crypto.randomUUID();
       try {
-        sessionStorage.setItem("whatelz-event-signup-token", token.current);
+        sessionStorage.setItem(storageKey, token.current);
       } catch {
         /* Cookie also survives the payment return. */
       }
@@ -37,7 +42,7 @@ export default function RegistrationForm({
       const response = await fetch("/api/event-registration/promo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, eventId }),
       });
       const data = await response.json();
       if (!response.ok) throw Error(data.error || "Code could not be checked.");
@@ -46,7 +51,7 @@ export default function RegistrationForm({
     } catch (e) {
       setCodeMessage(
         (e instanceof Error ? e.message : "Code not applied.") +
-          " You can continue with a S$7 ticket.",
+          ` You can continue with a ${price} ticket.`,
       );
     } finally {
       setApplying(false);
@@ -57,9 +62,9 @@ export default function RegistrationForm({
       await fetch("/api/event-registration/status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reset: true }),
+        body: JSON.stringify({ reset: true, eventId }),
       });
-      sessionStorage.removeItem("whatelz-event-signup-token");
+      sessionStorage.removeItem(storageKey);
     } catch {}
     token.current = null;
     setWaiting(false);
@@ -77,6 +82,7 @@ export default function RegistrationForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...Object.fromEntries(form),
+          eventId,
           code: applied ?? "",
           requestToken: requestToken(),
         }),
@@ -98,7 +104,11 @@ export default function RegistrationForm({
   }
   if (waiting)
     return (
-      <PaymentStatus requestToken={null} onStartOver={() => void startOver()} />
+      <PaymentStatus
+        eventId={eventId}
+        requestToken={null}
+        onStartOver={() => void startOver()}
+      />
     );
   return (
     <form className="event-registration-form" onSubmit={submit}>
@@ -175,7 +185,7 @@ export default function RegistrationForm({
         </label>
       </div>
       <p className="registration-total">
-        Ticket total <strong>{applied ? "S$0" : "S$7"}</strong>
+        Ticket total <strong>{applied ? "S$0" : price}</strong>
       </p>
       {error && <p role="alert">{error}</p>}
       <button

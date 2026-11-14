@@ -1,6 +1,6 @@
 import type Stripe from "stripe";
 import { canFulfillCheckout } from "./stripe-fulfillment";
-import { mapEvent } from "./public-events/map";
+import { mapEvent, type PublicSeminar } from "./public-events/map";
 
 export const MAP_PAYMENT_LINK = "plink_1UZvSJPA71qp9sGS9gBTQzhO";
 // Retain fulfilment for existing tickets and delayed legacy checkout events.
@@ -24,10 +24,14 @@ export function mapConfirmation(session: Stripe.Checkout.Session) {
   };
 }
 
-export function eventConfirmationMessage(email: string, name = "there") {
+export function eventConfirmationMessage(
+  email: string,
+  name = "there",
+  event: PublicSeminar = mapEvent,
+) {
   return {
     to: email,
     subject: "You’re confirmed — Money Mindset × AI Skillset",
-    text: `Hi ${name},\n\nYour place at Money Mindset × AI Skillset is confirmed!\n\nEvent ID: ${mapEvent.id}\n${mapEvent.dateLabel}\n7:30–9:30 PM · Singapore time\n${mapEvent.venue}\n${mapEvent.address}\n\nWe’ll explore AI Skillset × Money Mindset through practical ideas and conversation.\n\nLooking forward to meeting you!\n\nEdmund Lin Zhenming\nhttps://whatelz.ai${mapEvent.path}`,
+    text: `Hi ${name},\n\nYour place at Money Mindset × AI Skillset is confirmed!\n\nEvent ID: ${event.id}\n${event.dateLabel}\n7:30–9:30 PM · Singapore time\n${event.venue}\n${event.address}\n\nWe’ll explore AI Skillset × Money Mindset through practical ideas and conversation.\n\nLooking forward to meeting you!\n\nEdmund Lin Zhenming\nhttps://whatelz.ai${event.path}`,
   };
 }

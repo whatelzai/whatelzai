@@ -20,7 +20,7 @@ import {
   type EventData,
   type Payment,
 } from "@/lib/event-admin/model";
-import { mapEvent } from "@/lib/public-events/map";
+import { currentEvent as mapEvent } from "@/lib/public-events/map";
 import { retryEventTicketEmail } from "@/app/admin/event-checkin/actions";
 import ManualCheckin from "./ManualCheckin";
 import ScanTickets from "./ScanTickets";
