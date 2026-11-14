@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element -- this is the original downloadable PNG, not an optimised derivative. */
 import { useState } from "react";
 import { Copy, Image as ImageIcon } from "lucide-react";
-import { mapEvent } from "@/lib/public-events/map";
+import { currentEvent as mapEvent } from "@/lib/public-events/map";
 import {
   eventCaption,
   eventUrl,

@@ -27,6 +27,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticEntries: Entry[] = [
+    {
+      url: `${SITE_URL}/events/2026-11-19`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
     ...pastThursdayEvents.map((event) => ({
       url: `${SITE_URL}${event.path}`,
       lastModified: now,

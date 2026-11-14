@@ -3,7 +3,10 @@ import Link from "next/link";
 import PastEvents from "@/components/events/PastEvents";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
+import {
+  currentEvent as mapEvent,
+  isSeminarOpen,
+} from "@/lib/public-events/map";
 import { EventPrice } from "@/components/events/EventPrice";
 import "../offers.css";
 export const dynamic = "force-dynamic";
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://whatelz.ai/events" },
 };
 export default function EventsPage() {
-  const open = isMapRegistrationOpen();
+  const open = isSeminarOpen(mapEvent);
   return (
     <main className="map-events field-wrap">
       <header className="events-intro">
@@ -29,30 +32,30 @@ export default function EventsPage() {
       <section className="event-listing" aria-labelledby="next-talk">
         <Image
           className="map-poster-photo"
-          src="/images/events/money-mindset-ai-skillset-nov12-offer.png"
+          src={mapEvent.poster}
           alt="Money Mindset × AI Skillset seminar poster featuring Edmund speaking."
-          width={1024}
-          height={1536}
+          width={1080}
+          height={1440}
           sizes="(max-width:700px) 100vw, 40vw"
         />
         <div className="offer-copy">
           <h2 id="next-talk">{mapEvent.title}</h2>
-          <p>From groups of 10 to 20 places for the next session.</p>
+          <p>30 places for the next Thursday session.</p>
           <p>
             {open
-              ? "Next session: Thursday, 12 November 2026."
+              ? `Next session: ${mapEvent.dateLabel}.`
               : "The next session will be announced here."}
           </p>
           <p>
             7:30–9:30 PM · UTC+8
             <br />
-            20 participants maximum
+            {mapEvent.capacity} participants maximum
             <br />
             {mapEvent.venue}
             <br />
             {mapEvent.address}
           </p>
-          <EventPrice />
+          <EventPrice event={mapEvent} />
           <Link className="field-button" href={mapEvent.path}>
             {open ? "Details & registration" : "About the seminar"}
             <ArrowUpRight size={20} />

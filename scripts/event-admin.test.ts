@@ -194,7 +194,7 @@ test("server guard runs before any database access and errors never become zero 
             },
           },
         },
-        "@/lib/public-events/map": { mapEvent: { key: "event" } },
+        "@/lib/public-events/map": { currentEvent: { key: "event" } },
         "./model": { eventView },
       })[name],
   });

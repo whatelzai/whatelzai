@@ -149,7 +149,7 @@ test("archive reads scope both payment sources and reject non-owners before I/O"
           },
         };
       if (name === "@/lib/public-events/map")
-        return { mapEvent: { key: "default-event" } };
+        return { currentEvent: { key: "default-event" } };
       if (name === "./model") return { eventView: () => ({ counts: {} }) };
       throw Error(name);
     },

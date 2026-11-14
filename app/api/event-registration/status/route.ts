@@ -1,3 +1,8 @@
+import {
+  seminarById,
+  mapEvent,
+  registrationCookie,
+} from "@/lib/public-events/map";
 import { paymentFreezeUntil } from "@/lib/event-registration-policy";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -30,13 +35,17 @@ export async function POST(req: NextRequest) {
   }
   if (!body || typeof body !== "object")
     return reply({ error: "Invalid request." }, 400);
+  const event = seminarById(
+    typeof body.eventId === "string" ? body.eventId : mapEvent.id,
+  );
+  if (!event) return reply({ error: "Invalid event." }, 400);
+  const cookieName = registrationCookie(event);
   if (body.reset === true) {
     const result = reply({ state: "unknown" });
-    result.cookies.set("whatelz_event_signup", "", { path: "/", maxAge: 0 });
+    result.cookies.set(cookieName, "", { path: "/", maxAge: 0 });
     return result;
   }
-  const token =
-    body.requestToken || req.cookies.get("whatelz_event_signup")?.value;
+  const token = body.requestToken || req.cookies.get(cookieName)?.value;
   if (!z.uuid().safeParse(token).success) return reply({ state: "unknown" });
   const hash = signupHash(token as string);
   if (!checkTokenRateLimit(`event-status:${hash}`, getClientIp(req)).allowed)
@@ -47,7 +56,7 @@ export async function POST(req: NextRequest) {
     .eq("request_hash", hash)
     .maybeSingle();
   if (error) return reply({ error: "Unable to check registration." }, 503);
-  if (!data) return reply({ state: "unknown" });
+  if (!data || data.event_key !== event.key) return reply({ state: "unknown" });
   const attempt = data as SignupAttempt & { payment_started_at: string | null };
   const lockUntil = paymentFreezeUntil(attempt.payment_started_at);
   try {

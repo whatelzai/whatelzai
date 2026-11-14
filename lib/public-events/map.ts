@@ -22,3 +22,32 @@ export const mapEvent = {
 export function isMapRegistrationOpen(now = Date.now()) {
   return now < Date.parse(mapEvent.startsAt);
 }
+
+// Retain mapEvent as the immutable 12 November occurrence for existing tickets.
+export const currentEvent = {
+  ...mapEvent,
+  id: "ELZ-EVT-0005",
+  key: "ai-skillset-money-mindset-20261119",
+  path: "/events/2026-11-19",
+  poster: "/images/events/money-mindset-ai-skillset-nov19-post.png",
+  startsAt: "2026-11-19T19:30:00+08:00",
+  endsAt: "2026-11-19T21:30:00+08:00",
+  dateLabel: "Thursday, 19 November 2026",
+  capacity: 30,
+  price: "S$8",
+  checkoutUrl: "/events/register?event=ELZ-EVT-0005",
+} as const;
+export type PublicSeminar = typeof mapEvent | typeof currentEvent;
+export const seminarEvents: readonly PublicSeminar[] = [mapEvent, currentEvent];
+export const seminarByKey = (key: string) =>
+  seminarEvents.find((e) => e.key === key);
+export const seminarById = (id: string) =>
+  seminarEvents.find((e) => e.id === id);
+export const registrationCookie = (event: PublicSeminar) =>
+  event.id === mapEvent.id
+    ? "whatelz_event_signup"
+    : "whatelz_event_signup_nov19";
+export const registrationPath = (event: PublicSeminar) =>
+  `/events/register?event=${event.id}`;
+export const isSeminarOpen = (event: PublicSeminar, now = Date.now()) =>
+  now < Date.parse(event.startsAt);

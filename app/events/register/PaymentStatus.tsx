@@ -10,8 +10,10 @@ type State = {
 export default function PaymentStatus({
   requestToken,
   onStartOver,
+  eventId = "ELZ-EVT-0004",
 }: {
   requestToken: string | null;
+  eventId?: string;
   onStartOver: () => void;
 }) {
   const [status, setStatus] = useState<State>({ state: "checking" });
@@ -23,7 +25,7 @@ export default function PaymentStatus({
       const response = await fetch("/api/event-registration/status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requestToken, checkPayment: manual }),
+        body: JSON.stringify({ requestToken, checkPayment: manual, eventId }),
       });
       const data = await response.json();
       if (!response.ok) throw Error(data.error || "Please try again.");
@@ -44,7 +46,7 @@ export default function PaymentStatus({
         const response = await fetch("/api/event-registration/status", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ requestToken }),
+          body: JSON.stringify({ requestToken, eventId }),
         });
         if (response.ok && alive) {
           const data = await response.json();
@@ -70,7 +72,7 @@ export default function PaymentStatus({
       alive = false;
       clearInterval(timer);
     };
-  }, [requestToken]);
+  }, [requestToken, eventId]);
   useEffect(() => {
     // Tick independently of the network poll so the countdown moves every second.
     const ticker = setInterval(() => setNow(Date.now()), 1000);
