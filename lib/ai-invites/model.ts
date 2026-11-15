@@ -60,6 +60,7 @@ export const contactInput = z
     id: z.uuid(),
     revision,
     name: z.string().trim().min(1).max(160),
+    invite_name: z.string().trim().max(160).optional(),
     email: z
       .union([z.literal(""), z.email()])
       .transform((s) => s.toLowerCase())
@@ -74,6 +75,7 @@ export const contactInput = z
         "Choose each location once",
       )
       .optional(),
+    how_met: z.string().trim().max(2000).optional(),
     interests: z.string().trim().max(2000),
     context: z.string().trim().max(4000),
     collaboration: z.string().trim().max(2000),
@@ -118,8 +120,14 @@ export const inviteWriteInput = z.discriminatedUnion("action", [
 ]);
 export type Contact = Omit<
   z.infer<typeof contactInput>,
-  "action" | "location" | "locations"
+  "action" | "location" | "locations" | "how_met" | "invite_name"
 > & {
+  invite_name: string;
+  registration_name: string | null;
+  testimonial_name: string | null;
+  primary_email: string | null;
+  email2: string | null;
+  how_met: string;
   location: InviteLocation | null;
   locations: InviteLocation[];
   event_person_id: string | null;
@@ -138,6 +146,7 @@ export type Attendance = {
 export type InviteContact = Contact & {
   attendance: Attendance[];
   invitations: Invitation[];
+  testimonials?: { id: string; status: string; submitted_at: string | null }[];
 };
 export type TicketEvidence = {
   id: string;

@@ -47,12 +47,18 @@ async function main() {
     );
   for (const c of plan.contacts) {
     const { key, ...details } = c;
-    const write = await db
-      .from("ai_business_contacts")
-      .upsert(
-        { id: randomUUID(), owner_id: owner, source_key: key, ...details },
-        { onConflict: "owner_id,source_key", ignoreDuplicates: true },
-      );
+    const write = await db.from("ai_business_contacts").upsert(
+      {
+        id: randomUUID(),
+        owner_id: owner,
+        source_key: key,
+        ...details,
+        invite_name: details.name,
+        registration_name: details.event_person_id ? details.name : null,
+        primary_email: details.email,
+      },
+      { onConflict: "owner_id,source_key", ignoreDuplicates: true },
+    );
     if (write.error)
       throw Error("Contact import failed: " + write.error.message);
     const read = await db

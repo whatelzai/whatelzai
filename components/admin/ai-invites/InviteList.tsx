@@ -21,6 +21,7 @@ import {
   type Contact,
   type Invitation,
 } from "@/lib/ai-invites/model";
+import { nameSource, otherNames } from "@/lib/ai-invites/identity";
 type Write = (value: Record<string, unknown>) => Promise<void>;
 async function saveEntry(value: Record<string, unknown>) {
   const r = await fetch("/api/admin/ai-invites", {
@@ -72,7 +73,19 @@ export default function InviteList({
     () =>
       scoped
         .filter((c) =>
-          [c.name, c.email, c.phone, c.interests, c.next_step, c.collaboration]
+          [
+            c.name,
+            c.primary_email,
+            c.email2,
+            c.invite_name,
+            c.registration_name,
+            c.testimonial_name,
+            c.phone,
+            c.how_met,
+            c.interests,
+            c.next_step,
+            c.collaboration,
+          ]
             .join(" ")
             .toLowerCase()
             .includes(search.toLowerCase().trim()),
@@ -116,6 +129,20 @@ export default function InviteList({
           Add person
         </button>
       </div>
+      {initial.some((c) => !c.locations.length) && (
+        <button
+          className="invite-text-button invite-location-needed"
+          onClick={() => {
+            setLocation("unset");
+            setSearch("");
+            setFilter("all");
+            setSelected(null);
+          }}
+        >
+          Locations to label ·{" "}
+          {initial.filter((c) => !c.locations.length).length}
+        </button>
+      )}
       <div className={`invite-workspace ${person ? "has-selection" : ""}`}>
         <section className="invite-list-panel" aria-label="People">
           <div className="invite-toolbar">
@@ -124,7 +151,7 @@ export default function InviteList({
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name, interests or next step"
+                placeholder="Search names, emails or how we met"
               />
             </label>
             <label>
@@ -183,7 +210,7 @@ export default function InviteList({
                     <small>
                       {c.status !== "active"
                         ? statuses[c.status]
-                        : c.next_step || "Add a next step"}
+                        : c.next_step || c.how_met || "Add a next step"}
                     </small>
                     {c.follow_up_on && (
                       <small
@@ -244,6 +271,10 @@ export default function InviteList({
               <header>
                 <div>
                   <h2>{person.name}</h2>
+                  <p>Primary name · {nameSource(person)}</p>
+                  {otherNames(person).length > 0 && (
+                    <p>Also known as {otherNames(person).join(" · ")}</p>
+                  )}
                   <p>
                     {relationships[person.relationship]} ·{" "}
                     {statuses[person.status]}
@@ -265,12 +296,44 @@ export default function InviteList({
                   Edit
                 </button>
               </header>
-              {(person.email || person.phone) && (
-                <p className="invite-contact-details">
-                  {person.email && <span>{person.email}</span>}
-                  {person.phone && <span>{person.phone}</span>}
-                </p>
-              )}
+              <dl className="invite-source-details">
+                <div>
+                  <dt>Primary email · registration</dt>
+                  <dd>{person.primary_email || "Not recorded"}</dd>
+                </div>
+                <div>
+                  <dt>Email2 · testimonial</dt>
+                  <dd>
+                    {person.email2 || "Not recorded"}
+                    {person.email2 &&
+                      person.email2 === person.primary_email && (
+                        <small>Same address as primary</small>
+                      )}
+                  </dd>
+                </div>
+                {person.phone && (
+                  <div>
+                    <dt>Phone</dt>
+                    <dd>{person.phone}</dd>
+                  </div>
+                )}
+                {person.testimonials?.length ? (
+                  <div>
+                    <dt>Testimonial source</dt>
+                    <dd>
+                      {[
+                        ...new Set(
+                          person.testimonials.map((t) =>
+                            t.status === "incomplete"
+                              ? "Incomplete profile"
+                              : t.status[0].toUpperCase() + t.status.slice(1),
+                          ),
+                        ),
+                      ].join(" · ")}
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
               <section className="invite-next">
                 <h3>Next conversation</h3>
                 <p>
@@ -284,6 +347,10 @@ export default function InviteList({
                 </small>
               </section>
               <dl className="invite-context">
+                <div>
+                  <dt>How we met</dt>
+                  <dd>{person.how_met || "Not recorded yet"}</dd>
+                </div>
                 <div>
                   <dt>Interests / what they need</dt>
                   <dd>{person.interests || "Not noted yet"}</dd>
@@ -473,12 +540,12 @@ function ContactEditor({
         action: "contact",
         id: id.current,
         revision: contact?.revision || 0,
-        name: f.get("name"),
-        email: String(f.get("email") || "")
-          .trim()
-          .toLowerCase(),
+        name: contact?.name || String(f.get("invite_name") || ""),
+        invite_name: String(f.get("invite_name") || ""),
+        email: contact?.primary_email || null,
         phone: f.get("phone"),
         locations: f.getAll("locations"),
+        how_met: f.get("how_met"),
         interests: f.get("interests"),
         context: f.get("context"),
         collaboration: f.get("collaboration"),
@@ -499,24 +566,30 @@ function ContactEditor({
   return (
     <Editor title={contact ? "Edit person" : "Add person"} close={close}>
       <form onSubmit={submit}>
+        {contact && (
+          <p className="invite-helper">
+            Primary name: <strong>{contact.name}</strong> ·{" "}
+            {nameSource(contact)}
+          </p>
+        )}
         <label>
-          Name
+          Invite name / nickname
           <input
-            name="name"
+            name="invite_name"
             autoComplete="off"
-            required
+            required={!contact}
             maxLength={160}
-            defaultValue={contact?.name || ""}
+            defaultValue={contact?.invite_name || ""}
           />
         </label>
         <div className="invite-form-pair">
           <label>
-            Email
+            Primary email · registration
             <input
-              name="email"
               type="email"
-              maxLength={254}
-              defaultValue={contact?.email || ""}
+              readOnly
+              value={contact?.primary_email || ""}
+              placeholder="Set when they register"
             />
           </label>
           <label>
@@ -529,6 +602,15 @@ function ContactEditor({
             />
           </label>
         </div>
+        <label>
+          Email2 · testimonial
+          <input
+            type="email"
+            readOnly
+            value={contact?.email2 || ""}
+            placeholder="Not recorded"
+          />
+        </label>
         <fieldset className="invite-location-picker">
           <legend>Locations</legend>
           <p className="invite-helper">Choose every applicable location.</p>
@@ -575,6 +657,15 @@ function ContactEditor({
             </select>
           </label>
         </div>
+        <label>
+          How we met
+          <textarea
+            name="how_met"
+            rows={2}
+            maxLength={2000}
+            defaultValue={contact?.how_met || ""}
+          />
+        </label>
         <label>
           Interests / what they need
           <textarea

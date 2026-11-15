@@ -9,8 +9,9 @@ export const metadata: Metadata = { title: "AI Business — Admin" };
 const links = [
   {
     href: "/admin/ai-business/invites",
-    label: "Invite List",
-    description: "Invitation history, attendance and your next conversation.",
+    label: "People",
+    description:
+      "Contact details, invitation history and your next conversation.",
   },
   {
     href: "/admin/event-checkin",
@@ -101,9 +102,7 @@ export default function AIBusinessPage() {
       description="Events, relationships and paid offers."
       intro={
         <>
-          <Suspense
-            fallback={<p role="status">Reading next event…</p>}
-          >
+          <Suspense fallback={<p role="status">Reading next event…</p>}>
             <EventSummary />
           </Suspense>
           <Suspense
@@ -181,7 +180,7 @@ export default function AIBusinessPage() {
       secondary={links.filter(
         (link) =>
           ![
-            "Invite List",
+            "People",
             "Event registrations",
             "Testimonials",
             "Events",
