@@ -1,9 +1,9 @@
 import "server-only";
 import type Stripe from "stripe";
 import { supabaseAdmin } from "./supabase-server";
-import { mapEvent } from "./public-events/map";
+import { mapEvent, currentEvent } from "./public-events/map";
 import { mapConfirmation } from "./event-confirmation";
-export const EVENT_KEY = mapEvent.key;
+export const EVENT_KEY = currentEvent.key;
 export const TICKET_ORIGIN = "https://whatelz.ai";
 export const ticketUrl = (id: string) => `${TICKET_ORIGIN}/tickets/${id}`;
 export async function ensureEventTicket(session: Stripe.Checkout.Session) {
@@ -14,7 +14,7 @@ export async function ensureEventTicket(session: Stripe.Checkout.Session) {
   // Never overwrite check-in, cancellation or delivery state on webhook retries.
   const { error } = await supabaseAdmin.from("event_registrations").upsert(
     {
-      event_key: EVENT_KEY,
+      event_key: mapEvent.key,
       stripe_checkout_session_id: session.id,
       stripe_payment_intent_id:
         typeof session.payment_intent === "string"

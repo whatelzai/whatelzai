@@ -7,7 +7,7 @@ import {
   eventUrl,
   posterFilename,
 } from "../lib/event-admin/sharing";
-import { mapEvent } from "../lib/public-events/map";
+import { currentEvent as mapEvent } from "../lib/public-events/map";
 import { readFileSync } from "node:fs";
 const file = new File(["PNG"], posterFilename, { type: "image/png" });
 test("poster path is an existing PNG; caption uses only public event facts", () => {

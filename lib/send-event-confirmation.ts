@@ -1,4 +1,5 @@
 import "server-only";
+import { seminarByKey } from "./public-events/map";
 import type Stripe from "stripe";
 import QRCode from "qrcode";
 import { ensureEventTicket, ticketUrl } from "./event-tickets";
@@ -23,13 +24,15 @@ export async function sendStoredEventTicket(
 ) {
   const { data: ticket, error } = await supabaseAdmin
     .from("event_registrations")
-    .select("id,email,status,email_sent_at")
+    .select("id,event_key,email,status,email_sent_at")
     .eq("id", ticketId)
     .single();
   if (error || !ticket) throw new Error("Ticket unavailable for delivery");
   if (ticket.status !== "confirmed" || ticket.email_sent_at) return true;
   // Send no attendee name or phone to the email provider.
-  const message = eventConfirmationMessage(ticket.email);
+  const event = seminarByKey(ticket.event_key);
+  if (!event) throw Error("Unknown ticket event");
+  const message = eventConfirmationMessage(ticket.email, "there", event);
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EVENT_CONFIRMATION_FROM;
   if (!key || !from)

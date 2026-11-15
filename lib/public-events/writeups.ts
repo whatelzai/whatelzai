@@ -7,8 +7,24 @@ export const eventWriteups: Record<
     paragraphs: string[];
     agenda?: { time: string; activity: string }[];
     reminder?: string;
+    dateLabel?: string;
   }
 > = {
+  "ELZ-EVT-0005": {
+    heading: "A fresh perspective. A practical next step.",
+    dateLabel: "Thursday, 19 November · Singapore time",
+    paragraphs: [
+      "Money Mindset × AI Skillset returns to The Vibe on 19 November. Join Edmund for two hours exploring how we think about money and how we can put AI to useful work.",
+      "Bring a question from your work, an idea you want to develop, or a task you would like to approach differently. We’ll connect practical AI learning with deliberate choices about money, work and business.",
+      "This session has 30 places. The ideas and questions from these Thursday conversations will continue to shape The Money & AI Playbook.",
+    ],
+    agenda: [
+      { time: "7:00–7:30 PM", activity: "Registration" },
+      { time: "7:30–9:30 PM", activity: "Activity" },
+      { time: "9:30–10:00 PM", activity: "Post-event networking" },
+    ],
+    reminder: "Remember to have your dinner before coming over!",
+  },
   "ELZ-EVT-0001": {
     heading: "Starting with mindset and skillset.",
     paragraphs: [

@@ -1,16 +1,19 @@
-import { mapEvent } from "@/lib/public-events/map";
+import { mapEvent, type PublicSeminar } from "@/lib/public-events/map";
 
-// This offer belongs only to the confirmed 12 November occurrence.
-export function EventPrice() {
+// Discount framing remains exclusive to the original 12 November offer.
+export function EventPrice({ event = mapEvent }: { event?: PublicSeminar }) {
   return (
     <p
       className="map-price"
-      aria-label={`Originally ${mapEvent.originalPrice}, now ${mapEvent.price} per person`}
+      aria-label={`${event.id === mapEvent.id ? `Originally ${event.originalPrice}, now ` : ""}${event.price} per person`}
     >
-      <del aria-hidden="true">{mapEvent.originalPrice}</del>{" "}
-      <strong aria-hidden="true">{mapEvent.price}</strong>
+      {event.id === mapEvent.id && (
+        <del aria-hidden="true">{event.originalPrice}</del>
+      )}{" "}
+      <strong aria-hidden="true">{event.price}</strong>
       <span aria-hidden="true">
-        per person · final price · 12 November only
+        per person · final price ·{" "}
+        {event.id === mapEvent.id ? "12 November only" : "19 November"}
       </span>
     </p>
   );

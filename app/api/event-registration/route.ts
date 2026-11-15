@@ -1,3 +1,4 @@
+import { seminarById, registrationCookie } from "@/lib/public-events/map";
 import { NextRequest, NextResponse } from "next/server";
 import { eventRegistrationSchema } from "@/lib/event-registration-policy";
 import {
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
       400,
     );
   const input = parsed.data;
+  const event = seminarById(input.eventId)!;
   const { data: withinLimit, error: limitError } = await supabaseAdmin.rpc(
     "consume_event_signup_limit",
     {
@@ -54,13 +56,17 @@ export async function POST(req: NextRequest) {
     return response({ error: "Please try again later." }, 429);
 
   try {
-    const { data, error } = await supabaseAdmin.rpc("reserve_event_signup", {
-      p_request_hash: signupHash(input.requestToken),
-      p_name: input.name,
-      p_email: input.email,
-      p_phone: input.phone,
-      p_code_hash: input.code ? signupHash(input.code.toUpperCase()) : null,
-    });
+    const { data, error } = await supabaseAdmin.rpc(
+      "reserve_event_signup_for_event",
+      {
+        p_event_key: event.key,
+        p_request_hash: signupHash(input.requestToken),
+        p_name: input.name,
+        p_email: input.email,
+        p_phone: input.phone,
+        p_code_hash: input.code ? signupHash(input.code.toUpperCase()) : null,
+      },
+    );
     if (error) {
       const messages: Record<string, string> = {
         INVALID_CODE: "This promo code is invalid or no longer available.",
@@ -84,10 +90,12 @@ export async function POST(req: NextRequest) {
     }
     const attempt = data as SignupAttempt;
     if (
+      attempt.event_key !== event.key ||
       attempt.email !== input.email ||
       attempt.attendee_name !== input.name ||
       attempt.phone !== input.phone ||
-      attempt.amount !== (input.code ? 0 : 700)
+      attempt.amount !==
+        (input.code ? 0 : event.id === "ELZ-EVT-0005" ? 800 : 700)
     )
       return response(
         {
@@ -104,7 +112,7 @@ export async function POST(req: NextRequest) {
     if (attempt.amount === 0) {
       await finishPlatformSignup(attempt, null);
       const result = response({ confirmed: true });
-      result.cookies.set("whatelz_event_signup", input.requestToken, {
+      result.cookies.set(registrationCookie(event), input.requestToken, {
         httpOnly: true,
         secure: req.nextUrl.protocol === "https:",
         sameSite: "lax",
@@ -115,7 +123,7 @@ export async function POST(req: NextRequest) {
     }
     const url = await checkoutForAttempt(attempt, req.nextUrl.origin);
     const result = response(url ? { checkoutUrl: url } : { confirmed: true });
-    result.cookies.set("whatelz_event_signup", input.requestToken, {
+    result.cookies.set(registrationCookie(event), input.requestToken, {
       httpOnly: true,
       secure: req.nextUrl.protocol === "https:",
       sameSite: "lax",

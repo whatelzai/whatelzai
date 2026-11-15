@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { supabaseAdmin } from "@/lib/supabase-server";
-import { EVENT_KEY, ticketUrl } from "@/lib/event-tickets";
-import { mapEvent } from "@/lib/public-events/map";
+import { ticketUrl } from "@/lib/event-tickets";
+import { seminarByKey } from "@/lib/public-events/map";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Your event ticket",
@@ -20,12 +20,13 @@ export default async function TicketPage({
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const { data, error } = await supabaseAdmin
     .from("event_registrations")
-    .select("id,status,checked_in_at")
+    .select("id,event_key,status,checked_in_at")
     .eq("id", id)
-    .eq("event_key", EVENT_KEY)
     .maybeSingle();
   if (error) throw new Error("Ticket unavailable; please try again");
   if (!data) notFound();
+  const mapEvent = seminarByKey(data.event_key);
+  if (!mapEvent) notFound();
   const qr = await QRCode.toDataURL(ticketUrl(id), { width: 600, margin: 4 });
   return (
     <main className="field-wrap" style={{ paddingBlock: 64, maxWidth: 640 }}>

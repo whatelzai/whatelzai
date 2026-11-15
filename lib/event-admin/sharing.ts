@@ -1,4 +1,4 @@
-import { mapEvent } from "@/lib/public-events/map";
+import { currentEvent as mapEvent } from "@/lib/public-events/map";
 export const eventUrl = `https://whatelz.ai${mapEvent.path}`;
 export const posterFilename = `${mapEvent.id.toLowerCase()}-poster.png`;
 export const eventCaption = `${mapEvent.title}\n${mapEvent.dateLabel}\n${mapEvent.timeLabel}\n${mapEvent.venue} · ${mapEvent.address}\n${mapEvent.price} per person\n\nRegister: ${eventUrl}`;

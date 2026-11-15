@@ -66,7 +66,7 @@ export function eventView(
       : a?.state === "confirmed"
         ? a.amount === 0
           ? "free"
-          : a.amount === 700
+          : [700, 800].includes(a.amount)
             ? "paid"
             : "unknown"
         : "unknown";

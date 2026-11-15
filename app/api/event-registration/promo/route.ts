@@ -5,7 +5,7 @@ import {
 } from "@/lib/platform-event-registration";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { getClientIp, checkRateLimit } from "@/lib/rate-limit";
-import { mapEvent, isMapRegistrationOpen } from "@/lib/public-events/map";
+import { mapEvent, seminarById, isSeminarOpen } from "@/lib/public-events/map";
 export const runtime = "nodejs";
 const reply = (body: unknown, status = 200) =>
   NextResponse.json(body, {
@@ -13,17 +13,22 @@ const reply = (body: unknown, status = 200) =>
     headers: { "Cache-Control": "private, no-store" },
   });
 export async function POST(req: NextRequest) {
-  if (!platformRegistrationEnabled() || !isMapRegistrationOpen())
+  if (!platformRegistrationEnabled())
     return reply({ error: "Registration is not available." }, 503);
   if (req.headers.get("origin") !== req.nextUrl.origin)
     return reply({ error: "Use the registration page." }, 403);
   if (!checkRateLimit(`event-promo:${getClientIp(req)}`).allowed)
     return reply({ error: "Please try again in a moment." }, 429);
   let code = "";
+  let event = mapEvent as NonNullable<ReturnType<typeof seminarById>>;
   try {
     const text = await req.text();
     if (text.length > 256) return reply({ error: "Code too long." }, 400);
     const data = JSON.parse(text);
+    const selected = seminarById(data.eventId || mapEvent.id);
+    if (!selected || !isSeminarOpen(selected))
+      return reply({ error: "Registration is closed." }, 409);
+    event = selected;
     if (typeof data.code === "string") code = data.code.trim().toUpperCase();
   } catch {
     return reply({ error: "Enter a promo code." }, 400);
@@ -44,7 +49,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await supabaseAdmin
     .from("event_signup_codes")
     .select("max_uses")
-    .eq("event_key", mapEvent.key)
+    .eq("event_key", event.key)
     .eq("code_hash", hash)
     .eq("enabled", true)
     .gt("expires_at", new Date().toISOString())
@@ -59,7 +64,7 @@ export async function POST(req: NextRequest) {
   const { count, error: countError } = await supabaseAdmin
     .from("event_signup_attempts")
     .select("id", { head: true, count: "exact" })
-    .eq("event_key", mapEvent.key)
+    .eq("event_key", event.key)
     .eq("code_hash", hash)
     .in("state", ["reserved", "checkout", "confirmed"]);
   if (countError)

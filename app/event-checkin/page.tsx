@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { eventStaff } from "@/lib/event-staff";
-import { mapEvent } from "@/lib/public-events/map";
+import { currentEvent as mapEvent } from "@/lib/public-events/map";
 import Scanner from "./Scanner";
 import { parseTicket } from "@/lib/event-checkin-policy";
 export const dynamic = "force-dynamic";

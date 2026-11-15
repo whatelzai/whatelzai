@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { pastThursdayEvents } from "@/lib/public-events/past";
-import { mapEvent } from "@/lib/public-events/map";
+import { mapEvent, currentEvent } from "@/lib/public-events/map";
 import "../../offers.css";
 export function generateStaticParams() {
   return pastThursdayEvents.map((event) => ({ date: event.id }));
@@ -31,6 +31,7 @@ export default async function PastEventPage({
   params: Promise<{ date: string }>;
 }) {
   const { date } = await params;
+  if (date === currentEvent.id) permanentRedirect(currentEvent.path);
   const event = pastThursdayEvents.find(
     (event) => event.id === date || event.date === date,
   );

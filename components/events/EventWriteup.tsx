@@ -16,7 +16,7 @@ export default function EventWriteup({ eventId }: { eventId: string }) {
       {writeup.agenda && (
         <div className="event-agenda">
           <h3>Evening schedule</h3>
-          <p>Thursday, 12 November · Singapore time</p>
+          <p>{writeup.dateLabel || "Thursday, 12 November · Singapore time"}</p>
           <dl>
             {writeup.agenda.map(({ time, activity }) => (
               <div key={time}>
