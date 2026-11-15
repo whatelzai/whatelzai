@@ -25,7 +25,7 @@ export default async function RoutineLibrary() {
         </p>
         <h1 className="mt-3 text-3xl font-semibold">Routine library</h1>
         <p className="mt-3 text-sm leading-6">
-          Read the instructions behind your morning, evening and weekly
+          Read the instructions behind your daily reviews and weekly sprint
           practice. Download each skill to reuse it.
         </p>
       </header>
@@ -48,7 +48,7 @@ export default async function RoutineLibrary() {
             </p>
             <p className="mt-5 text-xs text-zinc-500">
               {states[index].status === "ready"
-                ? `Version ${states[index].version}`
+                ? `v${states[index].version} · Skill`
                 : states[index].status === "disconnected"
                   ? "Connect EMDEE to read"
                   : states[index].status === "missing"
