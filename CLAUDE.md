@@ -897,3 +897,7 @@ Fixed `/events/feedback/<event-id>` links stay attached to one actual occurrence
 ## Owner release preference (2026-11-16)
 
 Edmund explicitly authorizes automatic PR merge and production deployment for completed Whatelz changes after relevant tests, build and preview checks pass, followed by production verification. This supersedes the earlier human-merge workflow requirement for the authorized work. Pause for actual blockers or actions requiring separate approval; never treat this as permission to skip checks or expose private data. — codex,2026-11-16
+
+## Permanent event ID URLs (SPR-209)
+
+Public canonical pages derive from permanent event IDs: /events/ELZ-EVT-0004 and /events/ELZ-EVT-0005. Stored safe public_path remains a legacy alias, never canonical authority. Preserve308 title/date redirects to the same occurrence and307/no-store weekly /events/next. June retains its existing UUID rather than reusing retired placeholders. Cards, metadata/sitemap, registration/feedback backlinks and new email/share URLs use the canonical ID; payment keys/markers/cookies and fixed feedback paths remain unchanged. No DB edit/migration. See docs/public-events.md. — codex,2026-11-16
