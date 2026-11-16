@@ -17,6 +17,7 @@ export type CatalogEvent = {
   key: string | null;
   slug: string | null;
   path: string;
+  legacyPath: string | null;
   title: string;
   date: string;
   dateLabel: string;
@@ -147,7 +148,8 @@ export function projectEvent(row: CatalogRow): CatalogEvent | null {
     recordId: row.id,
     key: text(m.event_key, 160),
     slug: row.slug,
-    path: safeEventPath(m.public_path) || `/events/${row.id}`,
+    path: `/events/${/^[A-Za-z0-9-]{1,100}$/.test(id) ? id : row.id}`,
+    legacyPath: safeEventPath(m.public_path),
     title: row.name,
     date: row.date,
     dateLabel: new Date(row.date + "T12:00:00+08:00").toLocaleDateString(
@@ -222,7 +224,8 @@ export function resolveEvent(events: CatalogEvent[], alias: string) {
       e.id === alias ||
       e.recordId === alias ||
       e.slug === alias ||
-      e.path === `/events/${alias}`,
+      e.path === `/events/${alias}` ||
+      e.legacyPath === `/events/${alias}`,
   );
   if (exact.length === 1) return exact[0];
   if (exact.length > 1) return null;

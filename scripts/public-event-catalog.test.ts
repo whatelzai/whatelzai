@@ -119,7 +119,7 @@ test("canonical aliases remain stable, date ambiguity fails closed and redirect 
   const a = event("a", "2026-11-19", { public_path: "/events/fixed-a" }),
     b = event("b", "2026-11-19");
   assert.equal(resolveEvent([a, b], "2026-11-19"), null);
-  assert.equal(resolveEvent([a, b], "a")?.path, "/events/fixed-a");
+  assert.equal(resolveEvent([a, b], "a")?.path, "/events/a");
   assert.equal(resolveEvent([a, b], "fixed-a")?.id, "a");
   for (const path of [
     "https://evil.example/x",
@@ -214,5 +214,31 @@ test("future configured weekly signup uses its own price, marker, cookie and exa
       config,
     ),
     false,
+  );
+});
+
+test("event ID URLs stay fixed when title, date or legacy path changes, retaining old aliases", () => {
+  const original = event("ELZ-EVT-0004", "2026-11-12", {
+    public_path: "/events/money-mindset-ai-skillset",
+  });
+  const next = event("ELZ-EVT-0005", "2026-11-19", {
+    public_path: "/events/2026-11-19",
+  });
+  assert.equal(original.path, "/events/ELZ-EVT-0004");
+  assert.equal(next.path, "/events/ELZ-EVT-0005");
+  assert.equal(
+    resolveEvent([original, next], "money-mindset-ai-skillset")?.id,
+    original.id,
+  );
+  assert.equal(resolveEvent([original, next], "2026-11-19")?.id, next.id);
+  const moved = projectEvent({
+    ...row("ELZ-EVT-0005", "2026-11-26"),
+    name: "AI Skillset",
+  })!;
+  assert.equal(moved.path, next.path);
+  assert.equal(nextWeeklyEvent([original, next], now)?.path, next.path);
+  assert.equal(
+    resolveEvent([original, next], "ELZ-EVT-0004")?.path,
+    original.path,
   );
 });

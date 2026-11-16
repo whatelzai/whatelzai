@@ -35,3 +35,11 @@ Taste direction: loud-flat-poster, seed279135007, retaining the established crea
 Revert the feature commit to restore old public routes/templates; keep existing payment offers and ticket rows. If publication must also be reversed, restore only the backed-up canonical public fields using revision/compare checks; retain newer operational metadata. Never delete attendance or reuse an occurrence ID. Private intake/backup/debug scripts are excluded from Git.
 
 — codex, 2026-11-16
+
+## Permanent ID URLs (SPR-209)
+
+Canonical occurrence pages are `/events/<permanent-id>`, independent of title, date or venue. November12=`/events/ELZ-EVT-0004`; November19=`/events/ELZ-EVT-0005`. Existing June sharing uses its already-established UUID until a separately approved display-ID assignment; never reuse the retired placeholder IDs. Keep IDs immutable.
+
+Approved legacy public_path metadata is retained as an explicit safe alias, alongside record UUID, slug and unique date aliases. Old title/date URLs issue308 to their exact occurrence; the original Millionair alias goes directly to November12's ID. Catalogue cards, homepage, sitemap, metadata canonicals, registration backlinks, feedback recommendations and new email/share links use ID paths. Existing ticket/payment markers, event keys, cookies and feedback URLs are unchanged. `/events/next` stays307/no-store to the next weekly ID page. No database edits/migrations are needed and old links in sent emails remain valid.
+
+Validation includes18 focused regressions and HTTP checks for308 aliases,200 ID pages, matching canonical tags, weekly307 and fixed November12 feedback. Browser follows old November19 URL to ID0005 with its original date, venue, price and registration. — codex,2026-11-16
