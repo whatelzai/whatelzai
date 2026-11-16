@@ -43,10 +43,12 @@ export const seminarByKey = (key: string) =>
   seminarEvents.find((e) => e.key === key);
 export const seminarById = (id: string) =>
   seminarEvents.find((e) => e.id === id);
-export const registrationCookie = (event: PublicSeminar) =>
+export const registrationCookie = (event: { id: string }) =>
   event.id === mapEvent.id
     ? "whatelz_event_signup"
-    : "whatelz_event_signup_nov19";
+    : event.id === currentEvent.id
+      ? "whatelz_event_signup_nov19"
+      : `whatelz_event_signup_${event.id.replace(/[^a-zA-Z0-9-]/g, "")}`;
 export const registrationPath = (event: PublicSeminar) =>
   `/events/register?event=${event.id}`;
 export const isSeminarOpen = (event: PublicSeminar, now = Date.now()) =>

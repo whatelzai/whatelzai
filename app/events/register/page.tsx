@@ -4,18 +4,24 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   mapEvent as legacyEvent,
-  seminarById,
-  isSeminarOpen,
   registrationCookie,
 } from "@/lib/public-events/map";
+import {
+  loadPublicEvents,
+  publicEventNow,
+} from "@/lib/public-events/catalog-server";
+import {
+  resolveEvent,
+  eventStarts,
+  priceLabel,
+} from "@/lib/public-events/catalog";
 import { platformRegistrationEnabled } from "@/lib/platform-event-registration";
-import { EventPrice } from "@/components/events/EventPrice";
 import RegistrationForm from "./RegistrationForm";
 import "../../offers.css";
 import "../event-experience.css";
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Register — Money Mindset × AI Skillset",
+  title: "Register for an event",
   robots: { index: false, follow: false },
   referrer: "no-referrer",
 };
@@ -25,7 +31,10 @@ export default async function RegisterPage({
   searchParams: Promise<{ payment?: string; event?: string }>;
 }) {
   const { payment, event } = await searchParams;
-  const mapEvent = seminarById(event || legacyEvent.id);
+  const mapEvent = resolveEvent(
+    await loadPublicEvents(),
+    event || legacyEvent.id,
+  );
   if (!mapEvent) notFound();
   const hasSignup = Boolean(
     (await cookies()).get(registrationCookie(mapEvent))?.value,
@@ -37,29 +46,33 @@ export default async function RegisterPage({
       </Link>
       <div className="event-signup-grid">
         <aside className="event-signup-summary" aria-label="Your event">
-          <Image
-            src={mapEvent.poster}
-            alt="Money Mindset × AI Skillset with Edmund"
-            width={1024}
-            height={1536}
-            sizes="(max-width: 760px) 100px, 180px"
-          />
+          {mapEvent.poster && (
+            <Image
+              src={mapEvent.poster}
+              alt={`${mapEvent.title} with Edmund`}
+              width={mapEvent.posterWidth}
+              height={mapEvent.posterHeight}
+              sizes="(max-width: 760px) 100px, 180px"
+            />
+          )}
           <div className="event-signup-summary-copy">
-            <h2>
-              Money Mindset
-              <br />× AI Skillset
-            </h2>
+            <h2>{mapEvent.title}</h2>
             <p>
               {mapEvent.dateLabel}
               <br />
-              7:30–9:30 PM · Singapore time
+              {mapEvent.timeLabel}
             </p>
             <p>
-              The Vibe
+              {mapEvent.venue}
               <br />
               <span>{mapEvent.address}</span>
             </p>
-            <EventPrice event={mapEvent} />
+            {mapEvent.priceMinor !== null && (
+              <p className="map-price">
+                <strong>{priceLabel(mapEvent.priceMinor)}</strong>
+                <span>per person · final price</span>
+              </p>
+            )}
           </div>
           <p className="event-signup-ticket-note">
             Your place. Your QR ticket.
@@ -75,7 +88,8 @@ export default async function RegisterPage({
             <h1 id="signup-heading">Save your seat.</h1>
             <p>A few details, then you’re on your way.</p>
           </header>
-          {!isSeminarOpen(mapEvent) ? (
+          {eventStarts(mapEvent) <= publicEventNow() ||
+          !mapEvent.registrationUrl ? (
             <p>Registration is closed.</p>
           ) : !platformRegistrationEnabled() ? (
             <p>
@@ -84,7 +98,7 @@ export default async function RegisterPage({
           ) : (
             <RegistrationForm
               eventId={mapEvent.id}
-              price={mapEvent.price}
+              price={priceLabel(mapEvent.priceMinor!)}
               checkExisting={hasSignup || Boolean(payment)}
             />
           )}

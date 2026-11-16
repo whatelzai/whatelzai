@@ -1,5 +1,5 @@
 import "server-only";
-import { seminarById, currentEvent } from "./public-events/map";
+import { loadCheckoutConfig, checkoutConfigForMarker } from "./event-offer";
 import { createHash } from "node:crypto";
 import type Stripe from "stripe";
 import { supabaseAdmin } from "./supabase-server";
@@ -43,8 +43,11 @@ export async function finishPlatformSignup(
 export async function fulfillPlatformSession(
   session: Stripe.Checkout.Session,
 ): Promise<boolean> {
-  if (!seminarById(session.metadata?.whatelz_event_id || "")) return false;
-  if (!platformSessionMatches(session)) {
+  const config = await checkoutConfigForMarker(
+    session.metadata?.whatelz_event_id || "",
+  );
+  if (!config) return false;
+  if (!platformSessionMatches(session, config)) {
     if (session.status === "complete" && session.payment_status === "unpaid")
       return true;
     throw Error("Event payment does not match its registration");
@@ -57,9 +60,8 @@ export async function fulfillPlatformSession(
   if (
     error ||
     !data ||
-    data.event_key !==
-      seminarById(session.metadata?.whatelz_event_id || "")?.key ||
-    data.amount !== (data.event_key === currentEvent.key ? 800 : 700) ||
+    data.event_key !== config.eventKey ||
+    data.amount !== config.amount ||
     data.stripe_session_id !== session.id
   )
     throw Error("Event payment registration mismatch");
@@ -70,7 +72,10 @@ export async function releasePlatformSession(
   session: Stripe.Checkout.Session,
   failed = false,
 ) {
-  if (!seminarById(session.metadata?.whatelz_event_id || "")) return;
+  if (
+    !(await checkoutConfigForMarker(session.metadata?.whatelz_event_id || ""))
+  )
+    return;
   if (
     session.status !== "expired" &&
     !(
@@ -110,8 +115,10 @@ export async function checkoutForAttempt(
     }
     return existing.url;
   }
+  const config = await loadCheckoutConfig(attempt.event_key);
+  if (!config) throw Error("Event payment configuration unavailable");
   const session = await stripe.checkout.sessions.create(
-    platformCheckoutParams(attempt, origin),
+    platformCheckoutParams(attempt, origin, config),
     { idempotencyKey: `event-signup/${attempt.id}` },
   );
   const { error } = await supabaseAdmin

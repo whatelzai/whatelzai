@@ -1,5 +1,5 @@
 import "server-only";
-import { seminarByKey } from "./public-events/map";
+import { ticketEventDetails } from "./event-offer";
 import type Stripe from "stripe";
 import QRCode from "qrcode";
 import { ensureEventTicket, ticketUrl } from "./event-tickets";
@@ -30,7 +30,7 @@ export async function sendStoredEventTicket(
   if (error || !ticket) throw new Error("Ticket unavailable for delivery");
   if (ticket.status !== "confirmed" || ticket.email_sent_at) return true;
   // Send no attendee name or phone to the email provider.
-  const event = seminarByKey(ticket.event_key);
+  const event = await ticketEventDetails(ticket.event_key);
   if (!event) throw Error("Unknown ticket event");
   const message = eventConfirmationMessage(ticket.email, "there", event);
   const key = process.env.RESEND_API_KEY;

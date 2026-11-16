@@ -1,4 +1,7 @@
-import { seminarById, registrationCookie } from "@/lib/public-events/map";
+import { loadPublicEvents } from "@/lib/public-events/catalog-server";
+import { resolveEvent } from "@/lib/public-events/catalog";
+import { registrationCookie } from "@/lib/public-events/map";
+import { loadCheckoutConfig } from "@/lib/event-offer";
 import { NextRequest, NextResponse } from "next/server";
 import { eventRegistrationSchema } from "@/lib/event-registration-policy";
 import {
@@ -43,7 +46,15 @@ export async function POST(req: NextRequest) {
       400,
     );
   const input = parsed.data;
-  const event = seminarById(input.eventId)!;
+  let event, config;
+  try {
+    event = resolveEvent(await loadPublicEvents(), input.eventId);
+    config = event?.key ? await loadCheckoutConfig(event.key) : null;
+  } catch {
+    return response({ error: "Registration is temporarily unavailable." }, 503);
+  }
+  if (!event?.registrationUrl || !config || config.amount !== event.priceMinor)
+    return response({ error: "Registration is not open for this event." }, 409);
   const { data: withinLimit, error: limitError } = await supabaseAdmin.rpc(
     "consume_event_signup_limit",
     {
@@ -94,8 +105,7 @@ export async function POST(req: NextRequest) {
       attempt.email !== input.email ||
       attempt.attendee_name !== input.name ||
       attempt.phone !== input.phone ||
-      attempt.amount !==
-        (input.code ? 0 : event.id === "ELZ-EVT-0005" ? 800 : 700)
+      attempt.amount !== (input.code ? 0 : config.amount)
     )
       return response(
         {

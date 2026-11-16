@@ -5,10 +5,12 @@ import {
   currentEvent,
   seminarById,
   seminarByKey,
-  registrationPath,
 } from "./public-events/map";
 export const eventRegistrationSchema = z.object({
-  eventId: z.enum(["ELZ-EVT-0004", "ELZ-EVT-0005"]).default("ELZ-EVT-0004"),
+  eventId: z
+    .string()
+    .regex(/^[A-Za-z0-9-]{1,100}$/)
+    .default("ELZ-EVT-0004"),
   name: z.string().trim().min(1).max(160),
   email: z
     .string()
@@ -25,28 +27,39 @@ export const eventRegistrationSchema = z.object({
   requestToken: z.uuid(),
   website: z.string().max(0).default(""),
 });
+export type EventCheckoutConfig = {
+  eventId: string;
+  eventKey: string;
+  amount: number;
+  priceId: string;
+};
 export const PLATFORM_EVENT_MARKER = "ELZ-EVT-0004";
-export function platformSessionMatches(session: {
-  mode?: string | null;
-  status?: string | null;
-  payment_status?: string;
-  currency?: string | null;
-  amount_total?: number | null;
-  amount_subtotal?: number | null;
-  metadata?: Record<string, string> | null;
-  client_reference_id?: string | null;
-}) {
+export function platformSessionMatches(
+  session: {
+    mode?: string | null;
+    status?: string | null;
+    payment_status?: string;
+    currency?: string | null;
+    amount_total?: number | null;
+    amount_subtotal?: number | null;
+    metadata?: Record<string, string> | null;
+    client_reference_id?: string | null;
+  },
+  configured?: EventCheckoutConfig,
+) {
   const event = seminarById(session.metadata?.whatelz_event_id || "");
-  const amount = event?.id === currentEvent.id ? 800 : 700;
+  const amount =
+    configured?.amount ?? (event?.id === currentEvent.id ? 800 : 700);
+  const eventId = configured?.eventId ?? event?.id;
   return (
-    !!event &&
+    !!eventId &&
     session.mode === "payment" &&
     session.status === "complete" &&
     session.payment_status === "paid" &&
     session.currency === "sgd" &&
     session.amount_total === amount &&
     session.amount_subtotal === amount &&
-    session.metadata?.whatelz_event_id === event.id &&
+    session.metadata?.whatelz_event_id === eventId &&
     z.uuid().safeParse(session.client_reference_id).success
   );
 }
@@ -62,21 +75,24 @@ export function platformCheckoutParams(
     event_key?: string;
   },
   origin: string,
+  configured?: EventCheckoutConfig,
 ): Stripe.Checkout.SessionCreateParams {
   const event = seminarByKey(attempt.event_key || mapEvent.key);
-  if (!event) throw Error("Unknown registration event");
-  const path = registrationPath(event);
+  if (!event && !configured) throw Error("Unknown registration event");
+  const eventId = configured?.eventId ?? event!.id;
+  const path = `/events/register?event=${encodeURIComponent(eventId)}`;
   return {
     mode: "payment",
     client_reference_id: attempt.id,
     customer_email: attempt.email,
-    metadata: { whatelz_event_id: event.id },
+    metadata: { whatelz_event_id: eventId },
     line_items: [
       {
         price:
-          event.id === mapEvent.id
+          configured?.priceId ??
+          (event!.id === mapEvent.id
             ? "price_1UZvRuPA71qp9sGS6HIJUA8N"
-            : "price_1UbbJePA71qp9sGSyhBLclEo",
+            : "price_1UbbJePA71qp9sGSyhBLclEo"),
         quantity: 1,
       },
     ],

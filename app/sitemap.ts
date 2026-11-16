@@ -6,7 +6,7 @@ import { listCareer } from "@/lib/career";
 import { listLeadership } from "@/lib/leadership";
 import { listMentorship } from "@/lib/mentorship";
 import { listPublicTestimonials, testimonialSlug } from "@/lib/testimonials";
-import { pastThursdayEvents } from "@/lib/public-events/past";
+import { loadPublicEvents } from "@/lib/public-events/catalog-server";
 import { listQuizzes } from "@/lib/quizzes";
 
 const SITE_URL = "https://whatelz.ai";
@@ -27,26 +27,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticEntries: Entry[] = [
-    {
-      url: `${SITE_URL}/events/2026-11-19`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    ...pastThursdayEvents.map((event) => ({
-      url: `${SITE_URL}${event.path}`,
-      lastModified: now,
-      changeFrequency: "yearly" as const,
-      priority: 0.5,
-    })),
+    ...(await safe(loadPublicEvents))
+      .filter((e) => e.listed)
+      .map((event) => ({
+        url: `${SITE_URL}${event.path}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      })),
     {
       url: `${SITE_URL}/events`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/events/money-mindset-ai-skillset`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
