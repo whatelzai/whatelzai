@@ -901,3 +901,7 @@ Edmund explicitly authorizes automatic PR merge and production deployment for co
 ## Permanent event ID URLs (SPR-209)
 
 Public canonical pages derive from permanent event IDs: /events/ELZ-EVT-0004 and /events/ELZ-EVT-0005. Stored safe public_path remains a legacy alias, never canonical authority. Preserve308 title/date redirects to the same occurrence and307/no-store weekly /events/next. June retains its existing UUID rather than reusing retired placeholders. Cards, metadata/sitemap, registration/feedback backlinks and new email/share URLs use the canonical ID; payment keys/markers/cookies and fixed feedback paths remain unchanged. No DB edit/migration. See docs/public-events.md. — codex,2026-11-16
+
+## Event schedule and calendar (SPR-210)
+
+/events has shareable list/calendar browsing with Monday-first month navigation, Singapore dates and compact phone/tablet labels plus full agenda. Client receives only explicit public browse fields. Intensives require explicit public_visibility=listed and published=true; /events/next remains weekly-only. Owner-requested0006Dec10Money,0007Dec17AI,0008Jan7combined,0009Jan9AMI; weekly19:30–21:30SGT/S$8, AMI09:00–19:00SGT/priceunset. Venues TBD and omitted from posters; no checkout activated. Feedback recommendations link the actual listed intensive. Preserve IDs/attendance. Real-photo poster source usage is tracked in docs/design/event-photo-usage.md; use unused photos rather than recycled poses or invented portraits. See docs/event-calendar.md. — codex,2026-11-16

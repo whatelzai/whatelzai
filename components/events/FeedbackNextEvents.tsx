@@ -5,9 +5,13 @@ import {
   publicEventNow,
 } from "@/lib/public-events/catalog-server";
 import { feedbackNext } from "@/lib/event-feedback/model";
-import { priceLabel } from "@/lib/public-events/catalog";
+import { priceLabel, upcomingEvents } from "@/lib/public-events/catalog";
 export default async function FeedbackNextEvents() {
-  const event = feedbackNext(await loadPublicEvents(), publicEventNow());
+  const events = await loadPublicEvents();
+  const event = feedbackNext(events, publicEventNow());
+  const intensive = upcomingEvents(events, publicEventNow()).find(
+    (e) => e.format === "intensive",
+  );
   return (
     <section className="feedback-next" aria-labelledby="feedback-next-title">
       <h2 id="feedback-next-title">Keep the conversation going.</h2>
@@ -46,15 +50,42 @@ export default async function FeedbackNextEvents() {
             </div>
           </Link>
         )}
-        <article className="feedback-next-card feedback-intensive">
-          <div>
-            <p>A bigger gathering</p>
-            <h3>AI Money Intensive</h3>
-            <p>
-              We’re planning the next intensive. Date and details coming soon.
-            </p>
-          </div>
-        </article>
+        {intensive ? (
+          <Link
+            href={intensive.path}
+            className="feedback-next-card feedback-intensive"
+          >
+            {intensive.poster && (
+              <Image
+                src={intensive.poster}
+                width={intensive.posterWidth}
+                height={intensive.posterHeight}
+                alt={`${intensive.title} poster`}
+                sizes="100px"
+              />
+            )}
+            <div>
+              <p>A bigger gathering</p>
+              <h3>{intensive.title}</h3>
+              <p>
+                {intensive.dateLabel}
+                <br />
+                {intensive.timeLabel}
+              </p>
+              <span>View intensive ↗</span>
+            </div>
+          </Link>
+        ) : (
+          <article className="feedback-next-card feedback-intensive">
+            <div>
+              <p>A bigger gathering</p>
+              <h3>AI Money Intensive</h3>
+              <p>
+                We’re planning the next intensive. Date and details coming soon.
+              </p>
+            </div>
+          </article>
+        )}
       </div>
     </section>
   );
