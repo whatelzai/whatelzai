@@ -6,11 +6,7 @@ import { getSiteIdentity } from "@/lib/site-identity";
 import { listFeaturedTestimonials, testimonialSlug } from "@/lib/testimonials";
 import { BookObject } from "@/components/editorial/FieldElements";
 import { ReaderVoices } from "@/components/editorial/ReaderVoices";
-import {
-  currentEvent as mapEvent,
-  isSeminarOpen,
-} from "@/lib/public-events/map";
-import { EventPrice } from "@/components/events/EventPrice";
+import NextWeeklyFeature from "@/components/events/NextWeeklyFeature";
 import "./offers.css";
 
 export const metadata: Metadata = {
@@ -52,44 +48,7 @@ export default async function Home() {
           </Link>
         </div>
       </section>
-      <section className="map-feature" aria-labelledby="map-heading">
-        <div className="field-wrap map-feature-grid">
-          <Image
-            className="map-poster-photo"
-            src={mapEvent.poster}
-            alt={`${mapEvent.title} with Edmund, ${mapEvent.dateLabel}, ${mapEvent.price}, ${mapEvent.capacity} places.`}
-            width={1080}
-            height={1440}
-            sizes="(max-width:700px) 100vw, 50vw"
-          />
-          <div className="offer-copy">
-            <p className="offer-label">The Thursday seminar</p>
-            <h2 id="map-heading">
-              Money Mindset
-              <br />× AI Skillset.
-            </h2>
-            <p>
-              Two hours exploring AI Skillset × Money Mindset, together. A small
-              room, with space for questions.
-            </p>
-            <p className="offer-event-facts">
-              {isSeminarOpen(mapEvent)
-                ? mapEvent.dateLabel
-                : "Next date to be announced"}
-              <br />
-              7:30–9:30 PM · {mapEvent.capacity} people
-              <br />
-              {mapEvent.venue}
-              <br />
-              {mapEvent.address}
-            </p>
-            <EventPrice event={mapEvent} />
-            <Link className="field-button" href={mapEvent.path}>
-              See the seminar <ArrowUpRight size={20} />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <NextWeeklyFeature />
       <section className="offer-book field-wrap" aria-labelledby="book-heading">
         <div className="offer-copy">
           <p className="offer-label">The book</p>

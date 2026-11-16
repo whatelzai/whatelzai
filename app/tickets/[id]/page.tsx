@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { ticketUrl } from "@/lib/event-tickets";
-import { seminarByKey } from "@/lib/public-events/map";
+import { ticketEventDetails } from "@/lib/event-offer";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Your event ticket",
@@ -25,7 +25,7 @@ export default async function TicketPage({
     .maybeSingle();
   if (error) throw new Error("Ticket unavailable; please try again");
   if (!data) notFound();
-  const mapEvent = seminarByKey(data.event_key);
+  const mapEvent = await ticketEventDetails(data.event_key);
   if (!mapEvent) notFound();
   const qr = await QRCode.toDataURL(ticketUrl(id), { width: 600, margin: 4 });
   return (

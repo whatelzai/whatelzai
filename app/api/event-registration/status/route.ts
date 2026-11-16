@@ -1,8 +1,5 @@
-import {
-  seminarById,
-  mapEvent,
-  registrationCookie,
-} from "@/lib/public-events/map";
+import { mapEvent, registrationCookie } from "@/lib/public-events/map";
+import { loadCheckoutConfig } from "@/lib/event-offer";
 import { paymentFreezeUntil } from "@/lib/event-registration-policy";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -35,10 +32,11 @@ export async function POST(req: NextRequest) {
   }
   if (!body || typeof body !== "object")
     return reply({ error: "Invalid request." }, 400);
-  const event = seminarById(
-    typeof body.eventId === "string" ? body.eventId : mapEvent.id,
-  );
-  if (!event) return reply({ error: "Invalid event." }, 400);
+  const event = {
+    id: typeof body.eventId === "string" ? body.eventId : mapEvent.id,
+  };
+  if (!/^[A-Za-z0-9-]{1,100}$/.test(event.id))
+    return reply({ error: "Invalid event." }, 400);
   const cookieName = registrationCookie(event);
   if (body.reset === true) {
     const result = reply({ state: "unknown" });
@@ -56,7 +54,14 @@ export async function POST(req: NextRequest) {
     .eq("request_hash", hash)
     .maybeSingle();
   if (error) return reply({ error: "Unable to check registration." }, 503);
-  if (!data || data.event_key !== event.key) return reply({ state: "unknown" });
+  if (!data) return reply({ state: "unknown" });
+  let config;
+  try {
+    config = await loadCheckoutConfig(data.event_key);
+  } catch {
+    return reply({ error: "Unable to check registration." }, 503);
+  }
+  if (config?.eventId !== event.id) return reply({ state: "unknown" });
   const attempt = data as SignupAttempt & { payment_started_at: string | null };
   const lockUntil = paymentFreezeUntil(attempt.payment_started_at);
   try {

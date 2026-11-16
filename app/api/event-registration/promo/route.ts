@@ -5,7 +5,9 @@ import {
 } from "@/lib/platform-event-registration";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { getClientIp, checkRateLimit } from "@/lib/rate-limit";
-import { mapEvent, seminarById, isSeminarOpen } from "@/lib/public-events/map";
+import { mapEvent } from "@/lib/public-events/map";
+import { loadPublicEvents } from "@/lib/public-events/catalog-server";
+import { resolveEvent, type CatalogEvent } from "@/lib/public-events/catalog";
 export const runtime = "nodejs";
 const reply = (body: unknown, status = 200) =>
   NextResponse.json(body, {
@@ -20,13 +22,16 @@ export async function POST(req: NextRequest) {
   if (!checkRateLimit(`event-promo:${getClientIp(req)}`).allowed)
     return reply({ error: "Please try again in a moment." }, 429);
   let code = "";
-  let event = mapEvent as NonNullable<ReturnType<typeof seminarById>>;
+  let event: CatalogEvent;
   try {
     const text = await req.text();
     if (text.length > 256) return reply({ error: "Code too long." }, 400);
     const data = JSON.parse(text);
-    const selected = seminarById(data.eventId || mapEvent.id);
-    if (!selected || !isSeminarOpen(selected))
+    const selected = resolveEvent(
+      await loadPublicEvents(),
+      data.eventId || mapEvent.id,
+    );
+    if (!selected || !selected.registrationUrl)
       return reply({ error: "Registration is closed." }, 409);
     event = selected;
     if (typeof data.code === "string") code = data.code.trim().toUpperCase();
