@@ -1,5 +1,11 @@
 "use client";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -20,7 +26,7 @@ import {
   type EventData,
   type Payment,
 } from "@/lib/event-admin/model";
-import { currentEvent as mapEvent } from "@/lib/public-events/map";
+import { currentEvent, type PublicSeminar } from "@/lib/public-events/map";
 import { retryEventTicketEmail } from "@/app/admin/event-checkin/actions";
 import ManualCheckin from "./ManualCheckin";
 import ScanTickets from "./ScanTickets";
@@ -32,7 +38,14 @@ const icons: Record<Payment, typeof Check> = {
   refunded: Ban,
   unknown: CircleHelp,
 };
-export default function AttendeeList() {
+export default function AttendeeList({
+  event = currentEvent,
+  feedback,
+}: {
+  event?: PublicSeminar;
+  feedback?: ReactNode;
+}) {
+  const mapEvent = event;
   const [data, setData] = useState<EventData | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true),
@@ -49,7 +62,7 @@ export default function AttendeeList() {
   }, []);
   useEffect(() => {
     const c = new AbortController();
-    fetch("/api/admin/event-registrations", {
+    fetch(`/api/admin/event-registrations?event=${event.id}`, {
       cache: "no-store",
       signal: c.signal,
     })
@@ -74,7 +87,7 @@ export default function AttendeeList() {
         }
       });
     return () => c.abort();
-  }, [revision]);
+  }, [revision, event.id]);
   useEffect(() => {
     const tick = () => {
       if (document.visibilityState === "visible") reload();
@@ -119,6 +132,8 @@ export default function AttendeeList() {
         </button>
       </div>
       <ScanTickets
+        event={event}
+        feedback={feedback}
         onCheckedIn={() => {
           reload();
           router.refresh();
@@ -237,6 +252,9 @@ export default function AttendeeList() {
                 <summary>
                   <span className="event-person-name">
                     <strong>{r.name}</strong>
+                    <small className="event-account-type">
+                      {r.accountType === "guest" ? "Guest" : ""}
+                    </small>
                     <small>
                       {r.status === "needs-review"
                         ? "Confirmation needs review"
@@ -310,7 +328,11 @@ export default function AttendeeList() {
                       </dd>
                     </div>
                     <div>
-                      <dt>Account</dt>
+                      <dt>Account type</dt>
+                      <dd>{r.accountType === "guest" ? "Guest" : ""}</dd>
+                    </div>
+                    <div>
+                      <dt>Sign-in</dt>
                       <dd>
                         {r.accountLinked
                           ? "Linked to verified sign-in"
@@ -344,6 +366,7 @@ export default function AttendeeList() {
                           try {
                             const form = new FormData();
                             form.set("ticket_id", r.ticket!);
+                            form.set("event_id", event.id);
                             await retryEventTicketEmail(form);
                             reload();
                           } catch {
@@ -366,13 +389,15 @@ export default function AttendeeList() {
                   )}
                 </div>
               </details>
-              <ManualCheckin
-                person={r}
-                onCheckedIn={() => {
-                  reload();
-                  router.refresh();
-                }}
-              />
+              {event.id === currentEvent.id && (
+                <ManualCheckin
+                  person={r}
+                  onCheckedIn={() => {
+                    reload();
+                    router.refresh();
+                  }}
+                />
+              )}
             </div>
           );
         })}

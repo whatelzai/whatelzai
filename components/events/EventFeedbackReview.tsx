@@ -1,4 +1,5 @@
 import "server-only";
+import FeedbackShare from "@/components/admin/event-admin/FeedbackShare";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
 import { feedbackPath } from "@/lib/event-feedback/model";
@@ -19,22 +20,19 @@ export default async function EventFeedbackReview({
     .order("created_at", { ascending: false })
     .limit(100);
   return (
-    <section className="admin-ledger" aria-labelledby="event-feedback-heading">
+    <section
+      className="event-feedback-review"
+      aria-labelledby="event-feedback-heading"
+    >
       <h2 id="event-feedback-heading">Event feedback</h2>
-      {published && (
-        <p>
-          Share this fixed link:
-          <br />
-          <a
-            href={`https://whatelz.ai${feedbackPath(eventId)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            https://whatelz.ai{feedbackPath(eventId)}
-          </a>
-        </p>
+      {published ? (
+        <FeedbackShare url={`https://whatelz.ai${feedbackPath(eventId)}`} />
+      ) : (
+        <p>Publish the event before sharing its feedback form.</p>
       )}
-      <p>Private responses. Public links do not verify attendance.</p>
+      <p className="event-feedback-note">
+        Responses are private. The form does not ask for a name.
+      </p>
       {error ? (
         <p role="alert">Feedback could not be loaded. Refresh to try again.</p>
       ) : (

@@ -52,10 +52,14 @@ export async function eventAdminData(eventKey: string = mapEvent.key) {
           .in("stripe_payment_intent_id", intents)
       : Promise.resolve({ data: [], error: null }),
     ids.length
-      ? db.from("event_people").select("id,user_id").in("id", ids)
+      ? db.from("event_people").select("id,user_id,account_type").in("id", ids)
       : Promise.resolve({ data: [], error: null }),
   ]);
-  if (refunds.error || people.error)
+  if (
+    refunds.error ||
+    people.error ||
+    (people.data ?? []).some((p) => p.account_type !== "guest")
+  )
     throw Error("Payment or account status could not be verified.");
   return {
     ...eventView(

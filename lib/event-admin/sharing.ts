@@ -1,7 +1,18 @@
-import { currentEvent as mapEvent } from "@/lib/public-events/map";
+import {
+  currentEvent as mapEvent,
+  type PublicSeminar,
+} from "@/lib/public-events/map";
 export const eventUrl = `https://whatelz.ai${mapEvent.path}`;
 export const posterFilename = `${mapEvent.id.toLowerCase()}-poster.png`;
 export const eventCaption = `${mapEvent.title}\n${mapEvent.dateLabel}\n${mapEvent.timeLabel}\n${mapEvent.venue} · ${mapEvent.address}\n${mapEvent.price} per person\n\nRegister: ${eventUrl}`;
+export function eventSharing(event: PublicSeminar) {
+  const eventUrl = `https://whatelz.ai${event.path}`;
+  return {
+    eventUrl,
+    posterFilename: `${event.id.toLowerCase()}-poster.png`,
+    eventCaption: `${event.title}\n${event.dateLabel}\n${event.timeLabel}\n${event.venue} · ${event.address}\n${event.price} per person\n\n${eventUrl}`,
+  };
+}
 export function canSharePoster(
   nav: Pick<Navigator, "canShare" | "share">,
   file: File,

@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import Link from "@/components/admin/AdminLink";
-import { adminUrl } from "@/lib/admin-url";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { EVENT_KEY } from "@/lib/event-tickets";
-import AttendeeList from "@/components/admin/event-admin/AttendeeList";
+import EventOperations from "@/components/admin/event-admin/EventOperations";
+import { currentEvent, seminarById } from "@/lib/public-events/map";
+import { notFound } from "next/navigation";
 import {
   grantEventStaff,
   revokeEventStaff,
@@ -16,20 +16,29 @@ export const metadata = {
   title: "Registrations — Admin",
   robots: { index: false, follow: false },
 };
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ event?: string }>;
+}) {
+  const query = await searchParams;
+  const event = seminarById(query.event ?? currentEvent.id);
+  if (!event) notFound();
   await dailyOwner();
   return (
     <div className="event-admin">
-      <AttendeeList />
-      <Suspense
-        fallback={
-          <p className="event-loading" role="status">
-            Loading event controls…
-          </p>
-        }
-      >
-        <EventControls />
-      </Suspense>
+      <EventOperations event={event} />
+      {event.id === currentEvent.id && (
+        <Suspense
+          fallback={
+            <p className="event-loading" role="status">
+              Loading event controls…
+            </p>
+          }
+        >
+          <EventControls />
+        </Suspense>
+      )}
     </div>
   );
 }
@@ -46,10 +55,6 @@ async function EventControls() {
     );
   return (
     <section className="event-controls" aria-label="Event controls">
-      <Link href={adminUrl("/admin/events#draft-events")}>
-        Upcoming event drafts →
-      </Link>
-      <Link href={adminUrl("/admin/calendar-access")}>Membership access →</Link>
       <details className="event-control">
         <summary>Event staff</summary>
         <p>
