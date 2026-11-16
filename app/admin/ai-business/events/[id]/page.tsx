@@ -1,3 +1,4 @@
+import EventFeedbackReview from "@/components/events/EventFeedbackReview";
 import { notFound } from "next/navigation";
 import { loadEventPortfolio } from "@/lib/event-portfolio/server";
 import { loadInviteList } from "@/lib/ai-invites/server";
@@ -35,5 +36,18 @@ export default async function Page({
     peopleResult.status === "fulfilled" ? peopleResult.value.contacts : null;
   const tickets =
     ticketResult.status === "fulfilled" ? ticketResult.value : null;
-  return <EventDetail event={event} contacts={contacts} tickets={tickets} />;
+  return (
+    <>
+      <EventDetail event={event} contacts={contacts} tickets={tickets} />
+      <EventFeedbackReview
+        recordId={event.id}
+        eventId={
+          typeof event.metadata.event_id === "string"
+            ? event.metadata.event_id
+            : event.id
+        }
+        published={event.published}
+      />
+    </>
+  );
 }
