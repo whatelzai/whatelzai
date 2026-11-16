@@ -889,3 +889,11 @@ Public events are a server-only, explicitly projected catalogue of published tra
 All occurrence details share one layout and preserve canonical URLs/IDs. History rolls over after the actual ending time in Singapore and counts distinct checked-in people across ticket and historical attendance sources. Unavailable counts remain unknown. The two actual events are June28 (5) and November12 (13); retired October/November placeholder-poster URLs redirect to the archive, never reuse their IDs. No private notes, raw metadata, source contact data or private media paths reach public payloads.
 
 Future weekly AI-only/Money-only sessions support their own titles, S$8 offers and server-side Stripe price configuration. Publish an actual occurrence and enabled matching SGD offer before opening registration. Preserve legacy November12/19 fulfillment snapshots, occurrence cookies and inventory/idempotency checks. Admin current-event tools remain explicitly scoped independently of the evergreen public selector. See docs/public-events.md. — codex, 2026-11-16
+
+## Event feedback (SPR-208)
+
+Fixed `/events/feedback/<event-id>` links stay attached to one actual occurrence; November12 is ELZ-EVT-0004. One required usefulness rating and optional comment, no identity/login. Private service-only event_feedback table/RPC, same-origin bounded writes, daily HMAC rate limiting and UUID idempotency; no public response reads or attendance verification claim. Owner-only event detail shows private responses and share link. Form and thanks both show next weekly plus AMI planning teaser (explicitly owner-authorized here, superseding the earlier exclusion only for these recommendations); no invented AMI date/price/signup. Migration20261116093000 applied. Preserve feedback on rollback. See docs/event-feedback.md. — codex,2026-11-16
+
+## Owner release preference (2026-11-16)
+
+Edmund explicitly authorizes automatic PR merge and production deployment for completed Whatelz changes after relevant tests, build and preview checks pass, followed by production verification. This supersedes the earlier human-merge workflow requirement for the authorized work. Pause for actual blockers or actions requiring separate approval; never treat this as permission to skip checks or expose private data. — codex,2026-11-16

@@ -7,6 +7,7 @@ import {
   topicLabel,
 } from "@/lib/public-events/catalog";
 import PastEvents from "./PastEvents";
+import { feedbackPath } from "@/lib/event-feedback/model";
 export default function CatalogDetail({
   event: e,
   now,
@@ -168,6 +169,13 @@ export default function CatalogDetail({
             </div>
           )}
         </section>
+      )}
+      {past && (
+        <p>
+          <Link className="text-link" href={feedbackPath(e.id)}>
+            Attended this session? Share feedback ↗
+          </Link>
+        </p>
       )}
       <PastEvents excludeRecordId={e.recordId} />
       <section className="event-book-story">
