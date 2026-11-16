@@ -176,7 +176,9 @@ export function projectEvent(row: CatalogRow): CatalogEvent | null {
     posterHeight: num(m.poster_height) || 1440,
     topic,
     format,
-    listed: m.public_visibility !== "unlisted" && format !== "intensive",
+    listed:
+      m.public_visibility === "listed" ||
+      (m.public_visibility !== "unlisted" && format !== "intensive"),
     capacity: num(m.capacity),
     attended: null,
     priceMinor:
