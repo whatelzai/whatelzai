@@ -1,4 +1,5 @@
 "use client";
+import { useEventMediaUrl } from "./EventScope";
 import { useState } from "react";
 import type { EventMediaFile } from "@/lib/event-admin/media-policy";
 export default function MediaDetails({
@@ -8,6 +9,7 @@ export default function MediaDetails({
   file: EventMediaFile;
   onSaved: (file: EventMediaFile) => void;
 }) {
+  const mediaUrl = useEventMediaUrl();
   const [title, setTitle] = useState(file.title),
     [description, setDescription] = useState(file.description),
     [people, setPeople] = useState(file.people.join(", ")),
@@ -23,7 +25,7 @@ export default function MediaDetails({
           setBusy(true);
           setStatus("Saving…");
           try {
-            const response = await fetch("/api/admin/event-media", {
+            const response = await fetch(mediaUrl, {
               method: "PATCH",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

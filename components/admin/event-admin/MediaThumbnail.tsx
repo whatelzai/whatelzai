@@ -1,9 +1,11 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- private thumbnails are lazy-loaded through expiring signed URLs. */
+import { useEventMediaUrl } from "./EventScope";
 import { useRef, useState } from "react";
 import { Film, ImageOff } from "lucide-react";
 import type { EventMediaFile } from "@/lib/event-admin/media-policy";
 export default function MediaThumbnail({ file }: { file: EventMediaFile }) {
+  const mediaUrl = useEventMediaUrl();
   const [url, setUrl] = useState(file.url),
     [failed, setFailed] = useState(false);
   const attempted = useRef(false);
@@ -15,7 +17,7 @@ export default function MediaThumbnail({ file }: { file: EventMediaFile }) {
     attempted.current = true;
     try {
       const r = await fetch(
-        `/api/admin/event-media?path=${encodeURIComponent(file.path)}`,
+        `${mediaUrl}&path=${encodeURIComponent(file.path)}`,
         { cache: "no-store" },
       );
       const d = await r.json();

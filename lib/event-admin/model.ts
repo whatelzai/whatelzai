@@ -41,13 +41,14 @@ export type Attendee = {
   emailSent: string | null;
   checkedIn: string | null;
   accountLinked: boolean;
+  accountType: "guest";
   source: "platform" | "legacy";
 };
 export function eventView(
   tickets: Ticket[],
   attempts: Attempt[],
   refunds: string[],
-  people: { id: string; user_id: string | null }[],
+  people: { id: string; user_id: string | null; account_type?: "guest" }[],
 ) {
   const byAttempt = new Map(attempts.map((a) => [a.id, a])),
     used = new Set<string>(),
@@ -82,6 +83,8 @@ export function eventView(
       createdAt: t.created_at,
       emailSent: t.email_sent_at,
       checkedIn: t.checked_in_at,
+      accountType:
+        people.find((p) => p.id === t.person_id)?.account_type ?? "guest",
       accountLinked: !!t.person_id && linked.has(t.person_id),
       source: t.signup_attempt_id ? "platform" : "legacy",
     };
@@ -105,6 +108,7 @@ export function eventView(
       createdAt: a.created_at,
       emailSent: null,
       checkedIn: null,
+      accountType: "guest",
       accountLinked: false,
       source: "platform",
     });

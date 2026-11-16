@@ -1,7 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
-import { EVENT_KEY } from "@/lib/event-tickets";
+import { currentEvent, seminarById } from "@/lib/public-events/map";
+function requestEvent(req: Request) {
+  return seminarById(
+    new URL(req.url).searchParams.get("event") ?? currentEvent.id,
+  );
+}
 import {
   EVENT_MEDIA_BUCKET,
   eventMediaAdminHost,
@@ -25,9 +30,11 @@ async function authorized(req: Request) {
 export async function GET(req: Request) {
   if (!(await authorized(req)))
     return json({ error: "Owner Admin access required." }, 403);
+  const event = requestEvent(req);
+  if (!event) return json({ error: "Event not found." }, 404);
   const requestedPath = new URL(req.url).searchParams.get("path");
   if (requestedPath !== null) {
-    if (!validEventMediaPath(requestedPath, EVENT_KEY))
+    if (!validEventMediaPath(requestedPath, event.key))
       return json({ error: "Invalid media." }, 400);
     const file = await db.storage.from(EVENT_MEDIA_BUCKET).info(requestedPath);
     if (file.error) return json({ error: "Media not found." }, 404);
@@ -43,7 +50,7 @@ export async function GET(req: Request) {
     return json({ error: "Invalid page." }, 400);
   const { data, error } = await db.storage
     .from(EVENT_MEDIA_BUCKET)
-    .list(EVENT_KEY, {
+    .list(event.key, {
       limit: 25,
       offset,
       sortBy: { column: "created_at", order: "desc" },
@@ -51,11 +58,11 @@ export async function GET(req: Request) {
   if (error) return json({ error: "Media unavailable. Retry." }, 503);
   const files = (data || []).filter((f) => f.id);
   if (!files.length) return json({ files: [], more: false });
-  const paths = files.map((f) => `${EVENT_KEY}/${f.name}`);
+  const paths = files.map((f) => `${event.key}/${f.name}`);
   const metadata = await db
     .from("event_media_assets")
     .select("storage_path,title,description,people,revision")
-    .eq("event_key", EVENT_KEY)
+    .eq("event_key", event.key)
     .in("storage_path", paths);
   if (metadata.error)
     return json({ error: "Media details unavailable. Retry." }, 503);
@@ -90,6 +97,8 @@ export async function POST(req: Request) {
     !(await authorized(req))
   )
     return json({ error: "Owner Admin access required." }, 403);
+  const event = requestEvent(req);
+  if (!event) return json({ error: "Event not found." }, 404);
   let file;
   try {
     const body = await req.text();
@@ -101,7 +110,7 @@ export async function POST(req: Request) {
       400,
     );
   }
-  const path = `${EVENT_KEY}/${randomUUID()}-${file.name}`;
+  const path = `${event.key}/${randomUUID()}-${file.name}`;
   const { data, error } = await db.storage
     .from(EVENT_MEDIA_BUCKET)
     .createSignedUploadUrl(path, { upsert: false });
@@ -122,12 +131,14 @@ export async function PATCH(req: Request) {
   } catch {
     return json({ error: "Owner Admin access required." }, 403);
   }
+  const event = requestEvent(req);
+  if (!event) return json({ error: "Event not found." }, 404);
   let input;
   try {
     const text = await req.text();
     if (text.length > 6000) throw Error();
     input = mediaDescription(JSON.parse(text));
-    if (!validEventMediaPath(input.path, EVENT_KEY)) throw Error();
+    if (!validEventMediaPath(input.path, event.key)) throw Error();
   } catch {
     return json({ error: "Check the media details and retry." }, 400);
   }
@@ -145,17 +156,15 @@ export async function PATCH(req: Request) {
   };
   const query =
     input.revision === 0
-      ? db
-          .from("event_media_assets")
-          .insert({
-            ...payload,
-            event_key: EVENT_KEY,
-            storage_path: input.path,
-          })
+      ? db.from("event_media_assets").insert({
+          ...payload,
+          event_key: event.key,
+          storage_path: input.path,
+        })
       : db
           .from("event_media_assets")
           .update(payload)
-          .eq("event_key", EVENT_KEY)
+          .eq("event_key", event.key)
           .eq("storage_path", input.path)
           .eq("revision", input.revision);
   const result = await query

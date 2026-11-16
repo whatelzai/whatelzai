@@ -2,18 +2,18 @@
 /* eslint-disable @next/next/no-img-element -- this is the original downloadable PNG, not an optimised derivative. */
 import { useState } from "react";
 import { Copy, Image as ImageIcon } from "lucide-react";
-import { currentEvent as mapEvent } from "@/lib/public-events/map";
-import {
-  eventCaption,
-  eventUrl,
-  posterFilename,
-} from "@/lib/event-admin/sharing";
+import { currentEvent, type PublicSeminar } from "@/lib/public-events/map";
+import { eventSharing } from "@/lib/event-admin/sharing";
 import SocialImageExport from "./SocialImageExport";
 export default function PosterTools({
   embedded = false,
+  event = currentEvent,
 }: {
   embedded?: boolean;
+  event?: PublicSeminar;
 }) {
+  const mapEvent = event;
+  const { eventCaption, eventUrl, posterFilename } = eventSharing(event);
   const Container = embedded ? "section" : "details";
   const [open, setOpen] = useState(embedded),
     [message, setMessage] = useState(""),

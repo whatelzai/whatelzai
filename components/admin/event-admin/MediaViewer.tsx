@@ -1,5 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- signed private original, rendered directly for zoom and pan. */
+import { useEventMediaUrl } from "./EventScope";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import {
   X,
@@ -187,6 +188,7 @@ export default function MediaViewer({
   onSaved: (file: EventMediaFile) => void;
   resolveUrl?: (path: string) => Promise<string>;
 }) {
+  const mediaUrl = useEventMediaUrl();
   const dialog = useRef<HTMLDialogElement>(null);
   const [url, setUrl] = useState(""),
     [error, setError] = useState(""),
@@ -208,7 +210,7 @@ export default function MediaViewer({
     const abort = new AbortController();
     const request = resolveUrl
       ? resolveUrl(file.path)
-      : fetch(`/api/admin/event-media?path=${encodeURIComponent(file.path)}`, {
+      : fetch(`${mediaUrl}&path=${encodeURIComponent(file.path)}`, {
           cache: "no-store",
           signal: abort.signal,
         }).then(async (r) => {
@@ -224,7 +226,7 @@ export default function MediaViewer({
         if (!abort.signal.aborted) setError(e.message);
       });
     return () => abort.abort();
-  }, [file.path, retry, resolveUrl]);
+  }, [file.path, retry, resolveUrl, mediaUrl]);
   function move(n: number) {
     setUrl("");
     setError("");

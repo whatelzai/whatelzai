@@ -712,8 +712,8 @@
 /* Shared media controls must not depend on the scanner's lazy stylesheet. */
 .event-tool-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
   max-width: 540px;
 }
 .event-tool-tabs button {
@@ -1059,4 +1059,61 @@
   min-height: 44px;
   font-size: 0.85rem;
   text-decoration: underline;
+}
+
+.event-tool-tabs button {
+  min-height: 48px;
+  border: 1px solid var(--ea-line);
+}
+.event-feedback-review {
+  padding: 16px 0;
+  max-width: 720px;
+}
+.event-feedback-review h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.event-feedback-share label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+.event-feedback-share input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--ea-line);
+  border-radius: 10px;
+  background: var(--ea-surface);
+  color: inherit;
+  font-size: 14px;
+}
+.event-feedback-share > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+.event-feedback-share :is(button, a) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ea-line);
+  border-radius: 10px;
+}
+.event-feedback-note {
+  color: var(--ea-muted);
+  font-size: 14px;
+  margin: 8px 0 20px;
+}
+.event-feedback-review article {
+  border-top: 1px solid var(--ea-line);
+  padding: 16px 0;
+}
+.event-person-name .event-account-type {
+  color: var(--ea-ink);
+  font-size: 12px;
 }

@@ -1,4 +1,5 @@
 "use client";
+import { useEventMediaUrl } from "./EventScope";
 import dynamic from "next/dynamic";
 import MediaCollection from "./MediaCollection";
 import type { EventMediaFile } from "@/lib/event-admin/media-policy";
@@ -14,6 +15,7 @@ const MediaViewer = dynamic(() => import("./MediaViewer"), {
   loading: () => <p role="status">Opening viewer…</p>,
 });
 export default function EventMedia() {
+  const mediaUrl = useEventMediaUrl();
   const [rows, setRows] = useState<EventMediaFile[]>([]),
     [offset, setOffset] = useState(0),
     [more, setMore] = useState(false),
@@ -31,7 +33,7 @@ export default function EventMedia() {
   }, []);
   useEffect(() => {
     const abort = new AbortController();
-    fetch(`/api/admin/event-media?offset=${offset}`, {
+    fetch(`${mediaUrl}&offset=${offset}`, {
       cache: "no-store",
       signal: abort.signal,
     })
@@ -53,7 +55,7 @@ export default function EventMedia() {
         if (!abort.signal.aborted) setLoading(false);
       });
     return () => abort.abort();
-  }, [offset, revision]);
+  }, [offset, revision, mediaUrl]);
   async function upload(files: File[]) {
     if (!files.length || pending.current) return;
     if (files.length > 20) {
@@ -72,7 +74,7 @@ export default function EventMedia() {
         setMessage(`Uploading ${i + 1}/${files.length} · ${file.name}`);
         try {
           const input = mediaInput(file);
-          const response = await fetch("/api/admin/event-media", {
+          const response = await fetch(mediaUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(input),
