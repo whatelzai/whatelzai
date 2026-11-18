@@ -965,3 +965,13 @@ future attempted push deliveries also persist notices before sending. It does no
 Migration20261118053000 is additive and applied. New tables deny browser roles;
 reads/writes use verified owner endpoints, same-origin mutation guards and service
 credentials. Preserve saved conversations and notification history on rollback.
+
+## Admin missing-resource recovery (2026-11-18)
+
+Admin has its own not-found boundary and unmatched-path catch-all beneath the existing
+owner-gated layout, preserving header, dock and Back handling. Missing task/resource
+records use compact icon-led recovery with local Home/known-workspace actions, never
+browser-history Back or public Playbook promotion. The root not-found boundary also
+recognizes Admin requests as a fallback; public editorial404 remains unchanged.
+No auth checks are relaxed and unavailable database reads remain distinct from absent
+records. Task references retain encoded source IDs and owner-scoped lookup.

@@ -18,6 +18,11 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "This item isn’t available": "此项目暂不可用",
+  "It may have moved or been removed. Return to your workspace to continue.":
+    "内容可能已移动或移除。请返回工作区继续。",
+  "Back to Home": "返回首页",
+
   Notifications: "通知",
   "Apply task": "应用任务",
   "New task": "新任务",

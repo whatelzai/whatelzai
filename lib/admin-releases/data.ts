@@ -5,6 +5,19 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-18-admin-recovery",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T20:07:00+08:00",
+    title: "A clearer way back",
+    titleZh: "更清晰的返回路径",
+    items: [
+      {
+        en: "Missing Admin items now show a compact recovery view inside the app, with a safe route to your workspace or Home.",
+        zh: "Admin 中缺失的项目现在显示简洁的恢复页面，可安全返回工作区或首页。",
+      },
+    ],
+  },
+  {
     id: "2026-11-18-personal-chat-inbox",
     date: "2026-11-18",
     publishedAt: "2026-11-18T20:00:00+08:00",

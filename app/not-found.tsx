@@ -1,6 +1,20 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import { siteSurface } from "@/lib/domain-routing";
+import { AdminMissingResource } from "@/components/admin/AdminMissingResource";
 import { FieldHero } from "@/components/editorial/FieldElements";
-export default function NotFound() {
+export default async function NotFound() {
+  const requestHeaders = await headers();
+  if (
+    siteSurface(requestHeaders.get("host") ?? "") === "admin" ||
+    requestHeaders.get("x-whatelz-surface") === "admin"
+  ) {
+    return (
+      <main className="min-h-dvh bg-white px-6">
+        <AdminMissingResource />
+      </main>
+    );
+  }
   return (
     <main>
       <FieldHero
