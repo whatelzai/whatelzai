@@ -5,6 +5,36 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-18-admin-recovery",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T20:07:00+08:00",
+    title: "A clearer way back",
+    titleZh: "更清晰的返回路径",
+    items: [
+      {
+        en: "Missing Admin items now show a compact recovery view inside the app, with a safe route to your workspace or Home.",
+        zh: "Admin 中缺失的项目现在显示简洁的恢复页面，可安全返回工作区或首页。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-18-personal-chat-inbox",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T20:00:00+08:00",
+    title: "Three tabs, four epics, one inbox",
+    titleZh: "三个主标签、四个领域、一个通知中心",
+    items: [
+      {
+        en: "Chat, Home and Profile keep navigation simple. Personal joins the workspaces, including your planning and closeout rhythm.",
+        zh: "主导航简化为对话、首页与个人设置。个人成为独立领域，纳入规划与复盘节奏。",
+      },
+      {
+        en: "Chat saves conversations and can propose task changes for you to confirm. The header bell keeps release notes, recent registrations and new push notices together.",
+        zh: "对话可保存记录并提出待你确认的任务变更。顶部铃铛汇集版本说明、近期报名和新的推送通知。",
+      },
+    ],
+  },
+  {
     id: "2026-11-18-focus-horizons",
     date: "2026-11-18",
     publishedAt: "2026-11-18T12:45:00+08:00",

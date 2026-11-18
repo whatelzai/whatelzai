@@ -19,10 +19,10 @@ test("clean host paths and preview /admin paths select the same navigation", () 
   }
   assert.equal(cleanAdminPath("/administrator"), "/administrator");
 });
-test("Personal and Settings own their deep links without selecting a workstream", () => {
+test("Personal is a Home epic while Settings owns its utility links", () => {
   assert.deepEqual(adminNavigation("/personal/notes"), {
-    tab: "personal",
-    workstream: null,
+    tab: "home",
+    workstream: "Personal",
   });
   for (const path of ["/profile", "/settings", "/tokens", "/developer"])
     assert.deepEqual(adminNavigation(path), {

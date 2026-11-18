@@ -18,6 +18,35 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "This item isn’t available": "此项目暂不可用",
+  "It may have moved or been removed. Return to your workspace to continue.":
+    "内容可能已移动或移除。请返回工作区继续。",
+  "Back to Home": "返回首页",
+
+  Notifications: "通知",
+  "Apply task": "应用任务",
+  "New task": "新任务",
+  "Task update": "任务更新",
+  "Capture an idea": "记录想法",
+  "Review my tasks": "回顾任务",
+  "Plan my next step": "规划下一步",
+  Unread: "未读",
+  "Close notifications": "关闭通知",
+  "Mark all read": "全部标为已读",
+  "Notification settings": "通知设置",
+  "No notifications yet.": "暂无通知。",
+  "Dismiss notification": "移除此通知",
+  "Chat history": "对话记录",
+  "Saved conversations": "已保存的对话",
+  "Task saved": "任务已保存",
+  "Retry reply": "重试回复",
+  "Message saved · reply failed": "消息已保存 · 回复失败",
+  "An idea, a question, a next step…": "一个想法、问题，或下一步…",
+  "Saved privately · task changes need your confirmation":
+    "私密保存 · 任务变更需经你确认",
+  "No conversations yet.": "暂无对话。",
+  "Review Admin Chat ideas": "回顾 Admin 对话中的想法",
+
   "No upcoming items this week.": "本周接下来暂无安排。",
   Administration: "行政安排",
   "Weekly rhythm": "每周节奏",

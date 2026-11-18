@@ -1,4 +1,5 @@
 import "server-only";
+import { recordAdminNotice } from "@/lib/admin-notifications/server";
 import { createHash } from "node:crypto";
 import {
   DEFAULT_FOCUS,
@@ -134,6 +135,12 @@ export async function sendPush(
   notice: { title: string; url: string; tag: string },
   options?: { ttl: number; focusHash: string | null },
 ) {
+  await recordAdminNotice(
+    device.owner_id,
+    "push:" + notice.tag,
+    notice.title,
+    notice.url,
+  );
   const { data: live, error: liveError } = await supabaseAdmin
     .from("admin_push_subscriptions")
     .select("enabled,focus_hash")

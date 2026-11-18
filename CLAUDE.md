@@ -941,4 +941,41 @@ Do not show Choose my focus or Calendar links beneath Today/This Week on Home or
 
 ## Versioned registered-event feedback (SPR-213)
 
-Fixed feedback links render immutable DB question versions pinned per event, capped at10. Approved feedback-v3-20261118 has3Yes/No,6ratings and optional comments without an application text cap. Confirmed registration email requires a six-digit code; no public email list or accounts created. Hash-only expiring challenges/proofs, persistent request/guess limits and event/status checks gate one response per event/email/registration. Existing Resend sender delivers verification codes only when requested. Store exact Q/A snapshots; owner review renders history instead of current definitions. Earlier anonymous feedback remains labelled and preserved; public API now rejects anonymous legacy payloads. Migration versions20261118090000/090100/100000 applied; immutable v2 draft kept, never-released bindings moved to approvedv3 only after no-response check. No auto invitations. See docs/event-feedback.md. — codex,2026-11-18
+Fixed feedback links render immutable DB question versions pinned per event, capped at10. Approved feedback-v3-20261118 has3Yes/No,6ratings and optional comments without an application text cap. Confirmed registration email requires a six-digit code; no public email list or accounts created. Hash-only expiring challenges/proofs, persistent request/guess limits and event/status checks gate one response per event/email/registration. Existing Resend sender delivers verification codes only when requested. Store exact Q/A snapshots; owner review renders history instead of current definitions. Earlier anonymous feedback remains labelled and preserved; public API now rejects anonymous legacy payloads. Migration versions20261118090000/090100/100000 applied; immutable v2 draft kept, never-released bindings moved to approvedv3 only after no-response check. Release-phase migration20261118100100 revokes the legacy writer and enforces the ten-question database cap after the new API is live. No auto invitations. See docs/event-feedback.md. — codex,2026-11-18
+
+## Three-tab Admin, Personal epic and saved Chat — 2026-11-18
+
+The main dock is Chat | Home | Profile. Personal is the fourth epic beside AI Business,
+Network Marketing and Day Job, with scoped Today/Week and detail pages. Overview
+combines all four. Thursday planning and Sunday closeout now belong to Personal.
+Calendar remains accessible in the workspace selector. Personal schedules retain
+explicit saved choices.
+
+Admin Chat saves owner-scoped threads/turns in private Supabase tables and uses the
+existing server connection with gpt-6.1-sol, provider store:false. The verified task
+snapshot is available; calendar, email and EMDEE are not connected to this chat.
+Task changes are stored proposals until the user presses Apply task. A service-only
+RPC validates owner, stored proposal, revision and completion invariants, with
+idempotent receipts. Pending turns serialize per conversation; retries retain the
+saved message and request identity. History lists the latest50 conversations;
+each conversation supports100 turns and direct thread links remain valid.
+
+A daily21:00 Personal focus reminder opens saved Chat for idea review. This is a
+visible reminder only: no new scheduled AI reconciliation job or EMDEE write.
+The header bell has a private inbox with unread marks, mark-all-read and soft
+archive. It imports release notes and confirmed registrations from the last28days;
+future attempted push deliveries also persist notices before sending. It does not claim a complete archive of historical push notifications.
+
+Migration20261118053000 is additive and applied. New tables deny browser roles;
+reads/writes use verified owner endpoints, same-origin mutation guards and service
+credentials. Preserve saved conversations and notification history on rollback.
+
+## Admin missing-resource recovery (2026-11-18)
+
+Admin has its own not-found boundary and unmatched-path catch-all beneath the existing
+owner-gated layout, preserving header, dock and Back handling. Missing task/resource
+records use compact icon-led recovery with local Home/known-workspace actions, never
+browser-history Back or public Playbook promotion. The root not-found boundary also
+recognizes Admin requests as a fallback; public editorial404 remains unchanged.
+No auth checks are relaxed and unavailable database reads remain distinct from absent
+records. Task references retain encoded source IDs and owner-scoped lookup.

@@ -1,5 +1,5 @@
 "use client";
-import { Bot, Network, BriefcaseBusiness } from "lucide-react";
+import { CalendarDays, Bot, Network, BriefcaseBusiness } from "lucide-react";
 import { useState } from "react";
 import { useAdminPreferences } from "./AdminPreferences";
 import Link from "./AdminLink";
@@ -10,6 +10,7 @@ const laneIcons = {
   "ai-business": Bot,
   "network-marketing": Network,
   "day-job": BriefcaseBusiness,
+  personal: CalendarDays,
 };
 
 export function WeeklyFocus({

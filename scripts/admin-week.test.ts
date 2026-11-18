@@ -39,7 +39,7 @@ test("weekly lanes keep accepted carried work, but proposals, finished and next-
   assert.equal(result.next?.id, "carried");
   assert.deepEqual(
     result.lanes.map((l) => l.task?.id ?? null),
-    ["carried", null, "blocked"],
+    [null, "carried", null, "blocked"],
   );
 });
 test("a future accepted action may appear this week but is not an actionable sprint yet", () => {
@@ -55,10 +55,10 @@ test("a future accepted action may appear this week but is not an actionable spr
     "2026-10-20",
   );
   assert.equal(result.next, null);
-  assert.equal(result.lanes[0].task?.id, "future");
-  assert.equal(result.lanes[1].task?.id, "waiting");
+  assert.equal(result.lanes[1].task?.id, "future");
+  assert.equal(result.lanes[2].task?.id, "waiting");
   assert.deepEqual(
     weeklyWork([], "2026-10-25").lanes.map((l) => l.task),
-    [null, null, null],
+    [null, null, null, null],
   );
 });

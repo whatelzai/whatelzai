@@ -106,6 +106,7 @@ function fixture(owner = true) {
   };
   const mocks: Record<string, unknown> = {
     "server-only": {},
+    "@/lib/admin-notifications/server": { recordAdminNotice: async () => {} },
     "@/lib/supabase-server": { supabaseAdmin: db },
     "@/lib/admin-focus": focus,
     "./focus": candidates,

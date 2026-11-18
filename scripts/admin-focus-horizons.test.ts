@@ -41,7 +41,7 @@ test("overview combines lanes and workspace scopes both horizons without convert
   const events = [sprint, club];
   const all = focusHorizons([task], events, "2026-11-18");
   assert.deepEqual(
-    all.today.map((x) => x.title),
+    all.today.filter((x) => x.kind !== "routine").map((x) => x.title),
     ["Sprint 63"],
   );
   assert.equal(all.weekly.length, 4);
@@ -67,7 +67,7 @@ test("only accepted unfinished tasks appear; overdue work remains visible and bl
     "2026-11-18",
   );
   assert.deepEqual(
-    result.today.map((x) => x.status),
+    result.today.filter((x) => x.kind !== "routine").map((x) => x.status),
     ["Carried forward", "Blocked"],
   );
   assert.equal(result.weekly.length, 3);
@@ -91,7 +91,7 @@ test("Today includes the ongoing sprint; week preview excludes today and next we
   );
   assert.deepEqual(result.week, { start: "2026-11-16", end: "2026-11-22" });
   assert.equal(result.weekly.length, 0);
-  assert.equal(result.today.length, 3);
+  assert.equal(result.today.length, 4);
   assert.equal(focusHorizons(null, [], "2026-12-31").week.end, "2027-01-03");
 });
 
@@ -106,12 +106,19 @@ test("focus references and deep links remain stable without introducing sequenti
 });
 
 test("Overview alone includes Thursday planning and Sunday closeout with stable dated checkpoints", () => {
-  const routines = administrativeFocus("2026-11-18");
+  const routines = administrativeFocus("2026-11-18").filter(
+    (x) => !x.id.includes("chat-review"),
+  );
   assert.equal(routines[0].start, "2026-11-19");
   assert.equal(routines[0].time, "21:00");
   assert.equal(routines[0].title, "Plan next week · Sprint-002");
   assert.equal(routines[1].title, "Close this week · Sprint-001");
-  assert.equal(focusHorizons([], [], "2026-11-19").today[0].id, routines[0].id);
+  assert.equal(
+    focusHorizons([], [], "2026-11-19").today.find((x) =>
+      x.id.includes("planning"),
+    )!.id,
+    routines[0].id,
+  );
   assert.equal(focusHorizons([], [], "2026-11-19", "day-job").today.length, 0);
   assert.deepEqual(administrativeFocus("not-a-date"), []);
 });

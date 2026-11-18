@@ -21,7 +21,9 @@ export async function WorkspaceFocus({ lane }: { lane?: Task["lane"] }) {
   const day = singaporeDay();
   const [tasks, calendar] = await Promise.allSettled([
     loadDailyTasks(day),
-    loadAdminCalendar(),
+    lane === "personal"
+      ? Promise.resolve({ events: [], unavailable: [] })
+      : loadAdminCalendar(),
   ]);
   return (
     <WorkspaceFocusView
