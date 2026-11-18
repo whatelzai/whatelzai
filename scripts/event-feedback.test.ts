@@ -19,7 +19,7 @@ const event = (id: string, date: string, format = "weekly") =>
     published: true,
     metadata: { event_id: id, event_format: format },
   } as CatalogRow)!;
-test("minimal feedback has bounded input, no required identity and rejects extra contact/HTML-control fields", () => {
+test("legacy feedback parser retains its original bounds for historical compatibility", () => {
   const input = {
     eventId: "ELZ-EVT-0004",
     requestId: "a8fd01ac-8e7a-4b85-849d-29773b7df40b",
@@ -62,11 +62,20 @@ test("write boundary has same-origin, validation, ended-event gate, private resp
     new URL("../app/api/event-feedback/route.ts", import.meta.url),
     "utf8",
   );
-  assert.ok(src.indexOf('req.headers.get("origin")') < src.indexOf("db.rpc("));
-  assert.match(src, /eventFeedbackInput.safeParse/);
-  assert.match(src, /feedbackOpen/);
-  assert.match(src, /createHmac/);
-  assert.match(src, /private, no-store/);
+  const http = readFileSync(
+    new URL("../lib/event-feedback/http.ts", import.meta.url),
+    "utf8",
+  );
+  const server = readFileSync(
+    new URL("../lib/event-feedback/server.ts", import.meta.url),
+    "utf8",
+  );
+  assert.match(http, /req.headers.get\("origin"\)/);
+  assert.match(src, /verifiedFeedbackInput.safeParse/);
+  assert.match(src, /openFeedbackEvent/);
+  assert.match(server, /createHmac/);
+  assert.match(server, /feedbackOpen/);
+  assert.match(http, /private, no-store/);
   assert.ok(!src.includes("export async function GET"));
   const review = readFileSync(
     new URL("../components/events/EventFeedbackReview.tsx", import.meta.url),

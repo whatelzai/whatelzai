@@ -938,3 +938,7 @@ Home and each epic root lead with Today’s focus and This week’s focus. Overv
 ### Focus footer cleanup (2026-11-18)
 
 Do not show Choose my focus or Calendar links beneath Today/This Week on Home or epic roots. Focus selection belongs to Thursday planning; Calendar already has a persistent tab. Only source-availability notices may occupy the footer, and no empty footer is rendered.
+
+## Versioned registered-event feedback (SPR-213)
+
+Fixed feedback links render immutable DB question versions pinned per event, capped at10. Approved feedback-v3-20261118 has3Yes/No,6ratings and optional comments without an application text cap. Confirmed registration email requires a six-digit code; no public email list or accounts created. Hash-only expiring challenges/proofs, persistent request/guess limits and event/status checks gate one response per event/email/registration. Existing Resend sender delivers verification codes only when requested. Store exact Q/A snapshots; owner review renders history instead of current definitions. Earlier anonymous feedback remains labelled and preserved; public API now rejects anonymous legacy payloads. Migration versions20261118090000/090100/100000 applied; immutable v2 draft kept, never-released bindings moved to approvedv3 only after no-response check. No auto invitations. See docs/event-feedback.md. — codex,2026-11-18

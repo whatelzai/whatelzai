@@ -1,4 +1,5 @@
 import "server-only";
+import { feedbackSnapshot } from "@/lib/event-feedback/questions";
 import FeedbackShare from "@/components/admin/event-admin/FeedbackShare";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
@@ -15,7 +16,9 @@ export default async function EventFeedbackReview({
   await dailyOwner();
   const { data, error, count } = await db
     .from("event_feedback")
-    .select("id,rating,comment,created_at", { count: "exact" })
+    .select("id,rating,comment,created_at,form_id,question_answers", {
+      count: "exact",
+    })
     .eq("event_id", recordId)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -31,7 +34,8 @@ export default async function EventFeedbackReview({
         <p>Publish the event before sharing its feedback form.</p>
       )}
       <p className="event-feedback-note">
-        Responses are private. The form does not ask for a name.
+        Responses are private. New responses require a verified registration
+        email.
       </p>
       {error ? (
         <p role="alert">Feedback could not be loaded. Refresh to try again.</p>
@@ -49,9 +53,41 @@ export default async function EventFeedbackReview({
                   timeZone: "Asia/Singapore",
                 })}
               </p>
-              <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-                {r.comment || "No comment added."}
+              <p>
+                {r.form_id === "feedback-v1"
+                  ? "Earlier anonymous feedback"
+                  : "Verified registration email"}{" "}
+                · {r.form_id}
               </p>
+              {feedbackSnapshot.safeParse(r.question_answers).success ? (
+                <dl className="feedback-answer-list">
+                  {feedbackSnapshot.parse(r.question_answers).map((pair) => (
+                    <div
+                      key={pair.id}
+                      className={
+                        pair.type === "text"
+                          ? "feedback-answer-comment"
+                          : undefined
+                      }
+                    >
+                      <dt>{pair.question}</dt>
+                      <dd>
+                        {typeof pair.answer === "boolean"
+                          ? pair.answer
+                            ? "Yes"
+                            : "No"
+                          : typeof pair.answer === "number"
+                            ? `${pair.answer} / 5`
+                            : pair.answer || "No comment added."}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : (
+                <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                  {r.comment || "Earlier response"}
+                </p>
+              )}
             </article>
           ))}
         </>
