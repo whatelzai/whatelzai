@@ -271,14 +271,9 @@ export function AdminAppBoundary() {
       document.removeEventListener("submit", submit, true);
     };
   }, [router]);
-  const top = [
-    "/",
-    "/personal",
-    "/settings",
-    "/profile",
-    "/chat",
-    "/calendar",
-  ].includes(cleanAdminPath(pathname));
+  const top = ["/", "/settings", "/profile", "/chat", "/calendar"].includes(
+    cleanAdminPath(pathname),
+  );
   return (
     <>
       {navigating && (

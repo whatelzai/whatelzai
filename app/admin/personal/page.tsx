@@ -28,7 +28,10 @@ const areaLabels = [
 ];
 import Link from "@/components/admin/AdminLink";
 import { AdminText } from "@/components/admin/AdminPreferences";
-import { PersonalWeeklyFocus } from "@/components/admin/PersonalWeeklyFocus";
+import {
+  WorkspaceFocus,
+  WorkspaceFocusLoading,
+} from "@/components/admin/WorkspaceFocus";
 import { dailyOwner } from "@/lib/daily/server";
 import { singaporeDay } from "@/lib/daily/model";
 import { focusWeek } from "@/lib/personal/model";
@@ -53,6 +56,9 @@ export default async function PersonalPage() {
   const sources = personalSources(owner, day, week.start, now);
   return (
     <div className="personal-home">
+      <Suspense fallback={<WorkspaceFocusLoading />}>
+        <WorkspaceFocus lane="personal" />
+      </Suspense>
       <header className="personal-title">
         <div>
           <h1 className="sr-only">
@@ -95,16 +101,6 @@ export default async function PersonalPage() {
         <Direction source={sources.direction} />
       </Suspense>
       <div className="personal-main">
-        <section className="personal-week">
-          <h2>
-            <Text s="This week, for myself" />
-          </h2>
-          <Suspense
-            fallback={<Placeholder label="Reading your chosen outcome…" />}
-          >
-            <Week source={sources.focus} week={week.start} />
-          </Suspense>
-        </section>
         <section className="personal-money">
           <div className="personal-section-title">
             <h2>
@@ -201,23 +197,6 @@ async function Direction({ source }: { source: Sources["direction"] }) {
         <Text s="Read my Mandala" /> <span aria-hidden="true">›</span>
       </Link>
     </section>
-  );
-}
-async function Week({
-  source,
-  week,
-}: {
-  source: Sources["focus"];
-  week: string;
-}) {
-  const result = await source;
-  return (
-    <PersonalWeeklyFocus
-      key={week}
-      initial={result.status === "ready" ? result.data : null}
-      week={week}
-      available={result.status === "ready"}
-    />
   );
 }
 async function Money({ source }: { source: Sources["money"] }) {

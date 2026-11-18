@@ -26,15 +26,9 @@ export const DEFAULT_FOCUS: FocusSettings = {
     { days: "weekends", start: 540, end: 1080, space: "AI Business" },
   ],
 };
-// Legacy saved schedules remain valid, but Personal is now manual-only.
+// Saved schedules support all four epics, including Personal.
 export function normalizeFocusSettings(settings: FocusSettings): FocusSettings {
-  return {
-    ...settings,
-    blocks: settings.blocks.map((block) => ({
-      ...block,
-      space: block.space === "Personal" ? "Overview" : block.space,
-    })),
-  };
+  return settings;
 }
 export const focusPath = (space: FocusSpace) =>
   adminFocusSpaces.find((item) => item.label === space)!.path;
@@ -109,8 +103,7 @@ export function focusAt(now: Date, config: FocusSettings = DEFAULT_FOCUS) {
   ].sort((a, b) => a - b);
   const start = Math.max(...boundaries.filter((time) => time <= minute));
   const end = Math.min(...boundaries.filter((time) => time > minute));
-  const space =
-    block?.space === "Personal" ? "Overview" : (block?.space ?? "Overview");
+  const space = block?.space ?? "Overview";
   return {
     space,
     path: focusPath(space),
@@ -141,7 +134,7 @@ export function canAutoSwitch(input: {
     );
   const path = cleanAdminPath(input.path);
   if (path === "/users" || path.startsWith("/users/")) return false;
-  return ["home", "personal"].includes(adminNavigation(input.path).tab);
+  return adminNavigation(input.path).tab === "home";
 }
 export function minuteInput(value: number) {
   if (!Number.isFinite(value)) return "";

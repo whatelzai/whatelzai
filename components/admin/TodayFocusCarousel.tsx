@@ -21,6 +21,7 @@ const icons = {
   "ai-business": Bot,
   "network-marketing": Network,
   "day-job": BriefcaseBusiness,
+  personal: CalendarDays,
   administration: CalendarDays,
 };
 export function TodayFocusCarousel({

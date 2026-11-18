@@ -11,6 +11,7 @@ const icons = {
   "ai-business": Bot,
   "network-marketing": Network,
   "day-job": BriefcaseBusiness,
+  personal: CalendarDays,
   administration: CalendarDays,
 };
 export async function FocusDetail({
@@ -65,9 +66,11 @@ export async function FocusDetail({
         <p>
           <AdminText
             text={
-              item.id.includes(":planning:")
-                ? "Prepare next week’s outcomes, commitments and focus blocks."
-                : "Review this week’s results and carry forward deliberate choices."
+              item.id.includes(":chat-review:")
+                ? "Review saved ideas and choose any next steps. Task changes need confirmation."
+                : item.id.includes(":planning:")
+                  ? "Prepare next week’s outcomes, commitments and focus blocks."
+                  : "Review this week’s results and carry forward deliberate choices."
             }
           />
         </p>

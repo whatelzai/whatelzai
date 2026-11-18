@@ -9,13 +9,15 @@ export function AdminWorkspaceTheme({
 }) {
   const current = adminNavigation(usePathname());
   const workspace =
-    current.workstream === "AI Business"
-      ? "ai"
-      : current.workstream === "Network Marketing"
-        ? "network"
-        : current.workstream === "Day Job"
-          ? "day-job"
-          : "neutral";
+    current.workstream === "Personal"
+      ? "personal"
+      : current.workstream === "AI Business"
+        ? "ai"
+        : current.workstream === "Network Marketing"
+          ? "network"
+          : current.workstream === "Day Job"
+            ? "day-job"
+            : "neutral";
   return (
     <div
       data-admin-workspace={workspace}

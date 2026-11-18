@@ -1,6 +1,7 @@
 import type { Task } from "./daily/model";
 import { selectedSprint } from "./admin-reading";
 export const workLanes = [
+  { lane: "personal", label: "Personal", path: "/admin/personal" },
   { lane: "ai-business", label: "AI Business", path: "/admin/ai-business" },
   {
     lane: "network-marketing",

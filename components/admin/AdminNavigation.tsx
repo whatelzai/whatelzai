@@ -12,36 +12,25 @@ import {
   ChevronDown,
   House,
   Network,
-  CalendarDays,
   MessageCircle,
   BriefcaseBusiness,
   UserRound,
 } from "lucide-react";
+import { NotificationsBell } from "./NotificationsBell";
 import { adminUrl } from "@/lib/admin-url";
 import { adminNavigation, adminWorkstreams } from "@/lib/admin-navigation";
 
 const workspaceIcons = {
   Overview: House,
+  Personal: UserRound,
   "AI Business": Bot,
   "Network Marketing": Network,
   "Day Job": BriefcaseBusiness,
 } as const;
 
 const tabs = [
-  {
-    key: "personal",
-    label: "Personal",
-    path: "/admin/personal",
-    icon: UserRound,
-  },
   { key: "chat", label: "Chat", path: "/admin/chat", icon: MessageCircle },
   { key: "home", label: "Home", path: "/admin", icon: House },
-  {
-    key: "calendar",
-    label: "Calendar",
-    path: "/admin/calendar",
-    icon: CalendarDays,
-  },
   {
     key: "profile",
     label: "Profile",
@@ -71,9 +60,7 @@ export function AdminNavigation() {
     update();
     return () => observer.disconnect();
   }, []);
-  const activeLabel =
-    current.workstream ??
-    (current.tab === "personal" ? "Personal" : "Settings");
+  const activeLabel = current.workstream ?? "Settings";
   const ActiveIcon =
     workspaceIcons[current.workstream as keyof typeof workspaceIcons] ?? House;
   useEffect(() => {
@@ -199,6 +186,12 @@ export function AdminNavigation() {
                       </Link>
                     );
                   })}
+                  <Link
+                    href={adminUrl("/admin/calendar")}
+                    className="flex min-h-11 items-center gap-3 px-3 text-sm"
+                  >
+                    {t("Calendar")}
+                  </Link>
                   <div className="mt-1 border-t border-zinc-100 px-3 pt-3 pb-1 text-xs text-zinc-500">
                     <p>
                       {t(
@@ -234,13 +227,14 @@ export function AdminNavigation() {
                 </nav>
               </details>
             ) : null}
+            <NotificationsBell />
           </div>
         </div>
       </header>
       <nav
         aria-label="Admin tabs"
         data-ledger-dock=""
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-xl grid-cols-5 gap-1 border-t border-zinc-200 bg-white/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:rounded-t-3xl sm:border-x lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-xl grid-cols-3 gap-1 border-t border-zinc-200 bg-white/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:rounded-t-3xl sm:border-x lg:hidden"
       >
         {tabs.map(({ key, label, path, icon: Icon }) => {
           const active = current.tab === key;

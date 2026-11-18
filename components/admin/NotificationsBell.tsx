@@ -1,0 +1,155 @@
+"use client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Bell, X, CheckCheck, Archive } from "lucide-react";
+import Link from "./AdminLink";
+import { adminUrl } from "@/lib/admin-url";
+import { useAdminPreferences } from "./AdminPreferences";
+type Notice = {
+  id: string;
+  title: string;
+  body: string;
+  url: string;
+  created_at: string;
+  read_at: string | null;
+};
+export function NotificationsBell() {
+  const { t, preferences } = useAdminPreferences();
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [notices, setNotices] = useState<Notice[]>([]),
+    [unread, setUnread] = useState(0),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  const load = useCallback(async (poll = false) => {
+    try {
+      const r = await fetch(
+        adminUrl("/api/admin/notifications" + (poll ? "?poll=1" : "")),
+        { cache: "no-store" },
+      );
+      const d = await r.json();
+      if (!r.ok) throw Error(d.error);
+      setNotices(d.notices);
+      setUnread(d.unread);
+      setError("");
+    } catch {
+      setError("Notifications could not be loaded.");
+    } finally {
+      if (!poll) setBusy(false);
+    }
+  }, []);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => void load());
+    const timer = setInterval(() => {
+      if (document.visibilityState === "visible") void load(true);
+    }, 60000);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearInterval(timer);
+    };
+  }, [load]);
+  async function mark(action: "read" | "read-all" | "archive", id?: string) {
+    try {
+      const r = await fetch(adminUrl("/api/admin/notifications"), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, id }),
+      });
+      if (!r.ok) {
+        setError("Could not update notification");
+        return;
+      }
+      await load(true);
+    } catch {
+      setError("Could not update notification");
+    }
+  }
+  return (
+    <>
+      <button
+        type="button"
+        className="admin-notification-bell"
+        aria-label={
+          t("Notifications") + (unread ? ` · ${unread} ${t("Unread")}` : "")
+        }
+        onClick={() => {
+          setBusy(true);
+          dialog.current?.showModal();
+          void load();
+        }}
+      >
+        <Bell size={21} />
+        {unread > 0 && <span>{unread > 99 ? "99+" : unread}</span>}
+      </button>
+      <dialog ref={dialog} className="admin-notification-dialog">
+        <header>
+          <h2>{t("Notifications")}</h2>
+          <button
+            type="button"
+            aria-label={t("Close notifications")}
+            onClick={() => dialog.current?.close()}
+          >
+            <X size={21} />
+          </button>
+        </header>
+        <div className="admin-notification-tools">
+          <button type="button" onClick={() => void mark("read-all")}>
+            <CheckCheck size={16} />
+            {t("Mark all read")}
+          </button>
+          <Link
+            href={adminUrl("/admin/profile")}
+            onClick={() => dialog.current?.close()}
+          >
+            {t("Notification settings")}
+          </Link>
+        </div>
+        <div className="admin-notification-list">
+          {busy && <p role="status">{t("Loading…")}</p>}
+          {error && <p role="alert">{t(error)}</p>}
+          {!busy && !notices.length && !error && (
+            <p>{t("No notifications yet.")}</p>
+          )}
+          {notices.map((n) => (
+            <article key={n.id} data-unread={!n.read_at || undefined}>
+              <div>
+                <time>
+                  {new Date(n.created_at).toLocaleString(
+                    preferences.language === "zh" ? "zh-SG" : "en-SG",
+                    {
+                      timeZone: "Asia/Singapore",
+                      day: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    },
+                  )}{" "}
+                  SGT
+                </time>
+                <button
+                  type="button"
+                  aria-label={t("Dismiss notification")}
+                  onClick={() => void mark("archive", n.id)}
+                >
+                  <Archive size={16} />
+                </button>
+              </div>
+              <Link
+                href={adminUrl(
+                  n.url.startsWith("/admin")
+                    ? n.url
+                    : "/admin" + (n.url === "/" ? "" : n.url),
+                )}
+                onClick={() => {
+                  void mark("read", n.id);
+                  dialog.current?.close();
+                }}
+              >
+                <h3>{n.title}</h3>
+                <p>{n.body}</p>
+              </Link>
+            </article>
+          ))}
+        </div>
+      </dialog>
+    </>
+  );
+}
