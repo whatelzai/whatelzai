@@ -3396,3 +3396,36 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   height: 41px;
   border-bottom: 1px solid #e4e4e7;
 }
+
+.calendar-period {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  height: 3rem;
+  padding-inline: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 650;
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .calendar-period[data-direction="up"] span {
+    animation: calendar-period-flip 0.22s ease-out;
+    --entry: 70%;
+    --angle: -65deg;
+  }
+  .calendar-period[data-direction="down"] span {
+    animation: calendar-period-flip 0.22s ease-out;
+    --entry: -70%;
+    --angle: 65deg;
+  }
+}
+@keyframes calendar-period-flip {
+  from {
+    opacity: 0;
+    transform: perspective(180px) translateY(var(--entry)) rotateX(var(--angle));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
