@@ -77,17 +77,34 @@ Appearance, text size, push options, scheduling, install and sign-out remain.
 Synthetic profile/browser previews contain no private account data and are removed
 before release.
 
-## Focus horizons
+## Focus horizons checkpoint
 
 Shared WorkspaceFocus leads Home, AI Business, Network Marketing and Day Job.
-The pure focusHorizons model filters both accepted tasks and calendar anchors by
-lane and Singapore day/Monday–Sunday boundaries. Today includes overdue accepted
-work; the week includes accepted carryovers and intersecting calendar ranges.
-Blocked/waiting work stays visibly blocked and cannot start a focused sprint.
-Calendar records keep source statuses and never become commitments or attendance.
-If a lane has no remaining event this week, its next later anchor appears under
-“Next after this week”, never as an in-week event. Missing sources remain explicit.
-Four rows initially visible per horizon; every remaining row can be expanded.
-The shared Home briefing source no longer issues an unused duplicate task read.
-Owner gates, tool directories, Rhythm, progressive Suspense and navigation remain.
-No new schema, provider call, schedule or automatic task acceptance.
+Today includes accepted open/blocked/waiting tasks due today or overdue and events
+covering the Singapore date. One full-width snap carousel advances every6.5seconds
+only with multiple items, an active tab and no reduced-motion preference. Hover
+pauses; pointer/keyboard interaction stops automatic rotation until Play. Manual
+arrows and touch scrolling remain. A single item has no rotation controls.
+
+This Week contains only items starting/due tomorrow through Sunday, with three
+visible and remaining entries under View more. Ongoing company sprints remain in
+Today rather than repeating as future starts. Source failures stay explicit;
+calendar records never become accepted tasks or attendance assertions.
+
+Overview additionally projects read-only Thursday21:00 next-week planning and
+Sunday21:00 closeout checkpoints. Sprint-001 starts2026-11-16; planning references
+the next sprint and closeout the current sprint. Individual epics exclude these
+administrative reminders. This creates no automation or database task.
+
+Focus detail routes under /admin/focus/[id] and each epic's /focus/[id] retain
+source identity in encoded routes, with short deterministic display references
+(not new sequential database IDs). Owner verification precedes reads; task reads
+filter verified owner plus UUID and retain completed records. Events are projected
+through existing owner-only sources; routine dates must match their weekday.
+Epic detail wrappers reject a mismatched lane. Source tools remain available.
+Breadcrumbs use the originating epic and Today/Week anchor. Deep-link Back falls
+back to a real root, never a nonexistent focus index. Main tabs retain no Back row.
+
+The unused duplicate task read in briefing sources was removed. Directories,
+workspace shortcuts, Rhythm, lazy Suspense and existing permissions remain.
+No schema, dependency, provider call or automatic task acceptance changes.

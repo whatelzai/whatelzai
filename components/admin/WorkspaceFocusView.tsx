@@ -13,14 +13,20 @@ import {
 import Link from "./AdminLink";
 import { adminUrl } from "@/lib/admin-url";
 import { workLanes } from "@/lib/admin-week";
-import { focusHorizons, type FocusItem } from "@/lib/admin-focus/model";
+import {
+  focusPath,
+  focusHorizons,
+  type FocusItem,
+} from "@/lib/admin-focus/model";
 import type { Task } from "@/lib/daily/model";
 import type { AdminCalendarEvent } from "@/lib/admin-calendar/model";
+import { TodayFocusCarousel } from "./TodayFocusCarousel";
 import { useAdminPreferences } from "./AdminPreferences";
 const icons = {
   "ai-business": Bot,
   "network-marketing": Network,
   "day-job": BriefcaseBusiness,
+  administration: CalendarDays,
 };
 export function WorkspaceFocusView({
   tasks,
@@ -61,14 +67,22 @@ export function WorkspaceFocusView({
         data-focused={focused === item.id || undefined}
       >
         <Icon size={20} aria-hidden="true" />
-        <Link href={adminUrl(item.href)} className="horizon-item-copy">
+        <Link
+          href={adminUrl(focusPath(item.id, "week", lane))}
+          className="horizon-item-copy"
+        >
           <strong>{item.title}</strong>
           <small>
             {item.time && `${item.time} · `}
             {date(item.start)}
-            {item.end !== item.start && `–${date(item.end)}`} · {t(item.status)}
+            {item.end !== item.start && `–${date(item.end)}`} ·{" "}
+            {t(
+              item.status.startsWith("Imported event")
+                ? "Calendar"
+                : item.status,
+            )}
             {!lane &&
-              ` · ${t(workLanes.find((l) => l.lane === item.lane)!.label)}`}
+              ` · ${t(workLanes.find((l) => l.lane === item.lane)?.label ?? "Administration")}`}
           </small>
         </Link>
         {item.kind === "task" &&
@@ -97,13 +111,13 @@ export function WorkspaceFocusView({
   function list(items: FocusItem[]) {
     return (
       <>
-        <ul>{items.slice(0, 4).map(row)}</ul>
-        {items.length > 4 && (
+        <ul>{items.slice(0, 3).map(row)}</ul>
+        {items.length > 3 && (
           <details>
             <summary>
-              {t("More")} · {items.length - 4}
+              {t("View more")} · {items.length - 3}
             </summary>
-            <ul>{items.slice(4).map(row)}</ul>
+            <ul>{items.slice(3).map(row)}</ul>
           </details>
         )}
       </>
@@ -111,7 +125,7 @@ export function WorkspaceFocusView({
   }
   return (
     <div className="workspace-horizons">
-      <section aria-label={t("Today’s focus")}>
+      <section id="today-focus" aria-label={t("Today’s focus")}>
         <header>
           <h2>
             <Sun size={18} aria-hidden="true" />
@@ -120,7 +134,7 @@ export function WorkspaceFocusView({
           <span>{date(day)}</span>
         </header>
         {horizons.today.length ? (
-          list(horizons.today)
+          <TodayFocusCarousel items={horizons.today} lane={lane} />
         ) : (
           <p className="horizon-empty">
             {t(
@@ -131,7 +145,7 @@ export function WorkspaceFocusView({
           </p>
         )}
       </section>
-      <section aria-label={t("This week’s focus")}>
+      <section id="week-focus" aria-label={t("This week’s focus")}>
         <header>
           <h2>
             <CalendarDays size={18} aria-hidden="true" />
@@ -148,15 +162,9 @@ export function WorkspaceFocusView({
             {t(
               tasks === null || warnings.length
                 ? "Focus may be incomplete."
-                : "No focus recorded for this week.",
+                : "No upcoming items this week.",
             )}
           </p>
-        )}
-        {horizons.next.length > 0 && (
-          <div className="horizon-next">
-            <p>{t("Next after this week")}</p>
-            {list(horizons.next)}
-          </div>
         )}
       </section>
       <footer>

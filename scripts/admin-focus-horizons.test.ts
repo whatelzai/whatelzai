@@ -1,6 +1,12 @@
+import { adminParent } from "../lib/admin-link-policy";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { focusHorizons } from "../lib/admin-focus/model";
+import {
+  focusHorizons,
+  focusPath,
+  focusReference,
+  administrativeFocus,
+} from "../lib/admin-focus/model";
 import type { Task } from "../lib/daily/model";
 import type { AdminCalendarEvent } from "../lib/admin-calendar/model";
 const task: Task = {
@@ -20,6 +26,7 @@ const sprint: AdminCalendarEvent = {
   start: "2026-11-18",
   end: "2026-12-01",
   source: "Company",
+  location: "",
   status: "Company Q3",
 };
 const club: AdminCalendarEvent = {
@@ -37,13 +44,11 @@ test("overview combines lanes and workspace scopes both horizons without convert
     all.today.map((x) => x.title),
     ["Sprint 63"],
   );
-  assert.equal(all.weekly.length, 3);
+  assert.equal(all.weekly.length, 4);
   for (const lane of ["ai-business", "day-job", "network-marketing"] as const) {
     const scoped = focusHorizons([task], events, "2026-11-18", lane);
     assert.ok(
-      [...scoped.today, ...scoped.weekly, ...scoped.next].every(
-        (x) => x.lane === lane,
-      ),
+      [...scoped.today, ...scoped.weekly].every((x) => x.lane === lane),
     );
   }
   assert.equal(all.today[0].kind, "event");
@@ -67,7 +72,7 @@ test("only accepted unfinished tasks appear; overdue work remains visible and bl
   );
   assert.equal(result.weekly.length, 3);
 });
-test("Monday to Sunday includes spanning sprints, excludes adjacent weeks, and explicitly separates next anchors", () => {
+test("Today includes the ongoing sprint; week preview excludes today and next week", () => {
   const result = focusHorizons(
     [],
     [
@@ -85,12 +90,37 @@ test("Monday to Sunday includes spanning sprints, excludes adjacent weeks, and e
     "2026-11-22",
   );
   assert.deepEqual(result.week, { start: "2026-11-16", end: "2026-11-22" });
-  assert.equal(result.weekly.length, 2);
-  assert.equal(result.today.length, 2);
-  assert.deepEqual(
-    result.next.map((x) => x.title),
-    ["Collab"],
-  );
-  assert.equal(result.next[0].lane, "ai-business");
+  assert.equal(result.weekly.length, 0);
+  assert.equal(result.today.length, 3);
   assert.equal(focusHorizons(null, [], "2026-12-31").week.end, "2027-01-03");
+});
+
+test("focus references and deep links remain stable without introducing sequential or email identities", () => {
+  const id = "task:4cc06eb6-4b59-4e67-82bc-6f04df256490";
+  assert.equal(focusReference(id), focusReference(id));
+  assert.notEqual(focusReference(id), focusReference("event:other"));
+  const link = focusPath(id, "week", "day-job");
+  assert.ok(link.startsWith("/admin/day-job/focus/"));
+  assert.ok(link.endsWith("?horizon=week"));
+  assert.equal(decodeURIComponent(link.split("/focus/")[1].split("?")[0]), id);
+});
+
+test("Overview alone includes Thursday planning and Sunday closeout with stable dated checkpoints", () => {
+  const routines = administrativeFocus("2026-11-18");
+  assert.equal(routines[0].start, "2026-11-19");
+  assert.equal(routines[0].time, "21:00");
+  assert.equal(routines[0].title, "Plan next week · Sprint-002");
+  assert.equal(routines[1].title, "Close this week · Sprint-001");
+  assert.equal(focusHorizons([], [], "2026-11-19").today[0].id, routines[0].id);
+  assert.equal(focusHorizons([], [], "2026-11-19", "day-job").today.length, 0);
+  assert.deepEqual(administrativeFocus("not-a-date"), []);
+});
+
+test("deep-linked focus details have a real in-app parent rather than a nonexistent focus index", () => {
+  assert.equal(adminParent("/focus/task%3Auuid"), "/admin");
+  for (const lane of ["ai-business", "network-marketing", "day-job"])
+    assert.equal(
+      adminParent(`/admin/${lane}/focus/task%3Auuid`),
+      `/admin/${lane}`,
+    );
 });

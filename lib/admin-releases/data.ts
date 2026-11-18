@@ -7,17 +7,17 @@ export const adminReleases: AdminRelease[] = [
   {
     id: "2026-11-18-focus-horizons",
     date: "2026-11-18",
-    publishedAt: "2026-11-18T12:35:00+08:00",
+    publishedAt: "2026-11-18T12:45:00+08:00",
     title: "Today and this week, in focus",
     titleZh: "聚焦今天与本周",
     items: [
       {
-        en: "Home combines today’s and this week’s accepted work, company sprints, community activities and hosted events. Each workspace shows only its own lane.",
-        zh: "首页汇总今日与本周重点、公司Sprint、社群活动和自办活动；各工作区仅显示所属内容。",
+        en: "Today has a full-width rotating focus card. The week preview shows three items from tomorrow onwards, with View more. Each epic stays scoped to its own work.",
+        zh: "今日重点采用全宽轮播卡片；本周预览显示明日起三项安排，其余可展开。各领域仅显示所属重点。",
       },
       {
-        en: "Calendar activities remain distinct from accepted commitments. Upcoming dates outside this week are labelled separately; workspace tools and Rhythm stay below the focus.",
-        zh: "日历活动与已确认任务保持区分；本周之后的日期另行标注，工具与日常节奏保留在重点下方。",
+        en: "Stable focus references open detail pages with breadcrumbs. Overview also shows Thursday 9pm planning and Sunday 9pm closeout; no duplicate schedules are created.",
+        zh: "稳定的重点编号连接详情页与路径导航；总览另显示周四晚9点规划及周日晚9点收尾，不重复创建定时任务。",
       },
     ],
   },

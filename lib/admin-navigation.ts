@@ -42,7 +42,8 @@ export function adminNavigation(pathname: string) {
       ? "Day Job"
       : path === "/" ||
           within(path, "/today") ||
-          within(path, "/command-center")
+          within(path, "/command-center") ||
+          within(path, "/focus")
         ? "Overview"
         : "AI Business";
   return { tab: "home" as const, workstream };
