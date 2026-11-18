@@ -4,11 +4,13 @@ import { adminUrl } from "@/lib/admin-url";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AdminText } from "@/components/admin/AdminPreferences";
-import { WeeklyFocus } from "@/components/admin/WeeklyFocus";
-import { AdminSectionLoading } from "@/components/admin/AdminSectionLoading";
+import {
+  WorkspaceFocus,
+  WorkspaceFocusLoading,
+} from "@/components/admin/WorkspaceFocus";
+import { WorkspaceShortcuts } from "@/components/admin/WorkspaceShortcuts";
 import { dailyOwner } from "@/lib/daily/server";
 import { singaporeDay } from "@/lib/daily/model";
-import { currentWeek } from "@/lib/admin-week";
 import { weekSources } from "@/lib/admin-week-server";
 import { briefStatus } from "@/lib/admin-overview/model";
 export const metadata: Metadata = {
@@ -21,32 +23,17 @@ export default async function OverviewPage() {
   const owner = await dailyOwner();
   const now = new Date();
   const day = singaporeDay(now);
-  const week = currentWeek(day);
   const sources = weekSources(owner, day, now);
-  const date = (d: string) =>
-    new Date(d + "T12:00:00Z").toLocaleDateString("en-SG", {
-      day: "numeric",
-      month: "short",
-      timeZone: "Asia/Singapore",
-    });
   return (
     <div className="admin-ledger overview-ledger">
-      <header className="ledger-title admin-tab-context">
-        <h1 className="sr-only">
-          <AdminText text="Home" />
-        </h1>
-        <p>
-          <AdminText text="This week" /> · {date(week.start)}–{date(week.end)}
-        </p>
-      </header>
+      <h1 className="sr-only">
+        <AdminText text="Home" />
+      </h1>
+      <Suspense fallback={<WorkspaceFocusLoading />}>
+        <WorkspaceFocus />
+      </Suspense>
+      <WorkspaceShortcuts />
       <div className="overview-week-layout">
-        <Suspense
-          fallback={
-            <AdminSectionLoading label="Reading this week’s commitments…" />
-          }
-        >
-          <Work source={sources.tasks} day={day} />
-        </Suspense>
         <aside className="routine-rail">
           <h2>
             <AdminText text="Rhythm" />
@@ -84,21 +71,6 @@ export default async function OverviewPage() {
   );
 }
 type Sources = ReturnType<typeof weekSources>;
-async function Work({
-  source,
-  day,
-}: {
-  source: Sources["tasks"];
-  day: string;
-}) {
-  const result = await source;
-  return (
-    <WeeklyFocus
-      tasks={result.status === "ready" ? result.data.active : null}
-      day={day}
-    />
-  );
-}
 async function Routine({
   source,
   kind,

@@ -54,7 +54,7 @@ export function AdminArea({
   }
   return (
     <div className="admin-workspace admin-ledger lane-ledger">
-      <header className="admin-workspace-heading">
+      <header className="sr-only">
         <h1>{t(title)}</h1>
         <p>{t(description)}</p>
       </header>

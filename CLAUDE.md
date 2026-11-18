@@ -929,3 +929,8 @@ Calendar replaces period modes with a Monday-first seven-column continuous grid,
 ## Compact Admin chrome and owner Profile (2026-11-18)
 
 Keep repeated main-tab headings visually hidden with accessible h1 retained. AdminAppBoundary lives directly below AdminNavigation, outside animated main content; deeper-page Back is a40px sticky row using ResizeObserver-measured header height. Main tabs have no Back. Preserve document scrolling/native browser refresh; standalone Admin reuses guarded PullRefresh scope=admin without altering member default. Owner Profile uses weOS visual structure, language pills and identity, retaining Admin-only preferences. No member usage/role/tier semantics copied. — codex,2026-11-18
+
+
+## Admin focus horizons (2026-11-18)
+
+Home and all three workspace roots lead with the same Today’s focus / This week’s focus component. Overview combines all work lanes; each workspace filters tasks, calendar anchors and warnings to its own lane. Only accepted open/blocked/waiting tasks appear; overdue accepted work remains carried forward, blocked/waiting tasks have no start action. Current company sprint intervals, community import/planning dates and Whatelz hosted events come from the existing owner-only calendar projection. Activities are context, never implicit acceptance/attendance. Weekly bounds Monday–Sunday inclusive; next anchors beyond the week labelled separately. First four entries visible then expandable remaining items. Existing tool directories, workspace shortcuts and Rhythm stay below. No new task writes or proposed content-creation commitments are automatically accepted.

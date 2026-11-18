@@ -18,6 +18,12 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "Today’s focus": "今日重点",
+  "This week’s focus": "本周重点",
+  "Nothing scheduled for today.": "今天暂无安排。",
+  "No focus recorded for this week.": "本周尚未记录重点。",
+  "Next after this week": "下周之后",
+  "Focus may be incomplete.": "部分重点暂时无法读取。",
   "Welcome back,": "欢迎回来，",
   Owner: "所有者",
   "Go to date": "前往日期",

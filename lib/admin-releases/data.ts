@@ -5,6 +5,23 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-18-focus-horizons",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T12:35:00+08:00",
+    title: "Today and this week, in focus",
+    titleZh: "聚焦今天与本周",
+    items: [
+      {
+        en: "Home combines today’s and this week’s accepted work, company sprints, community activities and hosted events. Each workspace shows only its own lane.",
+        zh: "首页汇总今日与本周重点、公司Sprint、社群活动和自办活动；各工作区仅显示所属内容。",
+      },
+      {
+        en: "Calendar activities remain distinct from accepted commitments. Upcoming dates outside this week are labelled separately; workspace tools and Rhythm stay below the focus.",
+        zh: "日历活动与已确认任务保持区分；本周之后的日期另行标注，工具与日常节奏保留在重点下方。",
+      },
+    ],
+  },
+  {
     id: "2026-11-18-seasonal-calendar",
     publishedAt: "2026-11-18T12:14:00+08:00",
     date: "2026-11-18",

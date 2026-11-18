@@ -4,7 +4,6 @@ import { DAILY_PARENT } from "./daily/paths";
 import { loadBriefWithConnection } from "./daily/emdee";
 import { readEmdee } from "./daily/emdee-client";
 import { previousWeek } from "./daily/weekly-model";
-import { loadDailyTasks } from "./daily/server";
 import type { Brief, BriefKind } from "./daily/model";
 import type { Source } from "./admin-overview/model";
 async function safe<T>(read: () => Promise<T>): Promise<Source<T>> {
@@ -27,7 +26,6 @@ export function weekSources(owner: string, day: string, now: Date) {
       loadBriefWithConnection(await getConnection(), day, kind),
     );
   return {
-    tasks: safe(() => loadDailyTasks(day)),
     morning: brief("morning"),
     evening: brief("evening"),
     weekly: safe(async () => {

@@ -76,3 +76,18 @@ member passes, tiers and reset credits are not copied into the owner account.
 Appearance, text size, push options, scheduling, install and sign-out remain.
 Synthetic profile/browser previews contain no private account data and are removed
 before release.
+
+## Focus horizons
+
+Shared WorkspaceFocus leads Home, AI Business, Network Marketing and Day Job.
+The pure focusHorizons model filters both accepted tasks and calendar anchors by
+lane and Singapore day/Monday–Sunday boundaries. Today includes overdue accepted
+work; the week includes accepted carryovers and intersecting calendar ranges.
+Blocked/waiting work stays visibly blocked and cannot start a focused sprint.
+Calendar records keep source statuses and never become commitments or attendance.
+If a lane has no remaining event this week, its next later anchor appears under
+“Next after this week”, never as an in-week event. Missing sources remain explicit.
+Four rows initially visible per horizon; every remaining row can be expanded.
+The shared Home briefing source no longer issues an unused duplicate task read.
+Owner gates, tool directories, Rhythm, progressive Suspense and navigation remain.
+No new schema, provider call, schedule or automatic task acceptance.
