@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ensureUserRow } from "@/lib/users";
+import { AdminProfileIdentity } from "@/components/admin/AdminProfileIdentity";
 import SettingsPanel from "@/components/admin/SettingsPanel";
 export const metadata: Metadata = { title: "Settings — Admin" };
 import { dailyOwner } from "@/lib/daily/server";
@@ -12,9 +14,17 @@ export default async function SettingsPage({
   searchParams: Promise<{ tab?: string }>;
 }) {
   await dailyOwner();
+  const user = await ensureUserRow();
   const releases = (await searchParams).tab === "releases";
   return (
-    <div>
+    <div className="admin-profile-page">
+      {!releases && user && (
+        <AdminProfileIdentity
+          name={user.name}
+          email={user.email}
+          image={user.image_url}
+        />
+      )}
       <SettingsTabs active={releases ? "releases" : "preferences"} />
       {releases ? (
         <section className="admin-release-archive">

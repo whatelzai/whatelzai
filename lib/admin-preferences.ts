@@ -18,6 +18,14 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "Welcome back,": "欢迎回来，",
+  Owner: "所有者",
+  "Go to date": "前往日期",
+  "Jump to date": "跳至日期",
+  "Through 31 Dec 2029": "至2029年12月31日",
+  "Load more weeks": "加载更多周",
+  "End of calendar · 31 December 2029": "日历结束 · 2029年12月31日",
+  events: "项活动",
   Profile: "个人设置",
   Chat: "对话",
   Calendar: "日历",

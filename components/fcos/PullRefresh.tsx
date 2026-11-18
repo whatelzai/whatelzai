@@ -3,7 +3,13 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowDown, RotateCw } from "lucide-react";
 import { pullDistance, refreshThreshold } from "@/lib/fcos/pull-refresh";
-export function PullRefresh({ chat = false }: { chat?: boolean }) {
+export function PullRefresh({
+  chat = false,
+  scope = "member",
+}: {
+  chat?: boolean;
+  scope?: "member" | "admin";
+}) {
   const router = useRouter();
   const [distance, setDistance] = useState(0);
   const [pending, startTransition] = useTransition();
@@ -50,12 +56,28 @@ export function PullRefresh({ chat = false }: { chat?: boolean }) {
       if (
         !target ||
         target.closest(
-          'input,textarea,select,button,[contenteditable="true"],[data-fcos-header],[data-fcos-nav]',
+          'input,textarea,select,button,[contenteditable="true"],[data-fcos-header],[data-fcos-nav],.admin-nav-header,.admin-back-row,[data-ledger-dock]',
         )
       )
         return;
-      const root = target.closest(".fcos-tab-page,.fcos-chat-page");
+      const root = target.closest(
+        scope === "admin" ? "#admin-main" : ".fcos-tab-page,.fcos-chat-page",
+      );
       if (!root) return;
+      // Nested media, tables and dialogs keep their own scroll gestures.
+      if (scope === "admin") {
+        for (
+          let el: Element | null = target;
+          el && el !== root;
+          el = el.parentElement
+        ) {
+          if (
+            el.scrollHeight > el.clientHeight &&
+            /auto|scroll/.test(getComputedStyle(el).overflowY)
+          )
+            return;
+        }
+      }
       const scroller = chat
         ? root.querySelector("[data-fcos-scroll]")
         : document.scrollingElement;
@@ -123,7 +145,7 @@ export function PullRefresh({ chat = false }: { chat?: boolean }) {
       document.removeEventListener("touchend", end);
       document.removeEventListener("touchcancel", cancel);
     };
-  }, [chat, pending, router]);
+  }, [chat, pending, router, scope]);
   if (!pending && distance < 10) return null;
   return (
     <div

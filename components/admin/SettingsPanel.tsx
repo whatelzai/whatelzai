@@ -6,44 +6,40 @@ import {
   useAdminPreferences,
 } from "@/components/admin/AdminPreferences";
 import { InstallAppButton } from "@/components/fcos/AppInstallation";
-import { SignOutButton } from "@/components/auth/AuthControls";
+import { SlidersHorizontal, Bell, Smartphone } from "lucide-react";
 export default function SettingsPanel() {
   const { t, preferences } = useAdminPreferences();
   return (
     <div className="admin-workspace admin-settings-page admin-ledger compact-settings text-zinc-900">
-      <h1>{t("Profile")}</h1>
+      <h1 className="sr-only">{t("Profile")}</h1>
       <div className="admin-settings-sections">
         <section className="admin-settings-section">
-          <h2>{t("Reading preferences")}</h2>
+          <h2>
+            <SlidersHorizontal size={18} aria-hidden="true" />
+            {t("Reading preferences")}
+          </h2>
           <div className="admin-settings-surface">
-            <PreferenceRows />
+            <PreferenceRows includeLanguage={false} />
           </div>
         </section>
         <section className="admin-settings-section">
-          <h2>{t("Notifications & rhythm")}</h2>
+          <h2>
+            <Bell size={18} aria-hidden="true" />
+            {t("Notifications & rhythm")}
+          </h2>
           <div className="admin-settings-surface">
             <PushNotifications />
             <FocusSettingsCard />
           </div>
         </section>
         <section className="admin-settings-section">
-          <h2>{t("App & account")}</h2>
+          <h2>
+            <Smartphone size={18} aria-hidden="true" />
+            {t("App")}
+          </h2>
           <div className="admin-settings-surface">
             <div className="flex flex-wrap items-center justify-between gap-4 py-5">
-              <span className="text-sm font-medium">{t("App")}</span>
               <InstallAppButton language={preferences.language} />
-            </div>
-            <div className="flex items-center justify-between gap-4 py-5">
-              <span className="text-sm font-medium">{t("Your account")}</span>
-              <SignOutButton
-                redirectUrl="/sign-in"
-                className="min-h-11 px-3 text-sm underline underline-offset-4"
-                labels={{
-                  idle: t("Sign out"),
-                  busy: t("Signing out…"),
-                  error: t("Could not sign out. Try again."),
-                }}
-              />
             </div>
           </div>
         </section>

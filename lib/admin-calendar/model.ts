@@ -127,3 +127,58 @@ export function visibleEvents(
         a.start.localeCompare(b.start) || a.title.localeCompare(b.title),
     );
 }
+
+export const CALENDAR_END = "2029-12-31";
+export function addDays(day: string, amount: number) {
+  return new Date(Date.parse(day + "T12:00:00Z") + amount * 86400000)
+    .toISOString()
+    .slice(0, 10);
+}
+export function calendarWeeks(today: string, end = CALENDAR_END) {
+  const start = currentWeek(today).start;
+  const weeks: { start: string; end: string; days: (string | null)[] }[] = [];
+  for (let day = start; day <= end; day = addDays(day, 7)) {
+    weeks.push({
+      start: day,
+      end: addDays(day, 6) > end ? end : addDays(day, 6),
+      days: Array.from({ length: 7 }, (_, i) =>
+        addDays(day, i) <= end ? addDays(day, i) : null,
+      ),
+    });
+  }
+  return weeks;
+}
+export function indexCalendarEvents(
+  events: AdminCalendarEvent[],
+  start: string,
+  end = CALENDAR_END,
+) {
+  const index = new Map<string, AdminCalendarEvent[]>();
+  for (const event of [...events].sort(
+    (a, b) => a.start.localeCompare(b.start) || a.title.localeCompare(b.title),
+  )) {
+    if (!validDay(event.start) || !validDay(event.end)) continue;
+    for (
+      let day = event.start < start ? start : event.start;
+      day <= event.end && day <= end;
+      day = addDays(day, 1)
+    ) {
+      const list = index.get(day) ?? [];
+      list.push(event);
+      index.set(day, list);
+    }
+  }
+  return index;
+}
+
+/** Visual Northern-hemisphere season metaphor, independent of event lanes. */
+export function calendarSeason(day: string) {
+  const month = Number(day.slice(5, 7));
+  return month >= 3 && month <= 5
+    ? "spring"
+    : month >= 6 && month <= 8
+      ? "summer"
+      : month >= 9 && month <= 11
+        ? "autumn"
+        : "winter";
+}

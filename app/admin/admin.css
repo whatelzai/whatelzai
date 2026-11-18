@@ -2046,3 +2046,573 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   place-items: center;
   min-height: 24px;
 }
+.continuous-calendar {
+  max-width: 1200px;
+}
+.calendar-scroll-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+}
+.calendar-scroll-tools button {
+  min-height: 44px;
+  padding: 8px 14px;
+  background: #ffdf27;
+  color: #201d0b;
+  border-radius: 10px;
+}
+.calendar-scroll-tools label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.calendar-scroll-tools input {
+  background: transparent;
+  color: inherit;
+  min-height: 44px;
+  font-size: 14px;
+  padding: 6px;
+  border: 1px solid var(--ledger-rule);
+  border-radius: 8px;
+  max-width: 170px;
+}
+.calendar-scroll-tools > span {
+  color: var(--ledger-muted);
+}
+.calendar-weekdays,
+.calendar-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.calendar-weekdays {
+  position: sticky;
+  top: 67px;
+  z-index: 10;
+  background: #fff;
+  border-bottom: 1px solid var(--ledger-rule);
+  margin-top: 16px;
+}
+.calendar-weekdays span {
+  padding: 10px 5px;
+  font-size: 12px;
+  color: var(--ledger-muted);
+  text-align: center;
+}
+.calendar-week {
+  scroll-margin-top: 110px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 180px;
+}
+.calendar-week h2 {
+  padding: 20px 0 8px;
+  font-size: 12px;
+  color: var(--ledger-muted);
+  font-weight: 450;
+}
+.calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  min-height: 130px;
+  min-width: 0;
+  padding: 8px 6px;
+  border: 1px solid var(--ledger-rule);
+  border-right: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.calendar-day:last-child {
+  border-right: 1px solid var(--ledger-rule);
+}
+.calendar-day[data-weekend] {
+  background: #f8f8f5;
+}
+.calendar-day[data-today] {
+  box-shadow: inset 0 0 0 2px #e6bc00;
+}
+.calendar-day-number {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.calendar-day[data-today] .calendar-day-number {
+  border-radius: 50%;
+  background: #ffdf27;
+  color: #201d0b;
+  font-weight: 650;
+}
+.calendar-month-label {
+  font-size: 10px;
+  color: var(--ledger-muted);
+}
+.calendar-day-events {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+  min-width: 0;
+  font-size: 11px;
+}
+.calendar-day-event {
+  display: flex;
+  align-items: start;
+  gap: 3px;
+  min-width: 0;
+}
+.calendar-day-event svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.calendar-day-event > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.45;
+}
+.calendar-day-outside {
+  opacity: 0.3;
+}
+.calendar-load-more {
+  display: grid;
+  place-items: center;
+  min-height: 90px;
+  color: var(--ledger-muted);
+  font-size: 13px;
+}
+.calendar-load-more button {
+  min-height: 44px;
+  padding: 10px 18px;
+}
+.calendar-day-dialog {
+  width: min(580px, calc(100vw - 24px));
+  max-height: 80dvh;
+  border: 0;
+  border-radius: 18px;
+  padding: 20px;
+  background: #fff;
+  color: #252525;
+}
+.calendar-day-dialog::backdrop {
+  background: #0006;
+}
+.calendar-day-dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.calendar-day-dialog header h2 {
+  font-size: 19px;
+  font-weight: 600;
+}
+.calendar-day-dialog header button {
+  min-height: 44px;
+  min-width: 44px;
+  display: grid;
+  place-items: center;
+}
+.calendar-day-detail {
+  overflow-y: auto;
+  max-height: 65dvh;
+}
+.calendar-day-detail article {
+  display: flex;
+  gap: 12px;
+  padding: 18px 0;
+  border-bottom: 1px solid #e8e8e3;
+}
+.calendar-day-detail article > svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.calendar-day-detail h3,
+.calendar-day-detail a {
+  font-size: 16px;
+  font-weight: 550;
+}
+.calendar-day-detail p {
+  font-size: 12px;
+  color: #686c62;
+  line-height: 1.7;
+}
+.admin-shell[data-admin-theme="dark"] .calendar-weekdays,
+.admin-shell[data-admin-theme="dark"] .calendar-day-dialog {
+  background: #191919;
+  color: #eee;
+}
+.admin-shell[data-admin-theme="dark"] .calendar-day[data-weekend] {
+  background: #202020;
+}
+.admin-shell[data-admin-theme="dark"] .calendar-day-detail p {
+  color: #b4b8ac;
+}
+@media (max-width: 640px) {
+  .calendar-day {
+    min-height: 100px;
+    padding: 6px 3px;
+  }
+  .calendar-day-event > span {
+    display: none;
+  }
+  .calendar-day-events {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .calendar-week h2 {
+    font-size: 11px;
+  }
+  .calendar-day-number {
+    font-size: 13px;
+  }
+  .calendar-day-event svg {
+    width: 13px;
+    height: 13px;
+  }
+  .calendar-week {
+    contain-intrinsic-size: auto 145px;
+  }
+  .calendar-weekdays span {
+    font-size: 11px;
+  }
+}
+/* Seasons carry the calendar rhythm; printed months/years preserve greyscale meaning. */
+.calendar-year-marker {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  padding: 26px 0 2px;
+}
+.calendar-day[data-month="03"] {
+  --calendar-month: #edf5ee;
+  --calendar-month-dark: #202c23;
+}
+.calendar-day[data-month="04"] {
+  --calendar-month: #e4efe5;
+  --calendar-month-dark: #253328;
+}
+.calendar-day[data-month="05"] {
+  --calendar-month: #dbe8de;
+  --calendar-month-dark: #2a392d;
+}
+.calendar-day[data-month="06"] {
+  --calendar-month: #fff8df;
+  --calendar-month-dark: #302d1d;
+}
+.calendar-day[data-month="07"] {
+  --calendar-month: #fff1c8;
+  --calendar-month-dark: #393220;
+}
+.calendar-day[data-month="08"] {
+  --calendar-month: #f9e8b6;
+  --calendar-month-dark: #413823;
+}
+.calendar-day[data-month="09"] {
+  --calendar-month: #faeee4;
+  --calendar-month-dark: #302720;
+}
+.calendar-day[data-month="10"] {
+  --calendar-month: #f3e2d3;
+  --calendar-month-dark: #382d23;
+}
+.calendar-day[data-month="11"] {
+  --calendar-month: #ecd7c3;
+  --calendar-month-dark: #403228;
+}
+.calendar-day[data-month="12"] {
+  --calendar-month: #edf0f7;
+  --calendar-month-dark: #222630;
+}
+.calendar-day[data-month="01"] {
+  --calendar-month: #e2e8f2;
+  --calendar-month-dark: #272e39;
+}
+.calendar-day[data-month="02"] {
+  --calendar-month: #d6dfed;
+  --calendar-month-dark: #2d3541;
+}
+.calendar-day[data-season] {
+  background: var(--calendar-month);
+}
+.calendar-day[data-season][data-weekend] {
+  background: var(--calendar-month);
+  border-bottom-width: 3px;
+}
+.admin-shell[data-admin-theme="dark"] .calendar-day[data-season] {
+  background: var(--calendar-month-dark);
+}
+.calendar-day:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -3px;
+}
+.calendar-day-dialog {
+  inset: 0;
+  margin: auto;
+}
+.calendar-lane-short {
+  display: none;
+}
+@media (max-width: 640px) {
+  .continuous-calendar .calendar-lanes {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .continuous-calendar .calendar-lane-full {
+    display: none;
+  }
+  .continuous-calendar .calendar-lane-short {
+    display: inline;
+  }
+}
+
+/* The document scrolls; chrome stays put. Keep native browser overscroll intact. */
+.admin-workspace-shell {
+  --admin-header-height: calc(68px + env(safe-area-inset-top, 0px));
+}
+.admin-shell #admin-main .admin-content {
+  padding-top: 1rem;
+}
+.admin-back-row {
+  position: sticky;
+  top: var(--admin-header-height);
+  z-index: 25;
+  margin: 0;
+  background: #fff;
+  border-bottom: 1px solid #e4e4e7;
+}
+.admin-back-row > div {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 16px;
+}
+.admin-back-row a {
+  gap: 6px;
+  min-height: 40px;
+  font-size: 12px;
+}
+.admin-back-row svg {
+  width: 14px;
+  height: 14px;
+}
+.admin-shell[data-admin-theme="dark"] .admin-back-row {
+  background: #191919;
+  border-color: #393939;
+}
+.admin-tab-context {
+  margin-bottom: 18px;
+}
+.admin-chat-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.admin-chat-toolbar .chat-model {
+  margin: 0;
+}
+.calendar-weekdays {
+  top: var(--admin-header-height);
+}
+@media (min-width: 640px) {
+  .admin-back-row > div {
+    padding-inline: 24px;
+  }
+}
+@media (min-width: 768px) {
+  .admin-back-row > div {
+    padding-inline: 40px;
+  }
+}
+
+/* Familiar weOS profile structure, with owner-only Admin controls. */
+.admin-profile-page {
+  max-width: 760px;
+  margin-inline: auto;
+}
+.admin-profile-language {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.admin-profile-language > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-profile-language > div {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 24px;
+  background: #f2f2ef;
+}
+.admin-profile-language button {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 22px;
+}
+.admin-profile-language button[aria-pressed="true"] {
+  background: #fff;
+  color: #18181b;
+  box-shadow: 0 1px 4px #0001;
+}
+.admin-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0;
+}
+.admin-profile-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  height: 88px;
+  width: 88px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 4px solid #fff0a1;
+  background: #fff9d8;
+  color: #282410;
+  font-size: 30px;
+}
+.admin-profile-avatar img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.admin-profile-name {
+  min-width: 0;
+  flex: 1;
+}
+.admin-profile-name h2 {
+  font-size: 24px;
+  line-height: 1.15;
+  font-weight: 650;
+}
+.admin-profile-name p {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  color: #71717a;
+  margin-top: 7px;
+}
+.admin-profile-name > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  font-size: 11px;
+  background: #fff8cc;
+  color: #5c4d16;
+  padding: 4px 9px;
+  border-radius: 16px;
+}
+.admin-profile-signout {
+  align-self: start;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: #b34848;
+  background: #fff1f0;
+  border-radius: 50%;
+}
+.admin-profile-page .admin-settings-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 18px;
+  background: #f2f2ef;
+  border: 0;
+  border-radius: 14px;
+}
+.admin-profile-page .admin-settings-tabs a {
+  flex: 1;
+  min-height: 44px;
+  text-align: center;
+  padding: 12px 8px;
+  border: 0;
+  border-radius: 11px;
+  font-size: 13px;
+}
+.admin-profile-page .admin-settings-tabs a[aria-current] {
+  background: #fff;
+  box-shadow: 0 1px 4px #0001;
+}
+.admin-profile-page .admin-settings-sections {
+  display: grid;
+  gap: 16px;
+}
+.admin-profile-page .admin-settings-section {
+  margin: 0;
+  padding: 16px;
+  background: #f8f8f5;
+  border: 0;
+  border-radius: 20px;
+}
+.admin-profile-page .admin-settings-section h2 {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: inherit;
+}
+.admin-profile-page .admin-settings-surface {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.admin-profile-page .admin-settings-surface label {
+  min-height: 60px;
+  padding-block: 8px;
+}
+.admin-profile-page .compact-settings {
+  max-width: none;
+}
+.admin-shell[data-admin-theme="dark"] .admin-profile-language > div,
+.admin-shell[data-admin-theme="dark"] .admin-profile-page .admin-settings-tabs {
+  background: #292929;
+}
+.admin-shell[data-admin-theme="dark"]
+  .admin-profile-language
+  button[aria-pressed="true"],
+.admin-shell[data-admin-theme="dark"]
+  .admin-profile-page
+  .admin-settings-tabs
+  a[aria-current] {
+  background: #414141;
+  color: #fafafa;
+}
+.admin-shell[data-admin-theme="dark"]
+  .admin-profile-page
+  .admin-settings-section {
+  background: #232323;
+}
+.admin-shell[data-admin-theme="dark"] .admin-profile-name p {
+  color: #aaa;
+}
+@media (max-width: 380px) {
+  .admin-profile-avatar {
+    width: 64px;
+    height: 64px;
+  }
+  .admin-profile-identity {
+    gap: 10px;
+  }
+  .admin-profile-name h2 {
+    font-size: 21px;
+  }
+}

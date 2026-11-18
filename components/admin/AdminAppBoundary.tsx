@@ -288,12 +288,14 @@ export function AdminAppBoundary() {
         </div>
       )}
       {!top && (
-        <div className="admin-back-row">
-          <Link href={adminUrl(adminParent(pathname))}>
-            <ArrowLeft size={17} aria-hidden="true" />
-            <AdminText text="Back" />
-          </Link>
-        </div>
+        <nav className="admin-back-row" aria-label="Back navigation">
+          <div>
+            <Link href={adminUrl(adminParent(pathname))}>
+              <ArrowLeft size={17} aria-hidden="true" />
+              <AdminText text="Back" />
+            </Link>
+          </div>
+        </nav>
       )}
       {preview && (
         <dialog
