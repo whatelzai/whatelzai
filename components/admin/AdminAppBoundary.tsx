@@ -135,7 +135,13 @@ export function AdminAppBoundary() {
       if (internalPop) {
         internalPop = false;
         sync();
-        if (pendingNavigation) closeForNavigation();
+        // Let Next finish restoring the current entry for this popstate before
+        // pushing the selected destination. Otherwise restoration can win the
+        // race and leave a dismissed menu on the original page.
+        if (pendingNavigation)
+          requestAnimationFrame(() => {
+            if (!disposed) closeForNavigation();
+          });
         return;
       }
       const layer = layers.at(-1);

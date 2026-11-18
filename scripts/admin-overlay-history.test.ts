@@ -4,7 +4,8 @@ import fs from "node:fs";
 import vm from "node:vm";
 import ts from "typescript";
 import { adminParent, adminDestination } from "../lib/admin-link-policy";
-function harness() {
+function harness(deferredRestoration = false) {
+  const frames: Array<() => void> = [];
   const effects: Array<() => unknown> = [],
     observed: Array<Overlay> = [],
     routes: string[] = [];
@@ -35,10 +36,17 @@ function harness() {
       if (cursor > 0) {
         cursor--;
         window.dispatchEvent(new Event("popstate"));
+        // Next restores the old route after popstate listeners return. A push
+        // made inside that dispatch can be replaced by the restoration.
+        if (deferredRestoration) routes.length = 0;
       }
     },
   };
   class Overlay extends EventTarget {
+    href = "https://admin.whatelz.ai/day-job";
+    closest() {
+      return this;
+    }
     open = true;
     isConnected = true;
     dataset: Record<string, string> = {};
@@ -113,7 +121,8 @@ function harness() {
     HTMLDialogElement: Overlay,
     Event,
     crypto: globalThis.crypto,
-    requestAnimationFrame: (cb: () => void) => cb(),
+    requestAnimationFrame: (cb: () => void) =>
+      deferredRestoration ? frames.push(cb) : cb(),
     URL,
     Element: Overlay,
   });
@@ -130,6 +139,17 @@ function harness() {
       return dialog;
     },
     sync: () => mutation(),
+    selectDestination() {
+      const event = new Event("click", { cancelable: true });
+      Object.defineProperties(event, {
+        target: { value: new Overlay() },
+        button: { value: 0 },
+      });
+      document.dispatchEvent(event);
+    },
+    flushFrames() {
+      while (frames.length) frames.shift()!();
+    },
   };
 }
 test("Back closes a modal before reaching previous-page or auth history", () => {
@@ -176,4 +196,15 @@ test("fresh deep-link Back falls back inside Admin and preserves Next history fi
   assert.deepEqual(h.routes, ["/admin/personal"]);
   assert.equal(h.history.state.__NA, true);
   assert.equal(h.history.state.tree, "private-router-state");
+});
+test("menu selection waits until popstate restoration finishes before pushing the destination", () => {
+  const h = harness(true);
+  const menu = h.open();
+  h.selectDestination();
+  assert.equal(menu.open, false);
+  h.sync();
+  assert.deepEqual(h.routes, []);
+  h.flushFrames();
+  assert.deepEqual(h.routes, ["/day-job"]);
+  assert.equal(h.history.state.__NA, true);
 });
