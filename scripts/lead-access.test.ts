@@ -21,7 +21,13 @@ function load<T>(file: string, mocks: Record<string, unknown>) {
     module: mod,
     exports: mod.exports,
     require: (key: string) =>
-      key === "server-only" ? {} : key in mocks ? mocks[key] : req(key),
+      key === "server-only"
+        ? {}
+        : key === "@/lib/weos-role-server"
+          ? { requireBusinessTools: async () => ({ role: "torch" }) }
+          : key in mocks
+            ? mocks[key]
+            : req(key),
     Date,
     FormData,
     File,

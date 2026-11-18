@@ -1,3 +1,4 @@
+import { requireBusinessTools } from "@/lib/weos-role-server";
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { requireAssignedUser } from "@/lib/app-access";
@@ -13,6 +14,17 @@ export type Visibility = {
 export const sharedLeadColumns =
   "id,name,referrer_person_id,planned_sponsor_person_id,region,membership,stage,goal,relationship,story,interests,concerns,next_action,follow_up_on,is_priority,photo_path,updated_at";
 export async function sharedLeadIds(viewer: string) {
+  const access = await requireBusinessTools();
+  if (access.actual === "beacon" && !access.preview) {
+    const all = await supabaseAdmin
+      .from("member_leads")
+      .select("id,owner_id")
+      .neq("owner_id", access.user!.id)
+      .order("id")
+      .limit(501);
+    if (all.error) throw Error("Community profiles unavailable");
+    return all.data;
+  }
   const r = await supabaseAdmin.rpc("shared_member_lead_ids", {
     p_recipient: viewer,
   });

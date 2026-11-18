@@ -1,3 +1,4 @@
+import { requireBusinessTools } from "@/lib/weos-role-server";
 import "server-only";
 import { cache } from "react";
 import { requireAssignedUser } from "@/lib/app-access";
@@ -47,6 +48,7 @@ export const myCommunityRoles = cache(async () => {
   });
 });
 export const loadCommunities = cache(async (): Promise<CommunityData> => {
+  await requireBusinessTools();
   const user = await requireAssignedUser();
   const [view, shared] = await Promise.all([
     loadTeamView(),
@@ -115,7 +117,11 @@ export const loadCommunities = cache(async (): Promise<CommunityData> => {
   const names = new Map((leads.data ?? []).map((x) => [x.id, x.name]));
   return {
     communities: cs,
-    roles: (roles.data ?? []) as CommunityRole[],
+    roles: (roles.data ?? []).filter(
+      (role) =>
+        cs.find((c) => c.id === role.community_id)?.slug !== "whatelz" ||
+        ["beacon", "blaze", "torch", "ember", "guest"].includes(role.code),
+    ) as CommunityRole[],
     canManage,
     people: view.people.map((x) => ({ id: x.id, name: x.display_name })),
     members: permitted

@@ -1,3 +1,6 @@
+import { RoleSwitch } from "@/components/fcos/RoleSwitch";
+import { weosAccess } from "@/lib/weos-role-server";
+import { canUseBusinessTools, roleLabels } from "@/lib/weos-roles";
 import { myCommunityRoles } from "@/lib/communities/server";
 import { MemberPass } from "@/components/fcos/MemberPass";
 import { memberTranslator } from "@/lib/fcos/language-server";
@@ -52,12 +55,11 @@ export default async function Profile({
   const resetHistory = resets === "history";
   const usageTab = tab === "usage";
   const releasesTab = tab === "releases";
-  const { persona, usage } = releasesTab
-    ? { persona: null, usage: null }
-    : await loadProfileData();
+  const { usage } = releasesTab ? { usage: null } : await loadProfileData();
   const communityRoles =
     !usageTab && !releasesTab ? await myCommunityRoles() : [];
-  const whatelzRole = communityRoles.find((x) => x.slug === "whatelz");
+  const roleAccess = await weosAccess();
+  const business = canUseBusinessTools(roleAccess.role);
   const observedAt = usage ? Date.parse(usage.observedAt) : 0;
   const firstName = user.name?.split(" ")[0] || "friend";
   return (
@@ -77,6 +79,17 @@ export default async function Profile({
       />
       <MemberNav current="/profile" compact persistent />
       {!usageTab && !releasesTab && <LanguageSwitch />}
+      {!usageTab && !releasesTab && roleAccess.role === "blaze" && (
+        <a
+          href="https://admin.whatelz.ai/community"
+          className="flex min-h-12 items-center rounded-2xl border border-zinc-200 bg-white px-5 text-sm font-medium"
+        >
+          Community administration →
+        </a>
+      )}
+      {!usageTab && !releasesTab && roleAccess.actual === "beacon" && (
+        <RoleSwitch />
+      )}
       {!usageTab && !releasesTab && (
         <section className="flex items-center gap-4 py-3 sm:gap-6">
           <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-full border-4 border-yellow-100 bg-yellow-50 text-3xl font-semibold text-weos-ink sm:h-28 sm:w-28">
@@ -100,9 +113,9 @@ export default async function Profile({
               {firstName}.
             </h2>
             <p className="mt-2 text-sm leading-6 text-zinc-500">
-              {whatelzRole ? "Whatelz role:" : t("Current tier:")}{" "}
+              {"weOS role:"}{" "}
               <strong className="font-semibold uppercase text-zinc-600">
-                {whatelzRole?.label ?? persona ?? t("Unavailable")}
+                {roleLabels[roleAccess.role]}
               </strong>
             </p>
             <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-3 py-1 text-[11px] font-semibold text-weos-ink">
@@ -295,10 +308,10 @@ export default async function Profile({
           <MemberPass
             name={user.name || t("Your account")}
             email={user.email}
-            persona={whatelzRole?.label ?? persona ?? t("Unverified")}
+            persona={roleLabels[roleAccess.role]}
             title={t("Member Pass")}
           />
-          {communityRoles.length > 0 && (
+          {business && communityRoles.length > 0 && (
             <section className={`${card} space-y-3`}>
               <h2 className="text-base font-semibold">Community roles</h2>
               {communityRoles.map((role) => (
@@ -314,20 +327,22 @@ export default async function Profile({
             </section>
           )}
           <section className={`${card} space-y-5`}>
-            <Link
-              href="/team"
-              className="flex items-center justify-between text-sm font-semibold"
-            >
-              <span className="flex items-center gap-3">
-                <UsersRound
-                  size={20}
-                  className="text-weos-ink"
-                  aria-hidden="true"
-                />
-                {t("View my team")}
-              </span>
-              <ArrowUpRight size={17} aria-hidden="true" />
-            </Link>
+            {business && (
+              <Link
+                href="/team"
+                className="flex items-center justify-between text-sm font-semibold"
+              >
+                <span className="flex items-center gap-3">
+                  <UsersRound
+                    size={20}
+                    className="text-weos-ink"
+                    aria-hidden="true"
+                  />
+                  {t("View my team")}
+                </span>
+                <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
+            )}
             <div className="border-t border-zinc-100 pt-5">
               <InstallAppButton language={language} />
             </div>

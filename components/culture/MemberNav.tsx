@@ -1,7 +1,10 @@
 "use client";
+import { useWeosRole } from "@/components/fcos/WeosRoleContext";
+import { canUseBusinessTools } from "@/lib/weos-roles";
 import { useMemberLanguage } from "@/components/fcos/MemberLanguage";
 import Link from "@/components/fcos/MemberLink";
 import {
+  CalendarDays,
   House,
   MessageCircle,
   UsersRound,
@@ -27,7 +30,14 @@ export function MemberNav({
   persistent?: boolean;
 }) {
   const { t } = useMemberLanguage();
-  const selected = memberTab(current);
+  const role = useWeosRole();
+  const visibleItems = canUseBusinessTools(role)
+    ? items
+    : [
+        { href: "/calendar", label: "Events", icon: CalendarDays },
+        ...items.slice(1),
+      ];
+  const selected = current === "/calendar" ? "/calendar" : memberTab(current);
   return (
     <nav
       aria-label={t("weOS workspace")}
@@ -54,7 +64,7 @@ export function MemberNav({
       <div
         className={`${persistent ? "fcos-persistent-tabs " : ""}fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-zinc-200 bg-white px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_24px_rgba(0,0,0,0.04)] md:static md:gap-1 md:border-0 md:p-0 md:shadow-none`}
       >
-        {items.map((item) => (
+        {visibleItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}

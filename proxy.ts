@@ -1,3 +1,9 @@
+import { storedWeosRole } from "@/lib/weos-role-server";
+import {
+  effectiveRole,
+  memberDestinationAllowed,
+  PREVIEW_COOKIE,
+} from "@/lib/weos-roles";
 import { hasTeamAssignment } from "@/lib/team-assignment";
 import { createServerClient } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
@@ -85,13 +91,97 @@ export default async function proxy(req: NextRequest) {
         .select("id, role")
         .eq("supabase_auth_user_id", userId)
         .maybeSingle();
-      if (error || !isOwnerUser(data))
+      if (
+        error ||
+        (!isOwnerUser(data) &&
+          !(
+            (await storedWeosRole(data)) === "blaze" &&
+            route.surface === "admin" &&
+            ["/community", "/admin/community", "/"].includes(
+              req.nextUrl.pathname,
+            ) &&
+            ["GET", "HEAD"].includes(req.method)
+          ))
+      )
         return finish(
           NextResponse.json(
             { error: "Owner access required" },
             { status: 403 },
           ),
         );
+    }
+  }
+
+  // Beacon preview is read-only and never accepts a client-supplied identity.
+  let previewPath: string | null = null;
+  if (
+    route.surface === "app" &&
+    user?.email_confirmed_at &&
+    req.nextUrl.pathname !== "/api/weos/preview"
+  ) {
+    const account = await supabaseAdmin
+      .from("users")
+      .select("id,role")
+      .eq("supabase_auth_user_id", user.id)
+      .maybeSingle();
+    if (account.error)
+      return finish(
+        NextResponse.json(
+          { error: "Role lookup unavailable" },
+          { status: 503 },
+        ),
+      );
+    let actual;
+    try {
+      actual = await storedWeosRole(account.data);
+    } catch {
+      return finish(
+        NextResponse.json(
+          { error: "Role lookup unavailable" },
+          { status: 503 },
+        ),
+      );
+    }
+    const effective = effectiveRole(
+      actual,
+      req.cookies.get(PREVIEW_COOKIE)?.value,
+    );
+    const authInfrastructure =
+      req.nextUrl.pathname.startsWith("/auth/") ||
+      req.nextUrl.pathname.startsWith("/sign-");
+    if (
+      !authInfrastructure &&
+      !memberDestinationAllowed(effective, req.nextUrl.pathname)
+    ) {
+      if (
+        req.nextUrl.pathname.startsWith("/api/") ||
+        !["GET", "HEAD"].includes(req.method)
+      )
+        return finish(
+          NextResponse.json({ error: "Role access required" }, { status: 403 }),
+        );
+      return finish(
+        NextResponse.redirect(
+          actual === "guest" ? "https://whatelz.ai" : new URL("/", req.url),
+        ),
+      );
+    }
+    if (actual !== effective && !authInfrastructure) {
+      if (!["GET", "HEAD"].includes(req.method))
+        return finish(
+          NextResponse.json(
+            { error: "Role preview is read-only" },
+            { status: 403 },
+          ),
+        );
+      if (req.nextUrl.pathname.startsWith("/api/"))
+        return finish(
+          NextResponse.json(
+            { error: "Data is unavailable in role preview" },
+            { status: 403 },
+          ),
+        );
+      previewPath = req.nextUrl.pathname;
     }
   }
 
@@ -137,12 +227,18 @@ export default async function proxy(req: NextRequest) {
   const headers = new Headers(req.headers);
   // Always overwrite this header; callers cannot choose their shell.
   headers.set("x-whatelz-surface", route.surface);
-  const response = route.rewrite
-    ? NextResponse.rewrite(
-        new URL(route.rewrite + req.nextUrl.search, req.url),
-        { request: { headers } },
-      )
-    : NextResponse.next({ request: { headers } });
+  headers.delete("x-weos-preview-path");
+  if (previewPath) headers.set("x-weos-preview-path", previewPath);
+  const response = previewPath
+    ? NextResponse.rewrite(new URL("/role-preview", req.url), {
+        request: { headers },
+      })
+    : route.rewrite
+      ? NextResponse.rewrite(
+          new URL(route.rewrite + req.nextUrl.search, req.url),
+          { request: { headers } },
+        )
+      : NextResponse.next({ request: { headers } });
   if (route.surface !== "public")
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   return finish(response);

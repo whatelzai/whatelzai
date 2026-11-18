@@ -75,6 +75,7 @@ test("chat reads resource context without saving notes or requiring a vault", as
   let reads = 0;
   const receipt: Receipt = { input: 0, output: 0, charge: 0, uncertain: false };
   const result = await runMemberAgent({
+    role: "beacon",
     key: "test",
     model: "gpt-6-luna",
     history: [],

@@ -1,3 +1,5 @@
+import { weosAccess } from "@/lib/weos-role-server";
+import { canUseBusinessTools } from "@/lib/weos-roles";
 import { briefingLeads } from "@/lib/fcos/server";
 import { AppHeader } from "@/components/fcos/AppHeader";
 import { loadLead } from "@/lib/leads/server";
@@ -48,9 +50,10 @@ export default async function AssistantPage({
       </main>
     );
   }
-  const hqhPeople = await briefingLeads().catch(() => []);
+  const business = canUseBusinessTools((await weosAccess()).role);
+  const hqhPeople = business ? await briefingLeads().catch(() => []) : [];
   const leadContext =
-    query.new === "1" && z.uuid().safeParse(query.lead).success
+    business && query.new === "1" && z.uuid().safeParse(query.lead).success
       ? await loadLead(query.lead!)
       : null;
   return (
@@ -70,9 +73,9 @@ export default async function AssistantPage({
         initialPrompt={
           leadContext
             ? `Help me review ${leadContext.lead.name}’s profile and recorded activities. Read my leads first.`
-            : query.prompt === "hqh"
+            : business && query.prompt === "hqh"
               ? "Prepare the latest person-based HQH (会前会) from saved profiles and linked HQH/HHH. Look up saved context first; an event is optional."
-              : query.prompt === "hhh"
+              : business && query.prompt === "hhh"
                 ? "Help me write an HHH (会后会). Ask what happened and what I learned."
                 : ""
         }

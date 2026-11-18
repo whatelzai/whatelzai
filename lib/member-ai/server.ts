@@ -1,3 +1,5 @@
+import { createAuthClient } from "@/lib/supabase/auth-server";
+import { weosAccess } from "@/lib/weos-role-server";
 import { hasTeamAssignment } from "@/lib/team-assignment";
 import "server-only";
 import { ensureUserRow } from "@/lib/users";
@@ -10,6 +12,9 @@ export const memberApiEnabled = () => process.env.MEMBER_AI_ENABLED === "true";
 export async function memberActor() {
   const user = await ensureUserRow();
   if (!user) throw Error("Sign in to continue");
+  const roleAccess = await weosAccess();
+  if (roleAccess.actual === "guest" || roleAccess.preview)
+    throw Error("Member access required; role preview is read-only");
   if (!(await hasTeamAssignment(user.id)))
     throw Error("Your account is awaiting a tree assignment");
   const enrollment = await supabaseAdmin.rpc("ensure_activated_member_ai", {
@@ -19,7 +24,11 @@ export async function memberActor() {
     throw Error("Member assistant is temporarily unavailable");
   const data = enrollment.data;
   if (!data?.active) throw Error("Chat access could not be checked");
-  return { user, access: { ...data, model: modelSchema.parse(data.model) } };
+  return {
+    user,
+    role: roleAccess.role,
+    access: { ...data, model: modelSchema.parse(data.model) },
+  };
 }
 export async function platformKey() {
   // Only provider credentials are shared. No admin vault token, notes or tasks
@@ -40,7 +49,8 @@ export async function conversationMessages(
   userId: string,
   conversationId: string,
 ): Promise<ChatMessage[]> {
-  const conversation = await supabaseAdmin
+  const scopedDb = await createAuthClient();
+  const conversation = await scopedDb
     .from("member_ai_conversations")
     .select("id")
     .eq("id", conversationId)
@@ -48,7 +58,7 @@ export async function conversationMessages(
     .maybeSingle();
   if (conversation.error || !conversation.data)
     throw Error("Conversation unavailable");
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await scopedDb
     .from("member_ai_messages")
     .select("id,role,body,proposals,created_at,request_id")
     .eq("user_id", userId)
@@ -76,8 +86,9 @@ export async function conversationMessages(
 }
 export async function memberWorkspace(conversationId?: string, blank = false) {
   const actor = await memberActor();
+  const scopedDb = await createAuthClient();
   const [chats, tasks, cycle, link] = await Promise.all([
-    supabaseAdmin
+    scopedDb
       .from("member_ai_conversations")
       .select("id,title,created_at")
       .eq("user_id", actor.user.id)

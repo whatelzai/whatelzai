@@ -1,3 +1,5 @@
+import { weosAccess } from "@/lib/weos-role-server";
+import { redirect } from "next/navigation";
 import { RhythmShortcut } from "@/components/admin/RhythmShortcut";
 import Link from "@/components/admin/AdminLink";
 import { adminUrl } from "@/lib/admin-url";
@@ -20,6 +22,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export default async function OverviewPage() {
+  if ((await weosAccess()).actual === "blaze") redirect("/community");
   const owner = await dailyOwner();
   const now = new Date();
   const day = singaporeDay(now);

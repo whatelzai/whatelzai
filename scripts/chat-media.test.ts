@@ -63,6 +63,7 @@ test("Responses input includes images only on their matching private user messag
   const url = "data:image/webp;base64," + "A".repeat(90000);
   let calls = 0;
   const output = await runMemberAgent({
+    role: "beacon",
     key: "fake",
     model: "gpt-6-luna",
     day: "2026-10-26",

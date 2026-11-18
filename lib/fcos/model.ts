@@ -36,6 +36,7 @@ export const sourceQuerySchema = z
       "products",
       "events",
       "culture",
+      "learning",
       "briefings",
       "social",
       "communities",

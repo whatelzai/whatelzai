@@ -1,3 +1,5 @@
+import { weosAccess } from "@/lib/weos-role-server";
+import { SignOutButton } from "@/components/auth/AuthControls";
 import "@/components/admin/event-admin/events.css";
 import { AdminPreferencesProvider } from "@/components/admin/AdminPreferences";
 import { AdminFocusProvider } from "@/components/admin/AdminFocus";
@@ -19,7 +21,22 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const user = await ensureUserRow();
-  if (!user || !isOwnerUser(user)) notFound();
+  if (!user) notFound();
+  if (!isOwnerUser(user)) {
+    const access = await weosAccess();
+    if (access.actual !== "blaze") notFound();
+    return (
+      <div className="min-h-dvh bg-white text-zinc-950">
+        <header className="flex min-h-16 items-center justify-between border-b border-zinc-200 px-5">
+          <a href="/community" className="font-semibold">
+            weOS · Community
+          </a>
+          <SignOutButton />
+        </header>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <AdminPreferencesProvider owner={user.id}>

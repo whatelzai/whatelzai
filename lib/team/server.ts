@@ -1,3 +1,4 @@
+import { requireBusinessTools } from "@/lib/weos-role-server";
 import { isOwnerUser } from "@/lib/admin-policy";
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase-server";
@@ -20,6 +21,7 @@ export type TeamView = {
 export async function loadTeamView(
   slug = "whatelz-network",
 ): Promise<TeamView | null> {
+  await requireBusinessTools();
   const user = await ensureUserRow();
   if (!user) return null;
   const { data: team, error } = await supabaseAdmin

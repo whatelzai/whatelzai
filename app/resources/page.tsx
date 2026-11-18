@@ -1,3 +1,5 @@
+import { weosAccess } from "@/lib/weos-role-server";
+import { EmberResources } from "@/components/fcos/EmberResources";
 import Link from "@/components/fcos/MemberLink";
 import { redirect } from "next/navigation";
 import {
@@ -62,6 +64,7 @@ function ResourceRow({
 export default async function Resources() {
   const user = await ensureUserRow();
   if (!user) redirect("/sign-in");
+  if ((await weosAccess()).role === "ember") return <EmberResources />;
   return (
     <main className="fcos-tab-page mx-auto max-w-5xl space-y-8 px-5 py-8">
       <AppHeader title="Resources" />

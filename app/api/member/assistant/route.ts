@@ -1,3 +1,4 @@
+import { databaseContext } from "@/lib/fcos/database-context";
 import { titleConversation } from "@/lib/member-ai/title-server";
 import { modelChatImages } from "@/lib/member-ai/images";
 import { after } from "next/server";
@@ -112,6 +113,7 @@ export async function POST(request: Request) {
     let failure = "";
     try {
       result = await runMemberAgent({
+        role: actor.role,
         key,
         model,
         onText,
@@ -121,22 +123,7 @@ export async function POST(request: Request) {
         images,
         readFcos: readFcosResource,
         readVault: (path) => readMemberVault(actor.user.id, path),
-        readCommitments: async () => {
-          const tasks = await supabaseAdmin
-            .from("daily_tasks")
-            .select("title,lane,due_on,status")
-            .eq("owner_id", actor.user.id)
-            .not("status", "in", "(done,dropped)")
-            .order("due_on")
-            .limit(20);
-          if (tasks.error) throw Error("Commitments are unavailable.");
-          return {
-            items: tasks.data,
-            limit: 20,
-            coverage:
-              "Earliest unfinished commitments only. Completion must be confirmed by the member.",
-          };
-        },
+        readCommitments: () => databaseContext("commitments", ""),
       });
       if (receipt.charge > reservation) {
         receipt.uncertain = true;
