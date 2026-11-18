@@ -739,3 +739,24 @@
 .event-detail-v2 .past-event-copy .text-link {
   border: 0;
 }
+.event-return-applied {
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--surface);
+  margin: 20px 0;
+}
+.event-return-applied strong {
+  display: block;
+  color: var(--ink);
+}
+.event-return-applied p {
+  margin: 10px 0;
+}
+.event-return-applied [role="timer"] {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.event-return-applied button {
+  font-size: 14px;
+  text-decoration: underline;
+}

@@ -6,6 +6,7 @@ import { supabaseAdmin } from "./supabase-server";
 import { getStripe } from "./stripe-server";
 import {
   platformSessionMatches,
+  configForReservedAttempt,
   platformCheckoutParams,
 } from "./event-registration-policy";
 import { sendStoredEventTicket } from "./send-event-confirmation";
@@ -21,6 +22,7 @@ export type SignupAttempt = {
   email: string;
   phone: string;
   amount: number;
+  return_offer_id?: string | null;
   state: string;
   stripe_session_id: string | null;
   created_at: string;
@@ -47,11 +49,6 @@ export async function fulfillPlatformSession(
     session.metadata?.whatelz_event_id || "",
   );
   if (!config) return false;
-  if (!platformSessionMatches(session, config)) {
-    if (session.status === "complete" && session.payment_status === "unpaid")
-      return true;
-    throw Error("Event payment does not match its registration");
-  }
   const { data, error } = await supabaseAdmin
     .from("event_signup_attempts")
     .select("*")
@@ -61,10 +58,15 @@ export async function fulfillPlatformSession(
     error ||
     !data ||
     data.event_key !== config.eventKey ||
-    data.amount !== config.amount ||
     data.stripe_session_id !== session.id
   )
     throw Error("Event payment registration mismatch");
+  const expected = configForReservedAttempt(config, data as SignupAttempt);
+  if (!platformSessionMatches(session, expected)) {
+    if (session.status === "complete" && session.payment_status === "unpaid")
+      return true;
+    throw Error("Event payment does not match its registration");
+  }
   await finishPlatformSignup(data as SignupAttempt, session);
   return true;
 }
@@ -118,7 +120,11 @@ export async function checkoutForAttempt(
   const config = await loadCheckoutConfig(attempt.event_key);
   if (!config) throw Error("Event payment configuration unavailable");
   const session = await stripe.checkout.sessions.create(
-    platformCheckoutParams(attempt, origin, config),
+    platformCheckoutParams(
+      attempt,
+      origin,
+      configForReservedAttempt(config, attempt),
+    ),
     { idempotencyKey: `event-signup/${attempt.id}` },
   );
   const { error } = await supabaseAdmin

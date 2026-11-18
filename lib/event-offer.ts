@@ -15,7 +15,7 @@ export const loadCheckoutConfig = cache(
       };
     const offer = await db
       .from("event_signup_offers")
-      .select("event_id,event_key,amount,currency")
+      .select("event_id,event_key,amount,currency,return_amount")
       .eq("event_key", key)
       .maybeSingle();
     if (offer.error) throw Error("Event payment configuration unavailable");
@@ -43,6 +43,19 @@ export const loadCheckoutConfig = cache(
       eventKey: key,
       amount: offer.data.amount,
       priceId: price,
+      ...(typeof offer.data.return_amount === "number" &&
+      offer.data.return_amount > 0 &&
+      offer.data.return_amount < offer.data.amount &&
+      /^price_[A-Za-z0-9]+$/.test(
+        event.data.metadata?.return_stripe_price_id || "",
+      )
+        ? {
+            returnOffer: {
+              amount: offer.data.return_amount,
+              priceId: event.data.metadata.return_stripe_price_id,
+            },
+          }
+        : {}),
     };
   },
 );

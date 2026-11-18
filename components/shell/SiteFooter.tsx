@@ -10,7 +10,7 @@ export function SiteFooter({ ownerName }: { ownerName: string }) {
       <div className="field-wrap">
         <div className="footer-top">
           <div>
-            <h2>See you on Thursday.</h2>
+            <h2>See you at the next session.</h2>
             <Link href="/events" className="text-link">
               Explore events ↗
             </Link>

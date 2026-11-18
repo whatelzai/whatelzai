@@ -36,6 +36,7 @@ export type CatalogEvent = {
   capacity: number | null;
   attended: number | null;
   priceMinor: number | null;
+  originalPriceMinor?: number | null;
   description: string;
   heading: string | null;
   paragraphs: string[];
@@ -181,6 +182,7 @@ export function projectEvent(row: CatalogRow): CatalogEvent | null {
       (m.public_visibility !== "unlisted" && format !== "intensive"),
     capacity: num(m.capacity),
     attended: null,
+    originalPriceMinor: num(m.reference_price_minor),
     priceMinor:
       m.currency === "SGD" && num(m.price_minor) !== null
         ? num(m.price_minor)

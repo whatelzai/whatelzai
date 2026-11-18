@@ -38,6 +38,14 @@ export async function POST(req: NextRequest) {
   } catch {
     return reply({ error: "Enter a promo code." }, 400);
   }
+  if (code === "REJOIN")
+    return reply(
+      {
+        error:
+          "REJOIN is applied automatically through an eligible attendee’s feedback offer.",
+      },
+      409,
+    );
   if (!/^[A-Z0-9_-]{4,64}$/.test(code))
     return reply({ error: "This code is invalid." }, 400);
   const { data: allowed, error: rateError } = await supabaseAdmin.rpc(
