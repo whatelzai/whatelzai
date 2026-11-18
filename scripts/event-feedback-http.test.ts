@@ -84,96 +84,56 @@ const req = (body: unknown) =>
     },
     body: JSON.stringify(body),
   });
-test("code request has the same non-enumerating response for unknown and registered emails and queues only the registered recipient", async () => {
-  const responses: unknown[] = [],
-    sent: unknown[][] = [];
-  for (const registered of [false, true]) {
-    const deferred: Array<() => Promise<void>> = [];
-    const query = {
-      select() {
-        return this;
-      },
-      eq() {
-        return this;
-      },
-      order() {
-        return this;
-      },
-      async limit() {
-        return {
-          data: registered
-            ? [{ id: "registration", email: "attendee@example.test" }]
-            : [],
-          error: null,
-        };
-      },
-    };
+test("email check returns only a match for the entered address and fixed event", async () => {
+  for (const matched of [false, true]) {
     const api = loadRoute(
-      "app/api/event-feedback/request-code/route.ts",
+      "app/api/event-feedback/check-email/route.ts",
+      {},
       {
-        from: () => query,
-        rpc: async (_name: string, args: Record<string, unknown>) => {
-          assert.equal(args.p_registration, registered ? "registration" : null);
-          return { error: null };
-        },
-      },
-      {
-        "next/server": {
-          after: (fn: () => Promise<void>) => deferred.push(fn),
-        },
         "@/lib/event-feedback/server": {
-          feedbackHash: hash,
-          openFeedbackEvent: async () => event,
-          sendFeedbackCode: async (...args: unknown[]) => {
-            sent.push(args);
+          openFeedbackEvent: async (id: string) => {
+            assert.equal(id, event.id);
+            return event;
+          },
+          matchesEventRegistration: async (key: string, email: string) => {
+            assert.equal(key, event.key);
+            assert.equal(email, "attendee@example.test");
+            return matched;
           },
         },
       },
     );
-    const response = await api.POST(
-      req({ eventId: event.id, email: "attendee@example.test" }),
+    const r = await api.POST(
+      req({ eventId: event.id, email: " Attendee@Example.test " }),
     );
-    assert.equal(response.status, 200);
-    assert.equal(response.headers.get("cache-control"), "private, no-store");
-    const body = await response.json();
-    assert.match(body.verificationId, /^[a-f0-9-]{36}$/);
-    delete body.verificationId;
-    responses.push(body);
-    assert.equal(deferred.length, registered ? 1 : 0);
-    for (const f of deferred) await f();
+    assert.equal(r.status, 200);
+    assert.equal(r.headers.get("cache-control"), "private, no-store");
+    assert.deepEqual(await r.json(), { matched });
     assert.equal(api.GET, undefined);
   }
-  assert.deepEqual(responses[0], responses[1]);
-  assert.equal(sent.length, 1);
-  assert.equal(sent[0][0], "attendee@example.test");
-  assert.match(String(sent[0][1]), /^\d{6}$/);
-  assert.equal(
-    JSON.stringify(responses).includes("attendee@example.test"),
-    false,
-  );
 });
-test("submission requires proof and the complete pinned configuration, not caller-supplied questions", async () => {
-  let writes = 0;
-  let rejectProof = false;
+test("submission rechecks registration inside the database and rejects missing email or forged approval", async () => {
+  let writes = 0,
+    rejectRegistration = false;
   const api = loadRoute("app/api/event-feedback/route.ts", {
     rpc: async (name: string, args: Record<string, unknown>) => {
       writes++;
-      assert.equal(name, "submit_verified_event_feedback");
+      assert.equal(name, "submit_registered_event_feedback");
       assert.equal(args.p_event, event.recordId);
+      assert.equal(args.p_email, "attendee@example.test");
       assert.equal(args.p_form, config.id);
-      assert.equal("p_email" in args, false);
+      assert.equal("p_verification" in args, false);
       return {
-        error: rejectProof
-          ? { message: "FEEDBACK_VERIFICATION_REQUIRED" }
+        error: rejectRegistration
+          ? { message: "FEEDBACK_REGISTRATION_REQUIRED" }
           : null,
       };
     },
   });
   const input = {
     eventId: event.id,
+    email: "Attendee@Example.test",
     requestId: crypto.randomUUID(),
-    verificationId: crypto.randomUUID(),
-    token: "a".repeat(64),
     formId: config.id,
     answers: Object.fromEntries(
       config.questions.map((q) => [
@@ -183,36 +143,24 @@ test("submission requires proof and the complete pinned configuration, not calle
     ),
   };
   assert.equal(
-    (await api.POST(req({ ...input, token: undefined }))).status,
+    (await api.POST(req({ ...input, email: undefined }))).status,
     400,
   );
+  assert.equal((await api.POST(req({ ...input, matched: true }))).status, 400);
   assert.equal(
     (await api.POST(req({ ...input, answers: { format: true } }))).status,
     400,
   );
-  assert.equal((await api.POST(req({ ...input, questions: [] }))).status, 400);
   assert.equal(writes, 0);
   assert.equal((await api.POST(req(input))).status, 200);
-  rejectProof = true;
-  assert.equal((await api.POST(req(input))).status, 401);
+  rejectRegistration = true;
+  assert.equal((await api.POST(req(input))).status, 403);
 });
-test("bad verification code never yields a proof token", async () => {
-  let valid = false;
-  const api = loadRoute("app/api/event-feedback/verify-code/route.ts", {
-    rpc: async () => ({ data: valid, error: null }),
-  });
-  const input = {
-    eventId: event.id,
-    verificationId: crypto.randomUUID(),
-    code: "123456",
-  };
-  const bad = await api.POST(req(input));
-  assert.equal(bad.status, 400);
-  assert.equal("token" in (await bad.json()), false);
-  valid = true;
-  const ok = await api.POST(req(input));
-  assert.equal(ok.status, 200);
-  assert.match((await ok.json()).token, /^[a-f0-9]{64}$/);
+test("retired code endpoints never issue or verify a code", async () => {
+  for (const name of ["request-code", "verify-code"]) {
+    const api = loadRoute(`app/api/event-feedback/${name}/route.ts`, {});
+    assert.equal((await api.POST(req({}))).status, 410);
+  }
 });
 
 test("feedback transport keeps comments beyond the old 8k cap while small verification requests stay bounded", async () => {

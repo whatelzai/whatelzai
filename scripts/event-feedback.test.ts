@@ -71,7 +71,7 @@ test("write boundary has same-origin, validation, ended-event gate, private resp
     "utf8",
   );
   assert.match(http, /req.headers.get\("origin"\)/);
-  assert.match(src, /verifiedFeedbackInput.safeParse/);
+  assert.match(src, /registeredFeedbackInput.safeParse/);
   assert.match(src, /openFeedbackEvent/);
   assert.match(server, /createHmac/);
   assert.match(server, /feedbackOpen/);

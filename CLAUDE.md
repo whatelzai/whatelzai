@@ -921,7 +921,6 @@ Public canonical pages derive from permanent event IDs: /events/ELZ-EVT-0004 and
 
 Registrations has a 2×2 Poster/Scan/Media/Feedback tool grid. November12/19 portfolio details reuse the same operational page with correctly scoped attendee reads, poster/caption, media paths and retry-email event. Feedback share link, copy action and private responses remain in its panel; no duplicated bottom attendee/feedback section. New media event query is allowlisted to configured seminar IDs, retaining private owner gates and path/revision checks. event_people.account_type defaults to guest for all existing/future signup people; classification is private and independent of authentication or community access. Migration20261116161000 applied. No sign-in accounts, tier upgrades or newsletter consent created. See docs/admin-event-operations.md. — codex,2026-11-17
 
-
 ## Continuous Admin calendar (2026-11-18)
 
 Calendar replaces period modes with a Monday-first seven-column continuous grid, current Singapore week through2029-12-31 inclusive. Lazy eight-week batches, date jump/Today, complete day-detail dialog with shared Back handling. Seasonal month shades are visual metaphor, explicit dates/icons retain greyscale meaning; four-digit year markers. Community recurrence expands only existing imported rules through2029; never infer future company sprints. Owner gates, explicit source failures and inclusive date semantics remain. See docs/admin-five-tabs.md. — codex,2026-11-18
@@ -929,7 +928,6 @@ Calendar replaces period modes with a Monday-first seven-column continuous grid,
 ## Compact Admin chrome and owner Profile (2026-11-18)
 
 Keep repeated main-tab headings visually hidden with accessible h1 retained. AdminAppBoundary lives directly below AdminNavigation, outside animated main content; deeper-page Back is a40px sticky row using ResizeObserver-measured header height. Main tabs have no Back. Preserve document scrolling/native browser refresh; standalone Admin reuses guarded PullRefresh scope=admin without altering member default. Owner Profile uses weOS visual structure, language pills and identity, retaining Admin-only preferences. No member usage/role/tier semantics copied. — codex,2026-11-18
-
 
 ## Admin focus horizons checkpoint (2026-11-18)
 
@@ -979,3 +977,14 @@ browser-history Back or public Playbook promotion. The root not-found boundary a
 recognizes Admin requests as a fallback; public editorial404 remains unchanged.
 No auth checks are relaxed and unavailable database reads remain distinct from absent
 records. Task references retain encoded source IDs and owner-scoped lookup.
+
+## Feedback registration email match (2026-11-18)
+
+Feedback uses a simple event-scoped confirmed-registration email match; no code is
+sent and no email ownership claim is made. The private check endpoint returns only
+whether the entered email matches that event. Submission independently rechecks the
+registration in the service-only database writer, retaining one response per event
+registration, request idempotency and pinned ten-question snapshots. Old responses
+and verification records remain intact; review distinguishes email matches from
+historically verified responses. Retired code endpoints return 410. No attendee
+email list or account signup is exposed.

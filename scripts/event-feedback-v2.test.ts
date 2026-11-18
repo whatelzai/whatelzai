@@ -70,7 +70,7 @@ test("versioned configuration has ten typed questions and accepts No without acc
 async function fixture() {
   const db = new PGlite();
   await db.exec(
-    `create role anon;create role authenticated;create role service_role;create table public.events(id uuid primary key,date date,published boolean,metadata jsonb);create table public.event_registrations(id uuid primary key,event_key text,status text);insert into events values('${event}','2026-11-12',true,'{"event_id":"ELZ-EVT-0004","event_key":"nov12","ends_at":"2026-11-12T21:30:00+08:00"}');insert into event_registrations values('${reg}','nov12','confirmed');grant select on events,event_registrations to service_role;`,
+    `create role anon;create role authenticated;create role service_role;create table public.events(id uuid primary key,date date,published boolean,metadata jsonb);create table public.event_registrations(id uuid primary key,event_key text,status text,email text,created_at timestamptz default now());insert into events values('${event}','2026-11-12',true,'{"event_id":"ELZ-EVT-0004","event_key":"nov12","ends_at":"2026-11-12T21:30:00+08:00"}');insert into event_registrations values('${reg}','nov12','confirmed','attendee@example.test',now());grant select on events,event_registrations to service_role;`,
   );
   await db.exec(
     readFileSync(
@@ -262,6 +262,89 @@ test("unknown emails, expired challenges, cancelled registrations and five bad g
       "update event_feedback_verifications set expires_at=now()+interval '10 minutes';update event_registrations set status='cancelled'",
     );
     assert.equal((await verify(db)).rows[0].verify_event_feedback_code, false);
+  } finally {
+    await db.close();
+  }
+});
+
+test("email-match writer needs no code, checks confirmed event registration, preserves history and deduplicates", async () => {
+  const db = await fixture();
+  try {
+    await db.exec(
+      readFileSync(
+        "supabase/migrations/20261118143000_feedback_registration_email_match.sql",
+        "utf8",
+      ),
+    );
+    const write = (
+      email = "attendee@example.test",
+      id = response,
+      target = event,
+      data: unknown = answers,
+    ) =>
+      db.query(
+        "select public.submit_registered_event_feedback($1,$2,$3,$4,$5,$6,$7)",
+        [
+          id,
+          target,
+          email,
+          "a".repeat(64),
+          config.id,
+          JSON.stringify(data),
+          "c".repeat(64),
+        ],
+      );
+    await assert.rejects(
+      write("unknown@example.test"),
+      /REGISTRATION_REQUIRED/,
+    );
+    await assert.rejects(
+      write(
+        "attendee@example.test",
+        response,
+        "00000000-0000-4000-8000-000000000099",
+      ),
+      /REGISTRATION_REQUIRED/,
+    );
+    await db.exec(
+      `update event_registrations set status='cancelled' where id='${reg}'`,
+    );
+    await assert.rejects(write(), /REGISTRATION_REQUIRED/);
+    await db.exec(
+      `update event_registrations set status='confirmed' where id='${reg}'`,
+    );
+    await assert.rejects(
+      write("attendee@example.test", response, event, { format: true }),
+      /INVALID_FEEDBACK/,
+    );
+    await write("attendee@example.test", response, event, {
+      ...answers,
+      comments: "A".repeat(20000),
+    });
+    await write("attendee@example.test", response, event, {
+      ...answers,
+      comments: "A".repeat(20000),
+    });
+    await assert.rejects(write(), /FEEDBACK_CONFLICT/);
+    await assert.rejects(
+      write("attendee@example.test", "00000000-0000-4000-8000-000000000098"),
+      /ALREADY_SUBMITTED/,
+    );
+    const saved = await db.query<{
+      identity_method: string;
+      question_answers: unknown[];
+    }>(
+      "select identity_method,question_answers from event_feedback where id=$1",
+      [response],
+    );
+    assert.equal(saved.rows[0].identity_method, "email_match");
+    assert.equal(saved.rows[0].question_answers.length, 10);
+    const old = await db.query<{ identity_method: string }>(
+      "select identity_method from event_feedback where form_id='feedback-v1'",
+    );
+    assert.equal(old.rows[0].identity_method, "anonymous");
+    await db.exec("set role anon");
+    await assert.rejects(write(), /permission denied/);
   } finally {
     await db.close();
   }
