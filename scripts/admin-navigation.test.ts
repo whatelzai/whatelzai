@@ -24,9 +24,9 @@ test("Personal and Settings own their deep links without selecting a workstream"
     tab: "personal",
     workstream: null,
   });
-  for (const path of ["/settings", "/tokens", "/developer"])
+  for (const path of ["/profile", "/settings", "/tokens", "/developer"])
     assert.deepEqual(adminNavigation(path), {
-      tab: "settings",
+      tab: "profile",
       workstream: null,
     });
   assert.equal(adminNavigation("/users-guide").tab, "home");
@@ -44,8 +44,7 @@ test("existing tools stay under their parent venture and Today stays reachable u
       workstream: "Network Marketing",
     });
   for (const path of [
-    "/profile",
-    "/profile/career",
+    "/ai-business/profile",
     "/design-system",
     "/blog/new",
     "/testimonials/templates/new",

@@ -24,7 +24,7 @@ const links = [
     description: "Whatelzai and EMDEE activity and connection health.",
   },
   {
-    href: "/admin/profile",
+    href: "/admin/ai-business/profile",
     label: "My profile",
     description: "Manage your profile and related website content.",
   },

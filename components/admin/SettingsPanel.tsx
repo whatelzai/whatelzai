@@ -11,7 +11,7 @@ export default function SettingsPanel() {
   const { t, preferences } = useAdminPreferences();
   return (
     <div className="admin-workspace admin-settings-page admin-ledger compact-settings text-zinc-900">
-      <h1>{t("Settings")}</h1>
+      <h1>{t("Profile")}</h1>
       <div className="admin-settings-sections">
         <section className="admin-settings-section">
           <h2>{t("Reading preferences")}</h2>

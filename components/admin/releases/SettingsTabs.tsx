@@ -11,13 +11,13 @@ export function SettingsTabs({
   return (
     <nav className="admin-settings-tabs" aria-label={t("Settings sections")}>
       <Link
-        href={adminUrl("/admin/settings")}
+        href={adminUrl("/admin/profile")}
         aria-current={active === "preferences" ? "page" : undefined}
       >
         {t("Preferences")}
       </Link>
       <Link
-        href={adminUrl("/admin/settings?tab=releases")}
+        href={adminUrl("/admin/profile?tab=releases")}
         aria-current={active === "releases" ? "page" : undefined}
       >
         {t("Release notes")}

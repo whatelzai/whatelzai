@@ -12,7 +12,7 @@ import { currentWeek } from "@/lib/admin-week";
 import { weekSources } from "@/lib/admin-week-server";
 import { briefStatus } from "@/lib/admin-overview/model";
 export const metadata: Metadata = {
-  title: "Overview — Admin",
+  title: "Home — Admin",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
@@ -33,7 +33,7 @@ export default async function OverviewPage() {
     <div className="admin-ledger overview-ledger">
       <header className="ledger-title">
         <h1>
-          <AdminText text="Overview" />
+          <AdminText text="Home" />
         </h1>
         <p>
           <AdminText text="This week" /> · {date(week.start)}–{date(week.end)}
