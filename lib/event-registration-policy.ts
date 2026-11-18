@@ -24,6 +24,7 @@ export const eventRegistrationSchema = z.object({
     .regex(/^\+?[0-9 ()-]{7,24}$/)
     .transform((v) => v.replace(/[ ()-]/g, "")),
   code: z.string().trim().max(64).default(""),
+  returnOffer: z.boolean().default(false),
   requestToken: z.uuid(),
   website: z.string().max(0).default(""),
 });
@@ -32,6 +33,7 @@ export type EventCheckoutConfig = {
   eventKey: string;
   amount: number;
   priceId: string;
+  returnOffer?: { amount: number; priceId: string };
 };
 export const PLATFORM_EVENT_MARKER = "ELZ-EVT-0004";
 export function platformSessionMatches(
@@ -105,4 +107,23 @@ export function platformCheckoutParams(
 
 export function paymentFreezeUntil(startedAt: string | null) {
   return startedAt ? Date.parse(startedAt) + 180000 : 0;
+}
+
+export function configForReservedAttempt(
+  config: EventCheckoutConfig,
+  attempt: { amount: number; return_offer_id?: string | null },
+) {
+  if (attempt.amount === config.amount) return config;
+  if (
+    config.returnOffer &&
+    attempt.return_offer_id &&
+    z.uuid().safeParse(attempt.return_offer_id).success &&
+    attempt.amount === config.returnOffer.amount
+  )
+    return {
+      ...config,
+      amount: config.returnOffer.amount,
+      priceId: config.returnOffer.priceId,
+    };
+  throw Error("Registration amount is not authorized");
 }

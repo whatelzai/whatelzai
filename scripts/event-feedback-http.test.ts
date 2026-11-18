@@ -40,6 +40,10 @@ function loadRoute(
   }).outputText;
   const defaults: Record<string, unknown> = {
     "node:crypto": crypto,
+    "@/lib/event-return-offer/server": {
+      issueReturnOffer: async () => null,
+      returnCookieHeader: () => "",
+    },
     "next/server": { after: () => {} },
     "@/lib/event-feedback/questions": schemas,
     "@/lib/event-feedback/http": {

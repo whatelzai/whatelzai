@@ -1,0 +1,54 @@
+{
+  "recordId": "598a1db6-3c4a-4f81-9f3b-79fb8c1425aa",
+  "name": "Money Mindset \u00d7 AI Skillset",
+  "date": "2026-12-08",
+  "metadata": {
+    "event_id": "ELZ-EVT-0010",
+    "event_key": "ai-skillset-money-mindset-20261208",
+    "status": "scheduled",
+    "event_format": "weekly",
+    "topic": "combined",
+    "public_visibility": "listed",
+    "starts_at": "2026-12-08T19:30:00+08:00",
+    "ends_at": "2026-12-08T21:30:00+08:00",
+    "capacity": 30,
+    "currency": "SGD",
+    "price_minor": 1300,
+    "reference_price_minor": 9700,
+    "stripe_price_id": "price_1UdCJdPA71qp9sGS4LjMPe9o",
+    "return_stripe_price_id": "price_1UdCJhPA71qp9sGScoAeGnWl",
+    "public_venue": "Venue to be confirmed",
+    "public_poster": "/images/events/dec8-2026-money-mindset-ai-skillset.png",
+    "poster_width": 1086,
+    "poster_height": 1448,
+    "public_description": "A practical Tuesday evening exploring Money Mindset \u00d7 AI Skillset with Edmund Lin.",
+    "public_content": {
+      "heading": "A fresh week. Practical ideas to put to work.",
+      "paragraphs": [
+        "Join Edmund for a focused evening bringing money mindset and practical AI skills into the same conversation. Explore ways to think more clearly about money, use AI in everyday work, and turn useful ideas into small actions.",
+        "Bring your questions and your curiosity. There will be room for conversation, examples and connecting with others. No prior AI experience is required."
+      ],
+      "agenda": [
+        {
+          "time": "7:00\u20137:30 PM",
+          "activity": "Registration"
+        },
+        {
+          "time": "7:30\u20139:30 PM",
+          "activity": "Activity"
+        },
+        {
+          "time": "9:30\u201310:00 PM",
+          "activity": "Post-event networking"
+        }
+      ],
+      "reminder": "Remember to have your dinner before coming over!"
+    }
+  },
+  "posterGeneration": {
+    "tool": "built-in image_gen",
+    "referencePhoto": "photo_2026-11-08 12.38.48.jpeg",
+    "savedAsset": "public/images/events/dec8-2026-money-mindset-ai-skillset.png",
+    "prompt": "Portrait3:4 Whatelz.ai event poster. Preserve Edmund Lin identity and seated pointing pose from the reference; remove original mural. Warm cream, yellow and black, modern editorial typography. Exact copy: whatelz.ai; Money Mindset \u00d7 AI Skillset; With Edmund Lin; TUESDAY,8 DECEMBER2026;7:30\u20139:30 PM \u00b7 SINGAPORE TIME; S$97 visibly struck through, large S$13;30 places; Register at whatelz.ai/events/next. No venue, address, QR, or S$8 offer."
+  }
+}

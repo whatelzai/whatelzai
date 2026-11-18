@@ -110,6 +110,10 @@ export default function CatalogDetail({
               </div>
             ) : e.priceMinor !== null ? (
               <p className="map-price">
+                {e.originalPriceMinor != null &&
+                  e.originalPriceMinor > e.priceMinor! && (
+                    <del>{priceLabel(e.originalPriceMinor)}</del>
+                  )}
                 <strong>{priceLabel(e.priceMinor)}</strong>
                 <span>per person · final price</span>
               </p>

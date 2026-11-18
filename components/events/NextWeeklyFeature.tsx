@@ -62,6 +62,10 @@ export default async function NextWeeklyFeature() {
           )}
           {event?.priceMinor !== null && event?.priceMinor !== undefined && (
             <p className="map-price">
+              {event.originalPriceMinor != null &&
+                event.originalPriceMinor > event.priceMinor! && (
+                  <del>{priceLabel(event.originalPriceMinor)}</del>
+                )}
               <strong>{priceLabel(event.priceMinor)}</strong>
               <span>per person · final price</span>
             </p>

@@ -1,4 +1,8 @@
 import {
+  issueReturnOffer,
+  returnCookieHeader,
+} from "@/lib/event-return-offer/server";
+import {
   registeredFeedbackInput,
   validFeedbackAnswers,
 } from "@/lib/event-feedback/questions";
@@ -79,7 +83,21 @@ export async function POST(req: Request) {
         );
       throw r.error;
     }
-    return json({ ok: true });
+    const result = json({ ok: true });
+    try {
+      const offer = await issueReturnOffer(
+        input.data.requestId,
+        event.recordId,
+      );
+      if (offer)
+        result.headers.append(
+          "Set-Cookie",
+          returnCookieHeader(offer.token, req.url),
+        );
+    } catch {
+      console.error("Feedback saved; return offer unavailable");
+    }
+    return result;
   } catch {
     return json(
       {

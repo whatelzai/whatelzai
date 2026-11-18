@@ -1,3 +1,5 @@
+import { RETURN_OFFER_COOKIE } from "@/lib/event-return-offer/model";
+import { configForReservedAttempt } from "@/lib/event-registration-policy";
 import { loadPublicEvents } from "@/lib/public-events/catalog-server";
 import { resolveEvent } from "@/lib/public-events/catalog";
 import { registrationCookie } from "@/lib/public-events/map";
@@ -46,6 +48,14 @@ export async function POST(req: NextRequest) {
       400,
     );
   const input = parsed.data;
+  if (input.code.toUpperCase() === "REJOIN")
+    return response(
+      {
+        error:
+          "REJOIN is applied automatically through your eligible feedback offer.",
+      },
+      409,
+    );
   let event, config;
   try {
     event = resolveEvent(await loadPublicEvents(), input.eventId);
@@ -67,19 +77,32 @@ export async function POST(req: NextRequest) {
     return response({ error: "Please try again later." }, 429);
 
   try {
-    const { data, error } = await supabaseAdmin.rpc(
-      "reserve_event_signup_for_event",
-      {
-        p_event_key: event.key,
-        p_request_hash: signupHash(input.requestToken),
-        p_name: input.name,
-        p_email: input.email,
-        p_phone: input.phone,
-        p_code_hash: input.code ? signupHash(input.code.toUpperCase()) : null,
-      },
-    );
+    if (input.returnOffer && input.code)
+      return response({ error: "Offers cannot be combined." }, 409);
+    const token = req.cookies.get(RETURN_OFFER_COOKIE)?.value;
+    const baseArgs = {
+      p_event_key: event.key,
+      p_request_hash: signupHash(input.requestToken),
+      p_name: input.name,
+      p_email: input.email,
+      p_phone: input.phone,
+    };
+    const { data, error } = input.returnOffer
+      ? await supabaseAdmin.rpc("reserve_event_signup_with_return", {
+          ...baseArgs,
+          p_token_hash:
+            token && /^[a-f0-9]{64}$/.test(token) ? signupHash(token) : null,
+        })
+      : await supabaseAdmin.rpc("reserve_event_signup_for_event", {
+          ...baseArgs,
+          p_code_hash: input.code ? signupHash(input.code.toUpperCase()) : null,
+        });
     if (error) {
       const messages: Record<string, string> = {
+        RETURN_OFFER_EXPIRED:
+          "Your REJOIN offer has ended. Continue with the standard ticket price.",
+        RETURN_OFFER_MISMATCH:
+          "REJOIN is only available for the email tied to this feedback offer.",
         INVALID_CODE: "This promo code is invalid or no longer available.",
         EVENT_FULL: "This event is full.",
         REGISTRATION_CLOSED: "Registration has closed.",
@@ -95,17 +118,28 @@ export async function POST(req: NextRequest) {
           error: key
             ? messages[key]
             : "Registration could not be saved. Please try again.",
+          ...(key?.startsWith("RETURN_OFFER_") ? { offerExpired: true } : {}),
         },
         409,
       );
     }
     const attempt = data as SignupAttempt;
+    let amountMatches = input.code ? attempt.amount === 0 : false;
+    if (!input.code) {
+      try {
+        configForReservedAttempt(config, attempt);
+        amountMatches = true;
+      } catch {
+        /* Reject any amount without an authorized saved reservation. */
+      }
+    }
+
     if (
       attempt.event_key !== event.key ||
       attempt.email !== input.email ||
       attempt.attendee_name !== input.name ||
       attempt.phone !== input.phone ||
-      attempt.amount !== (input.code ? 0 : config.amount)
+      !amountMatches
     )
       return response(
         {

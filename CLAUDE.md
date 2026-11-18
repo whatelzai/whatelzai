@@ -1046,3 +1046,36 @@ subtle aligned rules replace rounded tiles/week gaps. Keep current-date circle,
 month/season shading, four-digit years, day-detail dialog, lazy batches and2029 end.
 Source coverage lives in a collapsed footer. Calendar scope is a view filter, never
 an authorization boundary. No schema or permission change.
+
+## December8 weekly event and return-attendee offer (2026-11-19)
+
+ELZ-EVT-0010 is the owner-confirmed Tuesday8 December2026 Money Mindset × AI Skillset
+session,19:30–21:30 Singapore time,30 places, venue TBD. Its new generated poster
+uses a different supplied Edmund photograph and shows S$97 struck through to S$13,
+with no venue. Public signup is S$13; both SGD Stripe prices are final, no added tax.
+Source/provenance is content/events/december8-2026.json. The shared footer is day-neutral.
+
+Successful feedback may issue a private return offer only when its normalized attendee
+email has a recorded confirmed prior check-in. REJOIN is never a public free code.
+An opaque HttpOnly cookie and email-bound database grant authorize S$8. The fixed
+five-minute deadline starts at feedback creation and is not extended by refresh or
+repeat requests; one offer per email/target event prevents restarting via another
+response. Thank-you tick/text fade out, then the next event card fades in. Reduced
+motion is respected and the initial countdown snapshot is stable across hydration.
+Leaving without claiming dismisses the offer; ordinary registration defaults to S$13.
+The deadline is for starting checkout, and an existing authorized reservation retains
+its saved price for safe payment retries. Do not increase an in-flight payment amount.
+
+The private return reservation wraps the existing locked seat inventory and stores
+its grant FK. Checkout/webhook validation chooses the exact persisted S$8/S$13
+price, checks session identity and paid status, and preserves QR/email idempotency.
+No attendee name/phone or promo text is newly sent to Stripe. Public REJOIN entry
+is rejected; it is only automatically applied from the eligible feedback offer.
+
+Migration20261119010000 is additive support plus an unpublished/disabled draft.
+Apply20261119010100 only after compatible production is READY to publish/open signup.
+Then20261119010200 restores the owner-requested existing free checked-in
+elz.news22@gmail.com test ticket, guarded against modifying any paid receipt.
+Registrations have an is_test flag; test entries never increase public attendance.
+Do not send its QR email or consume its first feedback offer during agent QA: Edmund
+will submit feedback himself to test the fresh five-minute window.

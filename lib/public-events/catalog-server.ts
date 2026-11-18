@@ -29,6 +29,7 @@ export const loadPublicEvents = cache(async (): Promise<CatalogEvent[]> => {
           .select("id,event_key,person_id", { count: "exact" })
           .in("event_key", eventKeys)
           .eq("status", "confirmed")
+          .eq("is_test", false)
           .not("checked_in_at", "is", null)
           .range(0, 999)
       : Promise.resolve({ data: [], count: 0, error: null }),
