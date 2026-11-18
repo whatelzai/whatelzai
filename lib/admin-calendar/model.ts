@@ -171,14 +171,13 @@ export function indexCalendarEvents(
   return index;
 }
 
-/** Visual Northern-hemisphere season metaphor, independent of event lanes. */
+/** Owner's calendar-quarter colour scheme, not geographic seasons. */
 export function calendarSeason(day: string) {
-  const month = Number(day.slice(5, 7));
-  return month >= 3 && month <= 5
-    ? "spring"
-    : month >= 6 && month <= 8
-      ? "summer"
-      : month >= 9 && month <= 11
-        ? "autumn"
-        : "winter";
+  return (["spring", "summer", "autumn", "winter"] as const)[
+    Math.floor((Number(day.slice(5, 7)) - 1) / 3)
+  ];
+}
+/** Cross-year weeks belong wholly to the year of their Monday start. */
+export function calendarWeekYear(start: string) {
+  return start.slice(0, 4);
 }

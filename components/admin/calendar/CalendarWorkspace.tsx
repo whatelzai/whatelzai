@@ -9,6 +9,7 @@ import {
   calendarWeeks,
   indexCalendarEvents,
   calendarSeason,
+  calendarWeekYear,
   type AdminCalendarEvent,
 } from "@/lib/admin-calendar/model";
 const icons = {
@@ -77,19 +78,8 @@ export function CalendarWorkspace({
     observer.observe(el);
     return () => observer.disconnect();
   }, [count, weeks.length]);
-  const weekdays = Array.from({ length: 7 }, (_, i) =>
-    new Date(`2026-11-${16 + i}T12:00:00Z`).toLocaleDateString(locale, {
-      weekday: "short",
-      timeZone: "Asia/Singapore",
-    }),
-  );
   return (
     <div className="admin-calendar continuous-calendar">
-      <div className="calendar-weekdays" aria-hidden="true">
-        {weekdays.map((d) => (
-          <span key={d}>{d}</span>
-        ))}
-      </div>
       <div className="calendar-weeks">
         {weeks.slice(0, count).map((w, weekIndex) => (
           <section
@@ -99,12 +89,10 @@ export function CalendarWorkspace({
             aria-label={`${date(w.start)} – ${date(w.end)}`}
           >
             {(weekIndex === 0 ||
-              weeks[weekIndex - 1].start.slice(0, 4) !== w.start.slice(0, 4) ||
-              w.start.slice(0, 4) !== w.end.slice(0, 4)) && (
+              calendarWeekYear(weeks[weekIndex - 1].start) !==
+                calendarWeekYear(w.start)) && (
               <p className="calendar-year-marker">
-                {w.start.slice(0, 4)}
-                {w.start.slice(0, 4) !== w.end.slice(0, 4) &&
-                  ` / ${w.end.slice(0, 4)}`}
+                {calendarWeekYear(w.start)}
               </p>
             )}
             <h2 className="sr-only">

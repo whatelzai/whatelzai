@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   calendarWeeks,
   calendarSeason,
+  calendarWeekYear,
   indexCalendarEvents,
   CALENDAR_END,
   type AdminCalendarEvent,
@@ -33,13 +34,13 @@ test("continuous weeks have seven aligned columns, no gaps and a strict December
   ]);
 });
 test("seasons cross the year boundary without changing actual month or year identity", () => {
-  for (const m of ["12", "01", "02"])
+  for (const m of ["10", "11", "12"])
     assert.equal(calendarSeason(`2027-${m}-01`), "winter");
-  for (const m of ["03", "04", "05"])
+  for (const m of ["01", "02", "03"])
     assert.equal(calendarSeason(`2027-${m}-01`), "spring");
-  for (const m of ["06", "07", "08"])
+  for (const m of ["04", "05", "06"])
     assert.equal(calendarSeason(`2027-${m}-01`), "summer");
-  for (const m of ["09", "10", "11"])
+  for (const m of ["07", "08", "09"])
     assert.equal(calendarSeason(`2027-${m}-01`), "autumn");
 });
 test("multi-day events index each inclusive date and never exceed the loaded horizon", () => {
@@ -67,4 +68,11 @@ test("multi-day events index each inclusive date and never exceed the loaded hor
     indexCalendarEvents([{ ...base, start: "invalid" }], "2026-11-19").size,
     0,
   );
+});
+
+test("a cross-year week belongs to its Monday year; the next Monday starts the new year", () => {
+  const weeks = calendarWeeks("2026-12-28", "2027-01-10");
+  assert.equal(calendarWeekYear(weeks[0].start), "2026");
+  assert.equal(weeks[0].end, "2027-01-03");
+  assert.equal(calendarWeekYear(weeks[1].start), "2027");
 });

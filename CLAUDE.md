@@ -1083,3 +1083,13 @@ elz.news22@gmail.com test ticket, guarded against modifying any paid receipt.
 Registrations have an is_test flag; test entries never increase public attendance.
 Do not send its QR email or consume its first feedback offer during agent QA: Edmund
 will submit feedback himself to test the fresh five-minute window.
+
+## Calendar pinned weekdays correction — 2026-11-19
+
+Back/breadcrumbs and weekdays share CalendarChrome outside the overflow main.
+Only their combined parent is sticky below the measured header, so weekdays never
+float over date cells or move with the calendar content. Retain all seven aligned
+columns. A week belongs to its Monday start year; never render a combined year label.
+The owner defines seasons as quarters: Spring Jan–Mar, Summer Apr–Jun, Autumn Jul–Sep,
+Winter Oct–Dec, with three month shades per palette. This supersedes geographic season
+mapping. Verified real scroll geometry at 360/768/1440px, year boundary, and 34 tests.

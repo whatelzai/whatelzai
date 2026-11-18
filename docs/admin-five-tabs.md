@@ -190,3 +190,14 @@ widths from the left viewport edge to the right, including desktop. The current 
 keeps its date circle; mobile cells show compact event titles alongside icons.
 Source warnings/recurrence coverage are retained in a collapsed footer. Changing
 scope changes the view only; existing owner gates are unchanged.
+
+
+## Calendar pinned weekdays correction — 2026-11-19
+
+Back/breadcrumbs and weekdays share CalendarChrome outside the overflow main.
+Only their combined parent is sticky below the measured header, so weekdays never
+float over date cells or move with the calendar content. Retain all seven aligned
+columns. A week belongs to its Monday start year; never render a combined year label.
+The owner defines seasons as quarters: Spring Jan–Mar, Summer Apr–Jun, Autumn Jul–Sep,
+Winter Oct–Dec, with three month shades per palette. This supersedes geographic season
+mapping. Verified real scroll geometry at 360/768/1440px, year boundary, and 34 tests.

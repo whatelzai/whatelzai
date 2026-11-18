@@ -2292,51 +2292,51 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   letter-spacing: -0.04em;
   padding: 26px 0 2px;
 }
-.calendar-day[data-month="03"] {
+.calendar-day[data-month="01"] {
   --calendar-month: #edf5ee;
   --calendar-month-dark: #202c23;
 }
-.calendar-day[data-month="04"] {
+.calendar-day[data-month="02"] {
   --calendar-month: #e4efe5;
   --calendar-month-dark: #253328;
 }
-.calendar-day[data-month="05"] {
+.calendar-day[data-month="03"] {
   --calendar-month: #dbe8de;
   --calendar-month-dark: #2a392d;
 }
-.calendar-day[data-month="06"] {
+.calendar-day[data-month="04"] {
   --calendar-month: #fff8df;
   --calendar-month-dark: #302d1d;
 }
-.calendar-day[data-month="07"] {
+.calendar-day[data-month="05"] {
   --calendar-month: #fff1c8;
   --calendar-month-dark: #393220;
 }
-.calendar-day[data-month="08"] {
+.calendar-day[data-month="06"] {
   --calendar-month: #f9e8b6;
   --calendar-month-dark: #413823;
 }
-.calendar-day[data-month="09"] {
+.calendar-day[data-month="07"] {
   --calendar-month: #faeee4;
   --calendar-month-dark: #302720;
 }
-.calendar-day[data-month="10"] {
+.calendar-day[data-month="08"] {
   --calendar-month: #f3e2d3;
   --calendar-month-dark: #382d23;
 }
-.calendar-day[data-month="11"] {
+.calendar-day[data-month="09"] {
   --calendar-month: #ecd7c3;
   --calendar-month-dark: #403228;
 }
-.calendar-day[data-month="12"] {
+.calendar-day[data-month="10"] {
   --calendar-month: #edf0f7;
   --calendar-month-dark: #222630;
 }
-.calendar-day[data-month="01"] {
+.calendar-day[data-month="11"] {
   --calendar-month: #e2e8f2;
   --calendar-month-dark: #272e39;
 }
-.calendar-day[data-month="02"] {
+.calendar-day[data-month="12"] {
   --calendar-month: #d6dfed;
   --calendar-month-dark: #2d3541;
 }
@@ -3263,16 +3263,6 @@ html:has(.admin-shell[data-admin-size="larger"]) {
 .calendar-page .continuous-calendar {
   --calendar-grid-line: #dedfe2;
 }
-.calendar-page .calendar-weekdays {
-  top: calc(var(--admin-header-height, 64px) + 40px);
-  margin-top: 0;
-  gap: 0;
-  border-bottom: 1px solid var(--calendar-grid-line);
-}
-.calendar-page .calendar-weekdays span {
-  border-right: 1px solid var(--calendar-grid-line);
-  padding: 9px 0;
-}
 .calendar-page .calendar-weeks {
   background-image: repeating-linear-gradient(
     to right,
@@ -3363,4 +3353,46 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   width: 100%;
   max-width: none;
   margin-inline: 0;
+}
+
+/* Keep Back and weekday labels together in app chrome, outside main overflow. */
+.admin-calendar-chrome {
+  position: sticky;
+  top: var(--admin-header-height, 64px);
+  z-index: 25;
+  background: #fff;
+}
+.admin-calendar-chrome .admin-back-row {
+  position: static;
+}
+.admin-calendar-chrome .calendar-weekdays {
+  position: static;
+  top: auto;
+  margin: 0;
+  background: #fff;
+  border-bottom: 1px solid #dedfe2;
+}
+.admin-calendar-chrome .calendar-weekdays span {
+  padding: 9px 0;
+  border-right: 1px solid #dedfe2;
+  color: #686c62;
+}
+.admin-shell[data-admin-theme="dark"] .admin-calendar-chrome,
+.admin-shell[data-admin-theme="dark"]
+  .admin-calendar-chrome
+  .calendar-weekdays {
+  background: #191919;
+  border-color: #3b3e43;
+}
+.admin-shell[data-admin-theme="dark"]
+  .admin-calendar-chrome
+  .calendar-weekdays
+  span {
+  color: #b4b8ac;
+  border-color: #3b3e43;
+}
+
+.admin-calendar-back-placeholder {
+  height: 41px;
+  border-bottom: 1px solid #e4e4e7;
 }
