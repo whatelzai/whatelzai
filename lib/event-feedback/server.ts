@@ -41,29 +41,17 @@ export async function openFeedbackEvent(id: string) {
   const event = resolveEvent(await loadPublicEvents(), id);
   return event && feedbackOpen(event, publicEventNow()) ? event : null;
 }
-export async function sendFeedbackCode(
+export async function matchesEventRegistration(
+  eventKey: string,
   email: string,
-  code: string,
-  eventTitle: string,
-  dateLabel: string,
-  challenge: string,
 ) {
-  const key = process.env.RESEND_API_KEY,
-    from = process.env.EVENT_CONFIRMATION_FROM;
-  if (!key || !from) throw Error("Feedback email unavailable");
-  const r = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": `event-feedback/${challenge}`,
-    },
-    body: JSON.stringify({
-      from,
-      to: email,
-      subject: "Your event feedback verification code",
-      text: `Your verification code is ${code}.\n\n${eventTitle}\n${dateLabel}\n\nThis code expires in 10 minutes. If you did not request it, you can ignore this email.`,
-    }),
-  });
-  if (!r.ok) throw Error("Feedback email delivery failed");
+  const result = await db
+    .from("event_registrations")
+    .select("id")
+    .eq("event_key", eventKey)
+    .eq("status", "confirmed")
+    .eq("email", email)
+    .limit(1);
+  if (result.error) throw Error("Registration check unavailable");
+  return !!result.data?.length;
 }

@@ -91,6 +91,16 @@ export const feedbackEmailInput = z
     website: z.string().max(0).default(""),
   })
   .strict();
+export const registeredFeedbackInput = feedbackEmailInput
+  .extend({
+    requestId: z.uuid(),
+    formId: z.string().regex(/^[a-z0-9-]{1,80}$/),
+    answers: z.record(
+      key,
+      z.union([z.number().int().min(1).max(5), z.boolean(), z.string()]),
+    ),
+  })
+  .strict();
 export const feedbackCodeInput = z
   .object({
     eventId: z.string().regex(/^[A-Za-z0-9-]{1,100}$/),

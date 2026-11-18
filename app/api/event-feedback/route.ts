@@ -1,5 +1,5 @@
 import {
-  verifiedFeedbackInput,
+  registeredFeedbackInput,
   validFeedbackAnswers,
 } from "@/lib/event-feedback/questions";
 import { feedbackBody, feedbackJson as json } from "@/lib/event-feedback/http";
@@ -14,12 +14,12 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   const parsed = await feedbackBody(req, true);
   if ("response" in parsed) return parsed.response;
-  const input = verifiedFeedbackInput.safeParse(parsed.body);
+  const input = registeredFeedbackInput.safeParse(parsed.body);
   if (!input.success)
     return json(
       {
         error:
-          "Please refresh this form, verify your registration email and answer every question.",
+          "Please refresh this form, check your registration email and answer every question.",
       },
       400,
     );
@@ -34,11 +34,11 @@ export async function POST(req: Request) {
       !validFeedbackAnswers(form, input.data.answers)
     )
       return json({ error: "Please answer every question on this form." }, 400);
-    const r = await db.rpc("submit_verified_event_feedback", {
+    const r = await db.rpc("submit_registered_event_feedback", {
       p_id: input.data.requestId,
       p_event: event.recordId,
-      p_verification: input.data.verificationId,
-      p_token_hash: feedbackHash(`token:${input.data.token}`),
+      p_email: input.data.email,
+      p_email_hash: feedbackHash(`email:${event.recordId}:${input.data.email}`),
       p_form: form.id,
       p_answers: input.data.answers,
       p_client_hash: feedbackHash(
@@ -47,12 +47,13 @@ export async function POST(req: Request) {
     });
     if (r.error) {
       const message = r.error.message;
-      if (message.includes("FEEDBACK_VERIFICATION_REQUIRED"))
+      if (message.includes("FEEDBACK_REGISTRATION_REQUIRED"))
         return json(
           {
-            error: "Your email verification has expired. Please verify again.",
+            error:
+              "This email does not have a confirmed registration for this event.",
           },
-          401,
+          403,
         );
       if (message.includes("FEEDBACK_ALREADY_SUBMITTED"))
         return json(

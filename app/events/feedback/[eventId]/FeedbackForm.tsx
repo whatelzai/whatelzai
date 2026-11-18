@@ -7,7 +7,6 @@ import {
   type FeedbackAnswers,
   type FeedbackFormConfig,
 } from "@/lib/event-feedback/questions";
-type Proof = { verificationId: string; token: string };
 export default function FeedbackForm({
   eventId,
   config,
@@ -24,9 +23,7 @@ export default function FeedbackForm({
       ),
     ),
     [email, setEmail] = useState(""),
-    [code, setCode] = useState(""),
-    [challenge, setChallenge] = useState<string | null>(null),
-    [proof, setProof] = useState<Proof | null>(null),
+    [matched, setMatched] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
@@ -46,32 +43,25 @@ export default function FeedbackForm({
     if (!r.ok) throw Error(result.error || "Please try again.");
     return result;
   }
-  async function emailAction(action: "send" | "verify") {
+  async function checkEmail() {
     if (pending.current) return;
     pending.current = true;
     setBusy(true);
     setError("");
     setNotice("");
     try {
-      if (action === "send") {
-        const r = await post("/api/event-feedback/request-code", {
-          eventId,
-          email,
-          website: "",
-        });
-        setChallenge(r.verificationId);
-        setCode("");
-        setNotice(r.message);
-      } else {
-        const r = await post("/api/event-feedback/verify-code", {
-          eventId,
-          verificationId: challenge,
-          code,
-        });
-        setProof({ verificationId: challenge!, token: r.token });
-        setCode("");
-        setNotice("Email verified. You can now send your feedback.");
-      }
+      const result = await post("/api/event-feedback/check-email", {
+        eventId,
+        email,
+        website: "",
+      });
+      setMatched(result.matched === true);
+      if (result.matched)
+        setNotice("Registration found. You can now send your feedback.");
+      else
+        setError(
+          "No registration found for this event. Please use the email you signed up with.",
+        );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Please try again.");
     } finally {
@@ -82,8 +72,8 @@ export default function FeedbackForm({
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (pending.current) return;
-    if (!proof) {
-      setError("Verify the email you registered with before submitting.");
+    if (!matched) {
+      setError("Check the email you registered with before submitting.");
       return;
     }
     if (!validFeedbackAnswers(config, answers)) {
@@ -98,8 +88,7 @@ export default function FeedbackForm({
       await post("/api/event-feedback", {
         eventId,
         requestId: requestId.current,
-        verificationId: proof.verificationId,
-        token: proof.token,
+        email,
         formId: config.id,
         answers,
         website: String(new FormData(e.currentTarget).get("website") || ""),
@@ -108,11 +97,6 @@ export default function FeedbackForm({
     } catch (e) {
       const message = e instanceof Error ? e.message : "Please try again.";
       setError(message);
-      if (message.includes("verification has expired")) {
-        setProof(null);
-        setChallenge(null);
-        setNotice("");
-      }
       pending.current = false;
       setBusy(false);
     }
@@ -124,7 +108,7 @@ export default function FeedbackForm({
         aria-labelledby="feedback-email-heading"
       >
         <h2 id="feedback-email-heading">Your registration email</h2>
-        <p>Use the email you signed up with. We’ll send a code to verify it.</p>
+        <p>Use the email you signed up with for this event.</p>
         <label htmlFor="feedback-email">Email address</label>
         <input
           id="feedback-email"
@@ -133,57 +117,33 @@ export default function FeedbackForm({
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
-            setChallenge(null);
-            setProof(null);
+            setMatched(false);
+            setError("");
             requestId.current = null;
             setNotice("");
           }}
-          readOnly={!!proof}
+          readOnly={matched}
           disabled={busy}
           maxLength={254}
           required
         />
-        {!proof && (
+        {!matched && (
           <button
             type="button"
             className="feedback-secondary"
             disabled={busy || !email}
-            onClick={() => void emailAction("send")}
+            onClick={() => void checkEmail()}
           >
-            {challenge ? "Send a new code" : "Send verification code"}
+            {busy ? "Checking…" : "Check email"}
           </button>
         )}
-        {challenge && !proof && (
-          <div className="feedback-code">
-            <label htmlFor="feedback-code">Six-digit code</label>
-            <input
-              id="feedback-code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              pattern="[0-9]{6}"
-              maxLength={6}
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-              disabled={busy}
-            />
-            <button
-              type="button"
-              className="feedback-secondary"
-              disabled={busy || code.length !== 6}
-              onClick={() => void emailAction("verify")}
-            >
-              Verify email
-            </button>
-          </div>
-        )}
-        {proof && (
+        {matched && (
           <button
             type="button"
             className="feedback-secondary"
             disabled={busy}
             onClick={() => {
-              setProof(null);
-              setChallenge(null);
+              setMatched(false);
               setNotice("");
               requestId.current = null;
             }}
@@ -192,12 +152,8 @@ export default function FeedbackForm({
           </button>
         )}
         <p role="status">{notice}</p>
-        {error && !proof && (
-          <p
-            role="alert"
-            className="feedback-error"
-            id="feedback-verification-error"
-          >
+        {error && !matched && (
+          <p role="alert" className="feedback-error" id="feedback-email-error">
             {error}
           </p>
         )}
@@ -283,7 +239,7 @@ export default function FeedbackForm({
           <input name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
-      {error && proof && (
+      {error && matched && (
         <p role="alert" className="feedback-error">
           {error}
         </p>
@@ -291,7 +247,7 @@ export default function FeedbackForm({
       <button
         type="submit"
         className="event-primary-button"
-        disabled={busy || !proof}
+        disabled={busy || !matched}
       >
         {busy ? "Please wait…" : "Send feedback →"}
       </button>
