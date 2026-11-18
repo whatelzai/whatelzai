@@ -22,8 +22,15 @@ export function adminNavigation(pathname: string) {
   const path = cleanAdminPath(pathname);
   if (within(path, "/personal"))
     return { tab: "personal" as const, workstream: null };
-  if (["/settings", "/tokens", "/developer"].some((root) => within(path, root)))
-    return { tab: "settings" as const, workstream: null };
+  if (within(path, "/chat")) return { tab: "chat" as const, workstream: null };
+  if (within(path, "/calendar"))
+    return { tab: "calendar" as const, workstream: null };
+  if (
+    ["/profile", "/settings", "/tokens", "/developer"].some((root) =>
+      within(path, root),
+    )
+  )
+    return { tab: "profile" as const, workstream: null };
   const workstream = [
     "/network-marketing",
     "/team",

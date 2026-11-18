@@ -12,7 +12,8 @@ import {
   ChevronDown,
   House,
   Network,
-  Settings2,
+  CalendarDays,
+  MessageCircle,
   BriefcaseBusiness,
   UserRound,
 } from "lucide-react";
@@ -33,12 +34,19 @@ const tabs = [
     path: "/admin/personal",
     icon: UserRound,
   },
+  { key: "chat", label: "Chat", path: "/admin/chat", icon: MessageCircle },
   { key: "home", label: "Home", path: "/admin", icon: House },
   {
-    key: "settings",
-    label: "Settings",
-    path: "/admin/settings",
-    icon: Settings2,
+    key: "calendar",
+    label: "Calendar",
+    path: "/admin/calendar",
+    icon: CalendarDays,
+  },
+  {
+    key: "profile",
+    label: "Profile",
+    path: "/admin/profile",
+    icon: UserRound,
   },
 ] as const;
 
@@ -214,7 +222,7 @@ export function AdminNavigation() {
       <nav
         aria-label="Admin tabs"
         data-ledger-dock=""
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-lg grid-cols-3 gap-3 border-t border-zinc-200 bg-white/95 px-5 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:rounded-t-3xl sm:border-x lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-xl grid-cols-5 gap-1 border-t border-zinc-200 bg-white/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:rounded-t-3xl sm:border-x lg:hidden"
       >
         {tabs.map(({ key, label, path, icon: Icon }) => {
           const active = current.tab === key;
@@ -223,13 +231,20 @@ export function AdminNavigation() {
               key={key}
               href={adminUrl(path)}
               aria-current={active ? "location" : undefined}
+              data-dock-home={key === "home" ? "" : undefined}
               className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl text-[11px] font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 ${active ? "text-zinc-950" : "text-zinc-500 hover:bg-zinc-100"}`}
             >
-              <Icon
-                size={22}
-                strokeWidth={active ? 2 : 1.7}
-                aria-hidden="true"
-              />
+              <span
+                className={
+                  key === "home" ? "admin-dock-home-icon" : "admin-dock-icon"
+                }
+              >
+                <Icon
+                  size={22}
+                  strokeWidth={active ? 2 : 1.7}
+                  aria-hidden="true"
+                />
+              </span>
               {t(label)}
             </Link>
           );

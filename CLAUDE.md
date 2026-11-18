@@ -838,6 +838,17 @@ attendees and visits. Draft does not mean registration activated. Archive paymen
 reads scope both sources to the exact event key; scanner remains current-event
 only. Preserve superseded June metadata. See docs/admin-event-portfolio.md.
 
+### Five-tab Admin shell
+
+Personal | Chat | Home | Calendar | Profile. Mobile Home is the raised yellow
+circle requested by the owner; Profile reuses preferences/releases, with legacy
+Settings URLs retained. Website profile tools moved to /admin/ai-business/profile.
+Owner Chat fixes gpt-6.1-sol server-side, uses the existing encrypted connection,
+and is ephemeral/no-tools; never claim it reads the calendar or EMDEE. Calendar
+projects existing events, imported community occurrences and explicit date tables
+from two allowlisted EMDEE docs. Preserve inclusive date ends, source gaps,
+company-quarter uncertainty and 2026–27 recurrence coverage. See docs/admin-five-tabs.md.
+
 ### Contained Admin navigation
 
 AdminAppBoundary owns modal/menu/reader-drawer history and first-party link containment. Back closes the top overlay before navigating, respects existing cancel guards, and uses known Admin parents on fresh launches rather than auth/referrer history. Preserve Next state when touching history. Author /admin/playbook imports chapters only after dailyOwner; the public entitlement gate is unchanged. Owner-only public previews are allowlisted and read-only; member readers reuse existing access checks under /admin/network-marketing/app. External providers show a Copy-address notice, not a fake integration. Native downloads/OS shares remain deliberate actions. See docs/admin-navigation-audit.md.

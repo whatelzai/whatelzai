@@ -5,6 +5,23 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-18-five-admin-tabs",
+    publishedAt: "2026-11-18T11:35:00+08:00",
+    date: "2026-11-18",
+    title: "Five tabs, one clear Home",
+    titleZh: "五个入口，一个清晰的首页",
+    items: [
+      {
+        en: "Personal, Chat, Home, Calendar and Profile. Home is a raised yellow circle; Profile contains preferences and release notes.",
+        zh: "个人、对话、首页、日历和设置；首页采用上浮黄色圆形，个人设置包含偏好和更新记录。",
+      },
+      {
+        en: "Calendar combines AI events, community dates and company sprints. Owner Chat uses GPT-6.1 Sol API credits; chats are not saved and have no connected tools yet.",
+        zh: "日历整合AI活动、社群日期和公司Sprint；专属对话使用GPT-6.1 Sol API额度，暂不保存记录，也不连接操作工具。",
+      },
+    ],
+  },
+  {
     id: "2026-11-14-event-portfolio",
     publishedAt: "2026-11-14T01:21:25+08:00",
     date: "2026-11-14",
