@@ -18,6 +18,7 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "Routine library": "例行流程库",
   "More tools": "更多工具",
   "Events, relationships and paid offers.": "活动、人脉与付费产品。",
   "Attendees & sales": "报名与签到",

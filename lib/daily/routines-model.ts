@@ -18,10 +18,17 @@ export const routines = [
   {
     slug: "whatelz-weekly-closeout",
     title: "Weekly Closeout",
-    schedule: "Monday · 3am",
+    schedule: "Sunday · 9pm",
     file: "03-WEEKLY-CLOSEOUT.md",
     summary:
-      "Keep the lessons from the previous Monday–Sunday, with the originals intact.",
+      "Review this sprint, keep the lessons and retain the daily originals.",
+  },
+  {
+    slug: "whatelz-sprint-planning",
+    title: "Sprint Planning",
+    schedule: "Thursday · 9pm",
+    file: "04-SPRINT-PLANNING.md",
+    summary: "Prepare next week’s commitments, outcomes and focus blocks.",
   },
 ] as const;
 export function findRoutine(slug: string) {

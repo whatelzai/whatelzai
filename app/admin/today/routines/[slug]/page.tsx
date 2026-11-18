@@ -38,7 +38,7 @@ export default async function RoutinePage({
         <>
           <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
             <span className="text-zinc-500">
-              Version {state.version} · Private EMDEE source
+              v{state.version} · Private EMDEE source
             </span>
             <a
               href={adminUrl(`/admin/today/routines/${slug}/download`)}

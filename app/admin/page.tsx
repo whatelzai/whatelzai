@@ -1,4 +1,6 @@
 import { RhythmShortcut } from "@/components/admin/RhythmShortcut";
+import Link from "@/components/admin/AdminLink";
+import { adminUrl } from "@/lib/admin-url";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AdminText } from "@/components/admin/AdminPreferences";
@@ -70,6 +72,12 @@ export default async function OverviewPage() {
           >
             <Weekly source={sources.weekly} />
           </Suspense>
+          <Link
+            href={adminUrl("/admin/today/routines")}
+            className="text-sm underline underline-offset-4"
+          >
+            <AdminText text="Routine library" />
+          </Link>
         </aside>
       </div>
     </div>
