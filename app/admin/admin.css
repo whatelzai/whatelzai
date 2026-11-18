@@ -3401,21 +3401,23 @@ html:has(.admin-shell[data-admin-size="larger"]) {
   display: flex;
   align-items: center;
   gap: 0.35em;
-  height: 3rem;
-  padding-inline: 0.75rem;
+  min-height: 2.25rem;
+  line-height: 1.125;
+  margin: 0;
+  padding: 0.25rem 0.75rem;
   font-size: 1.5rem;
   font-weight: 650;
   overflow: hidden;
 }
 @media (prefers-reduced-motion: no-preference) {
   .calendar-period[data-direction="up"] span {
-    animation: calendar-period-flip 0.22s ease-out;
-    --entry: 70%;
+    animation: calendar-period-flip 0.52s cubic-bezier(0.22, 0.61, 0.36, 1);
+    --entry: 45%;
     --angle: -65deg;
   }
   .calendar-period[data-direction="down"] span {
-    animation: calendar-period-flip 0.22s ease-out;
-    --entry: -70%;
+    animation: calendar-period-flip 0.52s cubic-bezier(0.22, 0.61, 0.36, 1);
+    --entry: -45%;
     --angle: 65deg;
   }
 }
