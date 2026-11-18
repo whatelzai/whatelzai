@@ -1,3 +1,4 @@
+import { loadReturnOffer } from "@/lib/event-return-offer/server";
 import { RETURN_OFFER_COOKIE } from "@/lib/event-return-offer/model";
 import { configForReservedAttempt } from "@/lib/event-registration-policy";
 import { loadPublicEvents } from "@/lib/public-events/catalog-server";
@@ -40,6 +41,44 @@ export async function POST(req: NextRequest) {
     raw = JSON.parse(text);
   } catch {
     return response({ error: "Please check your details." }, 400);
+  }
+  if (
+    raw?.returnOffer === true &&
+    raw.name === undefined &&
+    raw.phone === undefined
+  ) {
+    const grant = await loadReturnOffer(
+      req.cookies.get(RETURN_OFFER_COOKIE)?.value,
+    );
+    if (!grant?.claimed_at || grant.email !== raw.email)
+      return response(
+        { error: "Your return offer has expired.", offerExpired: true },
+        409,
+      );
+    const { data: feedback } = await supabaseAdmin
+      .from("event_feedback")
+      .select("registration_id")
+      .eq("id", grant.feedback_id)
+      .maybeSingle();
+    const { data: previous } =
+      (feedback &&
+        (await supabaseAdmin
+          .from("event_registrations")
+          .select("attendee_name,phone")
+          .eq("id", feedback.registration_id)
+          .eq("status", "confirmed")
+          .maybeSingle())) ||
+      {};
+    if (!previous?.attendee_name || !previous.phone)
+      return response(
+        {
+          error: "Please complete your missing registration details.",
+          needsDetails: true,
+        },
+        409,
+      );
+    raw.name = previous.attendee_name;
+    raw.phone = previous.phone;
   }
   const parsed = eventRegistrationSchema.safeParse(raw);
   if (!parsed.success)

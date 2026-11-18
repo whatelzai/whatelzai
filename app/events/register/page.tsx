@@ -110,7 +110,11 @@ export default async function RegisterPage({
         >
           <header>
             <h1 id="signup-heading">Save your seat.</h1>
-            <p>A few details, then you’re on your way.</p>
+            <p>
+              {returnOffer
+                ? "Use your previous registration details to book again."
+                : "A few details, then you’re on your way."}
+            </p>
           </header>
           {eventStarts(mapEvent) <= publicEventNow() ||
           !mapEvent.registrationUrl ? (
@@ -123,6 +127,7 @@ export default async function RegisterPage({
             <RegistrationForm
               eventId={mapEvent.id}
               price={priceLabel(mapEvent.priceMinor!)}
+              returnOffer={returnOffer}
               checkExisting={hasSignup || Boolean(payment)}
             />
           )}

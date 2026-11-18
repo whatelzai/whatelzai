@@ -19,6 +19,7 @@ export default function RegistrationForm({
 }) {
   const storageKey = `whatelz-event-signup-token:${eventId}`;
   const token = useRef<string | null>(null);
+  const [needsDetails, setNeedsDetails] = useState(false);
   const [busy, setBusy] = useState(false);
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState("");
@@ -115,6 +116,7 @@ export default function RegistrationForm({
       });
       const data = await response.json();
       if (!response.ok) {
+        if (data.needsDetails) setNeedsDetails(true);
         if (data.offerExpired) {
           setReturnEnabled(false);
           setReturnSeconds(0);
@@ -144,32 +146,36 @@ export default function RegistrationForm({
     );
   return (
     <form className="event-registration-form" onSubmit={submit}>
-      <label>
-        Name
-        <input
-          name="name"
-          autoComplete="name"
-          placeholder="Your full name"
-          required
-          maxLength={160}
-        />
-      </label>
-      <div className="event-form-field">
-        <label htmlFor="event-phone">Phone number</label>
-        <input
-          id="event-phone"
-          name="phone"
-          type="tel"
-          autoComplete="tel"
-          required
-          maxLength={24}
-          placeholder="e.g. +65 8123 4567"
-          aria-describedby="event-phone-hint"
-        />
-        <span id="event-phone-hint" className="event-input-hint">
-          Include your country code, e.g. +65 or +60.
-        </span>
-      </div>
+      {(!returnActive || needsDetails) && (
+        <>
+          <label>
+            Name
+            <input
+              name="name"
+              autoComplete="name"
+              placeholder="Your full name"
+              required
+              maxLength={160}
+            />
+          </label>
+          <div className="event-form-field">
+            <label htmlFor="event-phone">Phone number</label>
+            <input
+              id="event-phone"
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              required
+              maxLength={24}
+              placeholder="e.g. +65 8123 4567"
+              aria-describedby="event-phone-hint"
+            />
+            <span id="event-phone-hint" className="event-input-hint">
+              Include your country code, e.g. +65 or +60.
+            </span>
+          </div>
+        </>
+      )}
       <div className="event-form-field">
         <label htmlFor="event-email">Email address</label>
         <input
@@ -191,7 +197,7 @@ export default function RegistrationForm({
       </div>
       {returnActive ? (
         <div className="event-return-applied" role="status">
-          <strong>Promo code automatically applied: REJOIN</strong>
+          <strong>✓ REJOIN applied!</strong>
           <p>
             Your checked-in attendee ticket: {totalPrice}. Start checkout in{" "}
             <span role="timer">{offerTime(returnSeconds)}</span>.
@@ -259,7 +265,9 @@ export default function RegistrationForm({
           ? "Registering…"
           : applied
             ? "Confirm registration"
-            : "Proceed to payment"}
+            : returnActive
+              ? `Pay ${totalPrice}`
+              : "Proceed to payment"}
       </button>
       {error && (
         <button type="button" onClick={() => void startOver()} disabled={busy}>
