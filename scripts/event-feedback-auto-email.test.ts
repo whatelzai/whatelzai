@@ -94,7 +94,7 @@ function harness() {
   });
   const config = schemas.feedbackFormConfig.parse(
     JSON.parse(
-      readFileSync("content/event-feedback/feedback-v3-20261118.json", "utf8"),
+      readFileSync("content/event-feedback/feedback-v4-20261119.json", "utf8"),
     ),
   );
   let tree: Element;
@@ -147,7 +147,7 @@ test("automatic email match waits for typing, rejects malformed input locally, a
   h.render();
   assert.equal(h.calls.length, 0);
   assert.equal(
-    h.status().props!.children,
+    h.all(h.status()).find((n) => n.type === "span")?.props?.children,
     "Please use the email you registered for the event.",
   );
 });
@@ -168,7 +168,7 @@ test("stale email responses cannot unlock submission; a current match shows a ti
   await second;
   h.render();
   assert.equal(
-    h.status().props!.children,
+    h.all(h.status()).find((n) => n.type === "span")?.props?.children,
     "Please use the email you registered for the event.",
   );
   h.change("third@example.test");
@@ -197,4 +197,52 @@ test("lookup failures do not claim the address is unregistered or enable submiss
   h.render();
   assert.match(String(h.status().props!.children), /couldn’t check/);
   assert.equal(h.disabled(), true);
+});
+
+test("unmatched registration has a visible X and topic question is a single radio group with conditional Other text", async () => {
+  const h = harness();
+  h.change("unregistered@example.test");
+  const pending = h.tick();
+  h.calls[0].resolve(Response.json({ matched: false }));
+  await pending;
+  h.render();
+  assert.match(String(h.status().props!.className), /is-unmatched/);
+  assert.equal(h.all(h.status()).filter((n) => n.type === "svg").length, 1);
+  const topicRadios = () =>
+    h.all().filter((n) => n.props?.name === "question-future_topic");
+  assert.equal(topicRadios().length, 5);
+  const select = (option: string) => {
+    (
+      topicRadios().find((n) => n.props?.value === option)!.props!
+        .onChange as () => void
+    )();
+    h.render();
+  };
+  select("AI Skillset");
+  assert.equal(topicRadios().filter((n) => n.props?.checked).length, 1);
+  select("Others");
+  assert.equal(topicRadios().filter((n) => n.props?.checked).length, 1);
+  const other = h
+    .all()
+    .find((n) => n.props?.name === "question-future_topic-other")!;
+  assert.equal(other.props!.required, true);
+  (other.props!.onChange as (e: unknown) => void)({
+    target: { value: "AI automation" },
+  });
+  h.render();
+  assert.equal(
+    h.all().find((n) => n.props?.name === "question-future_topic-other")!.props!
+      .value,
+    "AI automation",
+  );
+  select("Money Mindset");
+  assert.equal(
+    h.all().some((n) => n.props?.name === "question-future_topic-other"),
+    false,
+  );
+  assert.equal(h.all().filter((n) => n.type === "fieldset").length, 10);
+  const comment = h.all().find((n) => n.props?.id === "feedback-comments")!;
+  assert.equal(comment.type, "textarea");
+  assert.equal(comment.props!.required, undefined);
+  assert.equal(comment.props!.maxLength, undefined);
 });

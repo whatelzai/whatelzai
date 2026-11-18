@@ -349,3 +349,157 @@ test("email-match writer needs no code, checks confirmed event registration, pre
     await db.close();
   }
 });
+
+test("new topic version keeps ten questions plus unnumbered optional comments and preserves existing responses", async () => {
+  const current = feedbackFormConfig.parse(
+    JSON.parse(
+      readFileSync("content/event-feedback/feedback-v4-20261119.json", "utf8"),
+    ),
+  );
+  assert.equal(current.questions.length, 10);
+  assert.equal(current.commentPrompt, "Any comments?");
+  const topic = current.questions[9];
+  assert.equal(topic.type, "single_select");
+  if (topic.type !== "single_select") throw Error("Expected topic choice");
+  assert.deepEqual(topic.options, [
+    "AI Skillset",
+    "Money Mindset",
+    "Passive Income Strategies",
+    "Entrepreneurial Secrets",
+    "Others",
+  ]);
+  const values = { ...answers, future_topic: "AI Skillset", comments: "" };
+  assert.equal(validFeedbackAnswers(current, values), true);
+  for (const value of [
+    "Others",
+    "Others: ",
+    "Invalid topic",
+    ["AI Skillset", "Money Mindset"],
+  ])
+    assert.equal(
+      validFeedbackAnswers(current, {
+        ...values,
+        future_topic: value,
+      } as never),
+      false,
+    );
+  assert.equal(
+    validFeedbackAnswers(current, {
+      ...values,
+      future_topic: "Others: AI automation",
+    }),
+    true,
+  );
+  const db = await fixture();
+  try {
+    await db.exec(
+      readFileSync(
+        "supabase/migrations/20261118143000_feedback_registration_email_match.sql",
+        "utf8",
+      ),
+    );
+    await db.query(
+      "select public.submit_registered_event_feedback($1,$2,$3,$4,$5,$6,$7)",
+      [
+        response,
+        event,
+        "attendee@example.test",
+        "a".repeat(64),
+        config.id,
+        JSON.stringify({ ...answers, comments: "Original v3 comment" }),
+        "c".repeat(64),
+      ],
+    );
+    const before = await db.query(
+      "select form_id,question_answers from event_feedback where id=$1",
+      [response],
+    );
+    await db.exec(
+      readFileSync(
+        "supabase/migrations/20261119003000_feedback_topic_question_support.sql",
+        "utf8",
+      ),
+    );
+    // Supporting code can ship first while the active form remains its old version.
+    assert.equal(
+      (
+        await db.query<{ form_id: string }>(
+          "select form_id from event_feedback_form_bindings where event_id=$1",
+          [event],
+        )
+      ).rows[0].form_id,
+      config.id,
+    );
+    await db.exec(
+      readFileSync(
+        "supabase/migrations/20261119003100_activate_feedback_topic_question.sql",
+        "utf8",
+      ),
+    );
+    assert.deepEqual(
+      (
+        await db.query(
+          "select form_id,question_answers from event_feedback where id=$1",
+          [response],
+        )
+      ).rows,
+      before.rows,
+    );
+    await db.exec(
+      "insert into event_registrations(id,event_key,status,email) values('00000000-0000-4000-8000-000000000042','nov12','confirmed','second@example.test')",
+    );
+    const save = (data: unknown, id = "00000000-0000-4000-8000-000000000043") =>
+      db.query(
+        "select public.submit_registered_event_feedback($1,$2,$3,$4,$5,$6,$7)",
+        [
+          id,
+          event,
+          "second@example.test",
+          "b".repeat(64),
+          current.id,
+          JSON.stringify(data),
+          "c".repeat(64),
+        ],
+      );
+    for (const value of [
+      "Others",
+      "Others:  ",
+      "Invalid topic",
+      ["AI Skillset", "Money Mindset"],
+    ])
+      await assert.rejects(
+        save({ ...values, future_topic: value }),
+        /INVALID_FEEDBACK/,
+      );
+    const missing = { ...values } as Record<string, unknown>;
+    delete missing.future_topic;
+    await assert.rejects(save(missing), /INVALID_FEEDBACK/);
+    const data = {
+      ...values,
+      future_topic: "Others: AI automation",
+      comments: "Long comment. ".repeat(2000),
+    };
+    await save(data);
+    await save(data);
+    const row = await db.query<{ question_answers: unknown }>(
+      "select question_answers from event_feedback where id='00000000-0000-4000-8000-000000000043'",
+    );
+    const snapshot = feedbackSnapshot.parse(row.rows[0].question_answers);
+    assert.equal(snapshot.length, 11);
+    assert.equal(snapshot[9].question, topic.text);
+    assert.equal(snapshot[9].answer, "Others: AI automation");
+    assert.deepEqual(snapshot[9].options, topic.options);
+    assert.equal(snapshot[10].question, "Any comments?");
+    assert.equal(snapshot[10].answer, data.comments);
+    await assert.rejects(
+      db.exec(
+        "update event_feedback_forms set comment_prompt='Changed' where id='feedback-v4-20261119'",
+      ),
+      /IMMUTABLE/,
+    );
+    await db.exec("set role anon");
+    await assert.rejects(save(data), /permission denied/);
+  } finally {
+    await db.close();
+  }
+});

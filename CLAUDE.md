@@ -1003,3 +1003,17 @@ an unmatched address prompts the attendee to use their registration email. The
 field stays editable, editing immediately removes submission eligibility, and
 aborted/stale lookup results cannot unlock another address. Lookup does not freeze
 the questions. Final server-side registration validation is unchanged.
+
+## Feedback topic choice and optional comments (2026-11-19)
+
+Feedback v4 retains ten numbered questions: Q10 is a configured single-choice topic
+list, with required free text for Others. Optional unrestricted comments live outside
+the numbered questions in `comment_prompt`. Saved snapshots include the selected
+answer, original option labels and optional comments; old form versions and answers
+remain unchanged. Additive support migration20261119003000 must precede deployment;
+activation migration20261119003100 repins current v3 bindings only after compatible
+production is READY. Do not delete historical forms or responses.
+
+Unmatched email shows a red X and red border/message. The submit button is natively
+disabled, grey and uses the not-allowed cursor; lookup errors stay distinct from a
+confirmed non-match. Automatic email checking and final server validation remain.
