@@ -18,6 +18,10 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "Showing the latest saved copy.": "显示最近保存的内容。",
+  "Reconnect EMDEE": "重新连接 EMDEE",
+  "Night debrief": "晚间复盘",
+
   "This item isn’t available": "此项目暂不可用",
   "It may have moved or been removed. Return to your workspace to continue.":
     "内容可能已移动或移除。请返回工作区继续。",

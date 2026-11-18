@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { PushNotifications } from "./PushNotifications";
 import { Bell, X, CheckCheck, Archive } from "lucide-react";
 import Link from "./AdminLink";
 import { adminUrl } from "@/lib/admin-url";
@@ -18,7 +19,8 @@ export function NotificationsBell() {
   const [notices, setNotices] = useState<Notice[]>([]),
     [unread, setUnread] = useState(0),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [open, setOpen] = useState(false);
   const load = useCallback(async (poll = false) => {
     try {
       const r = await fetch(
@@ -38,11 +40,14 @@ export function NotificationsBell() {
   }, []);
   useEffect(() => {
     const frame = requestAnimationFrame(() => void load());
+    const changed = () => void load(true);
+    window.addEventListener("admin-rhythm-read", changed);
     const timer = setInterval(() => {
       if (document.visibilityState === "visible") void load(true);
     }, 60000);
     return () => {
       cancelAnimationFrame(frame);
+      window.removeEventListener("admin-rhythm-read", changed);
       clearInterval(timer);
     };
   }, [load]);
@@ -72,6 +77,7 @@ export function NotificationsBell() {
         }
         onClick={() => {
           setBusy(true);
+          setOpen(true);
           dialog.current?.showModal();
           void load();
         }}
@@ -79,7 +85,11 @@ export function NotificationsBell() {
         <Bell size={21} />
         {unread > 0 && <span>{unread > 99 ? "99+" : unread}</span>}
       </button>
-      <dialog ref={dialog} className="admin-notification-dialog">
+      <dialog
+        ref={dialog}
+        className="admin-notification-dialog"
+        onClose={() => setOpen(false)}
+      >
         <header>
           <h2>{t("Notifications")}</h2>
           <button
@@ -95,12 +105,9 @@ export function NotificationsBell() {
             <CheckCheck size={16} />
             {t("Mark all read")}
           </button>
-          <Link
-            href={adminUrl("/admin/profile")}
-            onClick={() => dialog.current?.close()}
-          >
-            {t("Notification settings")}
-          </Link>
+        </div>
+        <div className="admin-notification-push">
+          {open && <PushNotifications compact />}
         </div>
         <div className="admin-notification-list">
           {busy && <p role="status">{t("Loading…")}</p>}

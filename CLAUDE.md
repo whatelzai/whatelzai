@@ -1017,3 +1017,18 @@ production is READY. Do not delete historical forms or responses.
 Unmatched email shows a red X and red border/message. The submit button is natively
 disabled, grey and uses the not-allowed cursor; lookup errors stay distinct from a
 confirmed non-match. Automatic email checking and final server validation remain.
+
+## Latest Rhythm entries (2026-11-19)
+
+Home/Personal use shared Morning, Night, Weekly, Calendar shortcuts. Canonical
+hub-linked latest Notes are mirrored in private owner-scoped admin_rhythm_snapshots;
+EMDEE remains canonical. /admin/rhythm/[kind] reads the latest saved copy and offers
+reconnection if refresh fails. Exact-version same-origin read receipts clear red
+unread dots; stale receipts cannot clear newer data. The existing five-minute cron
+syncs inbox notices independently of device opt-in and pushes new observed versions
+to opted-in devices, deduplicated by version and delivery leases. Preserve opt-in
+cutoff, legacy receipts, owner checks and cache on source failure. No inference.
+The bell has the existing per-device push switch inline. EMDEE transport now uses
+compact read/write actions. Its stored credential is expired; real latest entries
+were bootstrapped via connected MCP and a user reconnect is needed for future sync.
+Migration20261119004500 applied. See docs/admin-five-tabs.md.

@@ -1,10 +1,5 @@
 import "server-only";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
-import { emdeeConnection } from "@/lib/daily/connections";
-import { loadBriefWithConnection } from "@/lib/daily/emdee";
-import { readEmdee } from "@/lib/daily/emdee-client";
-import { previousWeek } from "@/lib/daily/weekly-model";
-import { DAILY_PARENT } from "@/lib/daily/paths";
 import { loadMandala } from "@/lib/mandala-server";
 import type { Source } from "@/lib/admin-overview/model";
 import type { PersonalFocus } from "./model";
@@ -17,18 +12,7 @@ async function safe<T>(read: () => Promise<T>): Promise<Source<T>> {
   }
 }
 /** The page must verify the owner before starting any sources. No work-task reads or mutations. */
-export function personalSources(
-  owner: string,
-  day: string,
-  week: string,
-  now: Date,
-) {
-  const connection = emdeeConnection(owner);
-  const connected = async () => {
-    const c = await connection;
-    if (c?.parentPath !== DAILY_PARENT) throw Error("Daily unavailable");
-    return c;
-  };
+export function personalSources(owner: string, week: string) {
   return {
     direction: loadMandala(),
     focus: safe(async () => {
@@ -67,19 +51,6 @@ export function personalSources(
           "id" | "name" | "amount_minor" | "currency" | "next_due"
         >[],
       };
-    }),
-    morning: safe(async () =>
-      loadBriefWithConnection(await connected(), day, "morning"),
-    ),
-    evening: safe(async () =>
-      loadBriefWithConnection(await connected(), day, "evening"),
-    ),
-    weekly: safe(async () => {
-      const doc = await readEmdee(await connected(), previousWeek(now).path);
-      return !!doc?.content
-        ?.split(/^## Notes\s*$/m)[1]
-        ?.split(/^## /m)[0]
-        ?.trim();
     }),
   };
 }

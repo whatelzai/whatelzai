@@ -1,6 +1,6 @@
 "use client";
 import Link from "@/components/admin/AdminLink";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useId } from "react";
 import { Bell } from "lucide-react";
 import { useAdminPreferences } from "./AdminPreferences";
 import { useAdminFocus } from "./AdminFocus";
@@ -69,7 +69,8 @@ async function worker() {
   }
   return registration;
 }
-export function PushNotifications() {
+export function PushNotifications({ compact = false }: { compact?: boolean }) {
+  const titleId = useId();
   const focus = useAdminFocus();
   const { t } = useAdminPreferences();
   const [state, setState] = useState<State | null>(null);
@@ -246,7 +247,7 @@ export function PushNotifications() {
               ? "Blocked in device settings"
               : "Not enabled on this device";
   return (
-    <section aria-labelledby="admin-push" className="py-5">
+    <section aria-labelledby={titleId} className="admin-push-control py-5">
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <Bell
@@ -255,7 +256,10 @@ export function PushNotifications() {
             className="shrink-0 text-zinc-500"
           />
           <div>
-            <h2 id="admin-push" className="text-sm font-semibold text-zinc-900">
+            <h2
+              id={titleId}
+              className="admin-push-title text-sm font-semibold text-zinc-900"
+            >
               {t("Push notifications")}
             </h2>
             <p className="mt-1 text-xs text-zinc-500" role="status">
@@ -310,49 +314,53 @@ export function PushNotifications() {
           {t("Open the installed app to enable notifications.")}
         </p>
       )}
-      <details className="mt-2 text-xs text-zinc-500">
-        <summary className="flex min-h-11 cursor-pointer items-center">
-          {t("Notification options")}
-        </summary>
-        <div className="space-y-3 pb-1 leading-5">
-          <p>
-            {t("Saved routines and scheduled space changes. This device only.")}
-          </p>
-          {state?.enabled && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={test}
-              className="min-h-11 rounded-xl border border-zinc-200 px-4 text-zinc-900 disabled:opacity-50"
-            >
-              {t("Send test notification")}
-            </button>
-          )}
-          <p>
-            {t(
-              "Sound: long-press a notification on your Vivo, open its notification settings and look for Sound. The available options depend on your phone and browser; custom sounds cannot be set here.",
-            )}
-          </p>
-          {focus?.pushSync === "error" && (
-            <p role="alert" className="text-amber-800">
+      {!compact && (
+        <details className="mt-2 text-xs text-zinc-500">
+          <summary className="flex min-h-11 cursor-pointer items-center">
+            {t("Notification options")}
+          </summary>
+          <div className="space-y-3 pb-1 leading-5">
+            <p>
               {t(
-                "Timetable alerts haven’t synced. Reopen Admin online to retry.",
+                "Saved routines and scheduled space changes. This device only.",
               )}
             </p>
-          )}
-          {state?.config?.monitor?.error_code && (
-            <p className="text-amber-800">
-              {t("Routine alerts need attention.")}{" "}
-              <Link
-                className="underline"
-                href={adminUrl("/admin/today/connections")}
+            {state?.enabled && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={test}
+                className="min-h-11 rounded-xl border border-zinc-200 px-4 text-zinc-900 disabled:opacity-50"
               >
-                {t("Check connection →")}
-              </Link>
+                {t("Send test notification")}
+              </button>
+            )}
+            <p>
+              {t(
+                "Sound: long-press a notification on your Vivo, open its notification settings and look for Sound. The available options depend on your phone and browser; custom sounds cannot be set here.",
+              )}
             </p>
-          )}
-        </div>
-      </details>
+            {focus?.pushSync === "error" && (
+              <p role="alert" className="text-amber-800">
+                {t(
+                  "Timetable alerts haven’t synced. Reopen Admin online to retry.",
+                )}
+              </p>
+            )}
+            {state?.config?.monitor?.error_code && (
+              <p className="text-amber-800">
+                {t("Routine alerts need attention.")}{" "}
+                <Link
+                  className="underline"
+                  href={adminUrl("/admin/today/connections")}
+                >
+                  {t("Check connection →")}
+                </Link>
+              </p>
+            )}
+          </div>
+        </details>
+      )}
       {message && (
         <p role="status" className="mt-2 text-xs leading-5 text-zinc-600">
           {t(message)}
