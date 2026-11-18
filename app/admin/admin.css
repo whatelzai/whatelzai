@@ -3257,3 +3257,110 @@ html:has(.admin-shell[data-admin-size="larger"]) {
     font-size: 10px;
   }
 }
+
+/* Calendar is a continuous sheet, rather than a collection of rounded cards. */
+
+.calendar-page .continuous-calendar {
+  --calendar-grid-line: #dedfe2;
+}
+.calendar-page .calendar-weekdays {
+  top: calc(var(--admin-header-height, 64px) + 40px);
+  margin-top: 0;
+  gap: 0;
+  border-bottom: 1px solid var(--calendar-grid-line);
+}
+.calendar-page .calendar-weekdays span {
+  border-right: 1px solid var(--calendar-grid-line);
+  padding: 9px 0;
+}
+.calendar-page .calendar-weeks {
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 calc(100% / 7 - 1px),
+    var(--calendar-grid-line) calc(100% / 7 - 1px) calc(100% / 7)
+  );
+}
+.calendar-page .calendar-week {
+  contain-intrinsic-size: auto 150px;
+}
+.calendar-page .calendar-week-grid {
+  gap: 0;
+}
+.admin-shell #admin-main .admin-ledger.calendar-page button.calendar-day {
+  border-radius: 0;
+  margin: 0;
+  border: 0;
+  border-right: 1px solid var(--calendar-grid-line);
+  border-bottom: 1px solid var(--calendar-grid-line);
+  box-shadow: none;
+  min-height: 145px;
+  padding: 8px 5px;
+}
+.calendar-page .calendar-year-marker {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 24px;
+  background: var(--ledger-paper, #fff);
+}
+.calendar-page .calendar-day-number {
+  align-self: center;
+}
+.calendar-page .calendar-source-details {
+  margin: 0 16px;
+  padding: 12px 0;
+  color: var(--ledger-muted);
+  font-size: 11px;
+}
+.calendar-page .calendar-source-details summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.admin-shell[data-admin-theme="dark"] .calendar-page .continuous-calendar {
+  --calendar-grid-line: #3b3e43;
+}
+@media (max-width: 640px) {
+  .admin-shell #admin-main .admin-ledger.calendar-page button.calendar-day {
+    min-height: 112px;
+    padding: 6px 3px;
+  }
+  .calendar-page .calendar-week {
+    contain-intrinsic-size: auto 112px;
+  }
+  .calendar-page .calendar-day-events {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+  .calendar-page .calendar-day-event {
+    align-items: center;
+    gap: 2px;
+  }
+  .calendar-page .calendar-day-event > span {
+    display: block;
+    white-space: nowrap;
+    font-size: 9px;
+    line-height: 1.5;
+  }
+  .calendar-page .calendar-day-event svg {
+    width: 10px;
+    height: 10px;
+    margin-top: 0;
+  }
+}
+
+.admin-shell[data-admin-theme="dark"] .calendar-page .calendar-year-marker {
+  background: #191919;
+}
+.admin-shell #admin-main .admin-content:has(.calendar-page) {
+  padding-top: 0;
+  padding-inline: 0;
+  max-width: none;
+}
+.admin-ledger.calendar-page,
+.calendar-page .continuous-calendar {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}

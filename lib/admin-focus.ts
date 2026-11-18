@@ -133,7 +133,8 @@ export function canAutoSwitch(input: {
         !input.hash)
     );
   const path = cleanAdminPath(input.path);
-  if (path === "/users" || path.startsWith("/users/")) return false;
+  if (path === "/users" || path.startsWith("/users/") || path === "/calendar")
+    return false;
   return adminNavigation(input.path).tab === "home";
 }
 export function minuteInput(value: number) {

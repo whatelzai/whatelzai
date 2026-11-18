@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ChevronRight } from "lucide-react";
+import { calendarScope, calendarWorkspace } from "@/lib/admin-calendar/scope";
 import { adminParent } from "@/lib/admin-link-policy";
 import { cleanAdminPath, adminWorkstreams } from "@/lib/admin-navigation";
 import { adminUrl } from "@/lib/admin-url";
@@ -27,39 +28,55 @@ export function AdminBackTrail({ pathname }: { pathname: string }) {
     }
   }
   const scope = adminWorkstreams.find((w) => w.path === root);
-  const crumbs = match
-    ? [
-        { label: "Home", href: "/admin" },
-        ...(scope && scope.path !== "/admin"
-          ? [{ label: scope.label, href: root }]
-          : []),
-        {
-          label: horizon === "week" ? "This week’s focus" : "Today’s focus",
-          href:
-            root + "#" + (horizon === "week" ? "week-focus" : "today-focus"),
-        },
-        { label: reference },
-      ]
-    : [
-        { label: "Home", href: "/admin" },
-        ...(root !== "/admin"
-          ? [
-              {
-                label:
-                  scope?.label ?? root.split("/").at(-1)!.replaceAll("-", " "),
-                href: root,
-              },
-            ]
-          : []),
-        {
-          label: path
-            .split("/")
-            .at(-1)!
-            .match(/^[0-9a-f-]{20,}$/i)
-            ? "Details"
-            : path.split("/").at(-1)!.replaceAll("-", " "),
-        },
-      ];
+  const scopeFilter = calendarScope(search.get("space"));
+  const crumbs =
+    path === "/calendar"
+      ? [
+          { label: "Home", href: "/admin" },
+          {
+            label: "Calendar",
+            ...(scopeFilter !== "all" ? { href: "/admin/calendar" } : {}),
+          },
+          ...(scopeFilter !== "all"
+            ? [{ label: calendarWorkspace(scopeFilter) }]
+            : []),
+        ]
+      : match
+        ? [
+            { label: "Home", href: "/admin" },
+            ...(scope && scope.path !== "/admin"
+              ? [{ label: scope.label, href: root }]
+              : []),
+            {
+              label: horizon === "week" ? "This week’s focus" : "Today’s focus",
+              href:
+                root +
+                "#" +
+                (horizon === "week" ? "week-focus" : "today-focus"),
+            },
+            { label: reference },
+          ]
+        : [
+            { label: "Home", href: "/admin" },
+            ...(root !== "/admin"
+              ? [
+                  {
+                    label:
+                      scope?.label ??
+                      root.split("/").at(-1)!.replaceAll("-", " "),
+                    href: root,
+                  },
+                ]
+              : []),
+            {
+              label: path
+                .split("/")
+                .at(-1)!
+                .match(/^[0-9a-f-]{20,}$/i)
+                ? "Details"
+                : path.split("/").at(-1)!.replaceAll("-", " "),
+            },
+          ];
   return (
     <nav className="admin-back-row" aria-label={t("Breadcrumb")}>
       <div>

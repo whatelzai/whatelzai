@@ -1036,3 +1036,17 @@ Migration20261119004500 applied. See docs/admin-five-tabs.md.
 ## Interactive weOS role testing (SPR-212 follow-up)
 
 Beacon may use Chat while viewing as Blaze/Torch/Ember through a dedicated endpoint. Authenticated SQL lowers context permissions for each call and restores them even after errors; no identity parameter or member impersonation. Tests use permitted owner/team network records without Beacon oversight, exclude private workspaces/vault/social context, and retain Ember source/audience restrictions. Separate preview_role conversations cannot mix roles or enter normal Chat; existing allowance/rate limits and settlement apply. No task/note/profile mutations, image uploads or automatic sharing. Other preview actions remain read-only. Details/rollback: docs/weos-access.md. — codex,2026-11-19
+
+## Calendar sheet and shared scope selector — 2026-11-19
+
+Calendar is a secondary Home page with the existing lean sticky Back/breadcrumb row.
+Remove Today/date-jump and local lane pills. On /admin/calendar only, the header
+workspace dropdown keeps the calendar route and selects validated ?space=personal,
+ai-business,network-marketing,day-job; absent/invalid means Overview/all. The shared
+theme and breadcrumbs reflect this filter. Same-calendar navigation preserves scroll,
+and automatic timetable switching never takes the owner away from Calendar.
+Seven equal-width columns touch both viewport edges; square contiguous cells and
+subtle aligned rules replace rounded tiles/week gaps. Keep current-date circle,
+month/season shading, four-digit years, day-detail dialog, lazy batches and2029 end.
+Source coverage lives in a collapsed footer. Calendar scope is a view filter, never
+an authorization boundary. No schema or permission change.
