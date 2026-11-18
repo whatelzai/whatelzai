@@ -151,6 +151,11 @@ test("submission rechecks registration inside the database and rejects missing e
     (await api.POST(req({ ...input, answers: { format: true } }))).status,
     400,
   );
+  assert.equal(
+    (await api.POST(req({ ...input, formId: "feedback-earlier-version" })))
+      .status,
+    409,
+  );
   assert.equal(writes, 0);
   assert.equal((await api.POST(req(input))).status, 200);
   rejectRegistration = true;

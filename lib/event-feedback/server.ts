@@ -26,7 +26,7 @@ export async function loadFeedbackForm(recordId: string) {
   if (!binding.data) return null;
   const r = await db
     .from("event_feedback_forms")
-    .select("id,title,questions,summary_question_id")
+    .select("id,title,questions,summary_question_id,comment_prompt")
     .eq("id", binding.data.form_id)
     .single();
   if (r.error) throw Error("Feedback configuration unavailable");
@@ -35,6 +35,7 @@ export async function loadFeedbackForm(recordId: string) {
     title: r.data.title,
     questions: r.data.questions,
     summaryQuestionId: r.data.summary_question_id,
+    commentPrompt: r.data.comment_prompt ?? undefined,
   });
 }
 export async function openFeedbackEvent(id: string) {

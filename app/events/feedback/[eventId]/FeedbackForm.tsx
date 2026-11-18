@@ -16,13 +16,14 @@ export default function FeedbackForm({
   config: FeedbackFormConfig;
 }) {
   const router = useRouter();
-  const [answers, setAnswers] = useState<FeedbackAnswers>(() =>
-      Object.fromEntries(
+  const [answers, setAnswers] = useState<FeedbackAnswers>(() => ({
+      ...(config.commentPrompt ? { comments: "" } : {}),
+      ...Object.fromEntries(
         config.questions
           .filter((q) => q.type === "text" && q.optional)
           .map((q) => [q.id, ""]),
       ),
-    ),
+    })),
     [email, setEmail] = useState(""),
     [emailCheck, setEmailCheck] = useState<{
       eventId: string;
@@ -36,7 +37,18 @@ export default function FeedbackForm({
   const required = config.questions.filter(
     (q) => q.type !== "text" || !q.optional,
   );
-  const count = required.filter((q) => answers[q.id] !== undefined).length;
+  const count = required.filter((q) =>
+    q.type === "single_select"
+      ? q.options.some((option) =>
+          option === q.otherOption
+            ? String(answers[q.id] ?? "").startsWith(option + ": ") &&
+              String(answers[q.id])
+                .slice(option.length + 2)
+                .trim().length > 0
+            : answers[q.id] === option,
+        )
+      : answers[q.id] !== undefined,
+  ).length;
   async function post(path: string, body: unknown) {
     const r = await fetch(path, {
       method: "POST",
@@ -158,7 +170,7 @@ export default function FeedbackForm({
         <p
           id="feedback-email-status"
           role="status"
-          className={`feedback-email-status${matched ? " is-matched" : ""}`}
+          className={`feedback-email-status${matched ? " is-matched" : emailStatus === "unmatched" ? " is-unmatched" : ""}`}
         >
           {matched ? (
             <>
@@ -180,7 +192,23 @@ export default function FeedbackForm({
               <span>Registration found</span>
             </>
           ) : emailStatus === "unmatched" ? (
-            "Please use the email you registered for the event."
+            <>
+              <svg
+                className="feedback-email-cross"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="12" fill="currentColor" />
+                <path
+                  d="m8 8 8 8m0-8-8 8"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span>Please use the email you registered for the event.</span>
+            </>
           ) : emailStatus === "error" ? (
             "We couldn’t check your email. Please try entering it again."
           ) : emailStatus === "checking" ? (
@@ -216,6 +244,54 @@ export default function FeedbackForm({
                 }))
               }
             />
+          ) : q.type === "single_select" ? (
+            <div className="feedback-topics">
+              {q.options.map((option) => (
+                <label key={option}>
+                  <input
+                    type="radio"
+                    name={`question-${q.id}`}
+                    value={option}
+                    required
+                    checked={
+                      option === q.otherOption
+                        ? String(answers[q.id] ?? "").startsWith(option + ": ")
+                        : answers[q.id] === option
+                    }
+                    onChange={() =>
+                      setAnswers((previous) => ({
+                        ...previous,
+                        [q.id]:
+                          option === q.otherOption ? option + ": " : option,
+                      }))
+                    }
+                  />
+                  <span>{option}</span>
+                </label>
+              ))}
+              {q.otherOption &&
+                String(answers[q.id] ?? "").startsWith(
+                  q.otherOption + ": ",
+                ) && (
+                  <label className="feedback-other-topic">
+                    <span>What topic do you have in mind?</span>
+                    <input
+                      type="text"
+                      name={`question-${q.id}-other`}
+                      required
+                      value={String(answers[q.id]).slice(
+                        q.otherOption.length + 2,
+                      )}
+                      onChange={(e) =>
+                        setAnswers((previous) => ({
+                          ...previous,
+                          [q.id]: q.otherOption + ": " + e.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+                )}
+            </div>
           ) : (
             <div
               className={
@@ -265,6 +341,26 @@ export default function FeedbackForm({
           )}
         </fieldset>
       ))}
+      {config.commentPrompt && (
+        <div className="feedback-optional-comment">
+          <label className="feedback-comment" htmlFor="feedback-comments">
+            {config.commentPrompt} <small>(optional)</small>
+          </label>
+          <textarea
+            id="feedback-comments"
+            name="comments"
+            rows={5}
+            disabled={busy}
+            value={String(answers.comments ?? "")}
+            onChange={(e) =>
+              setAnswers((previous) => ({
+                ...previous,
+                comments: e.target.value,
+              }))
+            }
+          />
+        </div>
+      )}
       <div className="feedback-honeypot" aria-hidden="true">
         <label>
           Leave this blank
@@ -280,6 +376,11 @@ export default function FeedbackForm({
         type="submit"
         className="event-primary-button"
         disabled={busy || !matched}
+        title={
+          !matched
+            ? "Please use the email you registered for the event."
+            : undefined
+        }
       >
         {busy ? "Please wait…" : "Send feedback →"}
       </button>
