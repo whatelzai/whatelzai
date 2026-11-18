@@ -36,6 +36,7 @@ test("tool loop binds reads through the server and proposals remain uncommitted"
     return { items: [] };
   };
   const result = await runMemberAgent({
+    role: "beacon",
     ...config,
     request: async (_url, init) => {
       const body = JSON.parse(String(init?.body));
@@ -85,6 +86,7 @@ test("model cannot inject a different user into a private read", async () => {
   let reads = 0;
   await assert.rejects(
     runMemberAgent({
+      role: "beacon",
       ...options(),
       readCommitments: async () => {
         reads++;
@@ -107,6 +109,7 @@ test("unknown provider outcome retains reservation; known incomplete receipts re
   const config = options();
   await assert.rejects(
     runMemberAgent({
+      role: "beacon",
       ...config,
       request: async () => {
         throw Error("timeout");
@@ -117,6 +120,7 @@ test("unknown provider outcome retains reservation; known incomplete receipts re
   const second = options();
   await assert.rejects(
     runMemberAgent({
+      role: "beacon",
       ...second,
       request: async () =>
         Response.json({
@@ -135,6 +139,7 @@ test("oversized input fails before contacting provider", async () => {
   let called = false;
   await assert.rejects(
     runMemberAgent({
+      role: "beacon",
       ...config,
       request: async () => {
         called = true;
@@ -148,6 +153,7 @@ test("loop stops after four provider calls and reservations exceed bounded usage
   let calls = 0;
   await assert.rejects(
     runMemberAgent({
+      role: "beacon",
       ...options(),
       request: async (_url, init) => {
         calls++;
@@ -172,6 +178,7 @@ test("loop stops after four provider calls and reservations exceed bounded usage
 test("GPT-6.1 Sol uses Responses with supported reasoning and its own usage rates", async () => {
   const config = { ...options(), model: "gpt-6.1-sol" as MemberModel };
   const result = await runMemberAgent({
+    role: "beacon",
     ...config,
     request: async (url, init) => {
       assert.equal(url, "https://api.openai.com/v1/responses");
@@ -191,6 +198,7 @@ test("GPT-6.1 Sol uses Responses with supported reasoning and its own usage rate
 test("group HQH tool context can exceed ordinary snippets and gets enough output room", async () => {
   let calls = 0;
   const result = await runMemberAgent({
+    role: "beacon",
     ...options(),
     readFcos: async () => ({
       format: "One combined message",
@@ -244,6 +252,7 @@ test("natural HQH request receives saved people before the first model response"
     },
   ];
   const result = await runMemberAgent({
+    role: "beacon",
     ...config,
     readFcos: async (input) => {
       assert.equal((input as { source: string }).source, "hqh_discover");
@@ -306,6 +315,7 @@ test("an explicit HQH re-read replaces automatic context instead of doubling the
     })),
   };
   await runMemberAgent({
+    role: "beacon",
     ...config,
     readFcos: async () => {
       reads++;

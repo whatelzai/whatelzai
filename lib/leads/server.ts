@@ -1,3 +1,4 @@
+import { requireBusinessTools } from "@/lib/weos-role-server";
 import "server-only";
 import { sharedLeadIds, sharedLeadColumns } from "./sharing";
 import { requireAssignedUser } from "@/lib/app-access";
@@ -12,6 +13,7 @@ import {
 } from "./model";
 
 export async function leadOwner() {
+  await requireBusinessTools();
   const user = await requireAssignedUser();
   if (!user) throw new Error("Sign in to manage your leads.");
   return user.id;
@@ -96,6 +98,16 @@ export async function leadAccess(id: string) {
     .maybeSingle();
   if (own.error) throw Error("Profile access unavailable.");
   if (own.data) return { ...own.data, canEdit: true };
+  const roleAccess = await requireBusinessTools();
+  if (roleAccess.actual === "beacon" && !roleAccess.preview) {
+    const row = await supabaseAdmin
+      .from("member_leads")
+      .select("id,owner_id,photo_path")
+      .eq("id", id)
+      .maybeSingle();
+    if (row.error) throw Error("Profile access unavailable.");
+    return row.data ? { ...row.data, canEdit: false } : null;
+  }
   const grant = (await sharedLeadIds(viewer)).find((x) => x.id === id);
   if (!grant) return null;
   const row = await supabaseAdmin

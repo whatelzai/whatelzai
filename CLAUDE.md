@@ -979,3 +979,9 @@ browser-history Back or public Playbook promotion. The root not-found boundary a
 recognizes Admin requests as a fallback; public editorial404 remains unchanged.
 No auth checks are relaxed and unavailable database reads remain distinct from absent
 records. Task references retain encoded source IDs and owner-scoped lookup.
+
+## weOS access and role preview (SPR-212)
+
+Beacon/Blaze/Torch/Ember/Guest are explicit Whatelz app roles, separate from FC roles and sponsorship. Ember is AI-learning-only; internal business routes, contexts and HQH tools are blocked. Existing account links remain activation proof; no name matching, automatic signup activation or Poti→ABO promotion. The Beacon-only read-only View as switch previews Blaze/Torch/Ember layouts without impersonation or private-data loads. Blaze has a separate community entry; owner workspaces remain owner-only.
+
+Member AI context uses authenticated member-JWT weos_read_context, never a service-role retrieval client. SQL derives auth.uid(), checks stored roles and existing visibility, and projects allowlisted fields. RLS protects published knowledge and own-or-Beacon conversations/messages; internal base tables remain browser-denied. Owner explicitly approved Beacon private-chat review for later app-improvement analysis. Other roles see own chats only; review is separate from ordinary AI context and disclosed in Chat. No automatic analysis/export, provider call or account merge. See docs/weos-access.md for scope, tests and rollback. — codex,2026-11-18

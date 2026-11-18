@@ -1,3 +1,4 @@
+import { requireBusinessTools } from "@/lib/weos-role-server";
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { requireAssignedUser } from "@/lib/app-access";
@@ -5,11 +6,13 @@ import { sharedLeadIds } from "@/lib/leads/sharing";
 import { sharedBriefingIds } from "./sharing";
 import type { Briefing } from "./model";
 export async function fcosOwner() {
+  await requireBusinessTools();
   const user = await requireAssignedUser();
   if (!user) throw Error("Sign in to continue.");
   return user.id;
 }
 export async function briefingLeads() {
+  await requireBusinessTools();
   const owner = await fcosOwner();
   const shared = await sharedLeadIds(owner);
   const { data, error } = await supabaseAdmin
@@ -29,6 +32,7 @@ export async function briefingLeads() {
   return data ?? [];
 }
 export async function loadBriefing(id: string) {
+  await requireBusinessTools();
   const owner = await fcosOwner();
   const { data, error } = await supabaseAdmin
     .from("member_briefings")
@@ -42,6 +46,7 @@ export async function loadBriefing(id: string) {
   return data as Briefing | null;
 }
 export async function loadBriefings(page = 1) {
+  await requireBusinessTools();
   const owner = await fcosOwner();
   const { data, error, count } = await supabaseAdmin
     .from("member_briefings")
@@ -57,6 +62,7 @@ export async function loadBriefings(page = 1) {
 export async function contextBriefings(
   context: { lead: string } | { event: string },
 ) {
+  await requireBusinessTools();
   const owner = await fcosOwner();
   const shared = await sharedBriefingIds(owner);
   let query = supabaseAdmin

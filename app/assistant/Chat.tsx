@@ -1,4 +1,6 @@
 "use client";
+import { useWeosRole } from "@/components/fcos/WeosRoleContext";
+import { canUseBusinessTools } from "@/lib/weos-roles";
 import { CreateHqh } from "@/components/fcos/CreateHqh";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,6 +30,7 @@ export function Chat({
   initialPrompt?: string;
   name?: string;
 }) {
+  const businessTools = canUseBusinessTools(useWeosRole());
   const [images, setImages] = useState<
     { key: string; file: File; url: string }[]
   >([]);
@@ -255,7 +258,7 @@ export function Chat({
               {message.role === "assistant" ? (
                 <>
                   <ChatMarkdown body={message.body} />
-                  {isShareableHqh(message.body) && (
+                  {businessTools && isShareableHqh(message.body) && (
                     <WhatsAppShare text={message.body} />
                   )}
                 </>
@@ -264,7 +267,7 @@ export function Chat({
                   {message.body}
                 </div>
               )}
-              {message.role === "assistant" && (
+              {message.role === "assistant" && businessTools && (
                 <details className="mt-2 text-xs text-zinc-500">
                   <summary className="w-fit cursor-pointer py-2">
                     Save as a note
@@ -354,14 +357,20 @@ export function Chat({
           )}
         </div>
       </div>
-      <CreateHqh
-        people={hqhPeople}
-        disabled={busy || mediaBusy || !enabled || images.length > 0}
-        onCreate={(prompt) => {
-          setText(prompt);
-          void sendText(prompt);
-        }}
-      />
+      {businessTools && (
+        <CreateHqh
+          people={hqhPeople}
+          disabled={busy || mediaBusy || !enabled || images.length > 0}
+          onCreate={(prompt) => {
+            setText(prompt);
+            void sendText(prompt);
+          }}
+        />
+      )}
+      <p className="px-5 text-center text-[11px] leading-5 text-zinc-500">
+        Beacon can review conversations to improve weOS. Other members cannot
+        read your chats.
+      </p>
       <form
         onSubmit={send}
         className="fcos-chat-composer shrink-0 bg-white px-1 pt-3 md:px-5"

@@ -1,3 +1,5 @@
+import { weosAccess } from "@/lib/weos-role-server";
+import { EmberHome } from "@/components/fcos/EmberHome";
 import { getMemberLanguagePreference } from "@/lib/fcos/language-server";
 import { LanguageWelcome } from "@/components/fcos/LanguageWelcome";
 import { Suspense } from "react";
@@ -29,6 +31,7 @@ const eyebrow =
 export default async function MemberHome() {
   const user = await ensureUserRow();
   if (!user) redirect("/sign-in");
+  if ((await weosAccess()).role === "ember") return <EmberHome />;
   const [data, preference] = await Promise.all([
     loadAttentionDashboard(),
     getMemberLanguagePreference(),

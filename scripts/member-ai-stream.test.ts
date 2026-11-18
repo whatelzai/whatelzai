@@ -53,6 +53,7 @@ test("provider text reaches caller before completion; only terminal usage settle
   const deltas: string[] = [];
   const opts = config();
   const running = runMemberAgent({
+    role: "beacon",
     ...opts,
     onText: (t) => {
       deltas.push(t);
@@ -96,6 +97,7 @@ test("interrupted provider stream keeps uncertain reservation; tool arguments ne
   await assert.rejects(
     () =>
       runMemberAgent({
+        role: "beacon",
         ...opts,
         onText: (t) => shown.push(t),
         request: async () =>
@@ -124,6 +126,7 @@ test("streaming loop executes scoped tools and counts every completed step", asy
     return { items: [] };
   };
   const result = await runMemberAgent({
+    role: "beacon",
     ...opts,
     onText: (t) => shown.push(t),
     request: async () => {

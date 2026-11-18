@@ -1,3 +1,5 @@
+import { weosAccess } from "@/lib/weos-role-server";
+import { WeosRoleProvider } from "@/components/fcos/WeosRoleContext";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-preference";
 import { getMemberLanguage } from "@/lib/fcos/language-server";
 import { MemberLanguageProvider } from "@/components/fcos/MemberLanguage";
@@ -188,6 +190,7 @@ export default async function RootLayout({
   const requestHeaders = await headers();
   const surface = siteSurface(requestHeaders.get("host") ?? "");
   const memberLanguage = surface === "app" ? await getMemberLanguage() : "en";
+  const role = surface !== "public" ? (await weosAccess()).role : "guest";
   // The member shell uses neither public identity nor the public admin-link flag.
   // Keep its loading boundary free of these reads; protected pages verify identity.
   const [isAdmin, s] =
@@ -267,10 +270,10 @@ export default async function RootLayout({
         >
           {surface === "app" ? (
             <MemberLanguageProvider language={memberLanguage}>
-              {children}
+              <WeosRoleProvider role={role}>{children}</WeosRoleProvider>
             </MemberLanguageProvider>
           ) : (
-            children
+            <WeosRoleProvider role={role}>{children}</WeosRoleProvider>
           )}
         </ShellProvider>
       </body>

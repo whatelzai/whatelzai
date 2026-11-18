@@ -1,3 +1,4 @@
+import { requireBusinessTools } from "@/lib/weos-role-server";
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { fcosOwner } from "./server";
@@ -39,6 +40,17 @@ export async function noteShares(id: string) {
   return data ?? [];
 }
 export async function sharedBriefingIds(viewer: string) {
+  const access = await requireBusinessTools();
+  if (access.actual === "beacon" && !access.preview) {
+    const all = await supabaseAdmin
+      .from("member_briefings")
+      .select("id,owner_id")
+      .neq("owner_id", access.user!.id)
+      .order("id")
+      .limit(501);
+    if (all.error) throw Error("Community notes unavailable");
+    return all.data;
+  }
   const r = await supabaseAdmin.rpc("shared_member_briefing_ids", {
     p_recipient: viewer,
   });
@@ -52,7 +64,8 @@ export async function loadSharedBriefing(id: string) {
     p_note: id,
   });
   if (allowed.error) throw Error("Team note unavailable.");
-  if (!allowed.data) return null;
+  if (!allowed.data && (await requireBusinessTools()).actual !== "beacon")
+    return null;
   const { data, error } = await supabaseAdmin
     .from("member_briefings")
     .select(sharedColumns)
