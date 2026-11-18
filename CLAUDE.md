@@ -988,3 +988,12 @@ registration, request idempotency and pinned ten-question snapshots. Old respons
 and verification records remain intact; review distinguishes email matches from
 historically verified responses. Retired code endpoints return 410. No attendee
 email list or account signup is exposed.
+
+## Automatic feedback email check (2026-11-18)
+
+The feedback email field checks the fixed event registration automatically after a
+600ms typing pause, without an email action button. A green tick indicates a match;
+an unmatched address prompts the attendee to use their registration email. The
+field stays editable, editing immediately removes submission eligibility, and
+aborted/stale lookup results cannot unlock another address. Lookup does not freeze
+the questions. Final server-side registration validation is unchanged.

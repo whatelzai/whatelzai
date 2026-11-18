@@ -1,8 +1,9 @@
 "use client";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { feedbackPath } from "@/lib/event-feedback/model";
 import {
+  feedbackEmailInput,
   validFeedbackAnswers,
   type FeedbackAnswers,
   type FeedbackFormConfig,
@@ -23,10 +24,13 @@ export default function FeedbackForm({
       ),
     ),
     [email, setEmail] = useState(""),
-    [matched, setMatched] = useState(false),
+    [emailCheck, setEmailCheck] = useState<{
+      eventId: string;
+      email: string;
+      status: "checking" | "matched" | "unmatched" | "error";
+    } | null>(null),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState(""),
-    [notice, setNotice] = useState("");
+    [error, setError] = useState("");
   const pending = useRef(false),
     requestId = useRef<string | null>(null);
   const required = config.questions.filter(
@@ -43,37 +47,62 @@ export default function FeedbackForm({
     if (!r.ok) throw Error(result.error || "Please try again.");
     return result;
   }
-  async function checkEmail() {
-    if (pending.current) return;
-    pending.current = true;
-    setBusy(true);
-    setError("");
-    setNotice("");
-    try {
-      const result = await post("/api/event-feedback/check-email", {
-        eventId,
-        email,
-        website: "",
-      });
-      setMatched(result.matched === true);
-      if (result.matched)
-        setNotice("Registration found. You can now send your feedback.");
-      else
-        setError(
-          "No registration found for this event. Please use the email you signed up with.",
-        );
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Please try again.");
-    } finally {
-      pending.current = false;
-      setBusy(false);
-    }
-  }
+  const normalizedEmail = email.trim().toLowerCase();
+  const emailStatus = !normalizedEmail
+    ? "idle"
+    : emailCheck?.eventId === eventId && emailCheck.email === normalizedEmail
+      ? emailCheck.status
+      : "pending";
+  const matched = emailStatus === "matched";
+  useEffect(() => {
+    if (!normalizedEmail) return;
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      if (
+        !feedbackEmailInput.safeParse({ eventId, email: normalizedEmail })
+          .success
+      ) {
+        setEmailCheck({ eventId, email: normalizedEmail, status: "unmatched" });
+        return;
+      }
+      setEmailCheck({ eventId, email: normalizedEmail, status: "checking" });
+      try {
+        const response = await fetch("/api/event-feedback/check-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventId,
+            email: normalizedEmail,
+            website: "",
+          }),
+          signal: controller.signal,
+        });
+        const result = await response.json();
+        if (controller.signal.aborted) return;
+        setEmailCheck({
+          eventId,
+          email: normalizedEmail,
+          status: response.ok
+            ? result.matched === true
+              ? "matched"
+              : "unmatched"
+            : "error",
+        });
+      } catch {
+        if (!controller.signal.aborted)
+          setEmailCheck({ eventId, email: normalizedEmail, status: "error" });
+      }
+    }, 600);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [eventId, normalizedEmail]);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (pending.current) return;
     if (!matched) {
-      setError("Check the email you registered with before submitting.");
+      setError("Please use the email you registered for the event.");
       return;
     }
     if (!validFeedbackAnswers(config, answers)) {
@@ -117,46 +146,49 @@ export default function FeedbackForm({
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
-            setMatched(false);
             setError("");
             requestId.current = null;
-            setNotice("");
           }}
-          readOnly={matched}
           disabled={busy}
           maxLength={254}
           required
+          aria-describedby="feedback-email-status"
+          aria-invalid={emailStatus === "unmatched" || undefined}
         />
-        {!matched && (
-          <button
-            type="button"
-            className="feedback-secondary"
-            disabled={busy || !email}
-            onClick={() => void checkEmail()}
-          >
-            {busy ? "Checking…" : "Check email"}
-          </button>
-        )}
-        {matched && (
-          <button
-            type="button"
-            className="feedback-secondary"
-            disabled={busy}
-            onClick={() => {
-              setMatched(false);
-              setNotice("");
-              requestId.current = null;
-            }}
-          >
-            Use another email
-          </button>
-        )}
-        <p role="status">{notice}</p>
-        {error && !matched && (
-          <p role="alert" className="feedback-error" id="feedback-email-error">
-            {error}
-          </p>
-        )}
+        <p
+          id="feedback-email-status"
+          role="status"
+          className={`feedback-email-status${matched ? " is-matched" : ""}`}
+        >
+          {matched ? (
+            <>
+              <svg
+                className="feedback-email-tick"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="12" fill="currentColor" />
+                <path
+                  d="m6.5 12 3.5 3.5 7.5-7.5"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2.25"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Registration found</span>
+            </>
+          ) : emailStatus === "unmatched" ? (
+            "Please use the email you registered for the event."
+          ) : emailStatus === "error" ? (
+            "We couldn’t check your email. Please try entering it again."
+          ) : emailStatus === "checking" ? (
+            "Checking your registration…"
+          ) : (
+            ""
+          )}
+        </p>
       </section>
       <div className="feedback-progress">
         <span>{config.questions.length} quick questions</span>
@@ -239,7 +271,7 @@ export default function FeedbackForm({
           <input name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
-      {error && matched && (
+      {error && (
         <p role="alert" className="feedback-error">
           {error}
         </p>

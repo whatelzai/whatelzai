@@ -234,16 +234,23 @@
   outline: 2px solid var(--ink);
   outline-offset: 3px;
 }
-.feedback-secondary {
-  min-height: 44px;
-  padding: 10px 14px;
-  border: 1px solid var(--ink);
-  border-radius: 12px;
+.feedback-email-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
   margin-top: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.feedback-email-status.is-matched {
   color: var(--ink);
 }
-.feedback-secondary:disabled {
-  opacity: 0.5;
+.feedback-email-tick {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  color: #15803d;
 }
 .feedback-progress {
   display: flex;
