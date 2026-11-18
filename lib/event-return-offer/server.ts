@@ -15,6 +15,7 @@ import {
 } from "./model";
 export type StoredReturnOffer = {
   id: string;
+  feedback_id: string;
   source_event_id: string;
   target_event_id: string;
   email: string;
@@ -51,7 +52,7 @@ export async function loadReturnOffer(token: string | undefined) {
   const r = await db
     .from("event_return_offers")
     .select(
-      "id,source_event_id,target_event_id,email,expires_at,claimed_at,dismissed_at,attempt_id",
+      "id,feedback_id,source_event_id,target_event_id,email,expires_at,claimed_at,dismissed_at,attempt_id",
     )
     .eq("token_hash", signupHash(token))
     .maybeSingle();
