@@ -8,7 +8,6 @@ import {
   CalendarDays,
   Play,
   Square,
-  ArrowRight,
 } from "lucide-react";
 import Link from "./AdminLink";
 import { adminUrl } from "@/lib/admin-url";
@@ -167,24 +166,18 @@ export function WorkspaceFocusView({
           </p>
         )}
       </section>
-      <footer>
-        {tasks === null && (
-          <p role="status">{t("Your commitments could not be loaded.")}</p>
-        )}
-        {warnings.length > 0 && (
-          <p role="status">
-            {t("Some sources unavailable")}: {warnings.join(", ")}
-          </p>
-        )}
-        <Link href={adminUrl("/admin/today#commitments")}>
-          {t("Choose my focus")}
-          <ArrowRight size={14} aria-hidden="true" />
-        </Link>
-        <Link href={adminUrl("/admin/calendar")}>
-          {t("Calendar")}
-          <ArrowRight size={14} aria-hidden="true" />
-        </Link>
-      </footer>
+      {(tasks === null || warnings.length > 0) && (
+        <footer>
+          {tasks === null && (
+            <p role="status">{t("Your commitments could not be loaded.")}</p>
+          )}
+          {warnings.length > 0 && (
+            <p role="status">
+              {t("Some sources unavailable")}: {warnings.join(", ")}
+            </p>
+          )}
+        </footer>
+      )}
     </div>
   );
 }

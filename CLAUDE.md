@@ -934,3 +934,7 @@ Keep repeated main-tab headings visually hidden with accessible h1 retained. Adm
 ## Admin focus horizons checkpoint (2026-11-18)
 
 Home and each epic root lead with Today’s focus and This week’s focus. Overview combines the three work lanes plus read-only administration; each epic filters to itself. Today is a full-width carousel (6.5s rotation, pause/manual/swipe, hidden/reduced-motion/interaction guards); ongoing sprint and overdue accepted work remain Today. Weekly lists only starts/due dates tomorrow–Sunday: first3 then View more. Overview adds Thursday21:00 next-sprint planning and Sunday21:00 closeout, Sprint-001 epoch2026-11-16, without creating schedules/tasks. Stable encoded source IDs open owner-only detail routes, derived short display references and sticky breadcrumbs; exact task reads are owner+UUID scoped, epic wrappers reject lane mismatch. Back on a fresh detail deep-link returns to the real epic/Home root. Never infer acceptance/attendance from calendar context. Existing directories/Rhythm remain below; no unconfirmed content-creation commitment is inserted. See docs/admin-five-tabs.md.
+
+### Focus footer cleanup (2026-11-18)
+
+Do not show Choose my focus or Calendar links beneath Today/This Week on Home or epic roots. Focus selection belongs to Thursday planning; Calendar already has a persistent tab. Only source-availability notices may occupy the footer, and no empty footer is rendered.
