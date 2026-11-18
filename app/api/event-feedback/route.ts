@@ -28,11 +28,20 @@ export async function POST(req: Request) {
     if (!event)
       return json({ error: "Feedback is not open for this event." }, 409);
     const form = await loadFeedbackForm(event.recordId);
-    if (
-      !form ||
-      form.id !== input.data.formId ||
-      !validFeedbackAnswers(form, input.data.answers)
-    )
+    if (!form)
+      return json(
+        { error: "Feedback is not available right now. Please try again." },
+        503,
+      );
+    if (form.id !== input.data.formId)
+      return json(
+        {
+          error:
+            "This form has been updated. Please refresh to see the latest questions before submitting.",
+        },
+        409,
+      );
+    if (!validFeedbackAnswers(form, input.data.answers))
       return json({ error: "Please answer every question on this form." }, 400);
     const r = await db.rpc("submit_registered_event_feedback", {
       p_id: input.data.requestId,
