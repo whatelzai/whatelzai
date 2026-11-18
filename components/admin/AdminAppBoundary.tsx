@@ -1,5 +1,6 @@
 "use client";
 import {
+  Suspense,
   useEffect,
   useEffectEvent,
   useRef,
@@ -7,13 +8,12 @@ import {
   useTransition,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Copy, X } from "lucide-react";
+import { Copy, X } from "lucide-react";
 import { adminDestination, adminParent } from "@/lib/admin-link-policy";
 import { adminUrl } from "@/lib/admin-url";
 import { cleanAdminPath } from "@/lib/admin-navigation";
-import Link from "./AdminLink";
 import { useAdminFocus } from "./AdminFocus";
-import { AdminText } from "./AdminPreferences";
+import { AdminBackTrail } from "./AdminBackTrail";
 
 export function AdminAppBoundary() {
   const router = useRouter();
@@ -288,14 +288,9 @@ export function AdminAppBoundary() {
         </div>
       )}
       {!top && (
-        <nav className="admin-back-row" aria-label="Back navigation">
-          <div>
-            <Link href={adminUrl(adminParent(pathname))}>
-              <ArrowLeft size={17} aria-hidden="true" />
-              <AdminText text="Back" />
-            </Link>
-          </div>
-        </nav>
+        <Suspense fallback={null}>
+          <AdminBackTrail pathname={pathname} />
+        </Suspense>
       )}
       {preview && (
         <dialog

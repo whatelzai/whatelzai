@@ -99,6 +99,10 @@ export function adminDestination(
 }
 export function adminParent(pathname: string): string {
   const p = cleanAdminPath(pathname);
+  const focus = p.match(
+    /^\/(ai-business\/|network-marketing\/|day-job\/)?focus\/[^/]+$/,
+  );
+  if (focus) return "/admin" + (focus[1] ? "/" + focus[1].slice(0, -1) : "");
   if (p.startsWith("/network-marketing/app/")) {
     const parts = p.split("/").filter(Boolean);
     return parts.length > 3

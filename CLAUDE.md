@@ -929,3 +929,8 @@ Calendar replaces period modes with a Monday-first seven-column continuous grid,
 ## Compact Admin chrome and owner Profile (2026-11-18)
 
 Keep repeated main-tab headings visually hidden with accessible h1 retained. AdminAppBoundary lives directly below AdminNavigation, outside animated main content; deeper-page Back is a40px sticky row using ResizeObserver-measured header height. Main tabs have no Back. Preserve document scrolling/native browser refresh; standalone Admin reuses guarded PullRefresh scope=admin without altering member default. Owner Profile uses weOS visual structure, language pills and identity, retaining Admin-only preferences. No member usage/role/tier semantics copied. — codex,2026-11-18
+
+
+## Admin focus horizons checkpoint (2026-11-18)
+
+Home and each epic root lead with Today’s focus and This week’s focus. Overview combines the three work lanes plus read-only administration; each epic filters to itself. Today is a full-width carousel (6.5s rotation, pause/manual/swipe, hidden/reduced-motion/interaction guards); ongoing sprint and overdue accepted work remain Today. Weekly lists only starts/due dates tomorrow–Sunday: first3 then View more. Overview adds Thursday21:00 next-sprint planning and Sunday21:00 closeout, Sprint-001 epoch2026-11-16, without creating schedules/tasks. Stable encoded source IDs open owner-only detail routes, derived short display references and sticky breadcrumbs; exact task reads are owner+UUID scoped, epic wrappers reject lane mismatch. Back on a fresh detail deep-link returns to the real epic/Home root. Never infer acceptance/attendance from calendar context. Existing directories/Rhythm remain below; no unconfirmed content-creation commitment is inserted. See docs/admin-five-tabs.md.

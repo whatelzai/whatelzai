@@ -1,7 +1,10 @@
+import {
+  WorkspaceFocus,
+  WorkspaceFocusLoading,
+} from "@/components/admin/WorkspaceFocus";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AdminArea } from "@/components/admin/AdminArea";
-import { SprintFocus } from "@/components/admin/SprintFocus";
 export const metadata: Metadata = { title: "Network Marketing — Admin" };
 const links = [
   {
@@ -56,12 +59,8 @@ export default function NetworkMarketingPage() {
       title="Network Marketing"
       description="People, conversations and the next follow-up."
       intro={
-        <Suspense
-          fallback={
-            <p className="text-sm text-zinc-500">Reading your focus…</p>
-          }
-        >
-          <SprintFocus lane="network-marketing" />
+        <Suspense fallback={<WorkspaceFocusLoading />}>
+          <WorkspaceFocus lane="network-marketing" />
         </Suspense>
       }
       links={links.filter((link) =>

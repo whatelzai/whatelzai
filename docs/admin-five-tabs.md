@@ -76,3 +76,35 @@ member passes, tiers and reset credits are not copied into the owner account.
 Appearance, text size, push options, scheduling, install and sign-out remain.
 Synthetic profile/browser previews contain no private account data and are removed
 before release.
+
+## Focus horizons checkpoint
+
+Shared WorkspaceFocus leads Home, AI Business, Network Marketing and Day Job.
+Today includes accepted open/blocked/waiting tasks due today or overdue and events
+covering the Singapore date. One full-width snap carousel advances every6.5seconds
+only with multiple items, an active tab and no reduced-motion preference. Hover
+pauses; pointer/keyboard interaction stops automatic rotation until Play. Manual
+arrows and touch scrolling remain. A single item has no rotation controls.
+
+This Week contains only items starting/due tomorrow through Sunday, with three
+visible and remaining entries under View more. Ongoing company sprints remain in
+Today rather than repeating as future starts. Source failures stay explicit;
+calendar records never become accepted tasks or attendance assertions.
+
+Overview additionally projects read-only Thursday21:00 next-week planning and
+Sunday21:00 closeout checkpoints. Sprint-001 starts2026-11-16; planning references
+the next sprint and closeout the current sprint. Individual epics exclude these
+administrative reminders. This creates no automation or database task.
+
+Focus detail routes under /admin/focus/[id] and each epic's /focus/[id] retain
+source identity in encoded routes, with short deterministic display references
+(not new sequential database IDs). Owner verification precedes reads; task reads
+filter verified owner plus UUID and retain completed records. Events are projected
+through existing owner-only sources; routine dates must match their weekday.
+Epic detail wrappers reject a mismatched lane. Source tools remain available.
+Breadcrumbs use the originating epic and Today/Week anchor. Deep-link Back falls
+back to a real root, never a nonexistent focus index. Main tabs retain no Back row.
+
+The unused duplicate task read in briefing sources was removed. Directories,
+workspace shortcuts, Rhythm, lazy Suspense and existing permissions remain.
+No schema, dependency, provider call or automatic task acceptance changes.

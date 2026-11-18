@@ -2616,3 +2616,312 @@ html:has(.admin-shell[data-admin-size="larger"]) {
     font-size: 21px;
   }
 }
+
+/* Two horizons first; calendar context never masquerades as an accepted task. */
+.workspace-horizons {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.workspace-horizons > section {
+  min-width: 0;
+}
+.workspace-horizons > section > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.workspace-horizons h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+}
+.workspace-horizons header > span {
+  font-size: 11px;
+  color: var(--ledger-muted);
+  white-space: nowrap;
+}
+.workspace-horizons ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.workspace-horizons li {
+  display: flex;
+  align-items: start;
+  gap: 11px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ledger-rule);
+}
+.workspace-horizons li > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--shortcut-ink, currentColor);
+}
+.workspace-horizons li[data-focused] {
+  border-left: 3px solid var(--admin-accent);
+  padding-left: 10px;
+}
+.horizon-item-copy {
+  flex: 1;
+  min-width: 0;
+}
+.horizon-item-copy strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 550;
+  line-height: 1.45;
+}
+.horizon-item-copy small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ledger-muted);
+  margin-top: 4px;
+}
+.workspace-horizons li button {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  background: var(--admin-accent-soft);
+}
+.workspace-horizons footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  grid-column: 1/-1;
+  font-size: 12px;
+}
+.workspace-horizons footer p {
+  flex-basis: 100%;
+  color: var(--ledger-muted);
+}
+.workspace-horizons footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+.workspace-horizons summary {
+  font-size: 12px;
+  padding-block: 10px;
+  cursor: pointer;
+}
+.horizon-empty {
+  font-size: 13px;
+  color: var(--ledger-muted);
+  padding: 14px 0;
+}
+.horizon-next > p {
+  font-size: 11px;
+  color: var(--ledger-muted);
+  margin-top: 16px;
+}
+.horizon-skeleton {
+  height: 80px;
+  border-radius: 8px;
+  background: #f4f4f1;
+}
+.horizon-workspaces {
+  margin-block: 12px 28px;
+}
+.overview-ledger .overview-week-layout {
+  display: block;
+}
+.admin-workspace-shell .admin-workspace-focus .workspace-horizons {
+  margin-top: 0;
+}
+@media (min-width: 1024px) {
+  .workspace-horizons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+}
+
+.workspace-horizons {
+  grid-template-columns: minmax(0, 1fr);
+}
+.today-carousel {
+  min-width: 0;
+}
+.today-carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  border-radius: 18px;
+}
+.today-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+.today-focus-card {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  background: var(--shortcut-bg);
+  color: var(--shortcut-ink);
+  border-radius: 18px;
+}
+.today-focus-card > a {
+  display: flex;
+  flex-direction: column;
+  min-height: 205px;
+  padding: 20px;
+  gap: 18px;
+}
+.today-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.today-card-top small {
+  font-size: 12px;
+}
+.today-card-top > span {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.8;
+}
+.today-focus-card strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ledger-ink, inherit);
+}
+.today-card-bottom {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+.today-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  padding-top: 3px;
+}
+.today-carousel-controls button {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+.today-carousel-controls button:last-child {
+  margin-left: 10px;
+}
+.workspace-horizons > section {
+  scroll-margin-top: calc(var(--admin-header-height) + 12px);
+}
+.workspace-horizons > section:first-child > .horizon-empty {
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  border-radius: 18px;
+  background: var(--admin-accent-soft);
+  padding: 20px;
+}
+.admin-back-row > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-back-row .admin-back-icon {
+  flex-shrink: 0;
+  min-width: 36px;
+  justify-content: center;
+}
+.admin-back-row ol {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+.admin-back-row li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+.admin-back-row li + li {
+  margin-left: 5px;
+}
+.admin-back-row li a {
+  font-size: 11px;
+}
+.admin-back-row li [aria-current] {
+  font-weight: 600;
+}
+.focus-detail {
+  max-width: 760px;
+}
+.focus-detail-ref {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--ledger-muted);
+  margin-bottom: 18px;
+}
+.focus-detail h1 {
+  margin-bottom: 12px;
+}
+.focus-detail > p {
+  font-size: 13px;
+}
+.focus-detail-facts {
+  display: flex;
+  gap: 12px;
+  margin-block: 26px;
+  line-height: 1.8;
+  font-size: 14px;
+}
+.focus-detail dl > div {
+  display: flex;
+  gap: 20px;
+  padding-block: 12px;
+  border-bottom: 1px solid var(--ledger-rule);
+  font-size: 13px;
+}
+.focus-detail dt {
+  width: 75px;
+  color: var(--ledger-muted);
+  flex-shrink: 0;
+}
+.focus-detail dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.focus-detail > a {
+  margin-top: 24px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .today-carousel-track {
+    scroll-behavior: auto;
+  }
+}
+[data-lane="administration"] {
+  --shortcut-bg: #e3efed;
+  --shortcut-ink: #266b62;
+}
+.admin-shell[data-admin-theme="dark"] [data-lane="administration"] {
+  --shortcut-bg: #20332f;
+  --shortcut-ink: #a3d5ca;
+}

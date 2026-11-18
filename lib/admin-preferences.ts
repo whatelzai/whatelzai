@@ -18,6 +18,28 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "No upcoming items this week.": "本周接下来暂无安排。",
+  Administration: "行政安排",
+  "Weekly rhythm": "每周节奏",
+  "Prepare next week’s outcomes, commitments and focus blocks.":
+    "准备下周的成果目标、承诺与专注时段。",
+  "Review this week’s results and carry forward deliberate choices.":
+    "回顾本周成果，审慎决定延续的事项。",
+  "Previous focus": "上一个重点",
+  "Next focus": "下一个重点",
+  "Pause carousel": "暂停轮播",
+  "Play carousel": "开始轮播",
+  Breadcrumb: "页面路径",
+  "View more": "查看更多",
+  "Open source": "打开来源",
+  "Focus could not be loaded. Please refresh to retry.":
+    "暂时无法读取重点，请刷新重试。",
+  "Today’s focus": "今日重点",
+  "This week’s focus": "本周重点",
+  "Nothing scheduled for today.": "今天暂无安排。",
+  "No focus recorded for this week.": "本周尚未记录重点。",
+  "Next after this week": "下周之后",
+  "Focus may be incomplete.": "部分重点暂时无法读取。",
   "Welcome back,": "欢迎回来，",
   Owner: "所有者",
   "Go to date": "前往日期",

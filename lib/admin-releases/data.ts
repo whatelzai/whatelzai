@@ -5,6 +5,23 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-18-focus-horizons",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T12:45:00+08:00",
+    title: "Today and this week, in focus",
+    titleZh: "聚焦今天与本周",
+    items: [
+      {
+        en: "Today has a full-width rotating focus card. The week preview shows three items from tomorrow onwards, with View more. Each epic stays scoped to its own work.",
+        zh: "今日重点采用全宽轮播卡片；本周预览显示明日起三项安排，其余可展开。各领域仅显示所属重点。",
+      },
+      {
+        en: "Stable focus references open detail pages with breadcrumbs. Overview also shows Thursday 9pm planning and Sunday 9pm closeout; no duplicate schedules are created.",
+        zh: "稳定的重点编号连接详情页与路径导航；总览另显示周四晚9点规划及周日晚9点收尾，不重复创建定时任务。",
+      },
+    ],
+  },
+  {
     id: "2026-11-18-seasonal-calendar",
     publishedAt: "2026-11-18T12:14:00+08:00",
     date: "2026-11-18",

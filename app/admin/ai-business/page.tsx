@@ -1,6 +1,8 @@
-import EventSummary from "@/components/admin/event-admin/EventSummary";
+import {
+  WorkspaceFocus,
+  WorkspaceFocusLoading,
+} from "@/components/admin/WorkspaceFocus";
 import { Suspense } from "react";
-import { SprintFocus } from "@/components/admin/SprintFocus";
 import type { Metadata } from "next";
 import { AdminArea } from "@/components/admin/AdminArea";
 
@@ -101,18 +103,9 @@ export default function AIBusinessPage() {
       title="AI Business"
       description="Events, relationships and paid offers."
       intro={
-        <>
-          <Suspense fallback={<p role="status">Reading next event…</p>}>
-            <EventSummary />
-          </Suspense>
-          <Suspense
-            fallback={
-              <p className="text-sm text-zinc-500">Reading your focus…</p>
-            }
-          >
-            <SprintFocus lane="ai-business" />
-          </Suspense>
-        </>
+        <Suspense fallback={<WorkspaceFocusLoading />}>
+          <WorkspaceFocus lane="ai-business" />
+        </Suspense>
       }
       links={[]}
       groups={[
