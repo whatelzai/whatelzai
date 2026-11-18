@@ -16,9 +16,12 @@ export default async function EventFeedbackReview({
   await dailyOwner();
   const { data, error, count } = await db
     .from("event_feedback")
-    .select("id,rating,comment,created_at,form_id,question_answers", {
-      count: "exact",
-    })
+    .select(
+      "id,rating,comment,created_at,form_id,question_answers,identity_method",
+      {
+        count: "exact",
+      },
+    )
     .eq("event_id", recordId)
     .order("created_at", { ascending: false })
     .limit(100);
@@ -34,8 +37,8 @@ export default async function EventFeedbackReview({
         <p>Publish the event before sharing its feedback form.</p>
       )}
       <p className="event-feedback-note">
-        Responses are private. New responses require a verified registration
-        email.
+        Responses are private. New responses require an email matched to a
+        confirmed event registration.
       </p>
       {error ? (
         <p role="alert">Feedback could not be loaded. Refresh to try again.</p>
@@ -56,7 +59,9 @@ export default async function EventFeedbackReview({
               <p>
                 {r.form_id === "feedback-v1"
                   ? "Earlier anonymous feedback"
-                  : "Verified registration email"}{" "}
+                  : r.identity_method === "email_match"
+                    ? "Registration email matched"
+                    : "Verified registration email"}{" "}
                 · {r.form_id}
               </p>
               {feedbackSnapshot.safeParse(r.question_answers).success ? (
