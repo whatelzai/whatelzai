@@ -1032,3 +1032,7 @@ The bell has the existing per-device push switch inline. EMDEE transport now use
 compact read/write actions. Its stored credential is expired; real latest entries
 were bootstrapped via connected MCP and a user reconnect is needed for future sync.
 Migration20261119004500 applied. See docs/admin-five-tabs.md.
+
+## Interactive weOS role testing (SPR-212 follow-up)
+
+Beacon may use Chat while viewing as Blaze/Torch/Ember through a dedicated endpoint. Authenticated SQL lowers context permissions for each call and restores them even after errors; no identity parameter or member impersonation. Tests use permitted owner/team network records without Beacon oversight, exclude private workspaces/vault/social context, and retain Ember source/audience restrictions. Separate preview_role conversations cannot mix roles or enter normal Chat; existing allowance/rate limits and settlement apply. No task/note/profile mutations, image uploads or automatic sharing. Other preview actions remain read-only. Details/rollback: docs/weos-access.md. — codex,2026-11-19

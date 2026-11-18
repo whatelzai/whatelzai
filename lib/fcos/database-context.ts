@@ -35,6 +35,7 @@ export async function databaseContext(
 export async function databaseHqh(
   query: string,
   budget = 8000,
+  read = databaseContext,
 ): Promise<Record<string, unknown>> {
   const names = query
     .split("|")
@@ -44,7 +45,9 @@ export async function databaseHqh(
     throw Error("Choose one to six Baobeis");
   if (names.length > 1) {
     const rows = await Promise.all(
-      names.map((name) => databaseHqh(name, Math.floor(10000 / names.length))),
+      names.map((name) =>
+        databaseHqh(name, Math.floor(10000 / names.length), read),
+      ),
     );
     return {
       people: rows.map((row) => ({
@@ -58,7 +61,7 @@ export async function databaseHqh(
         "Requested order retained; database permission checked for every person. Bounded dated follow-ups, not a claim of all history.",
     };
   }
-  const raw = await databaseContext("hqh", names[0]);
+  const raw = await read("hqh", names[0]);
   if (!raw.person) return raw;
   return {
     person: raw.person,
@@ -73,8 +76,11 @@ export async function databaseHqh(
       "Current person profile and up to twenty database-authorized linked notes. Past plans remain history; an event is optional.",
   };
 }
-export async function databaseHqhDiscovery(query: string) {
-  const raw = await databaseContext("hqh_discover", query);
+export async function databaseHqhDiscovery(
+  query: string,
+  read = databaseContext,
+) {
+  const raw = await read("hqh_discover", query);
   const people = (raw.people ?? []) as { id: string; name: string }[];
   const normalized = query.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
   const mentioned = people.filter((p) => {
@@ -113,14 +119,14 @@ export async function databaseHqhDiscovery(query: string) {
   return {
     resolved: true,
     names,
-    ...(await databaseHqh(names.join(" | "))),
+    ...(await databaseHqh(names.join(" | "), 8000, read)),
     optionalContext: found?.selected
       ? { event: found.selected.event, date: found.selected.date }
       : undefined,
   };
 }
-export async function databaseEvents(query: string) {
-  const raw = await databaseContext("events", query),
+export async function databaseEvents(query: string, read = databaseContext) {
+  const raw = await read("events", query),
     month = todayUtc8().slice(0, 7);
   const persona =
     raw.persona === "Admin"

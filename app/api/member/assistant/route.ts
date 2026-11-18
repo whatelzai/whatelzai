@@ -1,3 +1,4 @@
+import { createAuthClient } from "@/lib/supabase/auth-server";
 import { databaseContext } from "@/lib/fcos/database-context";
 import { titleConversation } from "@/lib/member-ai/title-server";
 import { modelChatImages } from "@/lib/member-ai/images";
@@ -53,6 +54,16 @@ export async function POST(request: Request) {
   if (!parsed.success)
     return json({ error: "Enter a message of up to 6,000 characters." }, 400);
   const { requestId, conversationId, text, imageIds } = parsed.data;
+  const db = await createAuthClient();
+  const normalConversation = await db
+    .from("member_ai_conversations")
+    .select("id")
+    .eq("id", conversationId)
+    .eq("user_id", actor.user.id)
+    .is("preview_role", null)
+    .maybeSingle();
+  if (normalConversation.error || !normalConversation.data)
+    return json({ error: "Conversation unavailable." }, 403);
   const model = actor.access.model;
   // Check provider readiness before reserving member funds.
   let key: string;
