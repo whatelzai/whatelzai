@@ -25,6 +25,7 @@ const icons = {
   "ai-business": Bot,
   "network-marketing": Network,
   "day-job": BriefcaseBusiness,
+  personal: CalendarDays,
   administration: CalendarDays,
 };
 export function WorkspaceFocusView({
@@ -51,11 +52,13 @@ export function WorkspaceFocusView({
   const warnings = unavailable.filter(
     (s) =>
       !lane ||
-      (lane === "ai-business"
-        ? s === "AI events"
-        : lane === "day-job"
-          ? s === "Company sprints"
-          : s !== "AI events" && s !== "Company sprints"),
+      (lane === "personal"
+        ? false
+        : lane === "ai-business"
+          ? s === "AI events"
+          : lane === "day-job"
+            ? s === "Company sprints"
+            : s !== "AI events" && s !== "Company sprints"),
   );
   function row(item: FocusItem) {
     const Icon = icons[item.lane];

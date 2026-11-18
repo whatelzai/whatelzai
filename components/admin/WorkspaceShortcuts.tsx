@@ -1,5 +1,5 @@
 "use client";
-import { Bot, Network, BriefcaseBusiness } from "lucide-react";
+import { CalendarDays, Bot, Network, BriefcaseBusiness } from "lucide-react";
 import { workLanes } from "@/lib/admin-week";
 import Link from "./AdminLink";
 import { adminUrl } from "@/lib/admin-url";
@@ -8,6 +8,7 @@ const icons = {
   "ai-business": Bot,
   "network-marketing": Network,
   "day-job": BriefcaseBusiness,
+  personal: CalendarDays,
 };
 export function WorkspaceShortcuts() {
   const { t } = useAdminPreferences();

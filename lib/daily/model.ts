@@ -1,8 +1,14 @@
 import { z } from "zod";
 import { branchParent, DAILY_PARENT } from "./paths";
 
-export const lanes = ["day-job", "ai-business", "network-marketing"] as const;
+export const lanes = [
+  "day-job",
+  "ai-business",
+  "network-marketing",
+  "personal",
+] as const;
 export const laneLabels = {
+  personal: "Personal",
   "day-job": "AsiaVerify",
   "ai-business": "AI business",
   "network-marketing": "Network Marketing",

@@ -17,18 +17,18 @@ import {
   adminNavigation,
 } from "../lib/admin-navigation";
 const at = (local: string) => focusAt(new Date(`${local}+08:00`));
-test("Personal remains schedulable outside the four Home workstreams", () => {
+test("Personal is a schedulable Home epic", () => {
   assert.deepEqual(
     adminFocusSpaces.map((item) => item.label),
     ["Overview", "Personal", "AI Business", "Network Marketing", "Day Job"],
   );
   assert.equal(rootSpace("/admin/personal"), "Personal");
-  assert.equal(adminNavigation("/personal").tab, "personal");
+  assert.equal(adminNavigation("/personal").tab, "home");
   assert.equal(
     adminWorkstreams.some((item) => String(item.label) === "Personal"),
-    false,
+    true,
   );
-  assert.equal(adminNavigation("/personal/notes").tab, "personal");
+  assert.equal(adminNavigation("/personal/notes").tab, "home");
   assert.equal(rootSpace("/personal/notes"), null);
 });
 test("weekday transitions use exact Singapore boundaries and Overview outside the blocks", () => {
@@ -166,7 +166,7 @@ test("time editing handles end-of-day midnight and malformed inputs", () => {
   assert.equal(minuteInput(NaN), "");
 });
 
-test("legacy Personal timetable blocks become Overview without losing schedule settings", () => {
+test("Personal timetable choices remain explicit and retain schedule settings", () => {
   const legacy = {
     ...DEFAULT_FOCUS,
     blocks: [
@@ -179,11 +179,11 @@ test("legacy Personal timetable blocks become Overview without losing schedule s
     ],
   };
   assert.equal(validFocusSettings(legacy), true);
-  assert.equal(normalizeFocusSettings(legacy).blocks[0].space, "Overview");
+  assert.equal(normalizeFocusSettings(legacy).blocks[0].space, "Personal");
   assert.equal(legacy.blocks[0].space, "Personal");
   assert.equal(
     focusAt(new Date("2026-10-26T08:30:00+08:00"), legacy).path,
-    "/admin",
+    "/admin/personal",
   );
   assert.equal(focusPath("Personal"), "/admin/personal");
 });

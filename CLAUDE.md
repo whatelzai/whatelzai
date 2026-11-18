@@ -938,3 +938,30 @@ Home and each epic root lead with Today’s focus and This week’s focus. Overv
 ### Focus footer cleanup (2026-11-18)
 
 Do not show Choose my focus or Calendar links beneath Today/This Week on Home or epic roots. Focus selection belongs to Thursday planning; Calendar already has a persistent tab. Only source-availability notices may occupy the footer, and no empty footer is rendered.
+
+## Three-tab Admin, Personal epic and saved Chat — 2026-11-18
+
+The main dock is Chat | Home | Profile. Personal is the fourth epic beside AI Business,
+Network Marketing and Day Job, with scoped Today/Week and detail pages. Overview
+combines all four. Thursday planning and Sunday closeout now belong to Personal.
+Calendar remains accessible in the workspace selector. Personal schedules retain
+explicit saved choices.
+
+Admin Chat saves owner-scoped threads/turns in private Supabase tables and uses the
+existing server connection with gpt-6.1-sol, provider store:false. The verified task
+snapshot is available; calendar, email and EMDEE are not connected to this chat.
+Task changes are stored proposals until the user presses Apply task. A service-only
+RPC validates owner, stored proposal, revision and completion invariants, with
+idempotent receipts. Pending turns serialize per conversation; retries retain the
+saved message and request identity. History lists the latest50 conversations;
+each conversation supports100 turns and direct thread links remain valid.
+
+A daily21:00 Personal focus reminder opens saved Chat for idea review. This is a
+visible reminder only: no new scheduled AI reconciliation job or EMDEE write.
+The header bell has a private inbox with unread marks, mark-all-read and soft
+archive. It imports release notes and confirmed registrations from the last28days;
+future attempted push deliveries also persist notices before sending. It does not claim a complete archive of historical push notifications.
+
+Migration20261118053000 is additive and applied. New tables deny browser roles;
+reads/writes use verified owner endpoints, same-origin mutation guards and service
+credentials. Preserve saved conversations and notification history on rollback.

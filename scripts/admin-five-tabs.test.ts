@@ -19,7 +19,6 @@ import {
 test("new destinations are utility tabs; public-site profile tools remain AI Business", () => {
   for (const [path, tab] of [
     ["/chat", "chat"],
-    ["/calendar", "calendar"],
     ["/profile", "profile"],
     ["/settings", "profile"],
   ])

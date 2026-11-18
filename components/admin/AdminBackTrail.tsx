@@ -12,7 +12,7 @@ export function AdminBackTrail({ pathname }: { pathname: string }) {
   const search = useSearchParams();
   const path = cleanAdminPath(pathname);
   const match = path.match(
-    /^\/(ai-business\/|network-marketing\/|day-job\/)?focus\/([^/]+)$/,
+    /^\/(personal\/|ai-business\/|network-marketing\/|day-job\/)?focus\/([^/]+)$/,
   );
   const root = match
     ? "/admin" + (match[1] ? "/" + match[1].slice(0, -1) : "")

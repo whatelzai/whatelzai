@@ -40,7 +40,7 @@ export async function loadFocusDetail(
     const date = id.split(":")[2] ?? "";
     const routine = administrativeFocus(date).find((r) => r.id === id);
     return routine
-      ? { ...routine, source: "Your weekly rhythm · Asia/Singapore" }
+      ? { ...routine, source: "Your rhythm · Asia/Singapore" }
       : null;
   }
   if (!id.startsWith("event:")) return null;

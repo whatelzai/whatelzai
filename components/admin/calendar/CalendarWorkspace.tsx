@@ -23,6 +23,7 @@ const icons = {
   "ai-business": Bot,
   "network-marketing": Network,
   "day-job": BriefcaseBusiness,
+  personal: CalendarDays,
 };
 const BATCH = 8;
 export function CalendarWorkspace({

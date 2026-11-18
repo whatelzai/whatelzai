@@ -55,7 +55,7 @@ export function focusHorizons(
     }));
   const anchors = [
     ...calendarAnchors,
-    ...(!lane ? administrativeFocus(day) : []),
+    ...(!lane || lane === "personal" ? administrativeFocus(day) : []),
   ];
   const sort = (a: FocusItem, b: FocusItem) =>
     a.start.localeCompare(b.start) ||
@@ -96,6 +96,12 @@ export function administrativeFocus(day: string): FocusItem[] {
   if (number < 1) return [];
   return [
     {
+      key: "chat-review",
+      day,
+      title: "Review Admin Chat ideas",
+      slug: "chat-review",
+    },
+    {
       key: "planning",
       day: addDays(week.start, 3),
       title: `Plan next week · ${sprint(number + 1)}`,
@@ -110,12 +116,15 @@ export function administrativeFocus(day: string): FocusItem[] {
   ].map((r) => ({
     id: `routine:${r.key}:${r.day}`,
     title: r.title,
-    lane: "administration",
+    lane: "personal",
     start: r.day,
     end: r.day,
     kind: "routine",
     time: "21:00",
-    status: "Weekly rhythm",
-    href: `/admin/today/routines/${r.slug}`,
+    status: r.key === "chat-review" ? "Daily rhythm" : "Weekly rhythm",
+    href:
+      r.key === "chat-review"
+        ? "/admin/chat?review=1"
+        : `/admin/today/routines/${r.slug}`,
   }));
 }
