@@ -144,3 +144,33 @@ through to the public404. The root fallback also recognizes Admin hosts/surface.
 Recovery links are same-origin and return to a known epic root or Home, never an
 arbitrary parent, public Playbook or browser auth history. Resource unavailability
 remains a retryable error; absent records remain not-found. No access controls change.
+
+## Latest Rhythm entries and inline push control — 2026-11-19
+
+Home and Personal share Morning | Night | Weekly | Calendar shortcuts. The first
+three open /admin/rhythm/[kind], showing the latest canonical saved Notes rather
+than requiring a current-day/previous-week entry. Owner-scoped private snapshots
+retain the last known good content through connection failures; readers show a
+reconnect action when the source cannot be refreshed. No Unavailable status on
+the shortcuts. Red dots plus accessible Unread labels compare exact source version
+against owner read_version; opening a visible reader posts a same-origin receipt.
+Stale receipts cannot mark a newer version read. Home and the bell refresh on the
+receipt and periodically while visible.
+
+The five-minute routine cron refreshes canonical hub-linked entries, creates a
+version-deduplicated inbox notice atomically with a new snapshot, and delivers
+opted-in device pushes through existing durable leases. No AI inference. Device
+opt-in time suppresses historical catch-up; legacy push receipts suppress repeat
+alerts for already delivered entries. A source refresh requires a valid EMDEE
+connection. Reconnect remains necessary after its30-day authorization expires;
+this change never reuses expired credentials or invents refresh-token support.
+The transport uses EMDEE's compact read/write action envelope, preserving exact
+missing-document handling and guarded writes.
+
+The notification dialog mounts the existing permission-aware push switch directly,
+with per-device enable/disable and explicit blocked/unsupported states. Profile
+retains its full options. Migration20261119004500 is applied: private RLS table and
+service-only save RPC, atomic notification dedupe and older-source rejection.
+Latest Morning/Evening2026-11-18 and Weekly2026-W42 were read through the connected
+EMDEE tool and copied to Admin as a bootstrap while the stored app connection is
+expired. These are real saved entries, not fabricated current-day briefs.

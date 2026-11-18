@@ -106,6 +106,11 @@ function fixture(owner = true) {
   };
   const mocks: Record<string, unknown> = {
     "server-only": {},
+    "@/lib/admin-rhythm/server": {
+      syncRhythms: async () => {},
+      cachedRhythms: async () => [],
+    },
+    "@/lib/admin-rhythm/model": {},
     "@/lib/admin-notifications/server": { recordAdminNotice: async () => {} },
     "@/lib/supabase-server": { supabaseAdmin: db },
     "@/lib/admin-focus": focus,

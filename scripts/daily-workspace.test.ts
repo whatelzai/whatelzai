@@ -110,8 +110,12 @@ function emdeeMock(existing: boolean, hash = "1".repeat(16)) {
     {
       fetch: async (_url: string, init: RequestInit) => {
         const rpc = JSON.parse(init.body as string);
-        const name = rpc.params.name;
-        const args = rpc.params.arguments;
+        const name = rpc.params.arguments.action;
+        const args = rpc.params.arguments.arguments;
+        assert.equal(
+          rpc.params.name,
+          name === "get_doc" || name === "list_docs" ? "read" : "write",
+        );
         calls.push({ name, args });
         let result: unknown;
         if (name === "list_docs") result = present ? [{ path }] : [];

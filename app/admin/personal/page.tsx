@@ -1,3 +1,4 @@
+import { RhythmPanel } from "@/components/admin/RhythmPanel";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import {
@@ -9,8 +10,6 @@ import {
   Mic,
   Heart,
   Battery,
-  Sun,
-  Moon,
   CalendarDays,
   Flower2,
   Dumbbell,
@@ -33,11 +32,9 @@ import {
   WorkspaceFocusLoading,
 } from "@/components/admin/WorkspaceFocus";
 import { dailyOwner } from "@/lib/daily/server";
-import { singaporeDay } from "@/lib/daily/model";
 import { focusWeek } from "@/lib/personal/model";
 import { personalSources } from "@/lib/personal/server";
 import { mandalaGoal, mandalaAreas } from "@/lib/mandala";
-import { briefStatus } from "@/lib/admin-overview/model";
 import { money } from "@/lib/money/model";
 import { adminUrl } from "@/lib/admin-url";
 import "./personal.css";
@@ -51,9 +48,8 @@ const Text = ({ s }: { s: string }) => <AdminText text={s} />;
 export default async function PersonalPage() {
   const owner = await dailyOwner(),
     now = new Date(),
-    day = singaporeDay(now),
     week = focusWeek(now);
-  const sources = personalSources(owner, day, week.start, now);
+  const sources = personalSources(owner, week.start);
   return (
     <div className="personal-home">
       <Suspense fallback={<WorkspaceFocusLoading />}>
@@ -124,17 +120,9 @@ export default async function PersonalPage() {
             <Text s="Routines" />
           </Link>
         </div>
-        <div className="personal-rhythm-grid">
-          <Suspense fallback={<Placeholder label="Morning brief" />}>
-            <Routine source={sources.morning} kind="morning" now={now} />
-          </Suspense>
-          <Suspense fallback={<Placeholder label="Evening debrief" />}>
-            <Routine source={sources.evening} kind="evening" now={now} />
-          </Suspense>
-          <Suspense fallback={<Placeholder label="Weekly closeout" />}>
-            <Weekly source={sources.weekly} />
-          </Suspense>
-        </div>
+        <Suspense fallback={<Placeholder label="My rhythm" />}>
+          <RhythmPanel owner={owner} />
+        </Suspense>
       </section>
       <Suspense fallback={<Placeholder label="My life areas" />}>
         <LifeAreas source={sources.direction} />
@@ -258,62 +246,6 @@ async function Money({ source }: { source: Sources["money"] }) {
         </p>
       )}
     </>
-  );
-}
-async function Routine({
-  source,
-  kind,
-  now,
-}: {
-  source: Sources["morning"];
-  kind: "morning" | "evening";
-  now: Date;
-}) {
-  const value = await source;
-  return (
-    <Link className="personal-routine" href={adminUrl(`/admin/today#${kind}`)}>
-      <span
-        className={`personal-visual-icon ${kind === "morning" ? "personal-warm" : "personal-lilac"}`}
-      >
-        {kind === "morning" ? (
-          <Sun size={22} aria-hidden="true" />
-        ) : (
-          <Moon size={22} aria-hidden="true" />
-        )}
-      </span>
-      <span className="personal-routine-copy">
-        <Text s={kind === "morning" ? "Morning brief" : "Evening debrief"} />
-        <small>
-          <Text s={briefStatus(value, kind, now)} />
-        </small>
-      </span>
-      <span aria-hidden="true">›</span>
-    </Link>
-  );
-}
-async function Weekly({ source }: { source: Sources["weekly"] }) {
-  const value = await source;
-  return (
-    <Link className="personal-routine" href={adminUrl("/admin/today/weekly")}>
-      <span className="personal-visual-icon personal-mint">
-        <CalendarDays size={22} aria-hidden="true" />
-      </span>
-      <span className="personal-routine-copy">
-        <Text s="Weekly closeout" />
-        <small>
-          <Text
-            s={
-              value.status === "unavailable"
-                ? "Unavailable"
-                : value.data
-                  ? "Last complete week · saved"
-                  : "Last complete week · no saved entry"
-            }
-          />
-        </small>
-      </span>
-      <span aria-hidden="true">›</span>
-    </Link>
   );
 }
 async function LifeAreas({ source }: { source: Sources["direction"] }) {

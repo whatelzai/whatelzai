@@ -1,6 +1,6 @@
 import { weosAccess } from "@/lib/weos-role-server";
 import { redirect } from "next/navigation";
-import { RhythmShortcut } from "@/components/admin/RhythmShortcut";
+import { RhythmPanel } from "@/components/admin/RhythmPanel";
 import Link from "@/components/admin/AdminLink";
 import { adminUrl } from "@/lib/admin-url";
 import { Suspense } from "react";
@@ -12,9 +12,6 @@ import {
 } from "@/components/admin/WorkspaceFocus";
 import { WorkspaceShortcuts } from "@/components/admin/WorkspaceShortcuts";
 import { dailyOwner } from "@/lib/daily/server";
-import { singaporeDay } from "@/lib/daily/model";
-import { weekSources } from "@/lib/admin-week-server";
-import { briefStatus } from "@/lib/admin-overview/model";
 export const metadata: Metadata = {
   title: "Home — Admin",
   robots: { index: false, follow: false },
@@ -24,9 +21,6 @@ export const revalidate = 0;
 export default async function OverviewPage() {
   if ((await weosAccess()).actual === "blaze") redirect("/community");
   const owner = await dailyOwner();
-  const now = new Date();
-  const day = singaporeDay(now);
-  const sources = weekSources(owner, day, now);
   return (
     <div className="admin-ledger overview-ledger">
       <h1 className="sr-only">
@@ -37,30 +31,12 @@ export default async function OverviewPage() {
       </Suspense>
       <WorkspaceShortcuts />
       <div className="overview-week-layout">
-        <aside className="routine-rail">
+        <aside className="rhythm-section">
           <h2>
             <AdminText text="Rhythm" />
           </h2>
-          <Suspense
-            fallback={
-              <RhythmShortcut kind="morning" status="Checking…" loading />
-            }
-          >
-            <Routine source={sources.morning} kind="morning" now={now} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <RhythmShortcut kind="evening" status="Checking…" loading />
-            }
-          >
-            <Routine source={sources.evening} kind="evening" now={now} />
-          </Suspense>
-          <Suspense
-            fallback={
-              <RhythmShortcut kind="weekly" status="Checking…" loading />
-            }
-          >
-            <Weekly source={sources.weekly} />
+          <Suspense fallback={<div className="min-h-28" aria-busy="true" />}>
+            <RhythmPanel owner={owner} />
           </Suspense>
           <Link
             href={adminUrl("/admin/today/routines")}
@@ -71,33 +47,5 @@ export default async function OverviewPage() {
         </aside>
       </div>
     </div>
-  );
-}
-type Sources = ReturnType<typeof weekSources>;
-async function Routine({
-  source,
-  kind,
-  now,
-}: {
-  source: Sources["morning"];
-  kind: "morning" | "evening";
-  now: Date;
-}) {
-  const value = await source;
-  return <RhythmShortcut kind={kind} status={briefStatus(value, kind, now)} />;
-}
-async function Weekly({ source }: { source: Sources["weekly"] }) {
-  const value = await source;
-  return (
-    <RhythmShortcut
-      kind="weekly"
-      status={
-        value.status === "unavailable"
-          ? "Unavailable"
-          : value.data
-            ? "Saved"
-            : "No saved entry"
-      }
-    />
   );
 }

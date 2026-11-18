@@ -5,6 +5,23 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-19-latest-rhythm",
+    date: "2026-11-19",
+    publishedAt: "2026-11-19T00:57:00+08:00",
+    title: "Your latest briefings, always within reach",
+    titleZh: "随时查看最近的简报",
+    items: [
+      {
+        en: "Morning, Night and Weekly open the latest saved entry, with a red dot for unread versions. Calendar sits beside Weekly.",
+        zh: "晨间、晚间和每周入口显示最近保存的内容；未读版本带红点。日历位于每周入口右侧。",
+      },
+      {
+        en: "The bell has a push switch for this device. New saved briefing versions get inbox notifications and opted-in push delivery; reconnect EMDEE when its authorization expires.",
+        zh: "铃铛内可直接开关本设备的推送通知。新保存的简报版本会进入通知中心，并推送至已启用的设备；EMDEE 授权到期后需重新连接。",
+      },
+    ],
+  },
+  {
     id: "2026-11-18-admin-recovery",
     date: "2026-11-18",
     publishedAt: "2026-11-18T20:07:00+08:00",

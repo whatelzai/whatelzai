@@ -16,7 +16,7 @@ const within = (path: string, root: string) =>
 
 export function adminNavigation(pathname: string) {
   const path = cleanAdminPath(pathname);
-  if (within(path, "/personal"))
+  if (within(path, "/personal") || within(path, "/rhythm"))
     return { tab: "home" as const, workstream: "Personal" };
   if (within(path, "/chat")) return { tab: "chat" as const, workstream: null };
   if (within(path, "/calendar"))

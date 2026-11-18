@@ -33,7 +33,14 @@ export async function emdeeCall<T>(
       jsonrpc: "2.0",
       id: randomUUID(),
       method: "tools/call",
-      params: { name, arguments: args },
+      params: {
+        name: ["get_doc", "search", "list_docs", "read_doc_section"].includes(
+          name,
+        )
+          ? "read"
+          : "write",
+        arguments: { action: name, arguments: args },
+      },
     }),
   });
   if (!res.ok)
@@ -60,9 +67,17 @@ export async function emdeeCall<T>(
     throw new Error(
       "EMDEE could not complete this request. Your text has been kept in the editor.",
     );
-  const result = JSON.parse(
-    rpc.result.content.find((c: { type: string }) => c.type === "text").text,
-  );
+  const resultText = rpc.result?.content?.find(
+    (c: { type: string }) => c.type === "text",
+  )?.text;
+  if (
+    name === "get_doc" &&
+    typeof args.path === "string" &&
+    rpc.result?.isError &&
+    resultText === `no such doc: ${args.path}`
+  )
+    throw new MissingDocument();
+  const result = JSON.parse(resultText);
   if (result.error) {
     if (
       name === "get_doc" &&

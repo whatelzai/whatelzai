@@ -1,3 +1,5 @@
+import { syncRhythms, cachedRhythms } from "@/lib/admin-rhythm/server";
+import { rhythmNotice } from "@/lib/admin-rhythm/model";
 import "server-only";
 import { recordAdminNotice } from "@/lib/admin-notifications/server";
 import { createHash } from "node:crypto";
@@ -11,12 +13,8 @@ import webpush from "web-push";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { decryptSecret, encryptSecret } from "@/lib/daily/crypto";
 import { isOwnerUser } from "@/lib/admin-policy";
-import { emdeeConnection } from "@/lib/daily/connections";
-import { readEmdee } from "@/lib/daily/emdee-client";
-import { DAILY_PARENT } from "@/lib/daily/paths";
 import {
   pushSubscriptionSchema,
-  routineCandidates,
   savedRoutineReady,
   notificationPayload,
   type SavedSubscription,
@@ -225,7 +223,6 @@ export async function sendTest(owner: string, endpoint: string) {
     );
 }
 export async function checkRoutinePush() {
-  if (!pushConfigured()) throw Error("push_not_configured");
   const owner = process.env.WHATELZ_OWNER_USER_ID;
   const { data: user, error: userError } = await supabaseAdmin
     .from("users")
@@ -233,6 +230,13 @@ export async function checkRoutinePush() {
     .eq("id", owner ?? "00000000-0000-0000-0000-000000000000")
     .maybeSingle();
   if (userError || !isOwnerUser(user)) throw Error("owner_unavailable");
+  let errorCode: string | null = null;
+  try {
+    await syncRhythms(owner!);
+  } catch {
+    errorCode = "emdee_reconnect";
+  }
+  const snapshots = await cachedRhythms(owner!);
   const { data, error } = await supabaseAdmin
     .from("admin_push_subscriptions")
     .select("id,owner_id,encrypted_subscription,enabled_at,enabled")
@@ -240,72 +244,65 @@ export async function checkRoutinePush() {
     .eq("enabled", true)
     .limit(11);
   if (error || (data?.length ?? 0) > 10) throw Error("devices_unavailable");
-  if (!data?.length) return { devices: 0, sent: 0 };
-  let errorCode: string | null = null;
   let sent = 0;
-  try {
-    const connection = await emdeeConnection(owner!);
-    if (connection?.parentPath !== DAILY_PARENT) throw Error("emdee_reconnect");
-    for (const candidate of routineCandidates()) {
-      // At most three canonical sources, with no AI calls or content in notifications.
-      const { data: completed, error: completedError } = await supabaseAdmin
-        .from("admin_push_deliveries")
-        .select("subscription_id")
-        .eq("document_path", candidate.path)
-        .eq("status", "sent")
-        .in(
-          "subscription_id",
-          data.map((d) => d.id),
-        );
-      if (completedError) throw Error("delivery_state_unavailable");
-      const pending = (data as Device[]).filter(
-        (d) => !completed?.some((c) => c.subscription_id === d.id),
-      );
-      if (!pending.length) continue;
-      const doc = await readEmdee(connection, candidate.path);
-      if (!doc) continue;
-      for (const device of pending) {
-        if (!savedRoutineReady(doc, device.enabled_at)) continue;
-        const { data: claimed, error: claimError } = await supabaseAdmin.rpc(
-          "claim_admin_push",
-          {
-            p_subscription: device.id,
-            p_document: candidate.path,
-            p_hash: doc.doc_content_hash,
-          },
-        );
-        if (claimError) throw Error("delivery_claim_unavailable");
-        if (!claimed) continue;
+  if (pushConfigured())
+    for (const snapshot of snapshots) {
+      const candidate = rhythmNotice(snapshot);
+      for (const device of (data ?? []) as Device[]) {
+        if (
+          !savedRoutineReady(
+            {
+              content: "## Notes\n" + snapshot.body,
+              last_edited_at: snapshot.source_updated_at,
+            },
+            device.enabled_at,
+          )
+        )
+          continue;
+        const legacy = await supabaseAdmin
+          .from("admin_push_deliveries")
+          .select("sent_at")
+          .eq("subscription_id", device.id)
+          .eq("document_path", snapshot.document_path)
+          .eq("status", "sent")
+          .maybeSingle();
+        if (legacy.error) throw Error("delivery_state_unavailable");
+        if (
+          legacy.data?.sent_at &&
+          Date.parse(legacy.data.sent_at) >=
+            Date.parse(snapshot.source_updated_at)
+        )
+          continue;
+        const document = "rhythm:" + snapshot.kind + ":" + snapshot.version;
+        const claim = await supabaseAdmin.rpc("claim_admin_push", {
+          p_subscription: device.id,
+          p_document: document,
+          p_hash: snapshot.version,
+        });
+        if (claim.error) throw Error("delivery_claim_unavailable");
+        if (!claim.data) continue;
         const ok = await sendPush(device, candidate);
-        const { error: updateError } = await supabaseAdmin
+        const update = await supabaseAdmin
           .from("admin_push_deliveries")
           .update({
             status: ok ? "sent" : "failed",
             ...(ok ? { sent_at: new Date().toISOString() } : {}),
           })
           .eq("subscription_id", device.id)
-          .eq("document_path", candidate.path);
-        if (updateError) throw Error("delivery_state_unavailable");
+          .eq("document_path", document);
+        if (update.error) throw Error("delivery_state_unavailable");
         if (ok) sent++;
         else errorCode = "delivery_failed";
       }
     }
-  } catch (error) {
-    errorCode =
-      error instanceof Error && error.message === "emdee_reconnect"
-        ? "emdee_reconnect"
-        : "check_failed";
-  }
-  const { error: stateError } = await supabaseAdmin
-    .from("admin_push_state")
-    .upsert({
-      owner_id: owner!,
-      checked_at: new Date().toISOString(),
-      error_code: errorCode,
-    });
-  if (stateError) throw Error("monitor_state_unavailable");
+  const state = await supabaseAdmin.from("admin_push_state").upsert({
+    owner_id: owner!,
+    checked_at: new Date().toISOString(),
+    error_code: errorCode,
+  });
+  if (state.error) throw Error("monitor_state_unavailable");
   if (errorCode) throw Error(errorCode);
-  return { devices: data.length, sent };
+  return { devices: data?.length ?? 0, sent };
 }
 
 /** Runs independently of EMDEE, so a disconnected vault cannot block focus alerts. */

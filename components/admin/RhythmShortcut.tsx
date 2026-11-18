@@ -6,10 +6,12 @@ export function RhythmShortcut({
   kind,
   status,
   loading = false,
+  unread = false,
 }: {
   kind: "morning" | "evening" | "weekly";
   status: string;
   loading?: boolean;
+  unread?: boolean;
 }) {
   const label =
     kind === "morning" ? "Morning" : kind === "evening" ? "Night" : "Weekly";
@@ -19,16 +21,16 @@ export function RhythmShortcut({
       : kind === "evening"
         ? "Evening debrief"
         : "Weekly closeout";
-  const href =
-    kind === "weekly" ? "/admin/today/weekly" : `/admin/today#${kind}`;
+  const href = `/admin/rhythm/${kind}`;
   return (
     <Link
       href={adminUrl(href)}
       className="rhythm-shortcut"
       data-rhythm={kind}
-      aria-label={name}
+      aria-label={name + (unread ? " · Unread" : "")}
     >
       <span className="rhythm-shortcut-icon" aria-hidden="true">
+        {unread && <span className="rhythm-unread-dot" />}
         {kind === "morning" ? (
           <Sun size={28} strokeWidth={1.7} />
         ) : kind === "evening" ? (
@@ -40,9 +42,11 @@ export function RhythmShortcut({
       <span className="rhythm-shortcut-label">
         <AdminText text={label} />
       </span>
-      <small role={loading ? "status" : undefined}>
-        <AdminText text={status} />
-      </small>
+      {status && (
+        <small role={loading ? "status" : undefined}>
+          <AdminText text={status} />
+        </small>
+      )}
     </Link>
   );
 }

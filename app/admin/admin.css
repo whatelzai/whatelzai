@@ -941,17 +941,17 @@ html:has(.admin-shell[data-admin-size="larger"]) {
 .compact-settings #focus-schedule label {
   min-height: 44px;
 }
-.compact-settings section[aria-labelledby="admin-push"] {
+.compact-settings .admin-push-control {
   padding: 0.375rem 0 0;
   border-bottom: 1px solid var(--ledger-rule);
 }
-.compact-settings #admin-push {
+.compact-settings .admin-push-title {
   font-weight: 450;
 }
-.compact-settings section[aria-labelledby="admin-push"] svg {
+.compact-settings .admin-push-control svg {
   display: none;
 }
-.compact-settings section[aria-labelledby="admin-push"] details {
+.compact-settings .admin-push-control details {
   margin-top: 0;
 }
 .compact-settings .admin-settings-surface > details {
@@ -3202,4 +3202,58 @@ html:has(.admin-shell[data-admin-size="larger"]) {
 }
 .admin-workspace-shell[data-admin-keyboard-open="true"] [data-ledger-dock] {
   display: none;
+}
+
+/* Four rhythm destinations, with persistent unread state independent of colour. */
+.rhythm-four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.rhythm-section {
+  align-self: start;
+}
+.rhythm-section > h2 {
+  margin-bottom: 18px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.rhythm-shortcut-icon {
+  position: relative;
+}
+.rhythm-unread-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #dc2626;
+  outline: 2px solid white;
+}
+[data-rhythm="calendar"] {
+  --shortcut-bg: #f1f1f3;
+  --shortcut-ink: #494950;
+}
+.admin-notification-push {
+  padding: 0 20px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+.admin-notification-push > section {
+  padding-block: 10px;
+}
+.admin-notification-dialog .admin-notification-push button[role="switch"] {
+  min-width: 56px;
+}
+@media (max-width: 600px) {
+  .rhythm-four .rhythm-shortcut-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
+  .rhythm-four .rhythm-shortcut-label {
+    font-size: 12px;
+  }
+  .rhythm-four small {
+    font-size: 10px;
+  }
 }
