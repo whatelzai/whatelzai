@@ -17,7 +17,7 @@ test("database context scopes and RLS hold under real authenticated roles, not p
  create table member_lead_activities(id uuid,lead_id uuid,title text,activity_on date,status text,notes text);
  create table member_knowledge_collections(id text primary key,kind text constraint member_knowledge_collections_kind_check check(kind in ('culture','product-class','pipeline','marketing-plan')),title text,position int,published bool,updated_at timestamptz); alter table member_knowledge_collections enable row level security;
  create table member_knowledge_entries(id text,collection_id text,title text,body text,position int,published bool,updated_at timestamptz); alter table member_knowledge_entries enable row level security;
- create table member_ai_conversations(id uuid,user_id uuid,title text,created_at timestamptz); alter table member_ai_conversations enable row level security;
+ create table member_ai_conversations(id uuid primary key,user_id uuid,title text,created_at timestamptz); alter table member_ai_conversations enable row level security;
  create table member_ai_messages(id uuid,user_id uuid,conversation_id uuid,body text,role text default 'user'); alter table member_ai_messages enable row level security;
  create table product_catalogue_sources(id text,market text,currency text,edition_date date,source_url text);
  create table product_catalogue_listings(source_id text,sku text,name text,brand text,category text,pack text,pv numeric,pv_max numeric,pv_status text,bv numeric,bv_max numeric,bv_status text,ap numeric,ap_max numeric,ap_status text,rp numeric,rp_max numeric,rp_status text);
@@ -51,6 +51,18 @@ test("database context scopes and RLS hold under real authenticated roles, not p
     fs.readFileSync(
       new URL(
         "../supabase/migrations/20261118123219_weos_conversation_scope.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  await db.exec(
+    `create function public.reserve_member_ai(p_user uuid,p_request uuid,p_conversation uuid,p_text text,p_reserve bigint,p_model text) returns jsonb language plpgsql as $$begin if p_text='fail reservation' then raise exception 'Allowance reached'; end if; return jsonb_build_object('duplicate',false); end;$$;`,
+  );
+  await db.exec(
+    fs.readFileSync(
+      new URL(
+        "../supabase/migrations/20261118171809_weos_role_chat_testing.sql",
         import.meta.url,
       ),
       "utf8",
@@ -132,6 +144,17 @@ test("database context scopes and RLS hold under real authenticated roles, not p
   await db.query(
     "insert into member_ai_messages(id,user_id,conversation_id,body) values($1,$2,$3,'Blaze private chat'),($4,$5,$6,'Ember private chat')",
     [uid(212), uid(2), uid(210), uid(213), uid(4), uid(211)],
+  );
+  await db.query(
+    "insert into weos_communities values($1,$2,'founders-club','FC')",
+    [uid(102), team],
+  );
+  await db.query(
+    "insert into weos_community_memberships values($1,$2,$3,$4,null,'catalyst','active')",
+    [uid(75), uid(102), team, uid(31)],
+  );
+  await db.exec(
+    `insert into community_calendar_imports values('test',now()); insert into community_calendar_records(import_id,id,ics) values('test','sport',E'SUMMARY:Badminton\n'),('test','internal',E'SUMMARY:Wednesday Soonye Leadership Class\n');`,
   );
   const asRole = async (n: number) => {
     await db.exec("reset role");
@@ -276,8 +299,114 @@ test("database context scopes and RLS hold under real authenticated roles, not p
     ),
     /new learning conversation/,
   );
+  const preview = async (role: string, source: string, query = "") =>
+    (
+      await db.query<{ result: Record<string, unknown> }>(
+        "select public.weos_preview_context($1,$2,$3) result",
+        [role, source, query],
+      )
+    ).rows[0].result;
+  await asRole(1);
+  assert.equal(
+    ((await preview("ember", "learning")).items as unknown[]).length,
+    1,
+  );
+  for (const source of [
+    "products",
+    "culture",
+    "leads",
+    "hqh",
+    "briefings",
+    "hqh_discover",
+    "communities",
+  ])
+    await assert.rejects(preview("ember", source), /unavailable for Ember/);
+  assert.equal(
+    ((await preview("torch", "culture")).items as unknown[]).length,
+    1,
+  );
+  assert.equal(
+    ((await preview("torch", "leads")).items as unknown[]).length,
+    1,
+  );
+  assert.equal(
+    ((await preview("torch", "hqh", "Profile Alpha")).items as unknown[])
+      .length,
+    0,
+  );
+  const emberEvents = await preview("ember", "events");
+  assert.equal(emberEvents.persona, "Spark");
+  assert.equal((emberEvents.records as unknown[]).length, 1);
+  assert.equal(
+    ((await preview("torch", "events")).records as unknown[]).length,
+    2,
+  );
+  assert.equal((await preview("torch", "commitments")).unavailable, true);
+  assert.equal((await preview("torch", "social")).unavailable, true);
+  for (const role of ["beacon", "guest", "admin", ""])
+    await assert.rejects(
+      preview(role, "learning"),
+      /Beacon role test required/,
+    );
+  // A failed/successful preview must restore privileges for the next RPC.
+  assert.equal(((await context("leads")).items as unknown[]).length, 3);
+  for (const n of [2, 3, 4, 5]) {
+    await asRole(n);
+    await assert.rejects(
+      preview("ember", "learning"),
+      /Beacon role test required/,
+    );
+  }
+  await db.exec("reset role; set role service_role");
+  const reserve = (conversation: number, role: string, text = "Test") =>
+    db.query(
+      "select public.reserve_weos_preview($1,$2,$3,$4,$5,100,'gpt-6.1-sol')",
+      [uid(1), uid(250), uid(conversation), role, text],
+    );
+  await reserve(240, "ember");
+  await assert.rejects(
+    reserve(240, "torch"),
+    /Role test conversation unavailable/,
+  );
+  await assert.rejects(
+    reserve(210, "ember"),
+    /Role test conversation unavailable/,
+  );
+  await assert.rejects(reserve(241, "beacon"), /Beacon role test required/);
+  await assert.rejects(
+    reserve(242, "ember", "fail reservation"),
+    /Allowance reached/,
+  );
+  await assert.rejects(
+    db.query(
+      "select public.reserve_weos_preview($1,$2,$3,'ember','Test',100,'gpt-6.1-sol')",
+      [uid(2), uid(251), uid(243)],
+    ),
+    /Beacon role test required/,
+  );
+  await assert.rejects(preview("ember", "learning"), /permission denied/);
+  await asRole(1);
+  assert.equal(
+    (
+      await db.query<{ preview_role: string }>(
+        "select preview_role from member_ai_conversations where id=$1",
+        [uid(240)],
+      )
+    ).rows[0].preview_role,
+    "ember",
+  );
+  assert.equal(
+    (
+      await db.query("select id from member_ai_conversations where id=$1", [
+        uid(242),
+      ])
+    ).rows.length,
+    0,
+  );
+  await assert.rejects(reserve(244, "ember"), /permission denied/);
   await db.exec("reset role; set role anon");
   await assert.rejects(context("events"), /permission denied/);
+  await assert.rejects(preview("ember", "learning"), /permission denied/);
   await assert.rejects(
     db.query("select * from member_ai_messages"),
     /permission denied/,

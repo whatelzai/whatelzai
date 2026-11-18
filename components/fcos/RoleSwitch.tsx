@@ -1,7 +1,13 @@
 "use client";
 import { useState } from "react";
 import { roleLabels, type WeosRole } from "@/lib/weos-roles";
-export function RoleSwitch({ current = "beacon" }: { current?: WeosRole }) {
+export function RoleSwitch({
+  current = "beacon",
+  compact = false,
+}: {
+  current?: WeosRole;
+  compact?: boolean;
+}) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   async function change(role: string) {
@@ -21,7 +27,13 @@ export function RoleSwitch({ current = "beacon" }: { current?: WeosRole }) {
     }
   }
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-4 text-sm">
+    <section
+      className={
+        compact
+          ? "px-2 text-sm"
+          : "rounded-2xl border border-zinc-200 bg-white p-4 text-sm"
+      }
+    >
       <label className="flex min-h-11 items-center justify-between gap-3">
         <span>View weOS as</span>
         <select
@@ -38,10 +50,12 @@ export function RoleSwitch({ current = "beacon" }: { current?: WeosRole }) {
           ))}
         </select>
       </label>
-      <p className="mt-2 text-xs leading-5 text-zinc-500">
+      <p
+        className={compact ? "sr-only" : "mt-2 text-xs leading-5 text-zinc-500"}
+      >
         {current === "beacon"
           ? "Your account stays Beacon. Preview another role without opening anyone else’s account."
-          : `Read-only ${roleLabels[current]} preview · you are still Beacon. No private account data or live actions.`}
+          : `${roleLabels[current]} test view · you are still Beacon. Chat is interactive; other actions stay read-only.`}
       </p>
       {error && (
         <p role="alert" className="mt-2 text-red-700">

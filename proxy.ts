@@ -117,7 +117,9 @@ export default async function proxy(req: NextRequest) {
   if (
     route.surface === "app" &&
     user?.email_confirmed_at &&
-    req.nextUrl.pathname !== "/api/weos/preview"
+    !["/api/weos/preview", "/api/weos/preview/chat"].includes(
+      req.nextUrl.pathname,
+    )
   ) {
     const account = await supabaseAdmin
       .from("users")

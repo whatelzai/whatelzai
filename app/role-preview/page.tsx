@@ -1,3 +1,5 @@
+import { ChatViewport } from "@/app/assistant/ChatViewport";
+import { RoleTestChat } from "@/components/fcos/RoleTestChat";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -15,6 +17,17 @@ export default async function RolePreview() {
     roleTabs(a.role).find((t) => t.href !== "/" && path.startsWith(t.href)) ??
     roleTabs(a.role)[2];
   const business = canUseBusinessTools(a.role);
+  if (tab.href === "/assistant")
+    return (
+      <ChatViewport>
+        <AppHeader title="Chat test" chat />
+        <MemberNav current="/assistant" compact persistent />
+        <div className="shrink-0 py-2">
+          <RoleSwitch current={a.role} compact />
+        </div>
+        <RoleTestChat key={a.role} role={a.role} />
+      </ChatViewport>
+    );
   return (
     <main className="fcos-tab-page mx-auto max-w-3xl space-y-5 px-5 py-6">
       <AppHeader title={tab.label} />
@@ -25,23 +38,7 @@ export default async function RolePreview() {
           Role preview · {roleLabels[a.role]}
         </p>
         <h1 className="mt-2 text-2xl font-semibold">{tab.label}</h1>
-        {tab.href === "/assistant" ? (
-          <>
-            <p className="mt-4 text-sm leading-6 text-zinc-600">
-              {business
-                ? "Chat can use permitted Baobeis, HQH/HHH and business resources."
-                : "Ask about AI, practise a skill or explore the member learning resources. Internal business data and HQH skills are unavailable."}
-            </p>
-            <label className="mt-6 block text-sm">
-              Message weOS
-              <input
-                disabled
-                placeholder="Read-only preview"
-                className="mt-2 min-h-12 w-full rounded-full border border-zinc-200 px-5"
-              />
-            </label>
-          </>
-        ) : tab.href === "/resources" ? (
+        {tab.href === "/resources" ? (
           <div className="mt-4 divide-y divide-zinc-100">
             {(business
               ? ["HQH & HHH", "Products", "Culture", "Events"]
@@ -115,8 +112,8 @@ export default async function RolePreview() {
         )}
       </section>
       <p className="text-xs leading-5 text-zinc-500">
-        Role layout and capabilities only. Actual membership, record sharing and
-        personal conversations stay unchanged.
+        Chat testing is interactive; other pages preview layouts only.
+        Membership, record sharing and personal conversations stay unchanged.
       </p>
     </main>
   );

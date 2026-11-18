@@ -54,6 +54,7 @@ export async function conversationMessages(
     .from("member_ai_conversations")
     .select("id")
     .eq("id", conversationId)
+    .is("preview_role", null)
     .eq("user_id", userId)
     .maybeSingle();
   if (conversation.error || !conversation.data)
@@ -91,6 +92,7 @@ export async function memberWorkspace(conversationId?: string, blank = false) {
     scopedDb
       .from("member_ai_conversations")
       .select("id,title,created_at")
+      .is("preview_role", null)
       .eq("user_id", actor.user.id)
       .order("created_at", { ascending: false })
       .limit(30),
