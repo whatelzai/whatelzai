@@ -1,76 +1,73 @@
-import { createHmac } from "node:crypto";
-import { eventFeedbackInput, feedbackOpen } from "@/lib/event-feedback/model";
 import {
-  loadPublicEvents,
-  publicEventNow,
-} from "@/lib/public-events/catalog-server";
-import { resolveEvent } from "@/lib/public-events/catalog";
+  verifiedFeedbackInput,
+  validFeedbackAnswers,
+} from "@/lib/event-feedback/questions";
+import { feedbackBody, feedbackJson as json } from "@/lib/event-feedback/http";
+import {
+  feedbackHash,
+  openFeedbackEvent,
+  loadFeedbackForm,
+} from "@/lib/event-feedback/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/rate-limit";
 export const runtime = "nodejs";
-const json = (body: unknown, status = 200) =>
-  Response.json(body, {
-    status,
-    headers: { "Cache-Control": "private, no-store" },
-  });
 export async function POST(req: Request) {
-  if (
-    req.headers.get("origin") !== new URL(req.url).origin ||
-    !req.headers.get("content-type")?.startsWith("application/json")
-  )
-    return json(
-      { error: "Please use the feedback form on this website." },
-      403,
-    );
-  if (!checkRateLimit(`event-feedback:${getClientIp(req)}`).allowed)
-    return json({ error: "Please wait a moment before trying again." }, 429);
-  if (Number(req.headers.get("content-length") ?? 0) > 8000)
-    return json({ error: "Feedback is too long." }, 413);
-  const raw = await req.text();
-  if (new TextEncoder().encode(raw).length > 8000)
-    return json({ error: "Feedback is too long." }, 413);
-  let input;
-  try {
-    input = eventFeedbackInput.safeParse(JSON.parse(raw));
-  } catch {
-    return json({ error: "Please check your feedback." }, 400);
-  }
+  const parsed = await feedbackBody(req, true);
+  if ("response" in parsed) return parsed.response;
+  const input = verifiedFeedbackInput.safeParse(parsed.body);
   if (!input.success)
     return json(
       {
-        error: "Choose a rating and keep your comment under 1,500 characters.",
+        error:
+          "Please refresh this form, verify your registration email and answer every question.",
       },
       400,
     );
   try {
-    const event = resolveEvent(await loadPublicEvents(), input.data.eventId);
-    if (!event || !feedbackOpen(event, publicEventNow()))
+    const event = await openFeedbackEvent(input.data.eventId);
+    if (!event)
       return json({ error: "Feedback is not open for this event." }, 409);
-    const secret =
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-    if (!secret) throw Error("Missing server configuration");
-    const clientHash = createHmac("sha256", secret)
-      .update(`${new Date().toISOString().slice(0, 10)}:${getClientIp(req)}`)
-      .digest("hex");
-    const { error } = await db.rpc("submit_event_feedback", {
+    const form = await loadFeedbackForm(event.recordId);
+    if (
+      !form ||
+      form.id !== input.data.formId ||
+      !validFeedbackAnswers(form, input.data.answers)
+    )
+      return json({ error: "Please answer every question on this form." }, 400);
+    const r = await db.rpc("submit_verified_event_feedback", {
       p_id: input.data.requestId,
       p_event: event.recordId,
-      p_rating: input.data.rating,
-      p_comment: input.data.comment,
-      p_client_hash: clientHash,
+      p_verification: input.data.verificationId,
+      p_token_hash: feedbackHash(`token:${input.data.token}`),
+      p_form: form.id,
+      p_answers: input.data.answers,
+      p_client_hash: feedbackHash(
+        `client:${new Date().toISOString().slice(0, 10)}:${getClientIp(req)}`,
+      ),
     });
-    if (error) {
-      if (error.message.includes("FEEDBACK_RATE_LIMIT"))
-        return json({ error: "Please try again later." }, 429);
-      if (error.message.includes("FEEDBACK_CONFLICT"))
+    if (r.error) {
+      const message = r.error.message;
+      if (message.includes("FEEDBACK_VERIFICATION_REQUIRED"))
+        return json(
+          {
+            error: "Your email verification has expired. Please verify again.",
+          },
+          401,
+        );
+      if (message.includes("FEEDBACK_ALREADY_SUBMITTED"))
+        return json(
+          { error: "You have already submitted feedback for this event." },
+          409,
+        );
+      if (message.includes("FEEDBACK_CONFLICT"))
         return json(
           {
             error:
-              "This response was already submitted. Refresh to start again.",
+              "This response has already been saved. Refresh to start again.",
           },
           409,
         );
-      throw error;
+      throw r.error;
     }
     return json({ ok: true });
   } catch {

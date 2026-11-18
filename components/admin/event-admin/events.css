@@ -1117,3 +1117,33 @@
   color: var(--ea-ink);
   font-size: 12px;
 }
+
+.feedback-answer-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.feedback-answer-list > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+}
+.feedback-answer-list dt {
+  color: var(--ea-muted);
+}
+.feedback-answer-list dd {
+  font-weight: 600;
+  text-align: right;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.feedback-answer-list > .feedback-answer-comment {
+  display: block;
+}
+.feedback-answer-comment dd {
+  text-align: left;
+  margin-top: 6px;
+  max-height: 32rem;
+  overflow-y: auto;
+}

@@ -1,3 +1,4 @@
+import { loadFeedbackForm } from "@/lib/event-feedback/server";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -26,13 +27,16 @@ export default async function Page({
   const event = resolveEvent(await loadPublicEvents(), eventId);
   if (!event || !event.listed) notFound();
   if (event.id !== eventId) permanentRedirect(feedbackPath(event.id));
+  const form = feedbackOpen(event, publicEventNow())
+    ? await loadFeedbackForm(event.recordId)
+    : null;
   return (
     <main className="field-wrap event-feedback">
       <header>
         <Link href={event.path} className="event-back-link">
           ← Event details
         </Link>
-        <h1>How was the session?</h1>
+        <h1>{form?.title ?? "Event feedback"}</h1>
         <p>
           {event.title}
           <br />
@@ -41,7 +45,11 @@ export default async function Page({
         <p className="feedback-reference">{event.id}</p>
       </header>
       {feedbackOpen(event, publicEventNow()) ? (
-        <FeedbackForm eventId={event.id} />
+        form ? (
+          <FeedbackForm eventId={event.id} config={form} />
+        ) : (
+          <p>Feedback is not available for this session.</p>
+        )
       ) : (
         <p>Feedback opens after this session ends.</p>
       )}

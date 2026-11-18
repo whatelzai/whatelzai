@@ -1,0 +1,71 @@
+{
+  "id": "feedback-v2-20261118",
+  "title": "How was the session?",
+  "questions": [
+    {
+      "id": "format",
+      "type": "yes_no",
+      "text": "Do you like this mode of training?"
+    },
+    {
+      "id": "engagement",
+      "type": "rating",
+      "text": "How engaging was the trainer?",
+      "low": "Not engaging",
+      "high": "Very engaging"
+    },
+    {
+      "id": "usefulness",
+      "type": "rating",
+      "text": "How useful was the session overall?",
+      "low": "Not useful",
+      "high": "Very useful"
+    },
+    {
+      "id": "clarity",
+      "type": "rating",
+      "text": "How easy was the session to follow?",
+      "low": "Difficult",
+      "high": "Very easy"
+    },
+    {
+      "id": "relevance",
+      "type": "rating",
+      "text": "How relevant was the session to you?",
+      "low": "Not relevant",
+      "high": "Very relevant"
+    },
+    {
+      "id": "examples",
+      "type": "rating",
+      "text": "How helpful were the practical examples?",
+      "low": "Not helpful",
+      "high": "Very helpful"
+    },
+    {
+      "id": "pace",
+      "type": "rating",
+      "text": "How comfortable was the pace of the session?",
+      "low": "Uncomfortable",
+      "high": "Very comfortable"
+    },
+    {
+      "id": "questions",
+      "type": "rating",
+      "text": "How much opportunity was there to ask questions?",
+      "low": "Not enough",
+      "high": "Plenty"
+    },
+    {
+      "id": "apply",
+      "type": "yes_no",
+      "text": "Do you plan to try something you learned?"
+    },
+    {
+      "id": "return",
+      "type": "yes_no",
+      "text": "Would you attend another session?"
+    }
+  ],
+  "summaryQuestionId": "usefulness"
+}
