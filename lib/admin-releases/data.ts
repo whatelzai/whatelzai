@@ -5,6 +5,19 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-19-calendar-pinned-days",
+    date: "2026-11-19",
+    publishedAt: "2026-11-19T01:42:00+08:00",
+    title: "Calendar weekdays stay in place",
+    titleZh: "日历星期栏固定在顶部",
+    items: [
+      {
+        en: "Weekdays stay below Back while dates scroll. Weeks belong to their starting year, and month colours follow Spring Jan–Mar, Summer Apr–Jun, Autumn Jul–Sep and Winter Oct–Dec.",
+        zh: "滚动日期时，星期栏固定在返回栏下方。每周归属其开始年份；月份颜色按春季一至三月、夏季四至六月、秋季七至九月、冬季十至十二月划分。",
+      },
+    ],
+  },
+  {
     id: "2026-11-19-calendar-sheet",
     date: "2026-11-19",
     publishedAt: "2026-11-19T01:19:00+08:00",

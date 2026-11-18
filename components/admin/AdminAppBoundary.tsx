@@ -13,6 +13,7 @@ import { adminDestination, adminParent } from "@/lib/admin-link-policy";
 import { adminUrl } from "@/lib/admin-url";
 import { cleanAdminPath } from "@/lib/admin-navigation";
 import { useAdminFocus } from "./AdminFocus";
+import { CalendarChrome } from "./calendar/CalendarChrome";
 import { AdminBackTrail } from "./AdminBackTrail";
 
 export function AdminAppBoundary() {
@@ -286,10 +287,14 @@ export function AdminAppBoundary() {
           Opening page…
         </div>
       )}
-      {!top && (
-        <Suspense fallback={null}>
-          <AdminBackTrail pathname={pathname} />
-        </Suspense>
+      {cleanAdminPath(pathname) === "/calendar" ? (
+        <CalendarChrome pathname={pathname} />
+      ) : (
+        !top && (
+          <Suspense fallback={null}>
+            <AdminBackTrail pathname={pathname} />
+          </Suspense>
+        )
       )}
       {preview && (
         <dialog
