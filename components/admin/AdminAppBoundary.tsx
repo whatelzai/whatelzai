@@ -22,7 +22,11 @@ export function AdminAppBoundary() {
   const [navigating, startNavigation] = useTransition();
   const navigate = useEffectEvent((href: string) => {
     focus?.manualPath(new URL(href, location.origin).pathname);
-    startNavigation(() => router.push(href));
+    const target = new URL(href, location.origin);
+    const keepCalendar =
+      cleanAdminPath(location.pathname) === "/calendar" &&
+      cleanAdminPath(target.pathname) === "/calendar";
+    startNavigation(() => router.push(href, { scroll: !keepCalendar }));
   });
   const [preview, setPreview] = useState<{
     kind: "file" | "external";
@@ -271,7 +275,7 @@ export function AdminAppBoundary() {
       document.removeEventListener("submit", submit, true);
     };
   }, [router]);
-  const top = ["/", "/settings", "/profile", "/chat", "/calendar"].includes(
+  const top = ["/", "/settings", "/profile", "/chat"].includes(
     cleanAdminPath(pathname),
   );
   return (

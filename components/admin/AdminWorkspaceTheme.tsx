@@ -1,5 +1,6 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { calendarScope, calendarWorkspace } from "@/lib/admin-calendar/scope";
 import { adminNavigation } from "@/lib/admin-navigation";
 
 export function AdminWorkspaceTheme({
@@ -7,7 +8,15 @@ export function AdminWorkspaceTheme({
 }: {
   children: React.ReactNode;
 }) {
-  const current = adminNavigation(usePathname());
+  const pathname = usePathname(),
+    search = useSearchParams();
+  const base = adminNavigation(pathname);
+  const current = /^\/(admin\/)?calendar(?:\/|$)/.test(pathname)
+    ? {
+        ...base,
+        workstream: calendarWorkspace(calendarScope(search.get("space"))),
+      }
+    : base;
   const workspace =
     current.workstream === "Personal"
       ? "personal"

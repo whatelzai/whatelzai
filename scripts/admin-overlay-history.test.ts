@@ -4,7 +4,12 @@ import fs from "node:fs";
 import vm from "node:vm";
 import ts from "typescript";
 import { adminParent, adminDestination } from "../lib/admin-link-policy";
-function harness(deferredRestoration = false) {
+function harness(
+  deferredRestoration = false,
+  path = "/personal/money",
+  destination = "/day-job",
+) {
+  const routeOptions: Array<{ scroll?: boolean } | undefined> = [];
   const frames: Array<() => void> = [];
   const effects: Array<() => unknown> = [],
     observed: Array<Overlay> = [],
@@ -12,9 +17,9 @@ function harness(deferredRestoration = false) {
   let mutation = () => {},
     cursor = 0;
   const location = {
-    href: "https://admin.whatelz.ai/personal/money",
+    href: "https://admin.whatelz.ai" + path,
     origin: "https://admin.whatelz.ai",
-    pathname: "/personal/money",
+    pathname: path,
   };
   const window = new EventTarget();
   const entries: Array<Record<string, unknown>> = [
@@ -43,7 +48,7 @@ function harness(deferredRestoration = false) {
     },
   };
   class Overlay extends EventTarget {
-    href = "https://admin.whatelz.ai/day-job";
+    href = "https://admin.whatelz.ai" + destination;
     closest() {
       return this;
     }
@@ -101,7 +106,10 @@ function harness(deferredRestoration = false) {
           usePathname: () => location.pathname,
           useRouter: () => ({
             replace: (p: string) => routes.push(p),
-            push: (p: string) => routes.push(p),
+            push: (p: string, options?: { scroll?: boolean }) => {
+              routes.push(p);
+              routeOptions.push(options);
+            },
           }),
         };
       if (name === "./AdminFocus") return { useAdminFocus: () => null };
@@ -132,6 +140,7 @@ function harness(deferredRestoration = false) {
     history,
     entries,
     routes,
+    routeOptions,
     open() {
       const dialog = new Overlay();
       observed.push(dialog);
@@ -207,4 +216,14 @@ test("menu selection waits until popstate restoration finishes before pushing th
   h.flushFrames();
   assert.deepEqual(h.routes, ["/day-job"]);
   assert.equal(h.history.state.__NA, true);
+});
+
+test("calendar dropdown closes its overlay and preserves scroll while applying the selected scope", () => {
+  const h = harness(true, "/calendar", "/calendar?space=ai-business");
+  h.open();
+  h.selectDestination();
+  h.sync();
+  h.flushFrames();
+  assert.deepEqual(h.routes, ["/calendar?space=ai-business"]);
+  assert.equal(h.routeOptions[0]?.scroll, false);
 });

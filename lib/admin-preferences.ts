@@ -18,6 +18,7 @@ export function validPreferences(value: unknown): value is AdminPreferences {
   );
 }
 export const chinese: Record<string, string> = {
+  "Calendar sources": "日历来源",
   "Showing the latest saved copy.": "显示最近保存的内容。",
   "Reconnect EMDEE": "重新连接 EMDEE",
   "Night debrief": "晚间复盘",

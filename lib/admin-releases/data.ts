@@ -5,6 +5,19 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-19-calendar-sheet",
+    date: "2026-11-19",
+    publishedAt: "2026-11-19T01:19:00+08:00",
+    title: "A clearer calendar grid",
+    titleZh: "更清晰的日历网格",
+    items: [
+      {
+        en: "Calendar now runs edge to edge with square, connected day cells and aligned weekday gridlines. Use the header workspace dropdown to filter while staying in Calendar; Back and breadcrumbs sit below the header.",
+        zh: "日历采用贴边的连续方格与对齐的星期网格线。顶部工作区菜单可直接筛选日历，标题下方提供返回与路径导航。",
+      },
+    ],
+  },
+  {
     id: "2026-11-19-latest-rhythm",
     date: "2026-11-19",
     publishedAt: "2026-11-19T00:57:00+08:00",

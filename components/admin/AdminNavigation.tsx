@@ -1,10 +1,15 @@
 "use client";
+import {
+  calendarScope,
+  calendarWorkspace,
+  calendarWorkspaceHref,
+} from "@/lib/admin-calendar/scope";
 
 import { useAdminPreferences } from "./AdminPreferences";
 import { useAdminFocus } from "./AdminFocus";
 import Link from "@/components/admin/AdminLink";
 import { WhatelzMark } from "@/components/brand/WhatelzMark";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import {
   Bot,
@@ -43,7 +48,15 @@ export function AdminNavigation() {
   const focus = useAdminFocus();
   const { t } = useAdminPreferences();
   const pathname = usePathname();
-  const current = adminNavigation(pathname);
+  const search = useSearchParams();
+  const isCalendar = /^\/(admin\/)?calendar(?:\/|$)/.test(pathname);
+  const base = adminNavigation(pathname);
+  const current = isCalendar
+    ? {
+        ...base,
+        workstream: calendarWorkspace(calendarScope(search.get("space"))),
+      }
+    : base;
   const switcher = useRef<HTMLDetailsElement>(null);
   const header = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -168,7 +181,12 @@ export function AdminNavigation() {
                     return (
                       <Link
                         key={item.path}
-                        href={adminUrl(item.path)}
+                        href={adminUrl(
+                          isCalendar
+                            ? calendarWorkspaceHref(item.path)
+                            : item.path,
+                        )}
+                        scroll={isCalendar ? false : undefined}
                         aria-current={active ? "location" : undefined}
                         onClick={() => {
                           if (switcher.current) {

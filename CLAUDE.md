@@ -1032,3 +1032,17 @@ The bell has the existing per-device push switch inline. EMDEE transport now use
 compact read/write actions. Its stored credential is expired; real latest entries
 were bootstrapped via connected MCP and a user reconnect is needed for future sync.
 Migration20261119004500 applied. See docs/admin-five-tabs.md.
+
+## Calendar sheet and shared scope selector — 2026-11-19
+
+Calendar is a secondary Home page with the existing lean sticky Back/breadcrumb row.
+Remove Today/date-jump and local lane pills. On /admin/calendar only, the header
+workspace dropdown keeps the calendar route and selects validated ?space=personal,
+ai-business,network-marketing,day-job; absent/invalid means Overview/all. The shared
+theme and breadcrumbs reflect this filter. Same-calendar navigation preserves scroll,
+and automatic timetable switching never takes the owner away from Calendar.
+Seven equal-width columns touch both viewport edges; square contiguous cells and
+subtle aligned rules replace rounded tiles/week gaps. Keep current-date circle,
+month/season shading, four-digit years, day-detail dialog, lazy batches and2029 end.
+Source coverage lives in a collapsed footer. Calendar scope is a view filter, never
+an authorization boundary. No schema or permission change.
