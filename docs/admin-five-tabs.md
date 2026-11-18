@@ -33,10 +33,16 @@ Only explicit table ranges and the dated guest-planning heading are projected;
 no background narrative or guest names are exposed in the calendar payload.
 All-day ends are inclusive; imported ICS exclusive ends subtract1ms. Timed imports
 show Singapore start time. Company quarters retain source labels, including Q1
-provisional on Sprint72, distinct from Gregorian quarter filters.
+provisional on Sprint72.
 
-Week is default; Day/Month/Quarter/Year and lane filters work locally and immediately.
-Community recurrence is bounded to current and following Singapore calendar years
+Calendar is one continuous Monday–Sunday seven-column grid, starting at the current
+Singapore week and ending strictly on 31 December 2029. Eight-week batches load
+progressively with a keyboard-accessible fallback. Date jump and Today shortcuts
+retain quick navigation. Month shades use spring green, summer gold, autumn earth
+and winter blue; explicit dates, month names, year markers and workspace icons
+preserve meaning in greyscale. Tap a day for complete event details; Back closes
+the dialog before navigating. No Day/Week/Month/Quarter/Year mode selector.
+Community recurrence is bounded from the current Singapore year through 2029
 and that coverage is displayed. Imported records paginate500at a time and require
 snapshot count agreement. Other source failures remain explicit, never false zeros.
 This is not a new event editor, a Google sync, an RSVP, or an attendance assertion.
@@ -51,3 +57,22 @@ browser fixture used for390/768/1440px review, including dark mode. No authentic
 production browser session or physical Vivo test is claimed. Fixtures are removed.
 Taste app-screen guidance used with existing type and user-requested yellow chrome
 preserved over the dealt achromatic styling. No dependency/schema changes.
+
+## Compact shell and Profile update
+
+Repeated main-tab headings remain screen-reader accessible but are visually hidden.
+The shared Back boundary sits outside the animated page content, in a compact
+sticky row below the measured header, only for deeper routes. The document keeps
+scrolling normally; header and mobile dock retain their positions. In installed
+phone mode Admin uses the existing guarded pull-refresh controller with an Admin
+root: it does not intercept controls, editing, active requests, open dialogs, pinch
+or nested scrolling. Regular browser pages retain native refresh. This refreshes
+server content rather than reloading or signing out. Physical Vivo gesture QA
+remains a device check.
+
+Profile follows weOS's language pills, owner avatar/identity and grouped surfaces,
+within a760px maximum width. Only existing Admin preference controls are used;
+member passes, tiers and reset credits are not copied into the owner account.
+Appearance, text size, push options, scheduling, install and sign-out remain.
+Synthetic profile/browser previews contain no private account data and are removed
+before release.

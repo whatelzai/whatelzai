@@ -19,7 +19,7 @@ test("refresh distance requires a vertical, single-finger, unzoomed pull at the 
   ])
     assert.equal(pullDistance({ dx: 0, dy: 100, atTop: true, ...args }), null);
 });
-function harness({ standalone = true, chat = false } = {}) {
+function harness({ standalone = true, chat = false, scope = "member" } = {}) {
   const listeners = new Map<string, (e: unknown) => void>();
   let refreshes = 0;
   let top = 0;
@@ -36,7 +36,9 @@ function harness({ standalone = true, chat = false } = {}) {
   const root = { querySelector: () => scroller };
   class Target {
     closest(selector: string) {
-      return selector.includes(".fcos-tab-page") ? root : null;
+      return selector.includes(".fcos-tab-page") || selector === "#admin-main"
+        ? root
+        : null;
     }
   }
   const target = new Target();
@@ -113,6 +115,7 @@ function harness({ standalone = true, chat = false } = {}) {
   });
   (mod.exports as { PullRefresh: (p: object) => unknown }).PullRefresh({
     chat,
+    scope,
   });
   const event = (x: number, y: number, touches = 1) => ({
     target,
@@ -209,4 +212,30 @@ test("Chat refresh rejects scrolled, streaming, editing, modal, pinch and multi-
   h.move(0, 100);
   h.end();
   assert.equal(h.refreshes(), 1);
+});
+
+test("Admin installed app refresh preserves editing, busy and modal guards", () => {
+  const h = harness({ scope: "admin" });
+  h.start();
+  h.move(0, 100);
+  h.end();
+  assert.equal(h.refreshes(), 1);
+  for (const state of [
+    { top: 100 },
+    { busy: true },
+    { modal: true },
+    { editing: true },
+    { scale: 1.2 },
+  ]) {
+    h.set(state);
+    h.start();
+    h.move(0, 100);
+    h.end();
+    assert.equal(h.refreshes(), 1);
+  }
+  h.cleanup();
+  assert.equal(
+    harness({ scope: "admin", standalone: false }).listeners.size,
+    0,
+  );
 });

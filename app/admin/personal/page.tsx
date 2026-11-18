@@ -55,7 +55,7 @@ export default async function PersonalPage() {
     <div className="personal-home">
       <header className="personal-title">
         <div>
-          <h1>
+          <h1 className="sr-only">
             <Text s="Personal" />
           </h1>
           <p>

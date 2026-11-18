@@ -31,8 +31,8 @@ export default async function OverviewPage() {
     });
   return (
     <div className="admin-ledger overview-ledger">
-      <header className="ledger-title">
-        <h1>
+      <header className="ledger-title admin-tab-context">
+        <h1 className="sr-only">
           <AdminText text="Home" />
         </h1>
         <p>

@@ -101,7 +101,11 @@ export function AdminPreferencesProvider({
     </Context.Provider>
   );
 }
-export function PreferenceRows() {
+export function PreferenceRows({
+  includeLanguage = true,
+}: {
+  includeLanguage?: boolean;
+}) {
   const { preferences, ready, save, t } = useAdminPreferences();
   const [notice, setNotice] = useState("");
   return (
@@ -134,32 +138,34 @@ export function PreferenceRows() {
             ],
           ],
         ] as const
-      ).map(([key, label, options]) => (
-        <label
-          key={key}
-          className="flex min-h-20 items-center justify-between gap-4 py-4"
-        >
-          <span className="text-sm font-medium">{t(label)}</span>
-          <select
-            disabled={!ready}
-            value={preferences[key]}
-            onChange={(e) => {
-              const persisted = save({ [key]: e.target.value });
-              setNotice(
-                persisted ? "" : "Preferences saved for this session only.",
-              );
-            }}
-            className="min-h-11 max-w-[55%] rounded-lg border border-zinc-200 bg-white px-3 text-sm"
-            aria-label={t(label)}
+      )
+        .filter(([key]) => includeLanguage || key !== "language")
+        .map(([key, label, options]) => (
+          <label
+            key={key}
+            className="flex min-h-20 items-center justify-between gap-4 py-4"
           >
-            {options.map(([value, text]) => (
-              <option key={value} value={value}>
-                {t(text)}
-              </option>
-            ))}
-          </select>
-        </label>
-      ))}
+            <span className="text-sm font-medium">{t(label)}</span>
+            <select
+              disabled={!ready}
+              value={preferences[key]}
+              onChange={(e) => {
+                const persisted = save({ [key]: e.target.value });
+                setNotice(
+                  persisted ? "" : "Preferences saved for this session only.",
+                );
+              }}
+              className="min-h-11 max-w-[55%] rounded-lg border border-zinc-200 bg-white px-3 text-sm"
+              aria-label={t(label)}
+            >
+              {options.map(([value, text]) => (
+                <option key={value} value={value}>
+                  {t(text)}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
       {notice && (
         <p role="status" className="py-2 text-xs text-zinc-500">
           {t(notice)}

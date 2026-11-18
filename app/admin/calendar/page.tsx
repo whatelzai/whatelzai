@@ -17,7 +17,7 @@ export default async function Page() {
   await dailyOwner();
   return (
     <div className="admin-ledger">
-      <header className="ledger-title">
+      <header className="sr-only">
         <h1>
           <AdminText text="Calendar" />
         </h1>

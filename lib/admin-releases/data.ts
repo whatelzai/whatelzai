@@ -5,6 +5,23 @@ import type { AdminRelease } from "./model";
  * No private balances, people or operational records belong here. */
 export const adminReleases: AdminRelease[] = [
   {
+    id: "2026-11-18-seasonal-calendar",
+    publishedAt: "2026-11-18T12:14:00+08:00",
+    date: "2026-11-18",
+    title: "A clearer Admin, a continuous calendar",
+    titleZh: "更清晰的Admin与连续日历",
+    items: [
+      {
+        en: "Seven days across, scrolling through 31 December 2029. Seasonal month shades and clear year markers replace calendar mode tabs.",
+        zh: "每行七天，连续滚动至2029年12月31日；四季色系、月份深浅和年份标记替代视图切换。",
+      },
+      {
+        en: "Cleaner tabs and a compact weOS-style Profile. Back stays beneath the header only on deeper pages; installed Admin supports pull-to-refresh.",
+        zh: "精简标签页，采用weOS风格的个人设置；深入页面时返回栏固定在顶部下方，已安装Admin支持下拉刷新。",
+      },
+    ],
+  },
+  {
     id: "2026-11-18-five-admin-tabs",
     publishedAt: "2026-11-18T11:35:00+08:00",
     date: "2026-11-18",

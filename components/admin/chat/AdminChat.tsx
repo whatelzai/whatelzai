@@ -46,9 +46,13 @@ export function AdminChat() {
     }
   }
   return (
-    <div className="admin-owner-chat admin-ledger">
-      <header className="ledger-title">
-        <h1>{t("Chat")}</h1>
+    <div className="admin-owner-chat admin-ledger" aria-busy={busy}>
+      <h1 className="sr-only">{t("Chat")}</h1>
+      <header className="admin-chat-toolbar">
+        <p className="chat-model">
+          <Bot size={16} />
+          GPT-6.1 Sol · {t("Not saved")}
+        </p>
         <button
           type="button"
           disabled={busy || !messages.length}
@@ -61,10 +65,6 @@ export function AdminChat() {
           {t("New chat")}
         </button>
       </header>
-      <p className="chat-model">
-        <Bot size={16} />
-        GPT-6.1 Sol · {t("Not saved")}
-      </p>
       <div className="admin-chat-transcript" aria-live="polite">
         {!messages.length && (
           <p className="chat-empty">

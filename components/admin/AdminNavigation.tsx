@@ -56,6 +56,21 @@ export function AdminNavigation() {
   const pathname = usePathname();
   const current = adminNavigation(pathname);
   const switcher = useRef<HTMLDetailsElement>(null);
+  const header = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = header.current;
+    const shell = element?.closest<HTMLElement>(".admin-workspace-shell");
+    if (!element || !shell) return;
+    const update = () =>
+      shell.style.setProperty(
+        "--admin-header-height",
+        `${element.getBoundingClientRect().height}px`,
+      );
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    update();
+    return () => observer.disconnect();
+  }, []);
   const activeLabel =
     current.workstream ??
     (current.tab === "personal" ? "Personal" : "Settings");
@@ -92,7 +107,10 @@ export function AdminNavigation() {
       >
         {t("Skip to content")}
       </a>
-      <header className="admin-nav-header sticky top-0 z-30 border-b border-zinc-200 bg-white/95 pt-[env(safe-area-inset-top)]">
+      <header
+        ref={header}
+        className="admin-nav-header sticky top-0 z-30 border-b border-zinc-200 bg-white/95 pt-[env(safe-area-inset-top)]"
+      >
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 md:px-10">
           <div className="flex min-h-16 items-center justify-between gap-3">
             <Link

@@ -36,7 +36,7 @@ export async function ownerCommunityDates(year: number) {
   if (records.length !== snapshot.data.record_count)
     throw Error("Community calendar incomplete");
   const events: AdminCalendarEvent[] = [];
-  for (let y = year; y <= year + 1; y++)
+  for (let y = year; y <= 2029; y++)
     for (let m = 1; m <= 12; m++)
       for (const e of expandMonth(
         records,

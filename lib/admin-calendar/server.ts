@@ -68,5 +68,5 @@ export async function loadAdminCalendar() {
       else unavailable.push(sources[i].label);
     });
   } else unavailable.push(...sources.map((s) => s.label));
-  return { events, unavailable, communityYears: `${year}–${year + 1}` };
+  return { events, unavailable, communityYears: `${year}–2029` };
 }
