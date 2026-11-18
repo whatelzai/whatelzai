@@ -1,21 +1,13 @@
 "use client";
+import { type CalendarScope } from "@/lib/admin-calendar/scope";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Bot,
-  Network,
-  BriefcaseBusiness,
-  CalendarDays,
-  ArrowRight,
-  X,
-} from "lucide-react";
+import { Bot, Network, BriefcaseBusiness, CalendarDays, X } from "lucide-react";
 import Link from "@/components/admin/AdminLink";
 import { adminUrl } from "@/lib/admin-url";
 import { useAdminPreferences } from "@/components/admin/AdminPreferences";
 import {
-  calendarLanes,
   calendarWeeks,
   indexCalendarEvents,
-  CALENDAR_END,
   calendarSeason,
   type AdminCalendarEvent,
 } from "@/lib/admin-calendar/model";
@@ -31,19 +23,18 @@ export function CalendarWorkspace({
   unavailable,
   today,
   communityYears,
+  lane = "all",
 }: {
   events: AdminCalendarEvent[];
   unavailable: string[];
   today: string;
   communityYears?: string;
+  lane?: CalendarScope;
 }) {
   const [count, setCount] = useState(BATCH),
-    [lane, setLane] = useState("all"),
-    [selected, setSelected] = useState<string | null>(null),
-    [jump, setJump] = useState("");
+    [selected, setSelected] = useState<string | null>(null);
   const sentinel = useRef<HTMLDivElement>(null),
-    dialog = useRef<HTMLDialogElement>(null),
-    dateInput = useRef<HTMLInputElement>(null);
+    dialog = useRef<HTMLDialogElement>(null);
   const { t, preferences } = useAdminPreferences();
   const locale = preferences.language === "zh" ? "zh-SG" : "en-SG";
   const weeks = useMemo(() => calendarWeeks(today), [today]);
@@ -86,27 +77,6 @@ export function CalendarWorkspace({
     observer.observe(el);
     return () => observer.disconnect();
   }, [count, weeks.length]);
-  useEffect(() => {
-    if (jump)
-      document
-        .getElementById(`calendar-week-${jump}`)
-        ?.scrollIntoView({ block: "start", behavior: "smooth" });
-  }, [jump]);
-  function jumpTo(day: string) {
-    const n = weeks.findIndex((w) => w.start <= day && w.end >= day);
-    if (n < 0) return;
-    setCount((current) =>
-      Math.max(
-        current,
-        Math.min(weeks.length, Math.ceil((n + 1) / BATCH) * BATCH),
-      ),
-    );
-    if (jump === weeks[n].start) {
-      document
-        .getElementById(`calendar-week-${jump}`)
-        ?.scrollIntoView({ block: "start", behavior: "smooth" });
-    } else setJump(weeks[n].start);
-  }
   const weekdays = Array.from({ length: 7 }, (_, i) =>
     new Date(`2026-11-${16 + i}T12:00:00Z`).toLocaleDateString(locale, {
       weekday: "short",
@@ -115,81 +85,6 @@ export function CalendarWorkspace({
   );
   return (
     <div className="admin-calendar continuous-calendar">
-      <div className="calendar-scroll-tools">
-        <button
-          type="button"
-          onClick={() => {
-            setJump("");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-        >
-          {t("Today")}
-        </button>
-        <label>
-          {t("Jump to date")}
-          <input
-            type="date"
-            ref={dateInput}
-            min={weeks[0]?.start}
-            max={CALENDAR_END}
-            onChange={(e) => jumpTo(e.target.value)}
-          />
-        </label>
-        <button
-          type="button"
-          aria-label={t("Go to date")}
-          onClick={() => {
-            if (dateInput.current?.value) jumpTo(dateInput.current.value);
-          }}
-        >
-          <ArrowRight size={18} />
-        </button>
-        <span>{t("Through 31 Dec 2029")}</span>
-      </div>
-      <div className="calendar-lanes" aria-label={t("Workspaces")}>
-        <button
-          type="button"
-          aria-pressed={lane === "all"}
-          onClick={() => setLane("all")}
-        >
-          {t("All")}
-        </button>
-        {calendarLanes.map((l) => {
-          const Icon = icons[l.id];
-          return (
-            <button
-              type="button"
-              key={l.id}
-              aria-label={t(l.label)}
-              aria-pressed={lane === l.id}
-              onClick={() => setLane(l.id)}
-            >
-              <Icon size={16} />
-              <span className="calendar-lane-full">{t(l.label)}</span>
-              <span className="calendar-lane-short">
-                {t(
-                  l.id === "ai-business"
-                    ? "AI"
-                    : l.id === "network-marketing"
-                      ? "Network"
-                      : "Work",
-                )}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      {unavailable.length > 0 && (
-        <p role="status" className="calendar-source-warning">
-          {t("Some sources unavailable")}: {unavailable.join(", ")}.{" "}
-          {t("Shown dates may be incomplete.")}
-        </p>
-      )}
-      {communityYears && (
-        <p className="calendar-footnote">
-          {t("Community recurrence coverage")}: {communityYears}
-        </p>
-      )}
       <div className="calendar-weekdays" aria-hidden="true">
         {weekdays.map((d) => (
           <span key={d}>{d}</span>
@@ -212,7 +107,7 @@ export function CalendarWorkspace({
                   ` / ${w.end.slice(0, 4)}`}
               </p>
             )}
-            <h2>
+            <h2 className="sr-only">
               {date(w.start)} – {date(w.end)}
             </h2>
             <div className="calendar-week-grid">
@@ -232,7 +127,8 @@ export function CalendarWorkspace({
                     <span className="calendar-day-number">
                       {Number(day.slice(-2))}
                     </span>
-                    {day.slice(-2) === "01" && (
+                    {(day.slice(-2) === "01" ||
+                      (weekIndex === 0 && i === 0)) && (
                       <span className="calendar-month-label">
                         {new Date(day + "T12:00:00Z").toLocaleDateString(
                           locale,
@@ -286,6 +182,22 @@ export function CalendarWorkspace({
           <p>{t("End of calendar · 31 December 2029")}</p>
         )}
       </div>
+      {(unavailable.length > 0 || communityYears) && (
+        <details className="calendar-source-details">
+          <summary>{t("Calendar sources")}</summary>
+          {unavailable.length > 0 && (
+            <p role="status">
+              {t("Some sources unavailable")}: {unavailable.join(", ")}.{" "}
+              {t("Shown dates may be incomplete.")}
+            </p>
+          )}
+          {communityYears && (
+            <p>
+              {t("Community recurrence coverage")}: {communityYears}
+            </p>
+          )}
+        </details>
+      )}
       {selected && (
         <dialog
           ref={dialog}

@@ -174,3 +174,19 @@ service-only save RPC, atomic notification dedupe and older-source rejection.
 Latest Morning/Evening2026-11-18 and Weekly2026-W42 were read through the connected
 EMDEE tool and copied to Admin as a bootstrap while the stored app connection is
 expired. These are real saved entries, not fabricated current-day briefs.
+
+## Calendar sheet — 2026-11-19
+
+Calendar is a secondary page with lean sticky Back and Home > Calendar breadcrumbs.
+The main header dropdown filters via validated ?space values without leaving the
+calendar. Header theme and optional epic breadcrumb match; Overview shows all.
+Filter changes preserve scroll even when the selector's overlay is unwound, and
+scheduled epic switching does not interrupt Calendar. Remove redundant local filters,
+Today and date-jump controls. Keep seven Monday-first columns, source data, day dialogs,
+seasonal month shades, four-digit years and lazy scrolling through2029-12-31.
+
+Cells are square and contiguous, with faint vertical/horizontal rules and equal
+widths from the left viewport edge to the right, including desktop. The current day
+keeps its date circle; mobile cells show compact event titles alongside icons.
+Source warnings/recurrence coverage are retained in a collapsed footer. Changing
+scope changes the view only; existing owner gates are unchanged.

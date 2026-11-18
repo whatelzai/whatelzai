@@ -1,3 +1,4 @@
+import { calendarScope, type CalendarScope } from "@/lib/admin-calendar/scope";
 import { Suspense } from "react";
 import { CalendarWorkspace } from "@/components/admin/calendar/CalendarWorkspace";
 import { AdminText } from "@/components/admin/AdminPreferences";
@@ -9,21 +10,26 @@ export const metadata = {
   title: "Calendar — Admin",
   robots: { index: false, follow: false },
 };
-async function CalendarData() {
+async function CalendarData({ lane }: { lane: CalendarScope }) {
   const data = await loadAdminCalendar();
-  return <CalendarWorkspace {...data} today={singaporeDay()} />;
+  return <CalendarWorkspace {...data} today={singaporeDay()} lane={lane} />;
 }
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ space?: string }>;
+}) {
   await dailyOwner();
+  const lane = calendarScope((await searchParams).space);
   return (
-    <div className="admin-ledger">
+    <div className="admin-ledger calendar-page">
       <header className="sr-only">
         <h1>
           <AdminText text="Calendar" />
         </h1>
       </header>
       <Suspense fallback={<p role="status">Reading calendar…</p>}>
-        <CalendarData />
+        <CalendarData lane={lane} />
       </Suspense>
     </div>
   );

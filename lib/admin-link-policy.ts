@@ -116,6 +116,7 @@ export function adminParent(pathname: string): string {
       : "/admin/ai-business";
   }
   if (p === "/preview" || p === "/playbook") return "/admin/ai-business";
+  if (p === "/calendar") return "/admin";
   if (p.startsWith("/rhythm/")) return "/admin/personal";
   if (p.startsWith("/personal/")) return "/admin/personal";
   if (p.startsWith("/today/")) return "/admin/today";
