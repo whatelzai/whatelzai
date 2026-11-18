@@ -9,7 +9,6 @@ import {
   calendarWeeks,
   indexCalendarEvents,
   calendarSeason,
-  calendarWeekYear,
   type AdminCalendarEvent,
 } from "@/lib/admin-calendar/model";
 const icons = {
@@ -84,17 +83,11 @@ export function CalendarWorkspace({
         {weeks.slice(0, count).map((w, weekIndex) => (
           <section
             className="calendar-week"
+            data-week-start={w.start}
             id={`calendar-week-${w.start}`}
             key={w.start}
             aria-label={`${date(w.start)} – ${date(w.end)}`}
           >
-            {(weekIndex === 0 ||
-              calendarWeekYear(weeks[weekIndex - 1].start) !==
-                calendarWeekYear(w.start)) && (
-              <p className="calendar-year-marker">
-                {calendarWeekYear(w.start)}
-              </p>
-            )}
             <h2 className="sr-only">
               {date(w.start)} – {date(w.end)}
             </h2>
