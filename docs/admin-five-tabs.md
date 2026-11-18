@@ -135,3 +135,12 @@ future attempted push deliveries also persist notices before sending. It does no
 Migration20261118053000 is additive and applied. New tables deny browser roles;
 reads/writes use verified owner endpoints, same-origin mutation guards and service
 credentials. Preserve saved conversations and notification history on rollback.
+
+## Missing resources
+
+Admin's nested not-found boundary handles missing records. An unmatched-path catch-all
+keeps unknown Admin URLs under the existing owner-gated layout rather than falling
+through to the public404. The root fallback also recognizes Admin hosts/surface.
+Recovery links are same-origin and return to a known epic root or Home, never an
+arbitrary parent, public Playbook or browser auth history. Resource unavailability
+remains a retryable error; absent records remain not-found. No access controls change.
