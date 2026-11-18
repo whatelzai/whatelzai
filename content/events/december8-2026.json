@@ -43,6 +43,14 @@
         }
       ],
       "reminder": "Remember to have your dinner before coming over!"
+    },
+    "poster_files": {
+      "original": {
+        "path": "598a1db6-3c4a-4f81-9f3b-79fb8c1425aa/a68bf58c-ec19-4f54-9b02-5f85920ca110-dec8-poster-original.png",
+        "width": 1086,
+        "height": 1448,
+        "type": "image/png"
+      }
     }
   },
   "posterGeneration": {

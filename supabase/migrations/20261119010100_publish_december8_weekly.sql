@@ -24,6 +24,6 @@ begin
  update public.event_signup_attempts set state='confirmed' where id=a.id;
  return ticket;
 end $$;
-update public.events set published=true where id='598a1db6-3c4a-4f81-9f3b-79fb8c1425aa' and metadata->>'event_id'='ELZ-EVT-0010';
+update public.events set published=true,metadata=metadata||'{"poster_files": {"original": {"path": "598a1db6-3c4a-4f81-9f3b-79fb8c1425aa/a68bf58c-ec19-4f54-9b02-5f85920ca110-dec8-poster-original.png", "width": 1086, "height": 1448, "type": "image/png"}}}'::jsonb where id='598a1db6-3c4a-4f81-9f3b-79fb8c1425aa' and metadata->>'event_id'='ELZ-EVT-0010';
 update public.event_signup_offers set enabled=true where event_id='598a1db6-3c4a-4f81-9f3b-79fb8c1425aa';
 commit;
