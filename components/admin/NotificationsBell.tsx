@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PushNotifications } from "./PushNotifications";
 import { Bell, X, CheckCheck, Archive } from "lucide-react";
-import Link from "./AdminLink";
+
 import { adminUrl } from "@/lib/admin-url";
 import { useAdminPreferences } from "./AdminPreferences";
 type Notice = {
@@ -55,6 +55,7 @@ export function NotificationsBell() {
     try {
       const r = await fetch(adminUrl("/api/admin/notifications"), {
         method: "PATCH",
+        keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, id }),
       });
@@ -101,9 +102,13 @@ export function NotificationsBell() {
           </button>
         </header>
         <div className="admin-notification-tools">
-          <button type="button" onClick={() => void mark("read-all")}>
+          <button
+            type="button"
+            disabled={!unread}
+            onClick={() => void mark("read-all")}
+          >
             <CheckCheck size={16} />
-            {t("Mark all read")}
+            {t("Mark all as read")}
           </button>
         </div>
         <div className="admin-notification-push">
@@ -139,20 +144,28 @@ export function NotificationsBell() {
                   <Archive size={16} />
                 </button>
               </div>
-              <Link
+              <a
                 href={adminUrl(
                   n.url.startsWith("/admin")
                     ? n.url
                     : "/admin" + (n.url === "/" ? "" : n.url),
                 )}
                 onClick={() => {
-                  void mark("read", n.id);
+                  if (!n.read_at) void mark("read", n.id);
                   dialog.current?.close();
                 }}
               >
-                <h3>{n.title}</h3>
+                <h3>
+                  {!n.read_at && (
+                    <span className="sr-only">{t("Unread")} · </span>
+                  )}
+                  {n.title}{" "}
+                  <span aria-hidden="true" className="notice-arrow">
+                    →
+                  </span>
+                </h3>
                 <p>{n.body}</p>
-              </Link>
+              </a>
             </article>
           ))}
         </div>
