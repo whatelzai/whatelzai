@@ -1,4 +1,5 @@
 import "server-only";
+import { syncAdminNotices } from "@/lib/admin-notifications/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
 import { isOwnerUser } from "@/lib/admin-policy";
 import { sendPush, pushConfigured } from "./server";
@@ -10,7 +11,6 @@ import {
   type EventDelivery,
 } from "./events";
 export async function checkEventPush(now = new Date()) {
-  if (!pushConfigured()) throw Error("push_not_configured");
   const owner = process.env.WHATELZ_OWNER_USER_ID;
   const user = await db
     .from("users")
@@ -18,6 +18,8 @@ export async function checkEventPush(now = new Date()) {
     .eq("id", owner ?? "00000000-0000-0000-0000-000000000000")
     .maybeSingle();
   if (user.error || !isOwnerUser(user.data)) throw Error("owner_unavailable");
+  await syncAdminNotices(owner!);
+  if (!pushConfigured()) return { devices: 0, sent: 0, failed: 0 };
   const devices = await db
     .from("admin_push_subscriptions")
     .select("id,owner_id,encrypted_subscription,enabled_at,enabled")
@@ -41,7 +43,25 @@ export async function checkEventPush(now = new Date()) {
     .range(0, 999);
   if (tickets.error || (tickets.count ?? 0) > 1000)
     throw Error("registrations_unavailable");
-  if (!tickets.data?.length)
+  const feedback = await db
+    .from("event_feedback")
+    .select("id,event_id,created_at")
+    .gte("created_at", cutoff)
+    .lte("created_at", now.toISOString())
+    .order("created_at")
+    .order("id")
+    .limit(1000);
+  if (feedback.error) throw Error("feedback_unavailable");
+  const activity: EventPushTicket[] = [
+    ...(tickets.data ?? []),
+    ...(feedback.data ?? []).map((f) => ({
+      id: f.id,
+      created_at: f.created_at,
+      status: "confirmed",
+      feedbackEventId: f.event_id,
+    })),
+  ].sort((a, b) => a.created_at.localeCompare(b.created_at));
+  if (!activity.length)
     return { devices: devices.data.length, sent: 0, failed: 0 };
   const results = await Promise.allSettled(
     devices.data.map(async (device) => {
@@ -49,13 +69,15 @@ export async function checkEventPush(now = new Date()) {
         .from("admin_push_deliveries")
         .select("document_path,status,attempts", { count: "exact" })
         .eq("subscription_id", device.id)
-        .like("document_path", "event-registration/%")
+        .or(
+          "document_path.like.event-registration/%,document_path.like.event-feedback/%",
+        )
         .gte("attempted_at", cutoff)
         .range(0, 999);
       if (history.error || (history.count ?? 0) > 1000)
         throw Error("delivery_state_unavailable");
       return deliverEventPush(
-        tickets.data as EventPushTicket[],
+        activity,
         device.enabled_at,
         now,
         history.data as EventDelivery[],
