@@ -2,7 +2,7 @@
 import { adminUrl } from "@/lib/admin-url";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import { createPrefillTestimonial } from "../actions";
 import {
   TESTIMONIAL_CATEGORIES,

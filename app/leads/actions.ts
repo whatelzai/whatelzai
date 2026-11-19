@@ -1,4 +1,5 @@
 "use server";
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-server";
@@ -84,6 +85,7 @@ export async function addActivity(
     .insert({ ...parsed.data, owner_id: owner });
   if (error)
     return { error: "This activity could not be saved. Please try again." };
+  revalidatePath("/leads");
   revalidatePath(`/leads/${parsed.data.lead_id}`);
   return { success: "Activity recorded." };
 }
@@ -110,6 +112,54 @@ export async function updateActivity(
     .maybeSingle();
   if (error || !data)
     return { error: "Activity could not be updated. Reload and try again." };
+  revalidatePath("/leads");
   revalidatePath(`/leads/${lead_id}`);
   return { success: "Activity updated." };
+}
+
+export async function setLeadPriority(
+  _previous: ActionResult,
+  form: FormData,
+): Promise<ActionResult> {
+  const owner = await leadOwner();
+  const parsed = z
+    .object({
+      id: z.uuid(),
+      revision: z.coerce.number().int().positive(),
+      priority: z.enum(["true", "false"]),
+    })
+    .strict()
+    .safeParse({
+      id: form.get("id"),
+      revision: form.get("revision"),
+      priority: form.get("priority"),
+    });
+  if (!parsed.success)
+    return { error: "Reload this profile before changing priority." };
+  const { id, revision, priority } = parsed.data;
+  const result = await supabaseAdmin
+    .from("member_leads")
+    .update({
+      is_priority: priority === "true",
+      revision: revision + 1,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("owner_id", owner)
+    .eq("id", id)
+    .eq("revision", revision)
+    .select("id")
+    .maybeSingle();
+  if (result.error || !result.data)
+    return {
+      error:
+        "This profile changed or is unavailable. Reload before trying again.",
+    };
+  revalidatePath("/leads");
+  revalidatePath(`/leads/${id}`);
+  return {
+    success:
+      priority === "true"
+        ? "Added to priority leads."
+        : "Removed from priority leads.",
+  };
 }

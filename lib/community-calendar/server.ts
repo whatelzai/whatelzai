@@ -1,5 +1,8 @@
+import { myCommunityRoles } from "@/lib/communities/server";
+import { founderPersona } from "@/lib/communities/model";
+import { isOwnerUser } from "@/lib/admin-policy";
 import "server-only";
-import { ensureUserRow, isAdminRole } from "@/lib/users";
+import { requireAssignedUser } from "@/lib/app-access";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { expandMonth, type CalendarRecord } from "./ical";
 import {
@@ -9,7 +12,7 @@ import {
   type Persona,
 } from "./personas";
 export async function loadCommunityCalendar(month: string, preview?: string) {
-  const user = await ensureUserRow();
+  const user = await requireAssignedUser();
   if (!user) throw new Error("Sign-in required");
   const { data: membership, error: membershipError } = await supabaseAdmin
     .from("community_calendar_memberships")
@@ -17,10 +20,11 @@ export async function loadCommunityCalendar(month: string, preview?: string) {
     .eq("user_id", user.id)
     .maybeSingle();
   if (membershipError) throw new Error("Calendar membership unavailable");
-  const persona: Persona = isPersona(membership?.persona)
-    ? membership.persona
-    : "Guest";
-  const canManage = isAdminRole(user.role);
+  const scopedPersona = founderPersona(await myCommunityRoles());
+  const persona: Persona =
+    scopedPersona ??
+    (isPersona(membership?.persona) ? membership.persona : "Guest");
+  const canManage = isOwnerUser(user);
   const viewingAs = calendarView(persona, canManage, preview);
   const access = { persona, viewingAs, canManage };
   const { data: snapshot, error } = await supabaseAdmin

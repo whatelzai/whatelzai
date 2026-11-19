@@ -1,3 +1,9 @@
+import {
+  WorkspaceFocus,
+  WorkspaceFocusLoading,
+} from "@/components/admin/WorkspaceFocus";
+import { Suspense } from "react";
+import { AdminText } from "@/components/admin/AdminPreferences";
 import type { Metadata } from "next";
 import { AdminArea } from "@/components/admin/AdminArea";
 
@@ -7,18 +13,25 @@ export default function DayJobPage() {
   return (
     <AdminArea
       title="Day Job"
-      description="A place for your work priorities, deadlines and follow-ups."
+      description="AsiaVerify. One work block at a time."
+      intro={
+        <Suspense fallback={<WorkspaceFocusLoading />}>
+          <WorkspaceFocus lane="day-job" />
+        </Suspense>
+      }
       links={[]}
     >
-      <div className="rounded-xl border border-zinc-200 p-6">
-        <h2 className="font-semibold text-zinc-900">
-          Choose what to track first
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-zinc-600">
-          This section is ready to build around your workflow. No tasks or work
-          data have been added yet.
+      <details className="dayjob-boundaries">
+        <summary>
+          <AdminText text="Work boundaries" />
+        </summary>
+        <p>
+          <AdminText text="AsiaVerify · weekdays 9am–6pm. Keep work within 40 hours a week; extra hours only for emergencies or incidents." />
         </p>
-      </div>
+        <p>
+          <AdminText text="A dependable job supports the runway. Protect evenings for building the life beyond it." />
+        </p>
+      </details>
     </AdminArea>
   );
 }

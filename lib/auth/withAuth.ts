@@ -4,7 +4,7 @@ import { findActiveToken, touchTokenUsage, type AuthToken } from "./tokens";
 import { matchesScope } from "./scopes";
 import { recordAudit } from "./audit";
 import { checkTokenRateLimit, getClientIp } from "@/lib/rate-limit";
-import { isAdminRole, type UserRole } from "@/lib/users";
+import { isOwnerUser } from "@/lib/admin-policy";
 import { supabaseAdmin } from "@/lib/supabase-server";
 
 export interface AuthContext {
@@ -90,7 +90,7 @@ export function withAuth(
   };
 }
 
-// Gate for admin-UI-only endpoints. Uses Supabase session, requires admin role.
+// Gate for admin-UI-only endpoints. Uses Supabase session, requires the configured owner.
 // Accepts an optional second arg so dynamic routes ({ params }) work unchanged.
 export function withSessionAdmin<TArg = unknown>(
   handler: (req: Request, arg: TArg) => Promise<Response> | Response,
@@ -99,14 +99,14 @@ export function withSessionAdmin<TArg = unknown>(
     const { userId } = await auth();
     if (!userId) return unauthorized("not_signed_in");
 
-    const { data } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from("users")
       .select("id, role")
       .eq("id", userId)
       .maybeSingle();
 
-    if (!data || !isAdminRole(data.role as UserRole | undefined)) {
-      return forbidden("admin_required");
+    if (error || !isOwnerUser(data)) {
+      return forbidden("owner_required");
     }
 
     return handler(req, arg);

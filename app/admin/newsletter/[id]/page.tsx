@@ -1,6 +1,6 @@
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import { notFound } from "next/navigation";
 import { getIssueById, listDistributions } from "@/lib/newsletter";
 import { IssueEditor } from "../_components/IssueEditor";

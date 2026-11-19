@@ -1,0 +1,403 @@
+import "server-only";
+import type { AdminRelease } from "./model";
+/** Admin-only product history. Add newest first after verifying shipped behaviour.
+ * Keep IDs immutable; publishing a new ID makes it unseen on each device.
+ * No private balances, people or operational records belong here. */
+export const adminReleases: AdminRelease[] = [
+  {
+    id: "2026-11-19-calendar-pinned-days",
+    date: "2026-11-19",
+    publishedAt: "2026-11-19T01:42:00+08:00",
+    title: "Calendar weekdays stay in place",
+    titleZh: "日历星期栏固定在顶部",
+    items: [
+      {
+        en: "Weekdays stay below Back while dates scroll. Weeks belong to their starting year, and month colours follow Spring Jan–Mar, Summer Apr–Jun, Autumn Jul–Sep and Winter Oct–Dec.",
+        zh: "滚动日期时，星期栏固定在返回栏下方。每周归属其开始年份；月份颜色按春季一至三月、夏季四至六月、秋季七至九月、冬季十至十二月划分。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-19-calendar-sheet",
+    date: "2026-11-19",
+    publishedAt: "2026-11-19T01:19:00+08:00",
+    title: "A clearer calendar grid",
+    titleZh: "更清晰的日历网格",
+    items: [
+      {
+        en: "Calendar now runs edge to edge with square, connected day cells and aligned weekday gridlines. Use the header workspace dropdown to filter while staying in Calendar; Back and breadcrumbs sit below the header.",
+        zh: "日历采用贴边的连续方格与对齐的星期网格线。顶部工作区菜单可直接筛选日历，标题下方提供返回与路径导航。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-19-latest-rhythm",
+    date: "2026-11-19",
+    publishedAt: "2026-11-19T00:57:00+08:00",
+    title: "Your latest briefings, always within reach",
+    titleZh: "随时查看最近的简报",
+    items: [
+      {
+        en: "Morning, Night and Weekly open the latest saved entry, with a red dot for unread versions. Calendar sits beside Weekly.",
+        zh: "晨间、晚间和每周入口显示最近保存的内容；未读版本带红点。日历位于每周入口右侧。",
+      },
+      {
+        en: "The bell has a push switch for this device. New saved briefing versions get inbox notifications and opted-in push delivery; reconnect EMDEE when its authorization expires.",
+        zh: "铃铛内可直接开关本设备的推送通知。新保存的简报版本会进入通知中心，并推送至已启用的设备；EMDEE 授权到期后需重新连接。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-18-admin-recovery",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T20:07:00+08:00",
+    title: "A clearer way back",
+    titleZh: "更清晰的返回路径",
+    items: [
+      {
+        en: "Missing Admin items now show a compact recovery view inside the app, with a safe route to your workspace or Home.",
+        zh: "Admin 中缺失的项目现在显示简洁的恢复页面，可安全返回工作区或首页。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-18-personal-chat-inbox",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T20:00:00+08:00",
+    title: "Three tabs, four epics, one inbox",
+    titleZh: "三个主标签、四个领域、一个通知中心",
+    items: [
+      {
+        en: "Chat, Home and Profile keep navigation simple. Personal joins the workspaces, including your planning and closeout rhythm.",
+        zh: "主导航简化为对话、首页与个人设置。个人成为独立领域，纳入规划与复盘节奏。",
+      },
+      {
+        en: "Chat saves conversations and can propose task changes for you to confirm. The header bell keeps release notes, recent registrations and new push notices together.",
+        zh: "对话可保存记录并提出待你确认的任务变更。顶部铃铛汇集版本说明、近期报名和新的推送通知。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-18-focus-horizons",
+    date: "2026-11-18",
+    publishedAt: "2026-11-18T12:45:00+08:00",
+    title: "Today and this week, in focus",
+    titleZh: "聚焦今天与本周",
+    items: [
+      {
+        en: "Today has a full-width rotating focus card. The week preview shows three items from tomorrow onwards, with View more. Each epic stays scoped to its own work.",
+        zh: "今日重点采用全宽轮播卡片；本周预览显示明日起三项安排，其余可展开。各领域仅显示所属重点。",
+      },
+      {
+        en: "Stable focus references open detail pages with breadcrumbs. Overview also shows Thursday 9pm planning and Sunday 9pm closeout; no duplicate schedules are created.",
+        zh: "稳定的重点编号连接详情页与路径导航；总览另显示周四晚9点规划及周日晚9点收尾，不重复创建定时任务。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-18-seasonal-calendar",
+    publishedAt: "2026-11-18T12:14:00+08:00",
+    date: "2026-11-18",
+    title: "A clearer Admin, a continuous calendar",
+    titleZh: "更清晰的Admin与连续日历",
+    items: [
+      {
+        en: "Seven days across, scrolling through 31 December 2029. Seasonal month shades and clear year markers replace calendar mode tabs.",
+        zh: "每行七天，连续滚动至2029年12月31日；四季色系、月份深浅和年份标记替代视图切换。",
+      },
+      {
+        en: "Cleaner tabs and a compact weOS-style Profile. Back stays beneath the header only on deeper pages; installed Admin supports pull-to-refresh.",
+        zh: "精简标签页，采用weOS风格的个人设置；深入页面时返回栏固定在顶部下方，已安装Admin支持下拉刷新。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-18-five-admin-tabs",
+    publishedAt: "2026-11-18T11:35:00+08:00",
+    date: "2026-11-18",
+    title: "Five tabs, one clear Home",
+    titleZh: "五个入口，一个清晰的首页",
+    items: [
+      {
+        en: "Personal, Chat, Home, Calendar and Profile. Home is a raised yellow circle; Profile contains preferences and release notes.",
+        zh: "个人、对话、首页、日历和设置；首页采用上浮黄色圆形，个人设置包含偏好和更新记录。",
+      },
+      {
+        en: "Calendar combines AI events, community dates and company sprints. Owner Chat uses GPT-6.1 Sol API credits; chats are not saved and have no connected tools yet.",
+        zh: "日历整合AI活动、社群日期和公司Sprint；专属对话使用GPT-6.1 Sol API额度，暂不保存记录，也不连接操作工具。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-14-event-portfolio",
+    publishedAt: "2026-11-14T01:21:25+08:00",
+    date: "2026-11-14",
+    title: "Next event, with history intact",
+    titleZh: "聚焦下一场，保留活动记录",
+    items: [
+      {
+        en: "AI Business highlights your next event. Browse upcoming and past sessions in All events.",
+        zh: "AI业务突出下一场活动；全部活动中可查看未来与过往场次。",
+      },
+      {
+        en: "People overview separates unique attendees, returning attendees and total visits.",
+        zh: "人脉总览区分独立参与者、回访参与者与总参与人次。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-14-contained-navigation",
+    publishedAt: "2026-11-14T00:58:02+08:00",
+    date: "2026-11-14",
+    title: "Stay inside Admin",
+    titleZh: "留在Admin内操作",
+    items: [
+      {
+        en: "The Playbook opens your owner-only flipbook, with reading mode. Website previews and supported team resources stay inside Admin.",
+        zh: "手册直接打开作者专属翻页阅读器，也可切换阅读模式；网站预览与支持的团队资源留在Admin内。",
+      },
+      {
+        en: "Back closes dialogs and book contents first. Other services show an address to copy instead of launching a browser.",
+        zh: "返回优先关闭弹窗和目录；外部服务显示可复制地址，不再直接打开浏览器。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-14-visual-overview",
+    publishedAt: "2026-11-14T00:18:29+08:00",
+    date: "2026-11-14",
+    title: "A more visual Overview",
+    titleZh: "更直观的总览",
+    items: [
+      {
+        en: "Three workspace icons replace repeated rows. Day Job now uses a brown work bag.",
+        zh: "三个工作空间图标取代重复列表，工作采用棕色公文包。",
+      },
+      {
+        en: "Rhythm uses an orange sun, blue moon and teal 7 for morning, night and weekly reflections.",
+        zh: "节奏采用橙色太阳、蓝色月亮与青绿色7，分别代表早晨、夜晚和每周回顾。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-13-focused-workspaces",
+    publishedAt: "2026-11-14T00:07:23+08:00",
+    date: "2026-11-13",
+    title: "Less clutter, clearer workspaces",
+    titleZh: "更精简，更清晰的工作空间",
+    items: [
+      {
+        en: "AI Business now centres on Events, People, Proof and Products. Occasional tools sit under More tools.",
+        zh: "AI业务聚焦活动、人脉、口碑与产品，其他工具收在更多工具中。",
+      },
+      {
+        en: "Robot and yellow for AI, purple network for relationships, orange sun for Day Job. Personal and Settings have a quieter header.",
+        zh: "AI使用黄色机器人，人脉使用紫色网络，工作使用橙色太阳；个人与设置页的页头更简洁。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-13-visual-media",
+    publishedAt: "2026-11-13T14:36:52+08:00",
+    date: "2026-11-13",
+    title: "Browse, describe and reuse event media",
+    titleZh: "浏览、记录、复用活动影像",
+    items: [
+      {
+        en: "Poster, Scan and Media are now compact tabs. Browse thumbnails or swipe, then open a zoomable photo viewer.",
+        zh: "海报、扫描、影像三个简洁入口；列表缩略图或滑动浏览，点击打开可缩放图片。",
+      },
+      {
+        en: "Add descriptions and confirmed people tags. Export posters or photos as 3:4 posts or 9:16 Stories; originals stay private.",
+        zh: "添加描述与手动确认的人物标签，可导出3:4帖子图或9:16限时动态；原始影像保持私密。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-13-event-followup",
+    publishedAt: "2026-11-13T11:43:22+08:00",
+    date: "2026-11-13",
+    title: "Attendance and event memories",
+    titleZh: "签到与活动影像",
+    items: [
+      {
+        en: "Manually check in a confirmed attendee after a named confirmation. QR scanning remains automatic.",
+        zh: "确认姓名后可手动签到，二维码扫描仍自动完成签到。",
+      },
+      {
+        en: "Media upload stores event photos and videos privately. Upcoming placeholders appear under Events → Draft events.",
+        zh: "活动照片和视频可私密上传，下一场活动占位草稿位于活动页。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-11-event-push",
+    publishedAt: "2026-11-12T10:07:50+08:00",
+    date: "2026-11-11",
+    title: "A notification for new registrations",
+    titleZh: "新报名，及时提醒",
+    items: [
+      {
+        en: "New confirmed event tickets can alert your enabled Admin devices. Tap the notification to open Registrations.",
+        zh: "新确认的活动票券可提醒已开启通知的管理设备，点击即可打开报名名单。",
+      },
+      {
+        en: "Enable Push notifications in Settings on your phone. Alerts use the existing one-minute check and keep attendee details off the lock screen.",
+        zh: "请在手机设置页开启推送通知。系统每分钟检查一次，锁屏通知不会显示报名者资料。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-11-poster-sharing",
+    publishedAt: "2026-11-11T19:52:28+08:00",
+    date: "2026-11-11",
+    title: "Take your event poster with you",
+    titleZh: "活动海报，随手分享",
+    items: [
+      {
+        en: "Open Poster & share in Registrations to download the original image and copy an editable caption or event link.",
+        zh: "在报名页打开海报与分享，下载原图并复制可编辑文案或活动链接。",
+      },
+      {
+        en: "Supported devices can hand the image to their share sheet. Choose an app and finish editing there; nothing posts automatically.",
+        zh: "支持的设备可通过系统分享面板发送图片，选择应用后继续编辑，不会自动发布。",
+      },
+    ],
+  },
+  {
+    id: "2026-11-10-event-operations",
+    publishedAt: "2026-11-10T22:08:34+08:00",
+    date: "2026-11-10",
+    title: "Event signups, at a glance",
+    titleZh: "活动报名，一眼看清",
+    items: [
+      {
+        en: "Overview and AI Business bring event registrations forward. Open the list for people, payments, ticket emails and check-in.",
+        zh: "总览与 AI 业务优先显示活动报名；打开名单查看人员、付款、票券邮件与签到。",
+      },
+      {
+        en: "Search attendees on phone or desktop. Pending payments stay separate from confirmed tickets; amounts not recorded remain clearly marked.",
+        zh: "手机和桌面都可搜索报名者。待付款与已确认票券分开显示；未记录的金额会明确标注。",
+      },
+    ],
+  },
+  {
+    id: "2026-10-28-personal-tools",
+    publishedAt: "2026-10-28T21:03:01+08:00",
+    date: "2026-10-28",
+    title: "Small tools for everyday life",
+    titleZh: "日常生活的小工具",
+    items: [
+      {
+        en: "Personal brings together payday allocation, meditation, workout logging and one-minute teaching practice.",
+        zh: "在个人页使用发薪分配、静心计时、训练记录与一分钟表达练习。",
+      },
+      {
+        en: "This week shows saved sessions and spending alongside your chosen outcome. Home stays focused on business and work.",
+        zh: "本周视图汇总已保存的练习、支出与所选成果；主页继续专注业务和工作。",
+      },
+    ],
+  },
+  {
+    id: "2026-10-28-visual-money",
+    publishedAt: "2026-10-28T19:53:43+08:00",
+    date: "2026-10-28",
+    title: "Money at a glance",
+    titleZh: "财务，一眼看清",
+    items: [
+      {
+        en: "Recognise your jars by icon and pastel colour. Tap a tile for the plan and account.",
+        zh: "用图标和柔和色彩识别罐子，点击查看计划与账户。",
+      },
+      {
+        en: "Activity and bills are compact. Tap a row for details and actions; voided entries and paused bills stay available behind a filter.",
+        zh: "收支与账单更简洁，点击查看详情与操作；筛选即可查看已作废账目和已暂停账单。",
+      },
+    ],
+  },
+  {
+    id: "2026-10-28-entry-date",
+    publishedAt: "2026-10-28T13:48:33+08:00",
+    date: "2026-10-28",
+    title: "Correct an entry’s date",
+    titleZh: "修改账目日期",
+    items: [
+      {
+        en: "Use Edit date on an active Activity entry, without voiding or recreating it.",
+        zh: "在明细中直接修改有效账目的日期，无需作废或重建。",
+      },
+      {
+        en: "Totals and exports follow the saved date. Recurring bill schedules stay unchanged.",
+        zh: "汇总和导出会使用修改后的日期；固定账单的计划保持不变。",
+      },
+    ],
+  },
+  {
+    id: "2026-10-28-simple-income",
+    publishedAt: "2026-10-28T08:27:37+08:00",
+    date: "2026-10-28",
+    title: "Income, without the expense fields",
+    titleZh: "收入记录，更简单",
+    items: [
+      {
+        en: "Choose Working, Investment or Business income. Notes are optional, and the receiving account is clearly labelled.",
+        zh: "选择工作收入、投资收入或业务收入；备注选填，并明确显示收款账户。",
+      },
+      {
+        en: "Income no longer asks for an expense description or a jar. Allocate it later when you transfer between jars.",
+        zh: "记录收入时无需填写支出说明或选择罐子；之后转账时再分配。",
+      },
+    ],
+  },
+  {
+    id: "2026-10-27-admin-release-history",
+    publishedAt: "2026-10-27T23:15:58+08:00",
+    date: "2026-10-27",
+    title: "A quieter way to catch up",
+    titleZh: "轻松了解最新更新",
+    items: [
+      {
+        en: "The latest three Admin updates appear in a scrollable popup when you return Home.",
+        zh: "返回主页时，可在滚动弹窗中查看最近三条后台更新。",
+      },
+      {
+        en: "Close it immediately, or open the full release history in Settings. Seen updates stay closed on this device until a new release.",
+        zh: "可以随时关闭，也能在设置中查看完整历史。本设备关闭后，直到新版本发布才会再次提示。",
+      },
+    ],
+  },
+  {
+    id: "2026-10-27-personal-home",
+    publishedAt: "2026-10-27T23:15:58+08:00",
+    date: "2026-10-27",
+    title: "Personal, built around your week",
+    titleZh: "围绕每一周的个人空间",
+    items: [
+      {
+        en: "Your Mandala direction, one chosen weekly outcome and daily reflection links now have a clear home.",
+        zh: "曼陀罗方向、本周选择的一个成果与每日复盘，现在都有清晰的位置。",
+      },
+      {
+        en: "Open money tracking or log an expense directly from Personal, on desktop or phone.",
+        zh: "在电脑或手机上，都可从个人页直接打开账本或记一笔支出。",
+      },
+    ],
+  },
+  {
+    id: "2026-10-27-personal-money",
+    publishedAt: "2026-10-27T23:15:58+08:00",
+    date: "2026-10-27",
+    title: "Every dollar. Every ringgit.",
+    titleZh: "每一元，每一令吉，都有记录",
+    items: [
+      {
+        en: "Track expenses, income and transfers across six jars, keeping original currencies separate.",
+        zh: "用六个罐子记录支出、收入与转账，不同币种分别记录。",
+      },
+      {
+        en: "Keep recurring bills in view, record payments and retain a recoverable transaction history. This is a manual tracker, with no bank connection.",
+        zh: "查看固定账单、记录已付款项，并保留可恢复的交易历史。这是手动账本，未连接银行。",
+      },
+    ],
+  },
+];

@@ -19,6 +19,7 @@ export const goals = ["Undecided", "ABO", "APC"] as const;
 export const activityStatuses = [
   "Attended",
   "Planned",
+  "Tentative",
   "To invite",
   "Conversation",
   "Missed",
@@ -78,6 +79,11 @@ export const activityUpdateSchema = z.object({
 export type Lead = Omit<z.infer<typeof leadUpdateSchema>, "id"> & {
   id: string;
   updated_at: string;
+  referrer_person_id?: string | null;
+  planned_sponsor_person_id?: string | null;
+  is_priority: boolean;
+  visibility?: "team" | "private";
+  has_photo?: boolean;
 };
 export type LeadSummary = Pick<
   Lead,
@@ -89,7 +95,9 @@ export type LeadSummary = Pick<
   | "goal"
   | "next_action"
   | "follow_up_on"
->;
+  | "is_priority"
+  | "has_photo"
+> & { updated_at?: string };
 export type Activity = z.infer<typeof activityCreateSchema> & {
   id: string;
   revision: number;

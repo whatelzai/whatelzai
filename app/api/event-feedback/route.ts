@@ -1,0 +1,110 @@
+import {
+  issueReturnOffer,
+  returnCookieHeader,
+} from "@/lib/event-return-offer/server";
+import {
+  registeredFeedbackInput,
+  validFeedbackAnswers,
+} from "@/lib/event-feedback/questions";
+import { feedbackBody, feedbackJson as json } from "@/lib/event-feedback/http";
+import {
+  feedbackHash,
+  openFeedbackEvent,
+  loadFeedbackForm,
+} from "@/lib/event-feedback/server";
+import { supabaseAdmin as db } from "@/lib/supabase-server";
+import { getClientIp } from "@/lib/rate-limit";
+export const runtime = "nodejs";
+export async function POST(req: Request) {
+  const parsed = await feedbackBody(req, true);
+  if ("response" in parsed) return parsed.response;
+  const input = registeredFeedbackInput.safeParse(parsed.body);
+  if (!input.success)
+    return json(
+      {
+        error:
+          "Please refresh this form, check your registration email and answer every question.",
+      },
+      400,
+    );
+  try {
+    const event = await openFeedbackEvent(input.data.eventId);
+    if (!event)
+      return json({ error: "Feedback is not open for this event." }, 409);
+    const form = await loadFeedbackForm(event.recordId);
+    if (!form)
+      return json(
+        { error: "Feedback is not available right now. Please try again." },
+        503,
+      );
+    if (form.id !== input.data.formId)
+      return json(
+        {
+          error:
+            "This form has been updated. Please refresh to see the latest questions before submitting.",
+        },
+        409,
+      );
+    if (!validFeedbackAnswers(form, input.data.answers))
+      return json({ error: "Please answer every question on this form." }, 400);
+    const r = await db.rpc("submit_registered_event_feedback", {
+      p_id: input.data.requestId,
+      p_event: event.recordId,
+      p_email: input.data.email,
+      p_email_hash: feedbackHash(`email:${event.recordId}:${input.data.email}`),
+      p_form: form.id,
+      p_answers: input.data.answers,
+      p_client_hash: feedbackHash(
+        `client:${new Date().toISOString().slice(0, 10)}:${getClientIp(req)}`,
+      ),
+    });
+    if (r.error) {
+      const message = r.error.message;
+      if (message.includes("FEEDBACK_REGISTRATION_REQUIRED"))
+        return json(
+          {
+            error:
+              "This email does not have a confirmed registration for this event.",
+          },
+          403,
+        );
+      if (message.includes("FEEDBACK_ALREADY_SUBMITTED"))
+        return json(
+          { error: "You have already submitted feedback for this event." },
+          409,
+        );
+      if (message.includes("FEEDBACK_CONFLICT"))
+        return json(
+          {
+            error:
+              "This response has already been saved. Refresh to start again.",
+          },
+          409,
+        );
+      throw r.error;
+    }
+    const result = json({ ok: true });
+    try {
+      const offer = await issueReturnOffer(
+        input.data.requestId,
+        event.recordId,
+      );
+      if (offer)
+        result.headers.append(
+          "Set-Cookie",
+          returnCookieHeader(offer.token, req.url),
+        );
+    } catch {
+      console.error("Feedback saved; return offer unavailable");
+    }
+    return result;
+  } catch {
+    return json(
+      {
+        error:
+          "Your feedback could not be saved. Please try again; your answers are still here.",
+      },
+      503,
+    );
+  }
+}

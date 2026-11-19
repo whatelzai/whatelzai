@@ -1,16 +1,10 @@
 import "server-only";
+import { isOwnerUser } from "./admin-policy";
 import { cache } from "react";
 import { supabaseAdmin } from "./supabase-server";
 import { getVerifiedAuthUser } from "./supabase/auth-server";
 
 export type UserRole = "superadmin" | "admin" | "unauthorized";
-export const ADMIN_ROLES: readonly UserRole[] = ["superadmin", "admin"];
-export function isAdminRole(role: UserRole | null | undefined): boolean {
-  return role === "superadmin" || role === "admin";
-}
-export function isSuperAdminRole(role: UserRole | null | undefined): boolean {
-  return role === "superadmin";
-}
 export interface AppUser {
   id: string;
   supabase_auth_user_id: string;
@@ -58,11 +52,11 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
   if (!user) return false;
   const { data, error } = await supabaseAdmin
     .from("users")
-    .select("role")
+    .select("id, role")
     .eq("supabase_auth_user_id", user.id)
     .maybeSingle();
-  return !error && isAdminRole(data?.role as UserRole | undefined);
+  return !error && isOwnerUser(data);
 }
 export async function requireAdmin(): Promise<void> {
-  if (!(await isCurrentUserAdmin())) throw new Error("Admin access required");
+  if (!(await isCurrentUserAdmin())) throw new Error("Owner access required");
 }

@@ -7,7 +7,7 @@ import { CheckoutButton } from "../checkout-button";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "The Solopreneur's AI Playbook — Lifetime Access",
+  title: "The Money & AI Playbook — Lifetime Access",
   description:
     "One playbook. Two pillars — Mindset and Skillset. Lifetime access, every future update, one flat payment.",
 };
@@ -98,7 +98,7 @@ export default async function PlaybookPage() {
       />
       <header className="text-center">
         <p className="font-mono text-xs uppercase tracking-widest text-zinc-500">
-          The Solopreneur&apos;s AI Playbook
+          The Money &amp; AI Playbook
         </p>
         <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-zinc-900 sm:text-5xl">
           Two pillars. One playbook. Lifetime access.

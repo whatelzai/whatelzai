@@ -15,7 +15,7 @@ export function ContentEditor({
   label = "Case Study",
 }: Props) {
   const [content, setContent] = useState(initial);
-  const [preview, setPreview] = useState(false);
+  const [preview, setPreview] = useState(true);
   const [saved, setSaved] = useState(false);
   const [pending, startTransition] = useTransition();
 

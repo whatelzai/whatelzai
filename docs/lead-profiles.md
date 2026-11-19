@@ -1,0 +1,15 @@
+# Lead profiles and visibility
+
+Leads are private by default. Cards use initials until their owner uploads a photo. Profiles prioritize the next plans and story; profile editing, activities and linked HQH/HHH stay collapsed. Status editing is available within each activity, not on the default page. The Chat shortcut prepares a prompt but never sends it automatically.
+
+Sharing on `/leads` is explicit, read-only and per activated team account: Private, Selected leads, or All my leads (including future leads). Saving replaces that recipient's selection with optimistic revision checks. Revocation is immediate on subsequent server reads; removing team assignment also makes an existing grant ineffective. Team position alone grants no access. No actual grants are seeded by this feature.
+
+Recipients see a curated profile: name/community/stage/membership/goal, story/interests/concerns, next action/follow-up, photo, and event titles/dates/statuses. Contact details, birthday/zodiac, relationship notes, private remarks, activity notes, HQH/HHH and chat history remain private. Sharing a profile does not share linked notes; note sharing remains independent. Recipients cannot edit profiles or re-share them through the owner's controls.
+
+`shared_member_lead_ids` resolves current grants. Profile, photo and Chat reads use it after verifying the assigned member session. Owner-only mutation actions still filter immutable owner IDs/revisions. `member_lead_visibility` and its invoker RPCs have no browser role grants; RLS is enabled. RPC inputs for owner/recipient identity come from verified server context and an eligible account directory, not model input.
+
+Photos use a private `lead-photos` bucket without browser policies or public/signed URLs. Owner uploads are decoded, constrained to JPG/PNG/WebP under 3 MB/25 million pixels, oriented, cropped to 512 square, metadata-stripped and encoded as WebP with pinned sharp 0.34.5. Every photo request verifies own/shared access and responds private/no-store. Arbitrary remote photo URLs are not accepted. Photo save uses revision checks; an uncertain database write does not delete the possibly active uploaded object. A failed old-object cleanup may leave an inaccessible orphan.
+
+Chat reads up to five own matching profiles, priority first, and five matching shared profiles from the first 500 permitted IDs. Each includes up to 20 most recent activity records, with explicit coverage and original status. Text excerpts are bounded. Past planned/tentative events never become attended automatically. No inference occurs on Leads page load or merely opening the Chat shortcut. Lists show up to 50 shared profiles; selected sharing supports up to 500 leads and fails closed beyond that picker limit.
+
+Apply migration `20261022064708_lead_profiles_sharing.sql` before publishing. Tests: `scripts/lead-access.test.ts`, `scripts/lead-photo.test.ts`, `scripts/lead-sharing-sql.test.mjs`, and existing priority/model suites. Browser checks cover phone layout, collapsed controls and unsaved sharing selection. Do not enable real lead access or replace a real person's photo merely to test deployment.

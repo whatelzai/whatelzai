@@ -1,8 +1,9 @@
+import { isOwnerUser } from "@/lib/admin-policy";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { auth } from "@/lib/auth/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
-import { ensureUserRow, isAdminRole, type AppUser } from "@/lib/users";
+import { ensureUserRow, type AppUser } from "@/lib/users";
 import {
   ALL_SCOPES,
   OWNER_SCOPE,
@@ -253,8 +254,7 @@ async function requireAdmin(): Promise<
   const { userId } = await auth();
   if (!userId) return { ok: false, reason: "unauthenticated" };
   const user = await ensureUserRow();
-  if (!user || !isAdminRole(user.role))
-    return { ok: false, reason: "not-admin" };
+  if (!user || !isOwnerUser(user)) return { ok: false, reason: "not-admin" };
   return { ok: true, user };
 }
 

@@ -1,4 +1,5 @@
 "use client";
+import { eventHref } from "@/lib/fcos/links";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -110,6 +111,12 @@ export function CommunityCalendar({
           ) : null}
         </div>
         <h4 className="mt-2 break-words text-lg font-semibold">{e.title}</h4>
+        <Link
+          href={eventHref(month, e.id)}
+          className="mt-3 inline-flex min-h-11 items-center text-sm font-medium underline"
+        >
+          Event notes · HQH / HHH →
+        </Link>
         <p className="mt-3 text-sm leading-relaxed">{schedule(e)}</p>
         <p className="mt-2 break-words text-sm text-zinc-500">
           {e.location || "Venue not specified"}

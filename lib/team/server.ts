@@ -1,6 +1,8 @@
+import { requireBusinessTools } from "@/lib/weos-role-server";
+import { isOwnerUser } from "@/lib/admin-policy";
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase-server";
-import { ensureUserRow, isAdminRole } from "@/lib/users";
+import { ensureUserRow } from "@/lib/users";
 import { validatePeople, visiblePeople, type TeamPerson } from "./model";
 
 export type Team = {
@@ -19,6 +21,7 @@ export type TeamView = {
 export async function loadTeamView(
   slug = "whatelz-network",
 ): Promise<TeamView | null> {
+  await requireBusinessTools();
   const user = await ensureUserRow();
   if (!user) return null;
   const { data: team, error } = await supabaseAdmin
@@ -28,7 +31,7 @@ export async function loadTeamView(
     .maybeSingle();
   if (error) throw new Error("Team data is unavailable");
   if (!team) return null;
-  const admin = isAdminRole(user.role);
+  const admin = isOwnerUser(user);
   const { data: link, error: linkError } = await supabaseAdmin
     .from("business_team_accounts")
     .select("person_id,access_role")
@@ -40,7 +43,7 @@ export async function loadTeamView(
   const { data, error: peopleError } = await supabaseAdmin
     .from("business_team_people")
     .select(
-      "id,team_id,display_name,sponsor_person_id,context,email,abo_number,current_level,next_goal,progress_notes",
+      "id,team_id,display_name,sponsor_person_id,abo_status,context,email,abo_number,current_level,next_goal,progress_notes",
     )
     .eq("team_id", team.id)
     .order("created_at")

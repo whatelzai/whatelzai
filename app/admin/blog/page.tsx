@@ -1,6 +1,6 @@
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import { supabaseAdmin } from "@/lib/supabase-server";
 
 export const metadata: Metadata = { title: "Blog — whatelz.ai admin" };

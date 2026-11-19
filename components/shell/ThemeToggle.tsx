@@ -3,7 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
-const key = "whatelz-theme-v1";
+import { resolveTheme, THEME_STORAGE_KEY as key } from "@/lib/theme-preference";
 function subscribe(callback: () => void) {
   const observer = new MutationObserver(callback);
   observer.observe(document.documentElement, {
@@ -19,34 +19,12 @@ function getSnapshot() {
 export function ThemeToggle() {
   const dark = useSyncExternalStore(subscribe, getSnapshot, () => false);
   useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const sync = () => {
-      let saved: string | null = null;
-      try {
-        saved = localStorage.getItem(key);
-      } catch {
-        /* Storage may be disabled. */
-      }
-      if (saved !== "light" && saved !== "dark") {
-        document.documentElement.dataset.theme = media.matches
-          ? "dark"
-          : "light";
-      }
-    };
     const storage = (event: StorageEvent) => {
       if (event.key !== key && event.key !== null) return;
-      const value = event.newValue;
-      document.documentElement.dataset.theme =
-        value === "light" || value === "dark"
-          ? value
-          : media.matches
-            ? "dark"
-            : "light";
+      document.documentElement.dataset.theme = resolveTheme(event.newValue);
     };
-    media.addEventListener("change", sync);
     window.addEventListener("storage", storage);
     return () => {
-      media.removeEventListener("change", sync);
       window.removeEventListener("storage", storage);
     };
   }, []);

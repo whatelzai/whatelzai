@@ -1,5 +1,6 @@
-import Link from "next/link";
-import { ensureUserRow, isAdminRole } from "@/lib/users";
+import { isOwnerUser } from "@/lib/admin-policy";
+import Link from "@/components/admin/AdminLink";
+import { ensureUserRow } from "@/lib/users";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import {
@@ -15,7 +16,7 @@ export default async function CalendarAccess({
   searchParams: Promise<{ result?: string }>;
 }) {
   const actor = await ensureUserRow();
-  if (!actor || !isAdminRole(actor.role)) notFound();
+  if (!actor || !isOwnerUser(actor)) notFound();
   const [users, memberships] = await Promise.all([
     supabaseAdmin
       .from("users")

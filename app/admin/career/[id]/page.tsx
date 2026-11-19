@@ -2,7 +2,7 @@ import { requireAdmin } from "@/lib/users";
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 

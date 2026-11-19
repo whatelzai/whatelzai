@@ -15,6 +15,18 @@ export async function linkTeamAccount(form: FormData): Promise<void> {
       access_role: z.enum(["member", "manager"]),
     })
     .parse(Object.fromEntries(form));
+  const account = await supabaseAdmin
+    .from("users")
+    .select("id,email,supabase_auth_user_id")
+    .eq("id", input.user_id)
+    .maybeSingle();
+  if (
+    account.error ||
+    !account.data?.email ||
+    !account.data.supabase_auth_user_id
+  )
+    throw Error("Choose a signed-in account with a verified identity.");
+
   // Insert only: replacing a verified identity needs a separate reviewed flow.
   const { error } = await supabaseAdmin
     .from("business_team_accounts")
@@ -24,6 +36,7 @@ export async function linkTeamAccount(form: FormData): Promise<void> {
       "Account could not be linked. Check whether it is already linked.",
     );
   revalidatePath("/admin/team");
+  revalidatePath("/admin/users");
   revalidatePath("/team");
 }
 

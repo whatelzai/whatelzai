@@ -1,10 +1,10 @@
 import "server-only";
-import { ensureUserRow } from "@/lib/users";
+import { requireAssignedUser } from "@/lib/app-access";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import type { CatalogueSource, Listing, ReferenceNote } from "./model";
 
 export async function loadCatalogue() {
-  if (!(await ensureUserRow())) throw new Error("Sign-in required");
+  if (!(await requireAssignedUser())) throw new Error("Sign-in required");
   const { data: allSources, error } = await supabaseAdmin
     .from("product_catalogue_sources")
     .select("*")

@@ -32,8 +32,8 @@ Instructions for any AI coding agent (Claude Code, Cursor, Aider, ...) working o
 - **Styling:** Tailwind CSS v4 (`@tailwindcss/postcss`) — _light mode only, see Hard Rule 5_
 - **Auth:** Supabase Auth (Google OAuth, `@supabase/ssr`)
 - **Data:** Supabase (Postgres) — `@supabase/supabase-js`
-- **Jobs:** none. Background/cron work is not supported in-repo — schedule remote agents via claude.ai if needed.
-- **AI runtime:** none. Zero server-side inference — not Anthropic, not Groq, not any Vercel AI SDK provider. All LLM reasoning happens client-side in Claude Chat / Claude Code, hitting the MCP surface at `/api/mcp/whatelz` (or the future CLI). MCP verbs are pure data — read verbs return structured context, write verbs persist a body Claude produced client-side.
+- **Jobs:** production Vercel cron checks saved EMDEE routines for owner-opted-in Web Push. Personal AI generation remains subscription/MCP-based and API generation stays off. See docs/admin-push.md.
+- **AI runtime:** Personal admin uses ChatGPT/Codex and pure-data MCP. Explicitly authorized member API inference runs only on app.whatelz.ai behind MEMBER_AI_ENABLED; see docs/member-assistant.md. Personal API Daily stays off.
 - **PDF:** Puppeteer (`puppeteer-core` + `@sparticuz/chromium-min`) — resume renderer
 - **Email:** Resend
 - **Package manager:** npm (lockfile: `package-lock.json`)
@@ -85,15 +85,15 @@ Full list: `.env.example`. Generate with `openssl rand -hex 32` where the commen
 
 When proposing a new `supabase/migrations/*.sql`, **apply it immediately** in the same session via Supabase Studio or CLI. Do not hand off "user, please apply this." The Supabase MCP in `.mcp.json` is currently **read-only** (no write tool exposed), so application happens via Studio/CLI for now. Re-enable write access by removing `--read-only` from the Supabase MCP config when ready.
 
-### 4. No server-side LLM. Ever.
+### 4. Personal admin uses subscription/MCP; member API is explicitly scoped
 
-- **Zero server inference.** Not Anthropic, not Groq, not OpenAI, not any Vercel AI SDK provider. All LLM reasoning happens client-side in Claude Chat / Claude Code, invoked by Edmund, hitting the MCP at `/api/mcp/whatelz` (or the future CLI) for data.
+- Personal admin reasoning stays in ChatGPT/Codex with pure-data MCP. Edmund explicitly authorized server-side OpenAI member inference on app.whatelz.ai (SPR-129), with US$5/person/month, atomic reservations, owner-managed access and resets. This supersedes the former blanket no-inference rule only for member chat.
 - **MCP verbs are pure data.** Read verbs return raw or lightly-shaped structured context. Write verbs persist a body that arrives fully-formed from the client. If a tool feels like it needs server inference to be useful, split it into a read verb + a write verb and let Claude bridge them client-side.
 - **Do not suggest** `ANTHROPIC_API_KEY`, `GROQ_API_KEY`, `OPENAI_API_KEY`, or any similar env var as a pending action, prerequisite, or blocker.
 
 ### 5. Light mode only
 
-`whatelz.ai` is permanently light mode. **Never:**
+Public `whatelz.ai` and member surfaces remain light mode. Edmund explicitly authorized an Admin-only appearance preference (SPR-165); scope it under `.admin-shell` without changing other surfaces. For public/member surfaces, **never:**
 
 - Add `dark:` Tailwind variants to new components.
 - Wire `ThemeProvider` from `next-themes` (the dep is vestigial, see Stack).
@@ -315,6 +315,783 @@ EMDEE INSTRUCTIONS mirrors this section. The CLI token was rejected during relea
 
 The admin `/team` surface defaults to a fitted fixed node canvas. Member edit forms and verified-account linking are collapsed initially. First activation opens one compact selected-person editor; a second activation of that same person (including double click/tap or repeated keyboard activation) navigates to `/team/[id]`. A visible Open profile link provides an explicit alternative, and Close clears the selection. Tree view uses the same interaction. Dedicated profiles show editable details plus direct upline/downline links. Existing verified-admin checks remain in pages, loaders and mutations; contact email/progress notes remain admin-only and no account grants are inferred. Member app interactions remain unchanged. Pan/pinch/drag click suppression remains intact; admin quick editing does not change graph dimensions. Mirrored to EMDEE INSTRUCTIONS under this heading.
 
-## Public Activities (SPR-123)
+## Sole owner administration (SPR-125)
 
-`/activities` is the public gathering destination; `/events` redirects there. Reviewed entries in `content/activities/index.ts` produce shareable `/activities/[slug]` pages and sitemap entries. Unconfirmed dates remain “In the making”; never generate recurring sessions or publish private guest lists. Date labels use Asia/Singapore. Interest forms use the existing contact email channel and do not reserve seats or subscribe people to marketing. Past sessions cannot register interest. Details and publishing procedure: `docs/activities/README.md`. Admin testimonial-attribution events and private community calendars are separate. Contact delivery returns failures for unavailable configuration and provider rejection rather than logging private messages or reporting false success.
+Edmund owns Whatelzai permanently. The whole admin.whatelz.ai surface is private to his stable application users.id, configured server-side as WHATELZ_OWNER_USER_ID. lib/admin-policy.ts requires both this exact ID and a stored privileged role; role labels alone never grant administration. Missing/invalid owner configuration fails closed. Proxy gates admin page reads/writes and /api/admin on every host; layouts, actions, session API wrappers, OAuth issuance/redemption and active MCP token checks independently enforce the same policy. Owner-authorized scoped agent tokens remain supported; tokens bound to other accounts are rejected. Shared app.whatelz.ai membership and team permissions remain separate; privileged global team/calendar overrides are owner-only. Do not derive ownership from email, JWT/user metadata, login order, number of admins or automatic promotion.
+
+Product metrics are independent authenticated connections into this personal command centre. Access to a sold/transferred product must be revoked at the source and its integration credentials removed here; ownership of Whatelzai grants no ongoing rights to another product. No cross-product database ownership assumptions. See docs/owner-admin.md for configuration and verification. — codex, 2026-10-19
+
+## Daily workspace and admin navigation (SPR-124)
+
+Admin `/` is Overview. `/command-center` redirects home; the former root website dashboard is `/site-dashboard` under AI Business. `Today` is `/today` with owner-only morning/evening editors, explicit operational commitments and connections. Canonical Markdown stays in EMDEE; SQL holds operational records and encrypted connection credentials only. Use the shared sole-owner policy, never a second productivity-only owner setting. Read docs/daily/README.md for OAuth, encryption, task lifecycle, source boundaries and run limits. Manual workflow only; no 8am/9pm schedules are enabled and existing ChatGPT schedules are unchanged. — codex, 2026-10-19
+
+## Personal Daily and weekly reflection (SPR-126)
+
+Canonical briefs live in EMDEE Personal `01-DAILY` (the first Personal branch), with `01-MORNING`, `02-EVENING`
+and `03-WEEKS` children. Reauthorize the folder in Connections; old project-scoped
+tokens cannot save new briefs. Vercel runs one combined prior Monday–Sunday
+reflection every Monday at 08:00 Singapore. Originals remain intact; summaries
+include source links/hashes and missing coverage. `/today/weekly` shows status and
+bounded manual retry. The cron endpoint requires CRON_SECRET, production and the
+configured owner's stored role; admin session policy remains intact. SQL stores
+only execution metadata, never Markdown. See docs/daily/README.md. This explicitly
+requested schedule supersedes the old blanket prohibition on in-repo jobs; daily
+08:00/21:00 generation is still disabled. — codex, 2026-10-19
+
+## Subscription-first personal Daily (SPR-127)
+
+Personal Daily uses the existing ChatGPT cloud tasks at 04:30 and 21:00
+Asia/Singapore. They read/write canonical EMDEE Morning/Evening records and verify
+readback; Whatelzai loads the saved Notes when Today opens or refreshes. Progress
+is never inferred as completed, and saving a brief never accepts commitments.
+Both Run now tests saved records that production Today successfully displayed.
+This verifies the tested execution path, not future unattended runs.
+
+API generation defaults off unless DAILY_API_GENERATION_ENABLED is exactly true.
+Daily actions, the shared generation module and weekly cron fail closed before
+inference; the weekly job returns disabled before reserving attempts. Credentials
+remain encrypted for eventual opt-in use. Monday API synthesis is paused; no
+ChatGPT weekly replacement is configured. This supersedes earlier descriptions
+of enabled weekly API generation and unchanged daily ChatGPT instructions.
+
+OAuth setup must verify the selected EMDEE parent with the new credential before
+storing it; a valid token for the wrong account must not count as a successful
+connection. Never copy a personal CLI/chat token into application configuration.
+See docs/daily/README.md. — codex, 2026-10-19
+
+## ChatGPT weekly reflection (SPR-128)
+
+The personal cloud task Weekly - EMDEE Reflection runs Mondays at 03:00
+Asia/Singapore (first natural run 2026-10-26), superseding the previous paused
+weekly plan. It reads the prior complete Monday–Sunday, saves one combined
+WEEK-YYYY-Www child under EMDEE Daily/Weeks, verifies readback and retains
+originals. Coverage and missing entries remain explicit; unavailable sources fail
+closed and unknown outcomes stay unknown. API generation remains off.
+The weekly page discovers the canonical EMDEE document independently of SQL
+API-run status so externally written summaries display correctly. Existing API
+metadata remains separate; the old daily 03:00 Distill is unchanged.
+See docs/daily/README.md. — codex, 2026-10-19
+
+## Member assistant (SPR-129)
+
+See docs/member-assistant.md for stable ownership, verified 1:1 EMDEE OAuth
+linking, mobile chat, private commitment tools and bounded API execution.
+MEMBER_AI_ENABLED is independent of the personal Daily generation flag.
+Admin /users is sole-owner gated; reset grants a fresh allowance without
+erasing history. EMDEE remains a knowledge service with no AI inference.
+
+## fcOS workspace (SPR-130)
+
+app.whatelz.ai is fcOS, Founder’s Club Operating System. Mobile navigation: Today, Chat, Leads, HQH/HHH and Resources. Today reads only the signed-in member’s due follow-ups and accepted unfinished commitments. Resources retains products/calendar/culture/team. Chat adds bounded owner-private lead/note and permitted shared resource reads within the existing pilot, allowance and execution limits. Actual calendar membership is resolved server-side; tool input never supplies owner IDs or preview personas. EMDEE is optional; personal admin Daily remains separate.
+
+Private HQH/HHH notes live in member_briefings, with RLS/no browser grants, independently verified server ownership, immutable identity, owner-validated lead references and optimistic revisions. Chat drafts enter a review form as reflections; explicit Save persists the record, and Reviewed is a human selection. No automatic sharing, RSVP, sponsor placement, account grants or commitment acceptance. Note list paginates 30 records, up to 20 leads per note; lead picker explicitly limits to first 200 own leads. Mirrored in EMDEE INSTRUCTIONS under “fcOS workspace (SPR-130)”.
+
+## fcOS attention homepage (SPR-131)
+
+The member root is an attention dashboard inspired by EMDEE: personal welcome, overdue/due follow-ups, accepted due/blocked/waiting commitments, private HQH/HHH drafts and permitted events from this month and next. Counts are exact with bounded lists and partial-source errors shown. No provider calls on page load; no inferred completions or RSVPs. API Chat is now Edmund-only: `memberActor` requires the configured stable owner ID plus privileged stored role before access lookup, reservation or provider use, even if another pilot account is active. Shared member leads, notes and resources keep their existing permissions.
+
+## AI-business owner overview (SPR-133)
+
+Admin root prioritizes accepted AI-business commitments, overdue/blocked/waiting
+attention, saved personal Daily previews, marketing review queues and product
+signals. `lib/admin-overview/server.ts` independently checks the configured owner
+before every source. Missing sources stay unknown; proposals, deferred work and
+other lanes never become accepted focus automatically. All reads are bounded or
+exact aggregate counts; no inference or publishing runs on load. Existing Daily
+schedules, owner/member access and app.whatelz.ai behavior remain unchanged.
+Local active accounts and website visitors are distinct metrics; unmeasured ARR
+and workspace counts are null. Remote product contracts are validated and stale
+snapshots flagged. See docs/admin-overview.md; mirrored in EMDEE INSTRUCTIONS.
+
+## fcOS navigation and linked notes (SPR-132)
+
+The mobile member navigation is fixed at the bottom: Leads, Chat, raised central Home, Resources, Profile. Notebook, calendar, team, catalogue and culture select Resources; desktop retains a top row. fcOS-only bottom padding and viewport safe areas prevent content overlap. `/profile` is a focused fcOS identity page; public commerce account pages stay separate.
+
+One `member_briefings` record links to own lead IDs and optionally a verified calendar occurrence (`event_key`, `event_month`). Resources, lead profiles and `/calendar/event` all open that same note; calendar links are checked with the real membership, never admin preview. Unlinked class/event names remain supported. Notes stay private until explicit sharing to a named existing account linked to the permitted team. Recipients get read-only access to saved note text and future saved edits, with no lead IDs, profile/contact data, chat context or recipient list. Owners can revoke access; shared notes are browsable under Resources → HQH & HHH → Shared with me. No email/invitation/automatic account linking. New grants table has RLS with browser grants revoked; server authorization, composite ownership FK and existing immutable-note/lead constraints enforce boundaries.
+
+## Focused fcOS Chat (SPR-134)
+
+Chat opens the newest created conversation and scrolls to its latest message, or shows an immediately editable blank slate. `?new=1` is ephemeral: a conversation is created through an independently owner-gated action only on first send; retries retain its ID and request idempotency key. A small header opens a native modal menu for history, allowance, commitments and optional connections. Main canvas contains only transcript/blank greeting and a compact composer clear of the raised Home navigation. Note-review links are collapsed per reply; commitment acceptance remains explicit. No schema, model, quota, API-origin or owner-access changes.
+
+## Admin Daily Markdown reading (SPR-133 follow-up)
+
+Overview, Today and weekly reflection render canonical Notes with React Markdown/GFM.
+Today keeps source editing behind Edit Markdown; empty entries open the writer.
+Tables scroll within their container on phones; overview previews scroll without
+cutting Markdown syntax. No raw HTML or remote image fetching; no source mutation.
+See docs/admin-overview.md; mirrored in EMDEE INSTRUCTIONS.
+
+## Read-first Today (SPR-133 follow-up)
+
+Today reads rendered briefs without briefing editors or Save to EMDEE controls.
+Missing entries show a short message; yesterday’s handoff and optional commitment
+forms are collapsed. The page no longer reads OpenAI credentials. Canonical EMDEE
+writes, schedules, permissions and existing actions remain unchanged. This supersedes
+the preceding Today source-editor UI description. Mirrored in EMDEE INSTRUCTIONS.
+
+## fcOS installation (SPR-135)
+
+Only the app surface links `/fcos/app.webmanifest`, with canonical app origin identity/scope/start URL, standalone display, PNG/maskable icons and Apple home-screen metadata. The app shell captures `beforeinstallprompt` across navigation; Profile exposes native installation or platform instructions and standalone state. The app-only shell registers `/fcos-sw.js` for older Chromium install promotion. Its fetch handler is strictly network-only and stores no offline private-data cache. Auth and member API gates remain unchanged; the app requires a network connection.
+
+## Simple install control (SPR-136)
+
+Profile shows one Install fcOS button, hidden when installed. A captured native prompt opens directly; otherwise platform guidance appears only after tapping, in a native accessible dialog with Escape/close and focus restoration. iOS continues to require Safari Share/Add to Home Screen; there is no fabricated install URL.
+
+## Private daily routine library (SPR-133 follow-up)
+
+Owner `/today/routines` reads three allowlisted, versioned SKILL.md sources from
+EMDEE Personal Daily/04-Routines. Personal instruction bodies stay out of the public
+repo. Detail pages render Markdown and owner-gated downloads return identical
+normalized sources with private/no-store headers. Skills and schedules remain
+separate; existing cloud task prompts/jobs are unchanged. Unknown sources do not
+fall back to fabricated instructions. See docs/daily/README.md; mirrored in EMDEE.
+
+## Mobile fcOS Chat (SPR-137)
+
+ChatViewport follows the mobile visual viewport height/offset, removing bottom navigation and its reserved padding while the software keyboard occupies the viewport. It restores navigation on keyboard dismissal and excludes pinch zoom/toolbars from detection. The chat shell uses overflow:clip to prevent browser focus scrolling of the entire page; only the transcript scrolls. Composer-specific focus CSS removes the nested textarea rectangle while retaining a rounded group focus border and other control outlines. The owner pilot now selects existing GPT-6.1 Sol Responses support with low reasoning; the US$5 allowance, reservations, ownership and conversation history are preserved.
+
+## User activation and assignment (SPR-139)
+
+Admin Users classifies a registered account explicitly linked to the fcOS tree as
+Activated; a tree person without a signed-in linked account as Not activated;
+and a registered account without a tree link as Not assigned. Stable users.id
+and explicit business_team_accounts links determine access, never names/emails
+or AI allowance flags. The complete bounded directory paginates and fails if
+source reads are incomplete; no partial join is labelled unassigned.
+
+Unassigned users see /pending-assignment. Proxy gates app pages/actions, and
+private leads/notes/calendar/catalogue/Chat loaders independently check assignment.
+Owner admin remains independent; Chat retains its stricter owner/pilot gates.
+Assignment is owner-only, verified-account, insert-only; no automatic invitations,
+placement changes, AI allowance grants or identity matching. AI controls remain
+a secondary admin section. See docs/user-activation.md; mirrored in EMDEE.
+
+## Member Profile and Usage (SPR-138)
+
+`/profile` uses a mobile orange welcome/avatar, verified calendar persona and fcOS Member Pass, with Profile/Usage links (`?tab=usage`). Profile alone opts into orange navigation/install accents; existing app tabs retain yellow. No invented points, streak, next tier or automatic team linking. `loadProfileData` independently verifies identity and scopes every membership/access/cycle/reset read to that immutable users.id, never accepting a target account. Usage shows current allowance spent/reserved/remaining, Singapore renewal, actual latest admin reset/count and 20-cycle history. Expired cycles stay historical; read-only monthly projection never resets credit. No provider/key access, quota write, access grant, self-reset or inference from this view. Unavailable data is explicit; owner-only Chat remains independently enforced.
+
+## Activated Chat and credit resets (SPR-141)
+
+Every registered account linked to the fcOS tree can use AI Chat. This supersedes
+owner-only Chat and separate enrollment descriptions. The service-only enrollment
+RPC verifies activation and provides the normal US$5 baseline without changing
+existing cycles/history/models. Reservations recheck activation. Admin remains
+sole-owner; private member records and provider credentials retain their boundaries.
+
+Owner Users supports selected-member/all-activated full (US$5) or half (US$2.50)
+resets after reviewing targets and total. One transaction validates live assignment,
+compares current-cycle IDs, locks in stable order and creates audited fresh cycles;
+a stale or failed batch rolls back all. Reset replaces remaining credit rather
+than adding it; old spend/reservations remain and monthly baseline stays US$5.
+No reset is issued on page load or during deployment. See docs/member-credit-resets.md;
+mirrored in EMDEE INSTRUCTIONS.
+
+## Conversation-first Chat sidebar (SPR-140)
+
+Chat’s native modal drawer contains New chat, title/date search across the latest 30 owned conversations, selected history and a small Profile/Usage link. Usage stays in Profile. Commitments are at `/assistant/commitments`, linked from Home and owner Resources alongside the optional knowledge connection. No inference or conversation creation on navigation; first-send creation and all owner/assignment/access checks remain intact. Projects and further harness automation are deferred until their context and sharing boundaries are defined.
+
+## Weekly percentage usage (SPR-142)
+
+The baseline is now internal US$1 per seven-day window (full reset US$1 / 100%, half US$0.50 / 50%), superseding SPR-141's monthly amounts. Profile Usage exposes percentages and a live countdown, never dollar amounts. Exact reset timestamps use Singapore time. Current-cycle spend/reservations and historical records are preserved on conversion. New members start a seven-day window on first send; expired windows roll forward on the existing anchor without credit accumulation. Read-only projection and reservation SQL agree. Owner resets restart the seven-day clock; a partial grant is measured against the normal weekly baseline. No member self-reset entitlement is invented. Apply migration 20261022053300 after 20261022053000 before publishing code.
+
+## Admin phone app (SPR-144)
+
+The admin host links its own `/admin-pwa/app.webmanifest`, yellow W icons and Apple home-screen metadata. Canonical identity/scope remain admin.whatelz.ai; standalone launch opens `/today`. Shared install UI retains fcOS defaults; only the admin shell supplies Admin identity and `/admin-sw.js`. Installation is available in the owner sidebar and Settings, with native Chromium prompting or iPhone/iPad Share-menu instructions. Closed mobile navigation is inert; touch targets and safe-area padding accommodate phones. Owner proxy/layout/action checks remain unchanged. The admin worker is network-only: no private offline cache, persisted snapshots, background sync or queued mutations. Failed navigation receives only a generic no-store reconnect page; API failures propagate. Requires network and owner sign-in. See docs/admin-pwa.md; mirrored in EMDEE INSTRUCTIONS.
+
+## Streamed Markdown Chat (SPR-143)
+
+Assistant replies render safe GFM (tables/lists/links/code/bold); tables/code scroll within the message and remote images/raw HTML do not execute or auto-load. The member client requests NDJSON and displays real Responses output_text deltas, not delayed typing animation. Tool arguments/results remain server-side. Terminal provider usage is validated before receipt settlement; done is sent only after persistence. Next after() tracks generation/settlement if a browser disconnects, within the existing route duration; an interrupted provider stream retains the uncertain reservation. Existing request IDs deduplicate retries; incomplete drafts cannot be saved/accepted until persisted server messages refresh. JSON compatibility, tree activation, rate/budget/call bounds and privacy are unchanged. Scroll follows new content only while near the bottom.
+
+## Priority leads and plans (SPR-145)
+
+Leads presents owner-private priority cards first, upcoming plans grouped over consecutive same-event/status dates, and other leads in a collapsible list. Search/filter and add forms stay collapsed until used. Priority can be changed from the profile using verified owner + revision guards; it never changes membership/access. Tentative is a distinct activity status, displayed as Maybe, never attendance. Upcoming plans are bounded, owner-scoped and restricted to the displayed lead IDs; failures are explicit. Historic and overdue activities remain in profiles without inferred completion. Apply 20261022061236_priority_leads before publication. Personal lead/event data belongs in the database, not migration source.
+
+## Calm lead profiles and explicit visibility (SPR-146)
+
+Leads use profile cards with initials/private uploaded photos and concise overviews; editing, history and HQH/HHH are collapsed. Explicit per-recipient visibility is private by default, selected leads or all current/future leads, read-only and revision guarded. Activated team position alone grants nothing. Contacts/private remarks/activity notes/linked briefings/chats stay private. Profile/photo/Chat reads independently verify the assigned session and current grants; owner mutation boundaries are unchanged. Private storage has no browser policies or public URLs; authenticated photo responses are no-store and uploads are decoded/resized/metadata-stripped via pinned sharp 0.34.5. Chat prioritizes own leads and includes bounded actual activity statuses; tentative/planned never means attended. No sharing is seeded. See docs/lead-profiles.md; apply 20261022064708 before publication.
+
+## Mobile lead controls (SPR-147)
+
+Lead forms/search/sharing use MobilePicker: a native modal dialog with rounded option buttons, current selection, keyboard arrow/Home/End navigation, Escape dismissal and focus restoration. The hidden form field preserves existing names/values and server validation; opening/cancelling never saves. Lead-scoped styles replace the public gold outline with a soft local focus ring, 48px fields, rounded disclosure chevrons and muted borders. Public/admin styling and all data/access rules remain unchanged.
+
+## Baobeis list (SPR-148)
+
+Member /leads and navigation are labelled Baobeis. The default list shows title, plus-button add dialog, rounded search bar and cards without introductory text, counts or priority section headings. Search submits on Enter. The sharing toolbar is removed; existing grants/permissions remain unchanged. Add uses the same owner-verified action in a native modal, with nested community picker and cancel/focus restoration. No record is created until submission.
+
+## Shared Admin navigation (SPR-149)
+
+All admin pages share `AdminNavigation` in the owner-guarded admin layout. It supersedes the left sidebar/hamburger with a sticky, horizontally swipeable workstream strip (Overview, AI Business, Network Marketing, Day Job) and a fixed Users | Home | Settings bottom bar. Home opens Overview; Today remains a header shortcut. `lib/admin-navigation.ts` maps clean host and preview `/admin` paths plus deep tools to their owning workstream/tab. Users and Settings do not highlight a workstream. Native header scrolling only reveals links; it never changes pages by itself. Active sections scroll into view on change, content clears the bottom bar and both bars account for safe areas. Install/sign-out live in Settings. PWA launch/identity, owner checks and member navigation remain unchanged. See docs/admin-navigation.md and mirrored EMDEE INSTRUCTIONS.
+
+## Shared fcOS tab shell (SPR-150)
+
+Five roots use AppHeader with consistent title/spacing and page action slots: Baobeis add, Chat history/new-chat, Profile sign out. Their headers and persistent bottom tabs stay visible; ordinary pages retain document scrolling. Chat keeps its independently scrolling transcript, visual-viewport composer and keyboard nav hiding. Shared safe-area offsets keep content clear. Native browser pull refresh is left alone on normal pages. Standalone app and contained Chat use an explicit single-finger downward-pull fallback only at scroll top: threshold/release, horizontal/pinch/modal/editing/streaming/cancel guards, and router.refresh without inference, writes, hard reload or draft loss. See docs/fcos-tab-shell.md. Real handset gesture QA remains separate from desktop automation.
+
+## Intentional Resources (SPR-151)
+
+Resources uses two compact HQH/HHH creation actions, grouped Notes & events and Learn & grow rows, and a collapsed owner-only Personal tools disclosure. Existing notebook/calendar/catalogue/culture/team destinations, permission gates and shared pinned tab shell are preserved. No data/model/schema changes. Mirrored in EMDEE INSTRUCTIONS.
+
+## Quiet Profile Usage (SPR-152)
+
+Profile removes the Grow with intention card. Usage omits the welcome block and model/explanatory copy, keeping weekly remaining percentage, progress bar and live renewal countdown. Resets/history are collapsed by default; in-flight usage appears only when nonzero. Quotas, private identity-scoped loaders, renewal and admin-reset authorization are unchanged. Mirrored in EMDEE INSTRUCTIONS.
+
+## Member reset credits (SPR-153)
+
+Profile Usage shows whole-number percentages and minute countdowns, plus Available/History reset links. Every existing/future user gets one lifetime full-reset credit (seven-day expiry; SPR-154); signup insert trigger and unique user constraint prevent repeat grants. Redemption is explicit, verified assigned-session only, account-scoped and atomic with a new USD1 seven-day cycle. Access-row/credit locks, expected-cycle guard, reservation guard and replay returning the recorded result prevent duplicated reset spend. Service-only invoker functions and RLS deny browser database access. Existing admin reset/access/provider/history behavior remains. Apply 20261022095557 before publication; see docs/member-credit-resets.md. Mirrored in EMDEE INSTRUCTIONS.
+
+## Reset credit expiry (SPR-154)
+
+Reset credits have stored non-null expires_at, defaulting to seven days from grant. Existing credits are backfilled from original granted_at, without grants, balance changes or extension on sign-in. Available filters expired unused credits; History retains expired/used records and expiry is shown in Singapore time. The locked redemption function rejects unused credits at/after database clock expiry, while used replay still returns its recorded cycle. Apply 20261022100901 before publication. Mirrored in EMDEE INSTRUCTIONS.
+
+## Whatelz brand identity (SPR-155)
+
+The approved rounded W/smile mark is canonical in public/brand/identity.json, with #FACC15 yellow, #18181B ink and #FFFCF5 paper. WhatelzMark reads the shared vector; generate-brand-assets.mjs exports SVG/outlined lockup/PNG/ICO and Admin PWA artwork. Public header/footer, browser favicon and Admin header use this identity. Admin Settings links the owner-only design-system library. Versioned Admin icon URLs refresh caches without changing manifest identity/scope/launch. Existing iOS installs may require re-adding for new home-screen art. fcOS retains its own identity. See docs/brand-identity.md.
+
+## Admin area dropdown (SPR-156)
+
+The shared Admin header now uses one top-right active-area disclosure for Overview, AI Business, Network Marketing and Day Job. It replaces Today and the horizontal workstream strip. Native disclosure/links retain keyboard navigation; selection, outside press, Escape and route changes dismiss it. Utility pages identify Users/Settings without false workstream selection. Today remains linked from Overview. The Users | Home | Settings bar, owner policy, URLs, brand and PWA identity remain unchanged. See docs/admin-navigation.md.
+
+## Admin Push notifications (SPR-157)
+
+Owner Settings supports per-device opt-in, status, test and disable. Permission is requested only on an explicit tap; iOS/iPadOS requires the installed home-screen app. Subscriptions are encrypted with the existing Daily integration key, browser-denied/RLS, and registered only through sole-owner same-origin Admin APIs. VAPID signing uses independent Production keys; no inference or OpenAI key is involved. A production-only CRON_SECRET-protected five-minute check reads the three canonical EMDEE routine paths and alerts only on nonempty, timestamp-verified entries saved after device opt-in. Per-device/document SQL claims deduplicate completed sends and bound retries; generic tags mitigate ambiguous transport retries. Expired endpoints are disabled. Notifications contain no private briefing text, and click destinations are restricted to Today/weekly/Settings. Existing ChatGPT schedules, source documents, personal API-off policy and member app remain unchanged. See docs/admin-push.md; migration20261024072128.
+
+## Responsive Admin workspace (SPR-158)
+
+Admin uses a bounded 1440px workspace. At 1024px and above Users/Home/Settings move into the header; smaller screens retain the safe-area bottom dock. The active-area dropdown remains shared. Overview uses a desktop priorities/signals grid, bounded rendered briefing previews and compact product snapshots with full metrics in disclosures. Today uses paired briefing columns at desktop width. Mobile remains one-column where appropriate. No data, authorization, PWA or push behavior changes.
+
+## Admin interaction feedback (SPR-159)
+
+AdminLink preserves Next Link props and uses useLinkStatus for actual pending navigation, with a pressed-link outline and nonblocking status. Root and Today/Users/Settings loading boundaries show neutral skeletons inside the owner-gated shell. Overview also uses the shared placeholder during source reads. Brief CSS section/disclosure fades are bounded and disabled for reduced motion; no artificial data delays or fake progress. Route errors provide retry without exposing private diagnostics. User assignment uses form pending feedback; existing write guards remain unchanged. See docs/admin-navigation.md.
+
+SPR-159 navigation verification exposed Settings cloning a server-provided button inside SignOutButton, which fails on client route transitions. Settings now uses SignOutButton’s own client-rendered button with optional className styling; sign-out behavior and auth gates remain unchanged. Do not pass server-rendered button children for cloning in this route.
+
+## Faster Admin reads (SPR-160)
+
+Overview verifies owner before starting independent read promises and streams priorities, briefs, growth and each product under separate Suspense boundaries. Attention waits for all relevant sources before claiming no issues. Today streams its static title before its workspace. Each Daily request reuses its verified EMDEE connection; exact get_doc replaces list-plus-get, with only explicit missing codes treated as absence. Auth/transport/errors remain failures; write hash/readback guards unchanged. Active/completed Daily queries run in parallel. Owner-partitioned server Data Cache revalidates successful product metrics after 60s, with background revalidation and visible read timestamp; no auth, credentials, tasks, briefs or mutations cached. Source timing logs contain static labels/duration/outcome only. Overview sends the first complete Markdown section as a preview; Today retains full content. See docs/admin-overview.md.
+
+Live EMDEE missing-document compatibility: exact get_doc reads may return JSON-RPC -32603 with message `no such doc: <requested path>`. Only that exact message/path pair or explicit not_found/no_such_doc codes becomes absence. Other -32603 failures, auth and transport errors remain unavailable; no discovery fallback or extra round trip is added.
+
+## Scheduled Admin focus (SPR-161)
+
+The selector has Overview, Personal, AI Business, Network Marketing and Day Job. Personal links to Daily, weekly reflection and routines. An owner-scoped client focus provider uses Asia/Singapore blocks: weekdays08–09 Personal,09–18 Day Job,18–19 Personal,19–22 Network Marketing; weekends09–18 AI Business; all gaps Overview. Fresh Home entry and unanchored standalone Today launch follow schedule; explicit deep links stay intact. Timers and foreground/pageshow checks catch up at boundaries. Manual space selection/back navigation overrides until the next block by default, with an optional pause-until-resume policy. Settings edits/validates a per-device timetable, enabled state and override policy; only these nonsensitive preferences use localStorage, override is per-tab sessionStorage. No private documents are cached. Users/Settings, dialogs, editable focus and dirty forms defer automatic navigation with a Switch now prompt. Manual navigation remains available; all server authorization stays unchanged. See docs/admin-focus.md.
+
+## Calm Admin Settings (SPR-162)
+
+Brand & design system belongs to AI Business, including active navigation state; its existing URL stays stable. Settings focuses on preferences, notifications, daily rhythm, installation and account controls. Technical access links are tucked into closed-by-default Advanced; inline MCP connection instructions are removed. Keep owner-facing copy short and avoid onboarding explanations in this personal workspace.
+
+## Scheduled focus notifications (SPR-163)
+
+Settings uses a compact per-device push switch, with test and sound help under Notification options. The existing enabled device remains enabled. One-minute server cron dispatches actual Singapore timetable transitions while the PWA is closed; EMDEE routine checks stay every five minutes and independent failures do not block focus alerts. Timetables mirror to private push subscription rows through owner-only same-origin validation; browser table grants remain denied. No-op sync preserves activation time. Durable per-device/block claims, five-minute eligibility window and 60-second TTL avoid duplicates and stale catch-up; unchanged spaces at midnight do not alert. Auto switching pause suppresses focus alerts; manual block overrides do not suppress reminders. Phone/browser manages sound; the web app cannot choose a custom ringtone. Reopen PWA after release for worker and timetable sync. No paid inference or private offline caching. See docs/admin-push.md.
+
+## Retired Developer tooling (SPR-164)
+
+Developer tooling is retired: no Inngest/quick links, endpoint inventory or singleton PAT controls. `/admin/developer` redirects to Settings for old bookmarks; remove links from Settings and legacy nav. Never recreate/display `system_config.mcp_token`; current MCP authentication uses hashed, scoped, revocable `auth_tokens`. Cleanup deletes only the unused singleton row, preserving OAuth signing secret and current tokens/endpoints.
+
+## Admin preferences and flat Settings (SPR-165)
+
+Settings uses a flat divided list, with appearance (light/dark), text size, English/Simplified Chinese, push, collapsed timetable, installation and advanced access. My Profile belongs to AI Business, including active navigation, with stable URL. Preferences are versioned owner-keyed per-device localStorage with session fallback; they do not change auth or schedule source semantics. Admin-only CSS scopes dark colours and rem sizing; public/member surfaces remain unchanged. Translate Settings/shared navigation and area-link labels; private Markdown, editable content, product names and canonical schedule identifiers remain original. Do not claim the entire legacy admin CMS is translated.
+
+## Reading-first Admin (SPR-166)
+
+Keep Admin calm: accepted focus first, supporting context and tools behind native disclosures, flat divided lists instead of per-item cards. Today puts commitments before Morning/Evening reading tabs. BriefDocument reveals original H3 sections with the full original entry available; highlighted source actions remain proposals unless accepted in the task system. SprintFocus selects only accepted, open, due commitments for the current lane, showing one first and others on demand. No invented priorities, source writes, auth changes or private caching. Admin-only typography/layout and preview-first ContentEditor apply across management pages; preserve form boundaries and sensitive controls. See docs/admin-reading.md.
+
+## Personal and business-owned People (SPR-167)
+
+Permanent Admin tabs are Personal | Home | Settings. Home’s selector has Overview, AI Business, Network Marketing and Day Job; Personal/Settings show a plain label. Existing member /users routes belong to Network Marketing → People, preserving URLs, account/credit actions and owner gates. Keep adminFocusSpaces separate from adminWorkstreams: Personal stays valid for manual navigation/overrides; legacy saved timetable blocks resolve to Overview on both client and server. User-management routes remain protected from automatic boundary navigation. AI Business customer users remain a separately defined future feature.
+
+SPR-167 steering: Personal is manual-only. Former Personal timetable blocks resolve to Overview, including legacy device/server schedules. Settings offers only the four Home workstreams for scheduling. Preserve manual Personal navigation and suppress unchanged Overview-to-Overview alerts.
+
+## Personal Mandala (SPR-168)
+
+Personal links to an owner-only /personal/mandala reader. It calls dailyOwner before loading the existing EMDEE connection and reads one fixed canonical Dream/Mandala path with no-store. No new credentials, client-side vault calls, private source snapshots in the repository or task generation. Source H3 sections and complete original document remain available; optional 9×9 grid is shown only if all eight ordered areas have eight ordered cells. Display draft provenance and open decisions; approved plan is not execution evidence. No quarters/seasons assigned. See docs/personal-mandala.md.
+
+## Mandala reading layout (SPR-169)
+
+Mandala is a dedicated reader, not an EMDEE heading accordion. Keep the shared Admin shell; present source-derived goal figures, one selected life area with eight visible actions, separate Money & time, full grid and full original-record views. Desktop index/reading columns become a labelled area selector and single-column reading on mobile. Retain approval provenance, all supporting detail, original source, parser fallback and owner-first fixed-path no-store reads. Goals remain targets, not achieved income. No source or task mutations. Taste app-screen direction editorial-greeting seed 105231933, keeping existing brand/type and shell. See docs/personal-mandala.md.
+
+## Admin workspace reading layouts (SPR-170)
+
+Overview exposes its independently streamed reading, attention, AI focus, growth and product sections directly. Shared AdminArea leads with current focus and presents grouped tools through a labelled category index with immediate local selection; all destinations remain. Settings uses reading, notifications/rhythm and app/account sections in desktop label/control columns, stacked on phones. Preserve source semantics, owner authorization, navigation, timetable and notification controls. Taste editorial-greeting seed 667337762 keeps existing identity/type and user-defined shell. See docs/admin-workspace-design.md.
+
+## Weekly focus ledger (SPR-171)
+
+Supersedes SPR-170 panel layouts: compact Overview shows Singapore week, accepted due/carried work per lane, next accepted actionable sprint and independently streamed routine status. In-memory focus view neither mutates nor completes work and protects against automatic space switches. No metric/draft reads on Overview; product metrics live under AI Business/operations. Settings narrow compact rows; timetable DOM mounts on open. Shared dropdown remains custom rounded details/anchors with keyboard/outside/Escape behavior. Plain grouped lane tools; Day Job source-backed work/deadlines/blockers and confirmed boundaries. Preserve loading/pending feedback, reduced-motion progression, owner gates and all existing device controls. See docs/admin-weekly-focus.md.
+
+## Chat images and dictation (SPR-173)
+
+Chat supports two previewed images per message and up to 60-second microphone dictation. Server-normalized metadata-free WebP images stay in private Storage, owner-scoped history routes and the latest-two-image model context. GPT-Transcribe returns editable text without auto-send; raw audio is not persisted. Service-only image binding and dictation ledger RPCs preserve weekly reservations, replay protection, uncertain holds and original-cycle settlement across resets. Existing Resources access and explicit note/proposal actions remain; attachments never auto-save Baobei facts or share data. See docs/member-assistant.md. Physical handset microphone QA remains required.
+
+## Admin passkeys rollback (SPR-172)
+
+Passkeys were removed at Edmund’s request. Admin uses the existing Google sign-in and stable sole-owner authorization. Supabase passkey authentication is disabled; there is no passkey enrollment or sign-in UI, route or experimental client opt-in. Preserve the existing PWA, sessions and Google flow.
+
+## Database-owned fcOS knowledge (SPR-174)
+
+Supersedes bundled Culture content in SPR-120. Editable business knowledge belongs in Supabase, not application imports or seed SQL. Shared references use member_knowledge_collections/entries (text + bounded JSONB metadata; original source provenance excluded from reader/Chat). Culture reader and Chat share an assigned-user, published-only paginated loader with no content fallback. Collection labels/teachers/chapters/sayings are data. Existing Baobei and HQH/HHH prose remains in private text columns; additive metadata JSONB supports variable attributes without changing ownership/sharing. Product prices/PV/BV remain authoritative relational facts. Import tooling is service-only, insert-only and atomic with exact verification. No semantic embeddings or new lesson editor implied. See docs/fcos-knowledge.md.
+
+## First-exchange Chat titles (SPR-175)
+
+New successful member exchanges schedule one nonblocking GPT-6 Luna title job via existing OpenAI credentials. Send bounded first-exchange text only, no tools/images/Resources; keep main Chat transport/model unchanged. Service-only title claims/outcome ledger ensures at-most-once inference, private owner binding, quota caps and compare-and-set preservation of custom titles. Empty chats stay placeholders; failure never breaks the saved reply or retries automatically. Sidebar opening refreshes titles. Title costs are capped platform overhead, not member weekly allowance. Backfill uses the same model/job path and an explicit single-owner scope; no automatic all-user backfill or Haiku/Gateway billing setup. See docs/member-assistant.md.
+
+## Team-visible Baobeis and HQH/HHH (SPR-176)
+
+Explicit 2026-10-27 user policy supersedes private-by-default Baobei/briefing reads. Same assigned fcOS team reads existing/future team-visible records by default; owners alone edit. Per-record Only me overrides grants; existing recipient exclusions remain. Hidden linked Baobeis suppress the whole note for other readers. Service-only permission RPCs govern lists, detail/photo routes, linked context and Chat; browser grants stay denied, chats/vaults/contact fields/private remarks stay private. Notes may link visible sideline Baobeis without ownership/sponsor changes. Chat includes two bounded permitted linked notes per profile. Import real names operationally only, with introducer metadata. See docs/team-baobeis.md.
+
+## Responsive fcOS navigation (SPR-177)
+
+Member route loading shells are data-free and retain the header/nav. MemberLink reflects real Next pending navigation; New Chat uses a router transition. Do not force full private-data prefetch or simulate progress. App root skips unused public identity/admin-link reads; page/API/session gates remain. Own/team Baobei reads and authorized profile/history reads run concurrently. Linked notes stream separately. Optional profile/activity editor modules mount on first disclosure expansion and remain mounted across collapse to preserve drafts. Core Chat stays eager; no persistent private caching, schema or inference changes. See docs/fcos-performance.md.
+
+## Member team default (SPR-178)
+
+The member team page opens in Node view by default. Tree view remains selectable; admin retains its explicit Node view default. Sponsor relationships and member levels remain database-owned. — codex, 2026-10-27
+
+## Compact team nodes (SPR-179)
+
+Node view uses 88px name-only circles and straight sponsor connectors on member/admin surfaces. Explicit two-name ampersand labels render as two slightly overlapping circles, retaining one stored identity and sponsor link; no relationship inference or data split. Subtree layout measures actual single/pair widths. Member view starts centered on the selected person at readable scale; admin retains its initial overview fit. Selection reveals details; pan/pinch/zoom and admin quick-edit/repeat-profile behavior remain. — codex, 2026-10-27
+
+## Personal money (SPR-180)
+
+Private Personal/Money is an owner-gated manual ledger: exact minor units, separate SGD/MYR/USD, six-jar salary plan, transactions and recurring bills. SQL service-only RLS tables and invoker functions; no browser grants, bank integrations, automated charges, inferred FX or seeded balances. Idempotent writes, atomic recurring payment/date advancement, void/restore history, paged lists/CSV. Bank mapping and LTSS target are plans, not balances or completed transfers. Preserve no-store reads and network-only PWA behavior. See docs/personal-money.md.
+
+## Node-only personal team view (SPR-181)
+
+Team visualization is node-only, with no perspective dropdown or visible relationship/gesture explanations. Member and admin initial cameras center the verified linked viewer at normal zoom; admin uses loadTeamView.focusId, not the shared team focus. Manual Fit remains available. Selecting a node retains details/editing without changing account links, view permissions or initial identity. This supersedes SPR-178’s Tree switch and SPR-179’s admin initial overview fit. — codex, 2026-10-27
+
+## Personal life workspace (SPR-183)
+
+Personal is a private reading and action home: source-backed Mandala direction, one owner-chosen Singapore-week outcome, expense capture, jar plan/upcoming bills and independent daily/weekly saved status. It does not mix business commitments into Personal or generate 64 weekly tasks. `personal_weekly_focus` is service-only with RLS and no browser grants; current-week writes require owner, Admin origin and matching revision. Previous weeks remain intact. Money quick links accept bounded entry/view hints, never submit automatically. Financial targets are not verified balances or income progress. Keep the shared shell, translations, large text and independent Suspense boundaries.
+
+## Member release notes (SPR-182)
+
+Home streams an optional latest-three What’s new modal when a published release is unseen. Close/Escape/View all saves a monotonic account-owned acknowledgement; Profile → Release notes is the permanent paginated archive. Release prose and dismissal state live in service-only Supabase tables, never bundled content or localStorage. Native modal scrolling/focus and immediate close preserve mobile usability. All reads/actions require assigned identity; drafts/future notes stay hidden. Release-tab reads skip unrelated credit queries. See docs/fcos-release-notes.md. — codex, 2026-10-27
+
+## Admin release notes (SPR-184)
+
+Owner-only Admin layout supplies versioned server-only release content, independent of member releases. `lib/admin-releases/data.ts` keeps newest-first immutable IDs and bilingual verified feature notes; never put operational/private facts in it. Home’s optional lazy native dialog shows newest three once per new release per device/owner; localStorage receipt is UX only, no database permissions. Close/Escape immediate, scrolling inside fixed header/footer. Full history is Settings `?tab=releases`, with Preferences as default. Settings/deep pages do not trigger popup. See docs/admin-release-notes.md.
+
+## Member language and Profile footer (SPR-185)
+
+Profile offers English/简体中文 for shared member navigation/header and Profile/usage controls. An assigned-user action validates the enum and sets a host-only HttpOnly SameSite=Lax one-year cookie; app root reads only this cookie, adding no identity/database work. Admin language preferences remain separate. Stored names, notes, teachings and release prose are preserved, with English fallback for untranslated interface copy. Release history stays at `/profile?tab=releases`, reached through a muted Profile footer link with a back link; only Profile and Usage remain as tabs. This is interface localization, not automatic translation of all legacy screens or user content.
+
+## Simple income (SPR-186)
+
+Income has three source choices (Working/Investment/Business), optional notes and a receiving account. `incomeFields` validates source/notes, supplies a default description and stores UNALLOCATED/personal as ledger bookkeeping; no jar selector, expense wording or hidden required expense fields in the Income UI. Existing category column carries income source; history/CSV already show it. No migration/reclassification or automatic allocations/tax/passive-income claims. Expense/refund/transfer/opening/recurring behavior stays distinct.
+
+## First-visit member language (SPR-187)
+
+Signed-in member Home offers English (initially selected) and 简体中文 when this device has no valid member-language cookie. Continue uses the existing assigned-user save action; it saves explicit English too. Home mounts either LanguageWelcome or the release popup boundary, never both. The confirmed language remains changeable in Profile. This inherits SPR-185’s per-device preference, original-content preservation and no extra root auth/database reads; no inferred browser language, account onboarding flag or forced full legacy-screen translation. — codex, 2026-10-28
+
+## Money entry dates (SPR-188)
+
+Active entries support Edit date through a lazy compact dialog and strict `entry_date` command. Owner/origin gate plus expected occurred_on and nonvoided filters protect updates. Only occurred_on changes; no recurring schedule or financial fields changed. Activity follows the saved month and reloads totals; CSV naturally uses saved dates. No migration; stale/voided corrections return409. Other corrections keep void/replacement.
+
+## Visual-first Personal and Money (SPR-189)
+
+Edmund explicitly prefers icon/color/visual recognition first, words as short supporting labels, following the supplied fcOS Resources reference. This overrides taste defaults against pastel icon tiles: use stable semantic pastel identities, not random status colors, keep yellow brand and accessible labels/contrast. Money has six jar-spending tiles (SGD-only progress vs plan; no cross-currency comparison), compact row buttons and lazy detail dialogs for full metadata/date/void/paid actions. UI hides voided entries by default using explicit include_voided=0; service filters before count/pagination. Existing API default and full CSV audit export remain inclusive. Paused recurring is hidden behind Show paused. No record deletion, math/schema/permissions changed. Personal life areas/rhythm share icon-led links; preserve no-store reads/lazy forms and truthful planned-vs-recorded values.
+
+## Personal daily tools (SPR-190)
+
+Personal-only tools use owner-gated no-store records, service-only RLS/invoker revision saves, actual SGD salary receipts and reviewed exact-cent allocations. Manual confirmations do not execute bank transfers or add ledger records. Timestamp timers save only explicit sessions; user-authored gym routines and current Singapore-week evidence preserve unknown activity. No API inference, new schedules, private offline storage or EMDEE summary duplication. See docs/personal-tools.md. Edmund approved this migration and release on 2026-10-28; migration applied through the authenticated CLI after a dry run isolated this file from legacy unrecorded migrations.
+
+Admin accessibility preference (2026-10-28): Edmund frequently views his phone in greyscale. Meaning, current selection, success/error and progress must be understandable through icons, labels, shapes, outlines and numeric values. Keep colour as supplementary rather than the only distinction. Mobile first and desktop friendly.
+
+## App-owned social connections (SPR-192)
+
+Owner-only Profile → Social connections supports one LinkedIn and two Instagram
+professional-account OAuth slots. Client credentials and tokens are encrypted in
+private Supabase tables using the existing integration key; social passwords are
+never collected. State/cookie/owner/app and account revisions bind authorization;
+disconnect atomically removes tokens and cached posts. A production-only daily
+11:00 Singapore cron refreshes up to 25 own posts/account without AI calls. Chat's
+`read_fcos` source `social` returns owner-only cached excerpts, never team content,
+DMs, live web search or inferred follower profiles. LinkedIn identity authorization
+does not imply restricted `r_member_social` access. Live activation requires
+provider app registration and consent. See `docs/fcos-social-connections.md`.
+— codex, 2026-10-31
+
+## Public offers (SPR-193)
+
+The public navigation is My why / Testimonials / M.A.P. events / The book. Home focuses on Millionair’s AI Playbook Thursday seminars and The Solopreneur’s Playbook, retaining the owner's why and verified testimonials. The book now has a sales page at `/playbook`; full draft bodies are server-gated at `/playbook/read`, superseding the earlier ungated preview. Event and book Payment Links, live operational setup, verification limits and release checks: `docs/design/map-commerce.md`. Never publish owner-issued promotion codes in site source. Stripe fulfilment gates on completed paid/no-payment-required sessions and canonicalizes the book offer; keep the signing secret server-only. First event date remains tentative and venue unconfirmed. No recurring event instances are invented.
+
+## Priority event operations (SPR-194)
+
+Overview and AI Business stream current-event status prominently; /event-checkin leads with searchable responsive attendees, stored payment evidence, email dispatch and check-in. Staff/promo/cutover controls disclose below. Owner/no-store API, visible-only30s polling, failed-read status and actual read time. Join attempt/ticket/person IDs; legacy Stripe amounts stay Not recorded and out of money totals. Pending reservations are not paid tickets; refunded/cancelled tickets do not inflate active totals. No new schema/Stripe calls/membership changes. See docs/admin-event-operations.md; mirrored in EMDEE INSTRUCTIONS. Content-bank work remains separate.
+
+## Public brand boundary
+
+Do not mention FC, Founder’s Club or its membership relationship in public
+Whatelz website copy, event registration, ticket communications or the customer
+event-history flow. Use Whatelz-only wording. Internal membership mapping and
+access controls remain private implementation details. This is an explicit
+owner requirement (10 November 2026).
+
+For this event-signup iteration, do not show account creation, sign-in, event
+history or membership prompts in registration, confirmation or QR ticket email.
+The attendee-facing flow is email-based signup and QR ticket delivery only.
+
+Do not advertise free admission, S$0 or first-time-joiner discounts in public
+event marketing copy. Keep promotion codes private; the adjusted total and
+payment requirement may be shown after an attendee applies a valid code.
+
+## Event poster sharing
+
+Registrations has a lazy Poster & share disclosure using the same mapEvent.poster as the public event page. Original PNG download works independently of native sharing; native Share image is enabled only after a prepared file passes canShare, and invokes share on the next explicit click. OS/receiving app selects destinations and editing; never promise posting, Instagram Story/Feed targeting or caption transfer. Copy caption/link/manual upload remain. Public media only, no attendee data, social credentials, API inference or automatic publication. See docs/admin-event-operations.md.
+
+## Admin ticket scanner
+
+Registrations includes adjacent Poster & share / Scan QR code controls with lazy inline panels, reusing the staff scanner and authorized atomic check-in endpoint. Camera decoding uses BarcodeDetector where available, with lazy local jsQR fallback; QR image selection is processed only on device. Only canonical Whatelz ticket links/UUIDv4 are accepted. Admin Scan QR code starts the camera on selection and valid scans automatically check in; same-ticket reads are suppressed briefly while the camera stays ready. Standalone staff scanner retains confirmation. Duplicate-aware feedback and attendee/count refresh. Default attendee filter hides released/cancelled records without deleting audit history; list scrolls within a bounded region. Camera stops on panel close/switch, hidden page and unmount; late camera permissions cannot restart a stopped scan. No new schema, paid inference or image storage. See docs/admin-event-operations.md.
+
+## Confirmed signup push alerts
+
+The existing production one-minute owner push cron also checks confirmed event registrations, independent of email delivery and focus/routine checks. Reuse encrypted owner devices and private claim_admin_push receipts with event-registration/<ticket> keys; only new tickets since request/opt-in within seven days, bounded queries/batches and existing three-attempt retries. Generic notification with hashed tag opens /event-checkin; no contacts, amounts or raw ticket capabilities in push payload. Reopen installed Admin after release for the updated worker title/path. No new schema, credentials, inference, checkout writes or historical alert burst. See docs/admin-push.md.
+
+## Check-in visual feedback
+
+Attendee Checked in includes a green circular tick. Scanner uses structured receipts rendered above camera with a prominent name: success green/tick, duplicate amber/clock, errors red/alert; labels/shapes remain meaningful in greyscale. No dismiss-to-continue popup. New messages clear stale receipts. Validate receipt name/time before success. Existing automatic scanning, duplicate suppression and authorization remain. See docs/admin-event-operations.md.
+
+## Manual check-in and event media
+
+Confirmed unchecked attendee rows support named native confirmation and the existing atomic check-in API; pending/cancelled/checked-in rows cannot manually check in. Media upload is a lazy inline tool kept mounted while changing tabs. Owner-only Admin-host/no-store signing/list API, same-origin POST, private event-media-private bucket, direct signed uploads with random event-prefixed keys,50 MB maximum and restricted photo/video MIME types. Explicit short-lived previews, paginated25 listing, no public policy/publication/inference/deletion UI. Admin Events surfaces unpublished planning drafts;19 November placeholder has no confirmed venue/time or registration offer. See docs/admin-event-operations.md.
+
+## Visual media browser and social sizes
+
+Event tools use Poster | Scan | Media. Media has lazy thumbnails, list/swipe views and a native popup with fresh private URL resolution,1–5× image zoom/pinch/bounded drag, video controls and metadata editing. Private event_media_assets stores title/description/manual people tags with owner-only API, current-object validation and optimistic revisions. Migration20261113060000 applied in isolation; no browser-role access. No automatic face recognition/inference. Upload styling is independent of Scan. Export prepared photos/posters as1080×1440 Post3:4,1080×1920 Story9:16 or Original; contain full art without cropping, manual share/download only. Future poster art direction is3:4 plus a distinct Story version. See docs/admin-event-operations.md and docs/brand-identity.md.
+
+## weOS identity (SPR-195)
+
+The member app is **weOS — Whatelz OS**, superseding the historical fcOS product
+name. Shared headers and first-login welcome use the same WhatelzMark vector as
+Admin; install metadata and icons reuse Admin's versioned PWA assets. Preserve
+the existing app manifest ID/start URL/scope and compatibility /fcos asset,
+service-worker, cookie, CSS and internal tool names. This is a branding change,
+not a data or authorization migration. Founder’s Club remains a community name
+in actual team/event/culture content. See docs/weos-identity.md.
+— codex, 2026-11-13
+
+## Historical event backfill and draft posters
+
+Private event_attendance records historical presence separately from live tickets, with attendance date, nullable unknown exact scan time, actual import actor/time and idempotent source_key. Admin Events streams past events plus unpublished drafts. June28 ASR sharing backfilled from explicit owner facts; no fake email/phone/checkout or ticket delivery. Poster variants are private object paths, exposed only through owner/Admin-host event-poster signed redirects with variant/path validation. November19 art is3:4 and9:16, S$8/30 places, confirmed timing and provisional The Vibe venue. It does not activate next-event checkout or replace current EVENT_KEY. See docs/admin-event-operations.md.
+
+## weOS palette (SPR-196)
+
+Member ShellProvider reads the reviewed Whatelz identity JSON into app-only
+weos theme variables: yellow #FACC15, ink #18181B and paper #FFFCF5. Tailwind
+weos colour utilities use those variables with reviewed fallbacks. Member Profile,
+Baobei cards, navigation/loading, installation and Chat actions share this palette;
+there is no orange Profile variant. The member pass is flat yellow with ink text
+and the shared Whatelz mark. Usage uses ink for a clearly visible progress bar.
+Actual warning/error colours remain semantic. Public/Admin theme scope remains
+separate. — codex, 2026-11-13
+
+## Inverted weOS app icon (SPR-197)
+
+weOS keeps the reviewed W shape but uses brand ink #18181B behind a yellow
+#FACC15 W for its installed icon, distinct from Admin. Member manifest/browser/
+Apple icons use versioned /weos assets; legacy /fcos icons match the inverted
+variant. Preserve manifest identity and Admin's yellow-background icon. Generate
+with scripts/generate-weos-icons.mjs, also invoked by the full asset generator.
+This supersedes SPR-195's shared install-icon colours, not the shared vector.
+— codex, 2026-11-13
+
+## Community roles and planned placement (SPR-199)
+
+weos_communities, weos_community_roles and weos_community_memberships hold
+community definitions and active/proposed assignments in Supabase. People and
+role descriptions are operational data, never migration seeds. Whatelz roles do
+not grant FC calendar access, app administration, AI access or ABO sponsorship.
+Only founders-club-scoped active roles resolve calendar personas. Linked Baobei
+FC status follows the existing membership editor; community-only leadership is
+owner-editable with revision checks. Rosters and Chat obey hidden-lead sharing.
+member_leads.referrer_person_id and planned_sponsor_person_id distinguish an
+introduction and intended future placement from actual sponsor_person_id edges.
+A plan never creates an ABO node or registers an ABO. Joint accounts stay joint.
+— codex, 2026-11-13
+
+### AI Business Invite List (SPR-198)
+
+`/admin/ai-business/invites` is sole-owner private contact context, independent of member leads and access tiers. Initial import uses the two actual 5/13-attendee events: 16 people / 18 attended visits, with explicit overlap resolution and no invented invitation history. Owner records interests, collaboration, priority and next follow-up manually. Attendance requires checked-in source evidence; future tickets can match existing canonical IDs/exact emails. Browser-denied RLS tables, same-origin Admin JSON writes and revision guards protect changes. Invitation logging sends nothing. Do not contact blocks new logs; corrections remain visible when removed from counts. No public account/membership flow is added. Migration 20261113145620 applied; details and rollback in `docs/ai-business-invites.md`.
+
+### Invite List locations (SPR-200)
+
+AI Business contacts have nullable owner-assigned SG/KL/PG locations (Singapore/Kuala Lumpur/Penang), shown as a list column/profile/editor and independent composable filter. Totals follow the selected location. The current authorized 16-person cohort is SG; future contacts default to Not set. Location is an invitation market, not nationality or membership. Older clients omitting location preserve the stored value. Migration 20261113152311 applied; owner-scoped revision backfill verified 16 SG and repeat-safe. Contact identity, attendance, permissions and other leads remain unchanged.
+
+### Focused Admin workspaces
+
+Admin AI Business centres on Events, People, Proof and Products; remaining website/portfolio tools are retained under More tools. Network Marketing leads with Leads and Team management. Overview keeps weekly focus and daily routines without repeating the event summary. AdminWorkspaceTheme scopes pathname-derived yellow robot / purple network / orange sun accents to Admin only, with neutral reading surfaces and dark-mode tokens. Personal and Settings show no redundant workspace label in the header. Event media is directly reachable via /admin/event-checkin?tool=media; that opens media only, never the scanner. Preserve lazy tools, streaming focus, permissions, timetable rules and the yellow brand mark. See docs/design/admin-focused-workspaces.md.
+
+### Historical invitation outcomes (SPR-201)
+
+Invite dates/channels may be null and must remain explicit unknowns, including after editing. Couldn’t attend (`unavailable`) is separate from Declined/attendance and never implies a lost lead. The event label contains its event date/ID; do not substitute that date for when outreach occurred. Owner/source uniqueness protects repeat-safe private imports, with source keys excluded from form input. Authorized Nov12 intake adds16 outcomes/15 new contacts:31 contacts,18 attended visits preserved. Referral reasons stay private; no invented dates, channels, contact details or follow-ups. The owner explicitly confirmed SG for the15 new contacts, giving31 SG contacts. Migration20261113154122 applied. See docs/ai-business-invites.md.
+
+### Overlapping Invite List locations (SPR-201)
+
+Supersedes SPR-200's single selector: canonical `locations` is a bounded unique SG/KL/PG array, empty means Not set. Multi-select checkboxes and every-tag row/profile rendering preserve one contact/history across regions. Filters match any assigned tag. Legacy scalar `location` is retained and mirrored from the first submitted tag for rollback; pre-tag forms carrying only scalar location must refresh (409), so they cannot replace multi-tags. Migration20261113154752 copies existing locations. Current31 unique people retainSG; two owner-confirmed contacts alsoKL (SG31/KL2/PG0, not33 people). No invitation reasons or attendance changed.
+
+### Visual Overview shortcuts
+
+Supersedes the orange/sun Day Job identity: brown work bag throughout Admin. Overview workspace links are three icon shortcuts side by side, with real accepted task titles when present and no repeated empty-state paragraphs. Rhythm uses orange sun (morning), blue moon (night) and teal 7 (weekly). Keep short labels, data-unavailable states, accessible link names, streaming and greyscale-distinct shapes.
+
+### Admin event portfolio
+
+AI Business leads with the next upcoming event. Owner-only events directory and
+people overview preserve past events and distinguish unique attendees, repeat
+attendees and visits. Draft does not mean registration activated. Archive payment
+reads scope both sources to the exact event key; scanner remains current-event
+only. Preserve superseded June metadata. See docs/admin-event-portfolio.md.
+
+### Five-tab Admin shell
+
+Personal | Chat | Home | Calendar | Profile. Mobile Home is the raised yellow
+circle requested by the owner; Profile reuses preferences/releases, with legacy
+Settings URLs retained. Website profile tools moved to /admin/ai-business/profile.
+Owner Chat fixes gpt-6.1-sol server-side, uses the existing encrypted connection,
+and is ephemeral/no-tools; never claim it reads the calendar or EMDEE. Calendar
+projects existing events, imported community occurrences and explicit date tables
+from two allowlisted EMDEE docs. Preserve inclusive date ends, source gaps,
+company-quarter uncertainty and 2026–27 recurrence coverage. See docs/admin-five-tabs.md.
+
+### Contained Admin navigation
+
+AdminAppBoundary owns modal/menu/reader-drawer history and first-party link containment. Back closes the top overlay before navigating, respects existing cancel guards, and uses known Admin parents on fresh launches rather than auth/referrer history. Preserve Next state when touching history. Author /admin/playbook imports chapters only after dailyOwner; the public entitlement gate is unchanged. Owner-only public previews are allowlisted and read-only; member readers reuse existing access checks under /admin/network-marketing/app. External providers show a Copy-address notice, not a fake integration. Native downloads/OS shares remain deliberate actions. See docs/admin-navigation-audit.md.
+
+## Bilingual HQH and WhatsApp handoff (SPR-202)
+
+Chat read_fcos source hqh resolves one named Baobei through existing readable
+profile gates before projecting explicitly allowlisted intake/disclosure/social/
+logistics metadata. The shared writing format is Supabase knowledge entry
+weos-hqh-whatsapp-format-v1, not hardcoded people or business prose. User-requested
+HQHs are one numbered message with indented continuation lines and inline >
+separators, in English or Simplified Chinese. Unknown disclosure stays unknown;
+FC membership/payment never proves 破题. Completed Chat replies and the current
+BriefingEditor draft expose a WhatsApp prepared-message link plus copy fallback.
+The user selects the recipient and sends; no server message API, recipient,
+tracking call, automatic send or sharing-permission change is introduced.
+— codex, 2026-11-14
+
+## Person-first HQH follow-up and discovery (SPR-203)
+
+HQH is anchored to the Baobei; events/dates are optional context. Chat preloads
+permission-checked saved context before the first model reply to an HQH request,
+so saved names or dates are not requested again. Explicit checkbox selections
+resolve directly and preserve order. Natural requests discover named people or
+an unambiguous saved cohort; ambiguous cohorts receive a narrow clarification.
+Create HQH opens a searchable one-to-six-person checklist with English/Chinese
+and optional context, then sends through the normal private Chat API. HQH reads
+prioritise linked HHH bodies with explicit byte/history coverage; old event plans
+remain dated history, not current logistics. WhatsApp action is shown for an
+actual briefing rather than intake questions. App/DB sharing gates are unchanged.
+— codex, 2026-11-14
+
+## Invite List How we met (SPR-204)
+
+Owner-private `how_met` holds supplied connection origin/relationship text, bounded at2000 chars. Profile/editor/search expose it; rows use it if no next step. Blank is unknown; old clients omitting it preserve it. It remains separate from conversation notes, locations, event history and business assessments. Migration20261113165712 applied;53 supplied facts saved against54 existing identities, one omitted record blank. Batch junior means relative intake-cohort gap, never current study year or age; preserve unspecified schools/gaps and month-only dates. No inferred relationship graph, membership, contact or follow-up writes. See docs/ai-business-invites.md.
+
+## People source identity (SPR-205)
+
+The owner-private Invite List is labelled People. Canonical name precedence is registration, confirmed testimonial, then invite nickname; preserve source aliases and search them. primary_email is registration-only and mirrored to legacy email; email2 is testimonial-only, never auth proof or newsletter consent. Both source emails are read-only in forms; strict input/server reads/revision guards prevent source override. Private ai_business_testimonial_links has per-owner testimonial uniqueness, composite owner/contact FK and browser-denied grants/RLS. Migration20261113172107 applied. Confirmed22 matches remain existing identities;28 new profiles (8incomplete) have no location. Verified82people/13primary/38secondary/51source links, with existing histories/tags/origins preserved and repeat import zero writes. No auth/tier/automatic future signup reconciliation. Locations to label opens Not set; status distinguishes incomplete sources. See docs/ai-business-invites.md.
+
+## November19 event publication (SPR-206)
+
+ELZ-EVT-0005 has `/events/2026-11-19`, S$8/30places, The Vibe confirmed,19:30–21:30 SGT/registration19:00. mapEvent remains immutable Nov12; currentEvent drives current Admin/tools. Registration accepts explicit event ID, scoped cookies/status/token storage, private event_signup_offers and reserve_event_signup_for_event inventory lock. Legacy cached forms defaultNov12closed. Fulfillment validates occurrence marker, exact amount, stored event/session; ticket/email resolve stored event key. Preserve Nov12 page/prices/delayed fulfillment; no oldpromo copied. Migration20261114071547 applied; additive800amount/privateoffer/RPC changes, legacyfunction retained. Activate offer and publish existing event row only during authorized release. Existing Stripe account has dedicatedS$8price; dynamic Dashboard methods unchanged. See docs/admin-event-operations.md.
+
+## Public event catalogue (SPR-207)
+
+Public events are a server-only, explicitly projected catalogue of published training/workshop/talk records. `/events` is the evergreen hub; `/events/next` temporarily redirects without caching to the nearest future listed weekly session, never sharing/intensive/AMI. With no upcoming weekly event it returns to the hub; database failures return503. AMI is introduced in-room only for now, with no public promotion or invented schedule.
+
+All occurrence details share one layout and preserve canonical URLs/IDs. History rolls over after the actual ending time in Singapore and counts distinct checked-in people across ticket and historical attendance sources. Unavailable counts remain unknown. The two actual events are June28 (5) and November12 (13); retired October/November placeholder-poster URLs redirect to the archive, never reuse their IDs. No private notes, raw metadata, source contact data or private media paths reach public payloads.
+
+Future weekly AI-only/Money-only sessions support their own titles, S$8 offers and server-side Stripe price configuration. Publish an actual occurrence and enabled matching SGD offer before opening registration. Preserve legacy November12/19 fulfillment snapshots, occurrence cookies and inventory/idempotency checks. Admin current-event tools remain explicitly scoped independently of the evergreen public selector. See docs/public-events.md. — codex, 2026-11-16
+
+## Event feedback (SPR-208)
+
+Fixed `/events/feedback/<event-id>` links stay attached to one actual occurrence; November12 is ELZ-EVT-0004. One required usefulness rating and optional comment, no identity/login. Private service-only event_feedback table/RPC, same-origin bounded writes, daily HMAC rate limiting and UUID idempotency; no public response reads or attendance verification claim. Owner-only event detail shows private responses and share link. Form and thanks both show next weekly plus AMI planning teaser (explicitly owner-authorized here, superseding the earlier exclusion only for these recommendations); no invented AMI date/price/signup. Migration20261116093000 applied. Preserve feedback on rollback. See docs/event-feedback.md. — codex,2026-11-16
+
+## Owner release preference (2026-11-16)
+
+Edmund explicitly authorizes automatic PR merge and production deployment for completed Whatelz changes after relevant tests, build and preview checks pass, followed by production verification. This supersedes the earlier human-merge workflow requirement for the authorized work. Pause for actual blockers or actions requiring separate approval; never treat this as permission to skip checks or expose private data. — codex,2026-11-16
+
+## Permanent event ID URLs (SPR-209)
+
+Public canonical pages derive from permanent event IDs: /events/ELZ-EVT-0004 and /events/ELZ-EVT-0005. Stored safe public_path remains a legacy alias, never canonical authority. Preserve308 title/date redirects to the same occurrence and307/no-store weekly /events/next. June retains its existing UUID rather than reusing retired placeholders. Cards, metadata/sitemap, registration/feedback backlinks and new email/share URLs use the canonical ID; payment keys/markers/cookies and fixed feedback paths remain unchanged. No DB edit/migration. See docs/public-events.md. — codex,2026-11-16
+
+## Event schedule and calendar (SPR-210)
+
+/events has shareable list/calendar browsing with Monday-first month navigation, Singapore dates and compact phone/tablet labels plus full agenda. Client receives only explicit public browse fields. Intensives require explicit public_visibility=listed and published=true; /events/next remains weekly-only. Owner-requested0006Dec10Money,0007Dec17AI,0008Jan7combined,0009Jan9AMI; weekly19:30–21:30SGT/S$8, AMI09:00–19:00SGT/priceunset. Venues TBD and omitted from posters; no checkout activated. Feedback recommendations link the actual listed intensive. Preserve IDs/attendance. Real-photo poster source usage is tracked in docs/design/event-photo-usage.md; use unused photos rather than recycled poses or invented portraits. See docs/event-calendar.md. — codex,2026-11-16
+
+## Event operations and participant types (SPR-211)
+
+Registrations has a 2×2 Poster/Scan/Media/Feedback tool grid. November12/19 portfolio details reuse the same operational page with correctly scoped attendee reads, poster/caption, media paths and retry-email event. Feedback share link, copy action and private responses remain in its panel; no duplicated bottom attendee/feedback section. New media event query is allowlisted to configured seminar IDs, retaining private owner gates and path/revision checks. event_people.account_type defaults to guest for all existing/future signup people; classification is private and independent of authentication or community access. Migration20261116161000 applied. No sign-in accounts, tier upgrades or newsletter consent created. See docs/admin-event-operations.md. — codex,2026-11-17
+
+## Continuous Admin calendar (2026-11-18)
+
+Calendar replaces period modes with a Monday-first seven-column continuous grid, current Singapore week through2029-12-31 inclusive. Lazy eight-week batches, date jump/Today, complete day-detail dialog with shared Back handling. Seasonal month shades are visual metaphor, explicit dates/icons retain greyscale meaning; four-digit year markers. Community recurrence expands only existing imported rules through2029; never infer future company sprints. Owner gates, explicit source failures and inclusive date semantics remain. See docs/admin-five-tabs.md. — codex,2026-11-18
+
+## Compact Admin chrome and owner Profile (2026-11-18)
+
+Keep repeated main-tab headings visually hidden with accessible h1 retained. AdminAppBoundary lives directly below AdminNavigation, outside animated main content; deeper-page Back is a40px sticky row using ResizeObserver-measured header height. Main tabs have no Back. Preserve document scrolling/native browser refresh; standalone Admin reuses guarded PullRefresh scope=admin without altering member default. Owner Profile uses weOS visual structure, language pills and identity, retaining Admin-only preferences. No member usage/role/tier semantics copied. — codex,2026-11-18
+
+## Admin focus horizons checkpoint (2026-11-18)
+
+Home and each epic root lead with Today’s focus and This week’s focus. Overview combines the three work lanes plus read-only administration; each epic filters to itself. Today is a full-width carousel (6.5s rotation, pause/manual/swipe, hidden/reduced-motion/interaction guards); ongoing sprint and overdue accepted work remain Today. Weekly lists only starts/due dates tomorrow–Sunday: first3 then View more. Overview adds Thursday21:00 next-sprint planning and Sunday21:00 closeout, Sprint-001 epoch2026-11-16, without creating schedules/tasks. Stable encoded source IDs open owner-only detail routes, derived short display references and sticky breadcrumbs; exact task reads are owner+UUID scoped, epic wrappers reject lane mismatch. Back on a fresh detail deep-link returns to the real epic/Home root. Never infer acceptance/attendance from calendar context. Existing directories/Rhythm remain below; no unconfirmed content-creation commitment is inserted. See docs/admin-five-tabs.md.
+
+### Focus footer cleanup (2026-11-18)
+
+Do not show Choose my focus or Calendar links beneath Today/This Week on Home or epic roots. Focus selection belongs to Thursday planning; Calendar already has a persistent tab. Only source-availability notices may occupy the footer, and no empty footer is rendered.
+
+## Versioned registered-event feedback (SPR-213)
+
+Fixed feedback links render immutable DB question versions pinned per event, capped at10. Approved feedback-v3-20261118 has3Yes/No,6ratings and optional comments without an application text cap. Confirmed registration email requires a six-digit code; no public email list or accounts created. Hash-only expiring challenges/proofs, persistent request/guess limits and event/status checks gate one response per event/email/registration. Existing Resend sender delivers verification codes only when requested. Store exact Q/A snapshots; owner review renders history instead of current definitions. Earlier anonymous feedback remains labelled and preserved; public API now rejects anonymous legacy payloads. Migration versions20261118090000/090100/100000 applied; immutable v2 draft kept, never-released bindings moved to approvedv3 only after no-response check. Release-phase migration20261118100100 revokes the legacy writer and enforces the ten-question database cap after the new API is live. No auto invitations. See docs/event-feedback.md. — codex,2026-11-18
+
+## Three-tab Admin, Personal epic and saved Chat — 2026-11-18
+
+The main dock is Chat | Home | Profile. Personal is the fourth epic beside AI Business,
+Network Marketing and Day Job, with scoped Today/Week and detail pages. Overview
+combines all four. Thursday planning and Sunday closeout now belong to Personal.
+Calendar remains accessible in the workspace selector. Personal schedules retain
+explicit saved choices.
+
+Admin Chat saves owner-scoped threads/turns in private Supabase tables and uses the
+existing server connection with gpt-6.1-sol, provider store:false. The verified task
+snapshot is available; calendar, email and EMDEE are not connected to this chat.
+Task changes are stored proposals until the user presses Apply task. A service-only
+RPC validates owner, stored proposal, revision and completion invariants, with
+idempotent receipts. Pending turns serialize per conversation; retries retain the
+saved message and request identity. History lists the latest50 conversations;
+each conversation supports100 turns and direct thread links remain valid.
+
+A daily21:00 Personal focus reminder opens saved Chat for idea review. This is a
+visible reminder only: no new scheduled AI reconciliation job or EMDEE write.
+The header bell has a private inbox with unread marks, mark-all-read and soft
+archive. It imports release notes and confirmed registrations from the last28days;
+future attempted push deliveries also persist notices before sending. It does not claim a complete archive of historical push notifications.
+
+Migration20261118053000 is additive and applied. New tables deny browser roles;
+reads/writes use verified owner endpoints, same-origin mutation guards and service
+credentials. Preserve saved conversations and notification history on rollback.
+
+## Admin missing-resource recovery (2026-11-18)
+
+Admin has its own not-found boundary and unmatched-path catch-all beneath the existing
+owner-gated layout, preserving header, dock and Back handling. Missing task/resource
+records use compact icon-led recovery with local Home/known-workspace actions, never
+browser-history Back or public Playbook promotion. The root not-found boundary also
+recognizes Admin requests as a fallback; public editorial404 remains unchanged.
+No auth checks are relaxed and unavailable database reads remain distinct from absent
+records. Task references retain encoded source IDs and owner-scoped lookup.
+
+## weOS access and role preview (SPR-212)
+
+Beacon/Blaze/Torch/Ember/Guest are explicit Whatelz app roles, separate from FC roles and sponsorship. Ember is AI-learning-only; internal business routes, contexts and HQH tools are blocked. Existing account links remain activation proof; no name matching, automatic signup activation or Poti→ABO promotion. The Beacon-only read-only View as switch previews Blaze/Torch/Ember layouts without impersonation or private-data loads. Blaze has a separate community entry; owner workspaces remain owner-only.
+
+Member AI context uses authenticated member-JWT weos_read_context, never a service-role retrieval client. SQL derives auth.uid(), checks stored roles and existing visibility, and projects allowlisted fields. RLS protects published knowledge and own-or-Beacon conversations/messages; internal base tables remain browser-denied. Owner explicitly approved Beacon private-chat review for later app-improvement analysis. Other roles see own chats only; review is separate from ordinary AI context and disclosed in Chat. No automatic analysis/export, provider call or account merge. See docs/weos-access.md for scope, tests and rollback. — codex,2026-11-18
+
+## Feedback registration email match (2026-11-18)
+
+Feedback uses a simple event-scoped confirmed-registration email match; no code is
+sent and no email ownership claim is made. The private check endpoint returns only
+whether the entered email matches that event. Submission independently rechecks the
+registration in the service-only database writer, retaining one response per event
+registration, request idempotency and pinned ten-question snapshots. Old responses
+and verification records remain intact; review distinguishes email matches from
+historically verified responses. Retired code endpoints return 410. No attendee
+email list or account signup is exposed.
+
+## Automatic feedback email check (2026-11-18)
+
+The feedback email field checks the fixed event registration automatically after a
+600ms typing pause, without an email action button. A green tick indicates a match;
+an unmatched address prompts the attendee to use their registration email. The
+field stays editable, editing immediately removes submission eligibility, and
+aborted/stale lookup results cannot unlock another address. Lookup does not freeze
+the questions. Final server-side registration validation is unchanged.
+
+## Feedback topic choice and optional comments (2026-11-19)
+
+Feedback v4 retains ten numbered questions: Q10 is a configured single-choice topic
+list, with required free text for Others. Optional unrestricted comments live outside
+the numbered questions in `comment_prompt`. Saved snapshots include the selected
+answer, original option labels and optional comments; old form versions and answers
+remain unchanged. Additive support migration20261119003000 must precede deployment;
+activation migration20261119003100 repins current v3 bindings only after compatible
+production is READY. Do not delete historical forms or responses.
+
+Unmatched email shows a red X and red border/message. The submit button is natively
+disabled, grey and uses the not-allowed cursor; lookup errors stay distinct from a
+confirmed non-match. Automatic email checking and final server validation remain.
+
+## Latest Rhythm entries (2026-11-19)
+
+Home/Personal use shared Morning, Night, Weekly, Calendar shortcuts. Canonical
+hub-linked latest Notes are mirrored in private owner-scoped admin_rhythm_snapshots;
+EMDEE remains canonical. /admin/rhythm/[kind] reads the latest saved copy and offers
+reconnection if refresh fails. Exact-version same-origin read receipts clear red
+unread dots; stale receipts cannot clear newer data. The existing five-minute cron
+syncs inbox notices independently of device opt-in and pushes new observed versions
+to opted-in devices, deduplicated by version and delivery leases. Preserve opt-in
+cutoff, legacy receipts, owner checks and cache on source failure. No inference.
+The bell has the existing per-device push switch inline. EMDEE transport now uses
+compact read/write actions. Its stored credential is expired; real latest entries
+were bootstrapped via connected MCP and a user reconnect is needed for future sync.
+Migration20261119004500 applied. See docs/admin-five-tabs.md.
+
+## Interactive weOS role testing (SPR-212 follow-up)
+
+Beacon may use Chat while viewing as Blaze/Torch/Ember through a dedicated endpoint. Authenticated SQL lowers context permissions for each call and restores them even after errors; no identity parameter or member impersonation. Tests use permitted owner/team network records without Beacon oversight, exclude private workspaces/vault/social context, and retain Ember source/audience restrictions. Separate preview_role conversations cannot mix roles or enter normal Chat; existing allowance/rate limits and settlement apply. No task/note/profile mutations, image uploads or automatic sharing. Other preview actions remain read-only. Details/rollback: docs/weos-access.md. — codex,2026-11-19
+
+## Calendar sheet and shared scope selector — 2026-11-19
+
+Calendar is a secondary Home page with the existing lean sticky Back/breadcrumb row.
+Remove Today/date-jump and local lane pills. On /admin/calendar only, the header
+workspace dropdown keeps the calendar route and selects validated ?space=personal,
+ai-business,network-marketing,day-job; absent/invalid means Overview/all. The shared
+theme and breadcrumbs reflect this filter. Same-calendar navigation preserves scroll,
+and automatic timetable switching never takes the owner away from Calendar.
+Seven equal-width columns touch both viewport edges; square contiguous cells and
+subtle aligned rules replace rounded tiles/week gaps. Keep current-date circle,
+month/season shading, four-digit years, day-detail dialog, lazy batches and2029 end.
+Source coverage lives in a collapsed footer. Calendar scope is a view filter, never
+an authorization boundary. No schema or permission change.
+
+## December8 weekly event and return-attendee offer (2026-11-19)
+
+ELZ-EVT-0010 is the owner-confirmed Tuesday8 December2026 Money Mindset × AI Skillset
+session,19:30–21:30 Singapore time,30 places, venue TBD. Its new generated poster
+uses a different supplied Edmund photograph and shows S$97 struck through to S$13,
+with no venue. Public signup is S$13; both SGD Stripe prices are final, no added tax.
+Source/provenance is content/events/december8-2026.json. The shared footer is day-neutral.
+
+Successful feedback may issue a private return offer only when its normalized attendee
+email has a recorded confirmed prior check-in. REJOIN is never a public free code.
+An opaque HttpOnly cookie and email-bound database grant authorize S$8. The fixed
+five-minute deadline starts at feedback creation and is not extended by refresh or
+repeat requests; one offer per email/target event prevents restarting via another
+response. Thank-you tick/text fade out, then the next event card fades in. Reduced
+motion is respected and the initial countdown snapshot is stable across hydration.
+Leaving without claiming dismisses the offer; ordinary registration defaults to S$13.
+The deadline is for starting checkout, and an existing authorized reservation retains
+its saved price for safe payment retries. Do not increase an in-flight payment amount.
+
+The private return reservation wraps the existing locked seat inventory and stores
+its grant FK. Checkout/webhook validation chooses the exact persisted S$8/S$13
+price, checks session identity and paid status, and preserves QR/email idempotency.
+No attendee name/phone or promo text is newly sent to Stripe. Public REJOIN entry
+is rejected; it is only automatically applied from the eligible feedback offer.
+
+Migration20261119010000 is additive support plus an unpublished/disabled draft.
+Apply20261119010100 only after compatible production is READY to publish/open signup.
+Then20261119010200 restores the owner-requested existing free checked-in
+elz.news22@gmail.com test ticket, guarded against modifying any paid receipt.
+Registrations have an is_test flag; test entries never increase public attendance.
+Do not send its QR email or consume its first feedback offer during agent QA: Edmund
+will submit feedback himself to test the fresh five-minute window.
+
+## Calendar pinned weekdays correction — 2026-11-19
+
+Back/breadcrumbs and weekdays share CalendarChrome outside the overflow main.
+Only their combined parent is sticky below the measured header, so weekdays never
+float over date cells or move with the calendar content. Retain all seven aligned
+columns. A week belongs to its Monday start year; never render a combined year label.
+The owner defines seasons as quarters: Spring Jan–Mar, Summer Apr–Jun, Autumn Jul–Sep,
+Winter Oct–Dec, with three month shades per palette. This supersedes geographic season
+mapping. Verified real scroll geometry at 360/768/1440px, year boundary, and 34 tests.
+
+Public Activities at /activities lists small gatherings and expressions of interest. /events remains the event catalogue with registration. See docs/activities/README.md.

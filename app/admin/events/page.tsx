@@ -1,6 +1,10 @@
+import { Suspense } from "react";
+import HistoricalEvents from "@/components/admin/event-admin/HistoricalEvents";
+import { dailyOwner } from "@/lib/daily/server";
+import { supabaseAdmin } from "@/lib/supabase-server";
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import {
   listServiceEvents,
   SERVICE_EVENT_KIND_LABELS,
@@ -22,10 +26,23 @@ function formatDate(d: string | null): string {
 }
 
 export default async function AdminEventsPage() {
-  const events = await listServiceEvents();
+  await dailyOwner();
+  const [events, drafts] = await Promise.all([
+    listServiceEvents(),
+    supabaseAdmin
+      .from("events")
+      .select("id,name,date,location,notes,metadata")
+      .eq("published", false)
+      .contains("metadata", { planning: true })
+      .order("date")
+      .limit(25),
+  ]);
 
   return (
     <div className="space-y-6">
+      <Link href={adminUrl("/admin/event-checkin")} className="underline">
+        Seminar registrations &amp; check-in →
+      </Link>
       <nav className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
         <Link
           href={adminUrl("/admin/testimonials")}
@@ -55,6 +72,61 @@ export default async function AdminEventsPage() {
         </Link>
       </div>
 
+      <section
+        id="draft-events"
+        aria-label="Draft events"
+        className="space-y-3"
+      >
+        <h2 className="text-lg font-semibold">Draft events</h2>
+        {drafts.error ? (
+          <p role="alert">Drafts unavailable. Refresh to retry.</p>
+        ) : !drafts.data?.length ? (
+          <p className="text-sm">No draft events.</p>
+        ) : (
+          drafts.data.map((d) => (
+            <article key={d.id} className="border-b border-zinc-200 py-3">
+              <p className="text-xs">Draft · {formatDate(d.date)}</p>
+              <h3 className="font-semibold">{d.name}</h3>
+              <p className="text-sm">
+                {d.location || "Venue to confirm"}
+                {d.metadata?.venue_status === "provisional"
+                  ? " (provisional)"
+                  : ""}{" "}
+                ·{" "}
+                {d.metadata?.starts_at && d.metadata?.ends_at
+                  ? `${new Date(d.metadata.starts_at).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "numeric", minute: "2-digit" })}–${new Date(d.metadata.ends_at).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore", hour: "numeric", minute: "2-digit" })}`
+                  : "Time to confirm"}
+              </p>
+              {typeof d.metadata?.price_minor === "number" && (
+                <p className="text-sm">
+                  S${(d.metadata.price_minor / 100).toFixed(0)} ·{" "}
+                  {d.metadata.capacity} places · Online registration not
+                  activated
+                </p>
+              )}
+              {d.metadata?.poster_files && (
+                <div className="draft-poster-links">
+                  {["post", "story"]
+                    .filter((f) => d.metadata.poster_files[f])
+                    .map((f) => (
+                      <a
+                        key={f}
+                        href={`/api/admin/event-poster?event=${d.id}&format=${f}`}
+                        rel="noreferrer"
+                      >
+                        {f === "post" ? "Post 3:4" : "Story 9:16"} →
+                      </a>
+                    ))}
+                </div>
+              )}
+            </article>
+          ))
+        )}
+      </section>
+
+      <Suspense fallback={<p role="status">Loading past events…</p>}>
+        <HistoricalEvents />
+      </Suspense>
       {events.length === 0 ? (
         <div className="rounded border border-dashed border-zinc-200 px-6 py-12 text-center">
           <p className="text-sm text-zinc-500">No events yet.</p>

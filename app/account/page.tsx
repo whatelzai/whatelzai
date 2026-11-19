@@ -89,6 +89,11 @@ export default async function AccountPage() {
         <p className="mt-2 text-sm text-zinc-500">{email}</p>
       </header>
 
+      <p className="mb-6">
+        <Link href="/account/events" className="underline">
+          Your event registrations →
+        </Link>
+      </p>
       <section className="rounded-2xl border border-zinc-200 bg-white p-6">
         <h2 className="text-sm font-mono uppercase tracking-widest text-zinc-500">
           Your archetype

@@ -1,0 +1,21 @@
+{
+  "id": "https://admin.whatelz.ai/",
+  "name": "Whatelz Admin",
+  "short_name": "Admin",
+  "description": "Edmund's private command centre. Daily briefs, ventures and people at a glance.",
+  "start_url": "https://admin.whatelz.ai/today",
+  "scope": "https://admin.whatelz.ai/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/admin-pwa/icon-192-v2.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/admin-pwa/icon-512-v2.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/admin-pwa/icon-maskable-512-v2.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Today", "url": "https://admin.whatelz.ai/today" },
+    { "name": "Overview", "url": "https://admin.whatelz.ai/" },
+    { "name": "People & accounts", "url": "https://admin.whatelz.ai/users" }
+  ]
+}

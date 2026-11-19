@@ -1,3 +1,4 @@
+import { isOwnerUser } from "@/lib/admin-policy";
 import { createHash, randomBytes } from "node:crypto";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import type { RateLimitTier } from "@/lib/rate-limit";
@@ -38,6 +39,12 @@ export async function findActiveToken(
   if (!data) return null;
   const row = data as AuthToken;
   if (row.expires_at && new Date(row.expires_at) <= new Date()) return null;
+  const { data: owner, error } = await supabaseAdmin
+    .from("users")
+    .select("id,role")
+    .eq("id", row.user_id)
+    .maybeSingle();
+  if (error || !isOwnerUser(owner)) return null;
   return row;
 }
 

@@ -1,9 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth/server";
-import { isAdminRole } from "@/lib/users";
-import { supabaseAdmin } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/users";
 import {
   upsertLandingSection,
   type SectionKey,
@@ -14,16 +12,7 @@ import {
 } from "@/lib/landing-content";
 
 async function assertAdmin(): Promise<void> {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not signed in");
-  const { data } = await supabaseAdmin
-    .from("users")
-    .select("role")
-    .eq("id", userId)
-    .maybeSingle();
-  if (!isAdminRole(data?.role as "admin" | "superadmin" | undefined)) {
-    throw new Error("Forbidden");
-  }
+  await requireAdmin();
 }
 
 async function save<T>(key: SectionKey, body: T) {

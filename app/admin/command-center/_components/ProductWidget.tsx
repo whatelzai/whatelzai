@@ -1,4 +1,5 @@
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
+import { productSignal } from "@/lib/admin-overview/model";
 import type { OwnerMetrics, WidgetState } from "@/lib/cockpit";
 
 const NUM_FMT = new Intl.NumberFormat("en-SG");
@@ -21,7 +22,8 @@ function fmtPct(n: number | null | undefined): string {
 
 function relTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
-  const sec = Math.floor(diff / 1000);
+  if (!Number.isFinite(diff)) return "Timestamp unavailable";
+  const sec = Math.max(0, Math.floor(diff / 1000));
   if (sec < 60) return `${sec}s ago`;
   const min = Math.floor(sec / 60);
   if (min < 60) return `${min}m ago`;
@@ -58,7 +60,9 @@ export function ProductWidget({
       </div>
 
       <div className="flex-1 px-5 py-4">
-        {state.status === "available" && <AvailableBody data={state.data} />}
+        {state.status === "available" && (
+          <AvailableBody data={state.data} product={product} />
+        )}
         {state.status === "pending" && <PendingBody reason={state.reason} />}
         {state.status === "error" && <ErrorBody reason={state.reason} />}
       </div>
@@ -72,11 +76,10 @@ export function ProductWidget({
         {adminHref.startsWith("http") ? (
           <a
             href={adminHref}
-            target="_blank"
             rel="noopener"
             className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 hover:text-zinc-900"
           >
-            Open admin ↗
+            Service address
           </a>
         ) : (
           <Link
@@ -110,16 +113,27 @@ function StatusChip({ state }: { state: WidgetState<OwnerMetrics> }) {
     },
   };
   const { label, classes } = map[state.status];
+  const signal = productSignal(state, new Date());
   return (
     <span
       className={`border ${classes} px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest`}
     >
-      {label}
+      {state.status === "available" && signal !== "available"
+        ? signal === "stale"
+          ? "Older snapshot"
+          : "Check timestamp"
+        : label}
     </span>
   );
 }
 
-function AvailableBody({ data }: { data: OwnerMetrics }) {
+function AvailableBody({
+  data,
+  product,
+}: {
+  data: OwnerMetrics;
+  product: string;
+}) {
   const business = data.business;
   const usage = Object.entries(data.usage);
   const health = data.product_health;
@@ -131,11 +145,26 @@ function AvailableBody({ data }: { data: OwnerMetrics }) {
           Business
         </p>
         <div className="mt-2 grid grid-cols-3 gap-3">
-          <Kpi label="DAU" value={fmt(business.dau)} />
-          <Kpi label="WAU" value={fmt(business.wau)} />
-          <Kpi label="MAU" value={fmt(business.mau)} />
-          <Kpi label="ARR" value={fmtMoney(business.arr_usd)} />
-          <Kpi label="+ 7d" value={fmt(business.signups_7d)} />
+          <Kpi
+            label={
+              product === "whatelz" ? "Active accounts 24h" : "Active users 24h"
+            }
+            value={fmt(business.dau)}
+          />
+          <Kpi
+            label={
+              product === "whatelz" ? "Active accounts 7d" : "Active users 7d"
+            }
+            value={fmt(business.wau)}
+          />
+          <Kpi
+            label={
+              product === "whatelz" ? "Active accounts 30d" : "Active users 30d"
+            }
+            value={fmt(business.mau)}
+          />
+          <Kpi label="ARR · USD" value={fmtMoney(business.arr_usd)} />
+          <Kpi label="New accounts 7d" value={fmt(business.signups_7d)} />
           <Kpi label="Workspaces" value={fmt(business.active_workspaces)} />
         </div>
       </section>
@@ -193,7 +222,7 @@ function PendingBody({ reason }: { reason: string }) {
   return (
     <div className="flex h-full flex-col justify-center gap-2 py-8 text-center">
       <p className="font-mono text-xs uppercase tracking-widest text-zinc-500">
-        endpoint not configured
+        connection not configured
       </p>
       <p className="mx-auto max-w-xs text-xs text-zinc-500">{reason}</p>
     </div>

@@ -4,5 +4,19 @@
     "deploymentEnabled": {
       "main": true
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/social",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/daily-weekly",
+      "schedule": "0 0 * * 1"
+    },
+    {
+      "path": "/api/cron/admin-push",
+      "schedule": "* * * * *"
+    }
+  ]
 }

@@ -4,8 +4,7 @@ import { adminUrl } from "@/lib/admin-url";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/server";
-import { isAdminRole } from "@/lib/users";
-import { supabaseAdmin } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/users";
 import {
   deleteTemplate,
   upsertTemplate,
@@ -13,16 +12,9 @@ import {
 } from "@/lib/testimonial-templates";
 
 async function assertAdmin(): Promise<string> {
+  await requireAdmin();
   const { userId } = await auth();
   if (!userId) throw new Error("Not signed in");
-  const { data } = await supabaseAdmin
-    .from("users")
-    .select("role")
-    .eq("id", userId)
-    .maybeSingle();
-  if (!isAdminRole(data?.role as "admin" | "superadmin" | undefined)) {
-    throw new Error("Forbidden");
-  }
   return userId;
 }
 

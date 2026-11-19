@@ -221,7 +221,6 @@ export function ResumeEditor({ initialVersions }: Props) {
                 {current?.pdf_url && (
                   <a
                     href={current.pdf_url}
-                    target="_blank"
                     rel="noopener noreferrer"
                     className="font-mono text-xs text-zinc-400 hover:text-zinc-900 underline underline-offset-2"
                   >

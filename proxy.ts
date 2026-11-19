@@ -1,8 +1,15 @@
+import { storedWeosRole } from "@/lib/weos-role-server";
+import {
+  effectiveRole,
+  memberDestinationAllowed,
+  PREVIEW_COOKIE,
+} from "@/lib/weos-roles";
+import { hasTeamAssignment } from "@/lib/team-assignment";
 import { createServerClient } from "@supabase/ssr";
 import type { NextRequest } from "next/server";
 import { authCookieOptions } from "@/lib/auth/redirect";
 import { NextResponse } from "next/server";
-import { isAdminRole } from "@/lib/users";
+import { isOwnerUser, isAdminRequest } from "@/lib/admin-policy";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { domainRoute } from "@/lib/domain-routing";
 
@@ -49,52 +56,191 @@ export default async function proxy(req: NextRequest) {
     }
     if (
       user ||
+      req.nextUrl.pathname.startsWith("/tickets/") ||
+      req.nextUrl.pathname.startsWith("/event-checkin") ||
+      req.nextUrl.pathname.startsWith("/api/event-checkin") ||
       route.protect ||
+      req.nextUrl.pathname.startsWith("/api/admin") ||
       req.nextUrl.pathname.startsWith("/auth/") ||
       req.nextUrl.pathname.startsWith("/sign-")
     )
       response.headers.set("Cache-Control", "private, no-store");
     return response;
   }
-  if (route.protect) {
+  const adminRequest = isAdminRequest(route.surface, req.nextUrl.pathname);
+  const protectedAdminApi =
+    req.nextUrl.pathname === "/api/admin" ||
+    req.nextUrl.pathname.startsWith("/api/admin/");
+  if (route.protect || protectedAdminApi) {
     const userId = user?.email_confirmed_at ? user.id : null;
     if (!userId) {
+      if (protectedAdminApi)
+        return finish(
+          NextResponse.json({ error: "not_signed_in" }, { status: 401 }),
+        );
       const visibleUrl = new URL(req.url);
       visibleUrl.host = req.headers.get("host") ?? req.nextUrl.host;
       const signIn = new URL("/sign-in", visibleUrl);
       signIn.searchParams.set("redirect_url", visibleUrl.toString());
       return finish(NextResponse.redirect(signIn));
     }
-    // Server Actions run independently of the layout's role check.
-    const adminRequest =
-      route.surface === "admin" ||
-      req.nextUrl.pathname === "/admin" ||
-      req.nextUrl.pathname.startsWith("/admin/");
-    if (adminRequest && req.method !== "GET" && req.method !== "HEAD") {
+    // Gate reads and writes before private pages or actions can execute.
+    if (adminRequest) {
       const { data, error } = await supabaseAdmin
         .from("users")
-        .select("role")
+        .select("id, role")
         .eq("supabase_auth_user_id", userId)
         .maybeSingle();
-      if (error || !isAdminRole(data?.role))
+      if (
+        error ||
+        (!isOwnerUser(data) &&
+          !(
+            (await storedWeosRole(data)) === "blaze" &&
+            route.surface === "admin" &&
+            ["/community", "/admin/community", "/"].includes(
+              req.nextUrl.pathname,
+            ) &&
+            ["GET", "HEAD"].includes(req.method)
+          ))
+      )
         return finish(
           NextResponse.json(
-            { error: "Admin access required" },
+            { error: "Owner access required" },
             { status: 403 },
           ),
         );
     }
   }
 
+  // Beacon preview is read-only and never accepts a client-supplied identity.
+  let previewPath: string | null = null;
+  if (
+    route.surface === "app" &&
+    user?.email_confirmed_at &&
+    !["/api/weos/preview", "/api/weos/preview/chat"].includes(
+      req.nextUrl.pathname,
+    )
+  ) {
+    const account = await supabaseAdmin
+      .from("users")
+      .select("id,role")
+      .eq("supabase_auth_user_id", user.id)
+      .maybeSingle();
+    if (account.error)
+      return finish(
+        NextResponse.json(
+          { error: "Role lookup unavailable" },
+          { status: 503 },
+        ),
+      );
+    let actual;
+    try {
+      actual = await storedWeosRole(account.data);
+    } catch {
+      return finish(
+        NextResponse.json(
+          { error: "Role lookup unavailable" },
+          { status: 503 },
+        ),
+      );
+    }
+    const effective = effectiveRole(
+      actual,
+      req.cookies.get(PREVIEW_COOKIE)?.value,
+    );
+    const authInfrastructure =
+      req.nextUrl.pathname.startsWith("/auth/") ||
+      req.nextUrl.pathname.startsWith("/sign-");
+    if (
+      !authInfrastructure &&
+      !memberDestinationAllowed(effective, req.nextUrl.pathname)
+    ) {
+      if (
+        req.nextUrl.pathname.startsWith("/api/") ||
+        !["GET", "HEAD"].includes(req.method)
+      )
+        return finish(
+          NextResponse.json({ error: "Role access required" }, { status: 403 }),
+        );
+      return finish(
+        NextResponse.redirect(
+          actual === "guest" ? "https://whatelz.ai" : new URL("/", req.url),
+        ),
+      );
+    }
+    if (actual !== effective && !authInfrastructure) {
+      if (!["GET", "HEAD"].includes(req.method))
+        return finish(
+          NextResponse.json(
+            { error: "Role preview is read-only" },
+            { status: 403 },
+          ),
+        );
+      if (req.nextUrl.pathname.startsWith("/api/"))
+        return finish(
+          NextResponse.json(
+            { error: "Data is unavailable in role preview" },
+            { status: 403 },
+          ),
+        );
+      previewPath = req.nextUrl.pathname;
+    }
+  }
+
+  // A verified sign-in is not member activation. Check the stored tree link
+  // before rendering app pages or executing actions on them.
+  const appPage = route.surface === "app" && route.protect;
+  if (
+    appPage &&
+    (req.nextUrl.pathname !== "/pending-assignment" ||
+      !["GET", "HEAD"].includes(req.method))
+  ) {
+    try {
+      const account = await supabaseAdmin
+        .from("users")
+        .select("id")
+        .eq("supabase_auth_user_id", user!.id)
+        .maybeSingle();
+      if (account.error) throw Error("Account lookup unavailable");
+      const assigned =
+        account.data && (await hasTeamAssignment(account.data.id));
+      if (!assigned) {
+        if (req.method !== "GET" && req.method !== "HEAD")
+          return finish(
+            NextResponse.json(
+              { error: "tree_assignment_required" },
+              { status: 403 },
+            ),
+          );
+        return finish(
+          NextResponse.redirect(new URL("/pending-assignment", req.url)),
+        );
+      }
+    } catch {
+      return finish(
+        NextResponse.json(
+          { error: "Member access could not be checked" },
+          { status: 503 },
+        ),
+      );
+    }
+  }
+
   const headers = new Headers(req.headers);
   // Always overwrite this header; callers cannot choose their shell.
   headers.set("x-whatelz-surface", route.surface);
-  const response = route.rewrite
-    ? NextResponse.rewrite(
-        new URL(route.rewrite + req.nextUrl.search, req.url),
-        { request: { headers } },
-      )
-    : NextResponse.next({ request: { headers } });
+  headers.delete("x-weos-preview-path");
+  if (previewPath) headers.set("x-weos-preview-path", previewPath);
+  const response = previewPath
+    ? NextResponse.rewrite(new URL("/role-preview", req.url), {
+        request: { headers },
+      })
+    : route.rewrite
+      ? NextResponse.rewrite(
+          new URL(route.rewrite + req.nextUrl.search, req.url),
+          { request: { headers } },
+        )
+      : NextResponse.next({ request: { headers } });
   if (route.surface !== "public")
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   return finish(response);

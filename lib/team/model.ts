@@ -5,6 +5,7 @@ const personSchema = z.object({
   team_id: z.uuid(),
   display_name: z.string().trim().min(1).max(120),
   sponsor_person_id: z.uuid().nullable(),
+  abo_status: z.enum(["Unknown", "ABO", "Not ABO"]).optional(),
   context: z.string().trim().max(240).nullable(),
   current_level: z.string().trim().max(120).nullable().optional(),
   next_goal: z.string().trim().max(240).nullable().optional(),

@@ -52,3 +52,6 @@ skills-lock.json
 
 # Private team imports contain real people and sponsor links.
 /supabase/private/
+
+# Generated poster originals are retained locally and in private event storage.
+/output/posters/

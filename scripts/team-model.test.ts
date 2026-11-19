@@ -12,6 +12,7 @@ import {
   layoutTeamNodes,
   NODE_HEIGHT,
   NODE_WIDTH,
+  teamNodeNames,
 } from "../lib/team/node-layout";
 
 const teamId = randomUUID();
@@ -165,5 +166,45 @@ test("member and manager serialization hides contact and private progress notes 
     );
     assert.ok(result.every((person) => person.next_goal === "Example goal"));
     assert.ok(result.every((person) => person.abo_number === "00012345"));
+  }
+});
+
+test("shared pairs stay one identity with two name circles and enough layout space", () => {
+  const mixed = people.map((person, index) => ({
+    ...person,
+    display_name:
+      index % 3 === 0
+        ? `Partner ${index} & Companion ${index}`
+        : person.display_name,
+  }));
+  const layout = layoutTeamNodes(mixed);
+  assert.equal(layout.nodes.length, mixed.length);
+  assert.equal(layout.edges.length, mixed.length - 1);
+  for (const node of layout.nodes) {
+    assert.equal(
+      node.names.length,
+      node.person.display_name.includes("&") ? 2 : 1,
+    );
+    assert.ok(node.width >= NODE_WIDTH);
+    assert.ok(node.x >= 0 && node.x + node.width <= layout.width);
+    for (const other of layout.nodes) {
+      if (node === other || node.y !== other.y) continue;
+      assert.ok(
+        node.x + node.width <= other.x || other.x + other.width <= node.x,
+      );
+    }
+  }
+  for (const { parent, child } of layout.edges) {
+    assert.ok(parent.y + NODE_HEIGHT < child.y);
+    assert.equal(child.person.sponsor_person_id, parent.person.id);
+  }
+  assert.deepEqual(teamNodeNames("First Person & Second Person"), [
+    "First Person",
+    "Second Person",
+  ]);
+  assert.deepEqual(teamNodeNames("First ＆ Second"), ["First", "Second"]);
+  assert.deepEqual(teamNodeNames("Single Person"), ["Single Person"]);
+  for (const name of ["First &", "& Second", "A & B & C"]) {
+    assert.deepEqual(teamNodeNames(name), [name]);
   }
 });

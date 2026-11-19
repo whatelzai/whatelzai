@@ -1,7 +1,7 @@
 "use client";
 import { adminUrl } from "@/lib/admin-url";
 
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 
 // Tab bar for /admin/profile/[section]. Each tab is a real URL so
 // deep-linking works and section-swaps don't re-mount the whole shell.
@@ -16,7 +16,7 @@ export type ProfileTab =
 // Tabs link to the existing per-section admin URLs — no new URL scheme.
 // This keeps direct links stable and avoids duplicating list-render logic.
 const TABS: readonly { key: ProfileTab; label: string; href: string }[] = [
-  { key: "about", label: "About", href: "/admin/profile" },
+  { key: "about", label: "About", href: "/admin/ai-business/profile" },
   { key: "projects", label: "Projects", href: "/admin/projects" },
   { key: "career", label: "Career", href: "/admin/career" },
   { key: "hackathons", label: "Hackathons", href: "/admin/hackathons" },

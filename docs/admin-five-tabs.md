@@ -1,0 +1,203 @@
+# Admin five-tab shell
+
+Personal | Chat | Home | Calendar | Profile. Mobile Home is a yellow circular
+anchor raised 23px, as requested in the follow-up reference; other destinations
+retain aligned labels and quiet yellow selection. Desktop keeps the five links
+in its header. Home is the existing Overview route. Profile reuses preferences
+and release history. Old /settings links still work; public website profile tools
+were preserved under /admin/ai-business/profile, with their links updated.
+
+## Owner Chat
+
+/admin/chat and /api/admin/chat are sole-owner surfaces. The endpoint verifies
+same origin/allowed Admin host and owner before credential reads. The encrypted
+existing OpenAI connection stays server-side; model is fixed to gpt-6.1-sol.
+No member AI endpoint, allowance, credential or conversation table is altered.
+Requests permit only user/assistant roles, at most20messages/24,000characters,
+6,000 per message and40KB body; replies cap at2,000tokens with60s provider timeout.
+Existing process-local rate limiter is used (best-effort, not a global budget).
+Provider store:false. One tiny live provider smoke test returned successfully.
+
+This first chat is ephemeral: navigation/reload clears it. The UI says Not saved.
+No calendar/EMDEE/email context or tools are supplied to the model; it cannot
+claim to read or mutate those sources. The composer states that API credits are
+used. No inference happens on page load.
+
+## Calendar
+
+Owner-only read view merges dated Whatelz event records, explicit Network Marketing
+planning tables and company sprint tables from the two allowlisted EMDEE docs,
+plus existing private community-calendar imports. No dates are hardcoded in UI.
+Network and career reads were live-verified to project7and11ranges respectively.
+Only explicit table ranges and the dated guest-planning heading are projected;
+no background narrative or guest names are exposed in the calendar payload.
+All-day ends are inclusive; imported ICS exclusive ends subtract1ms. Timed imports
+show Singapore start time. Company quarters retain source labels, including Q1
+provisional on Sprint72.
+
+Calendar is one continuous Monday–Sunday seven-column grid, starting at the current
+Singapore week and ending strictly on 31 December 2029. Eight-week batches load
+progressively with a keyboard-accessible fallback. Date jump and Today shortcuts
+retain quick navigation. Month shades use spring green, summer gold, autumn earth
+and winter blue; explicit dates, month names, year markers and workspace icons
+preserve meaning in greyscale. Tap a day for complete event details; Back closes
+the dialog before navigating. No Day/Week/Month/Quarter/Year mode selector.
+Community recurrence is bounded from the current Singapore year through 2029
+and that coverage is displayed. Imported records paginate500at a time and require
+snapshot count agreement. Other source failures remain explicit, never false zeros.
+This is not a new event editor, a Google sync, an RSVP, or an attendance assertion.
+Shared events are not duplicated across lanes; source identity is preserved.
+
+## Verification
+
+23 targeted tests cover navigation, focus/Back, owner gating, origin/model/input
+bounds, provider request, date windows and year/quarter boundaries. TypeScript,
+ESLint and production build must pass before release. Synthetic real-component
+browser fixture used for390/768/1440px review, including dark mode. No authenticated
+production browser session or physical Vivo test is claimed. Fixtures are removed.
+Taste app-screen guidance used with existing type and user-requested yellow chrome
+preserved over the dealt achromatic styling. No dependency/schema changes.
+
+## Compact shell and Profile update
+
+Repeated main-tab headings remain screen-reader accessible but are visually hidden.
+The shared Back boundary sits outside the animated page content, in a compact
+sticky row below the measured header, only for deeper routes. The document keeps
+scrolling normally; header and mobile dock retain their positions. In installed
+phone mode Admin uses the existing guarded pull-refresh controller with an Admin
+root: it does not intercept controls, editing, active requests, open dialogs, pinch
+or nested scrolling. Regular browser pages retain native refresh. This refreshes
+server content rather than reloading or signing out. Physical Vivo gesture QA
+remains a device check.
+
+Profile follows weOS's language pills, owner avatar/identity and grouped surfaces,
+within a760px maximum width. Only existing Admin preference controls are used;
+member passes, tiers and reset credits are not copied into the owner account.
+Appearance, text size, push options, scheduling, install and sign-out remain.
+Synthetic profile/browser previews contain no private account data and are removed
+before release.
+
+## Focus horizons checkpoint
+
+Shared WorkspaceFocus leads Home, AI Business, Network Marketing and Day Job.
+Today includes accepted open/blocked/waiting tasks due today or overdue and events
+covering the Singapore date. One full-width snap carousel advances every6.5seconds
+only with multiple items, an active tab and no reduced-motion preference. Hover
+pauses; pointer/keyboard interaction stops automatic rotation until Play. Manual
+arrows and touch scrolling remain. A single item has no rotation controls.
+
+This Week contains only items starting/due tomorrow through Sunday, with three
+visible and remaining entries under View more. Ongoing company sprints remain in
+Today rather than repeating as future starts. Source failures stay explicit;
+calendar records never become accepted tasks or attendance assertions.
+
+Overview additionally projects read-only Thursday21:00 next-week planning and
+Sunday21:00 closeout checkpoints. Sprint-001 starts2026-11-16; planning references
+the next sprint and closeout the current sprint. Individual epics exclude these
+administrative reminders. This creates no automation or database task.
+
+Focus detail routes under /admin/focus/[id] and each epic's /focus/[id] retain
+source identity in encoded routes, with short deterministic display references
+(not new sequential database IDs). Owner verification precedes reads; task reads
+filter verified owner plus UUID and retain completed records. Events are projected
+through existing owner-only sources; routine dates must match their weekday.
+Epic detail wrappers reject a mismatched lane. Source tools remain available.
+Breadcrumbs use the originating epic and Today/Week anchor. Deep-link Back falls
+back to a real root, never a nonexistent focus index. Main tabs retain no Back row.
+
+The unused duplicate task read in briefing sources was removed. Directories,
+workspace shortcuts, Rhythm, lazy Suspense and existing permissions remain.
+No schema, dependency, provider call or automatic task acceptance changes.
+
+## Three-tab Admin, Personal epic and saved Chat — 2026-11-18
+
+The main dock is Chat | Home | Profile. Personal is the fourth epic beside AI Business,
+Network Marketing and Day Job, with scoped Today/Week and detail pages. Overview
+combines all four. Thursday planning and Sunday closeout now belong to Personal.
+Calendar remains accessible in the workspace selector. Personal schedules retain
+explicit saved choices.
+
+Admin Chat saves owner-scoped threads/turns in private Supabase tables and uses the
+existing server connection with gpt-6.1-sol, provider store:false. The verified task
+snapshot is available; calendar, email and EMDEE are not connected to this chat.
+Task changes are stored proposals until the user presses Apply task. A service-only
+RPC validates owner, stored proposal, revision and completion invariants, with
+idempotent receipts. Pending turns serialize per conversation; retries retain the
+saved message and request identity. History lists the latest50 conversations;
+each conversation supports100 turns and direct thread links remain valid.
+
+A daily21:00 Personal focus reminder opens saved Chat for idea review. This is a
+visible reminder only: no new scheduled AI reconciliation job or EMDEE write.
+The header bell has a private inbox with unread marks, mark-all-read and soft
+archive. It imports release notes and confirmed registrations from the last28days;
+future attempted push deliveries also persist notices before sending. It does not claim a complete archive of historical push notifications.
+
+Migration20261118053000 is additive and applied. New tables deny browser roles;
+reads/writes use verified owner endpoints, same-origin mutation guards and service
+credentials. Preserve saved conversations and notification history on rollback.
+
+## Missing resources
+
+Admin's nested not-found boundary handles missing records. An unmatched-path catch-all
+keeps unknown Admin URLs under the existing owner-gated layout rather than falling
+through to the public404. The root fallback also recognizes Admin hosts/surface.
+Recovery links are same-origin and return to a known epic root or Home, never an
+arbitrary parent, public Playbook or browser auth history. Resource unavailability
+remains a retryable error; absent records remain not-found. No access controls change.
+
+## Latest Rhythm entries and inline push control — 2026-11-19
+
+Home and Personal share Morning | Night | Weekly | Calendar shortcuts. The first
+three open /admin/rhythm/[kind], showing the latest canonical saved Notes rather
+than requiring a current-day/previous-week entry. Owner-scoped private snapshots
+retain the last known good content through connection failures; readers show a
+reconnect action when the source cannot be refreshed. No Unavailable status on
+the shortcuts. Red dots plus accessible Unread labels compare exact source version
+against owner read_version; opening a visible reader posts a same-origin receipt.
+Stale receipts cannot mark a newer version read. Home and the bell refresh on the
+receipt and periodically while visible.
+
+The five-minute routine cron refreshes canonical hub-linked entries, creates a
+version-deduplicated inbox notice atomically with a new snapshot, and delivers
+opted-in device pushes through existing durable leases. No AI inference. Device
+opt-in time suppresses historical catch-up; legacy push receipts suppress repeat
+alerts for already delivered entries. A source refresh requires a valid EMDEE
+connection. Reconnect remains necessary after its30-day authorization expires;
+this change never reuses expired credentials or invents refresh-token support.
+The transport uses EMDEE's compact read/write action envelope, preserving exact
+missing-document handling and guarded writes.
+
+The notification dialog mounts the existing permission-aware push switch directly,
+with per-device enable/disable and explicit blocked/unsupported states. Profile
+retains its full options. Migration20261119004500 is applied: private RLS table and
+service-only save RPC, atomic notification dedupe and older-source rejection.
+Latest Morning/Evening2026-11-18 and Weekly2026-W42 were read through the connected
+EMDEE tool and copied to Admin as a bootstrap while the stored app connection is
+expired. These are real saved entries, not fabricated current-day briefs.
+
+## Calendar sheet — 2026-11-19
+
+Calendar is a secondary page with lean sticky Back and Home > Calendar breadcrumbs.
+The main header dropdown filters via validated ?space values without leaving the
+calendar. Header theme and optional epic breadcrumb match; Overview shows all.
+Filter changes preserve scroll even when the selector's overlay is unwound, and
+scheduled epic switching does not interrupt Calendar. Remove redundant local filters,
+Today and date-jump controls. Keep seven Monday-first columns, source data, day dialogs,
+seasonal month shades, four-digit years and lazy scrolling through2029-12-31.
+
+Cells are square and contiguous, with faint vertical/horizontal rules and equal
+widths from the left viewport edge to the right, including desktop. The current day
+keeps its date circle; mobile cells show compact event titles alongside icons.
+Source warnings/recurrence coverage are retained in a collapsed footer. Changing
+scope changes the view only; existing owner gates are unchanged.
+
+
+## Calendar pinned weekdays correction — 2026-11-19
+
+Back/breadcrumbs and weekdays share CalendarChrome outside the overflow main.
+Only their combined parent is sticky below the measured header, so weekdays never
+float over date cells or move with the calendar content. Retain all seven aligned
+columns. A week belongs to its Monday start year; never render a combined year label.
+The owner defines seasons as quarters: Spring Jan–Mar, Summer Apr–Jun, Autumn Jul–Sep,
+Winter Oct–Dec, with three month shades per palette. This supersedes geographic season
+mapping. Verified real scroll geometry at 360/768/1440px, year boundary, and 34 tests.

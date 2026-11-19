@@ -1,6 +1,6 @@
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
@@ -113,7 +113,6 @@ export default async function TemplateDetailPage({
             <CopyButton text={publicUrl} label="Copy link" />
             <Link
               href={publicUrl}
-              target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-zinc-300 px-4 py-2 font-mono text-xs uppercase tracking-widest text-zinc-700 hover:border-zinc-900 hover:text-zinc-900"
             >

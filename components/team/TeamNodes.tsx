@@ -8,6 +8,7 @@ import {
   layoutTeamNodes,
   NODE_HEIGHT,
   NODE_WIDTH,
+  PAIR_OVERLAP,
 } from "@/lib/team/node-layout";
 
 export function TeamNodes({
@@ -16,14 +17,12 @@ export function TeamNodes({
   onSelect,
   editingId,
   quickEdit = false,
-  fitOnMount = false,
 }: {
   people: TeamPerson[];
   selectedId: string;
   onSelect?: (id: string) => void;
   editingId?: string | null;
   quickEdit?: boolean;
-  fitOnMount?: boolean;
 }) {
   const layout = useMemo(() => layoutTeamNodes(people), [people]);
   const viewport = useRef<HTMLDivElement>(null);
@@ -36,17 +35,24 @@ export function TeamNodes({
   const fitted = useRef(false);
   useEffect(() => {
     const element = viewport.current;
-    if (!fitOnMount || fitted.current || !element) return;
+    if (fitted.current || !element) return;
     fitted.current = true;
+    const selected = layout.nodes.find((node) => node.person.id === selectedId);
     updateCamera(
-      fitNodeCamera(
-        layout.width,
-        layout.height,
-        element.clientWidth,
-        element.clientHeight,
-      ),
+      !selected
+        ? fitNodeCamera(
+            layout.width,
+            layout.height,
+            element.clientWidth,
+            element.clientHeight,
+          )
+        : {
+            zoom: 1,
+            x: element.clientWidth / 2 - selected.x - selected.width / 2,
+            y: element.clientHeight / 2 - selected.y - NODE_HEIGHT / 2,
+          },
     );
-  }, [fitOnMount, layout.width, layout.height, updateCamera]);
+  }, [layout, selectedId, updateCamera]);
   const { zoom } = camera;
   const zoomAt = (value: number) =>
     zoomCamera(value, {
@@ -60,13 +66,12 @@ export function TeamNodes({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p id="team-node-help" className="text-xs text-zinc-500">
-          Sponsors sit above their downlines. Drag or scroll to explore. Pinch
-          with two fingers to zoom.
+        <p id="team-node-help" className="sr-only">
+          Drag to move the network. Pinch to zoom.
           {quickEdit
-            ? " Tap once to edit. Tap again or double-click to open the profile."
+            ? " Select once to edit. Select again to open the profile."
             : onSelect
-              ? " Select a person to change perspective."
+              ? " Select a person for details."
               : ""}
         </p>
         <div className="flex items-center gap-2" aria-label="Node view zoom">
@@ -117,12 +122,19 @@ export function TeamNodes({
             className={controlClass}
             onClick={() => {
               const element = viewport.current;
+              const selected = layout.nodes.find(
+                (node) => node.person.id === selectedId,
+              );
               updateCamera({
                 zoom: 1,
-                x: ((element?.clientWidth ?? layout.width) - layout.width) / 2,
+                x:
+                  (element?.clientWidth ?? layout.width) / 2 -
+                  (selected
+                    ? selected.x + selected.width / 2
+                    : layout.width / 2),
                 y:
-                  ((element?.clientHeight ?? layout.height) - layout.height) /
-                  2,
+                  (element?.clientHeight ?? layout.height) / 2 -
+                  (selected ? selected.y + NODE_HEIGHT / 2 : layout.height / 2),
               });
             }}
           >
@@ -160,67 +172,40 @@ export function TeamNodes({
               aria-hidden="true"
               className="pointer-events-none absolute inset-0"
             >
-              {layout.edges.map(({ parent, child }) => {
-                const startX = parent.x + NODE_WIDTH / 2;
-                const startY = parent.y + NODE_HEIGHT;
-                const endX = child.x + NODE_WIDTH / 2;
-                const endY = child.y;
-                const middleY = (startY + endY) / 2;
-                return (
-                  <path
-                    key={child.person.id}
-                    d={`M ${startX} ${startY} V ${middleY} H ${endX} V ${endY}`}
-                    fill="none"
-                    stroke="#a1a1aa"
-                    strokeWidth={2}
-                  />
-                );
-              })}
+              {layout.edges.map(({ parent, child }) => (
+                <line
+                  key={child.person.id}
+                  x1={parent.x + parent.width / 2}
+                  y1={parent.y + NODE_HEIGHT / 2}
+                  x2={child.x + child.width / 2}
+                  y2={child.y + NODE_HEIGHT / 2}
+                  stroke="#a1a1aa"
+                  strokeWidth={1.5}
+                />
+              ))}
             </svg>
             <ul
               aria-label="People in this team view"
               className="m-0 list-none p-0"
             >
-              {layout.nodes.map(({ person, x, y }) => {
+              {layout.nodes.map(({ person, names, width, x, y }) => {
                 const selected = person.id === selectedId;
                 const relation = relationshipTo(people, selectedId, person.id);
-                const content = (
-                  <>
-                    <span className="block truncate text-xs capitalize text-zinc-500">
-                      {selected ? "Selected person" : relation}
-                    </span>
-                    <span className="mt-2 block line-clamp-2 break-words text-base font-semibold leading-snug text-zinc-900">
-                      {person.display_name}
-                    </span>
-                    {person.abo_number ? (
-                      <span className="mt-1 block text-xs font-medium text-zinc-600">
-                        ABO {person.abo_number}
-                      </span>
-                    ) : null}
-                    {person.context && !person.abo_number ? (
-                      <span className="mt-1 block truncate text-xs text-zinc-500">
-                        {person.context}
-                      </span>
-                    ) : null}
-                    {person.current_level ? (
-                      <span
-                        className="mt-2 block truncate text-xs font-medium text-zinc-700"
-                        title={person.current_level}
-                      >
-                        Level: {person.current_level}
-                      </span>
-                    ) : null}
-                    {person.next_goal ? (
-                      <span
-                        className="mt-1 block truncate text-xs text-zinc-600"
-                        title={person.next_goal}
-                      >
-                        Next: {person.next_goal}
-                      </span>
-                    ) : null}
-                  </>
-                );
-                const cardClass = `block h-full w-full rounded-xl border-2 px-4 py-3 text-left ${selected ? "border-yellow-400 bg-yellow-50" : "border-zinc-200 bg-white"}`;
+                const content = names.map((name, index) => (
+                  <span
+                    key={index}
+                    className={`flex shrink-0 items-center justify-center rounded-full border-2 px-3 text-center text-[13px] font-semibold leading-tight text-zinc-900 ${selected ? "border-yellow-400 bg-yellow-50" : "border-zinc-300 bg-white"}`}
+                    style={{
+                      width: NODE_WIDTH,
+                      height: NODE_HEIGHT,
+                      marginLeft: index ? -PAIR_OVERLAP : 0,
+                    }}
+                  >
+                    <span className="line-clamp-3 break-words">{name}</span>
+                  </span>
+                ));
+                const cardClass =
+                  "flex h-full w-full items-center rounded-full text-left";
                 return (
                   <li
                     key={person.id}
@@ -228,7 +213,7 @@ export function TeamNodes({
                     style={{
                       left: x,
                       top: y,
-                      width: NODE_WIDTH,
+                      width,
                       height: NODE_HEIGHT,
                     }}
                   >
@@ -238,14 +223,27 @@ export function TeamNodes({
                         title={[person.display_name, person.context]
                           .filter(Boolean)
                           .join(" — ")}
+                        aria-label={person.display_name}
+                        aria-describedby={`team-node-${person.id}-description`}
                         aria-pressed={selected}
                         aria-expanded={
                           quickEdit ? editingId === person.id : undefined
                         }
                         onClick={() => onSelect(person.id)}
-                        className={`${cardClass} hover:border-yellow-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500`}
+                        className={`${cardClass} hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500`}
                       >
                         {content}
+                        <span
+                          id={`team-node-${person.id}-description`}
+                          className="sr-only"
+                        >
+                          {[
+                            selected ? "Selected person" : relation,
+                            person.current_level,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </span>
                       </button>
                     ) : (
                       <div className={cardClass}>{content}</div>
@@ -257,17 +255,15 @@ export function TeamNodes({
           </div>
         </div>
       </div>
-      {!quickEdit && focus?.context ? (
-        <p className="text-sm text-zinc-600">
-          {focus.display_name}: {focus.context}
-        </p>
-      ) : null}
-      {!quickEdit &&
-      (focus?.current_level || focus?.next_goal || focus?.progress_notes) ? (
-        <div className="space-y-1 rounded-lg border border-zinc-200 bg-white p-3 text-sm text-zinc-600">
+      {!quickEdit && focus ? (
+        <div className="space-y-1 text-sm text-zinc-600" aria-live="polite">
           <p className="font-medium text-zinc-900">{focus.display_name}</p>
-          <p>Current level: {focus.current_level || "Not recorded"}</p>
-          <p>Next goal: {focus.next_goal || "Not recorded"}</p>
+          {focus.context ? <p>{focus.context}</p> : null}
+          {focus.abo_number ? <p>ABO {focus.abo_number}</p> : null}
+          {focus.current_level ? (
+            <p>Current level: {focus.current_level}</p>
+          ) : null}
+          {focus.next_goal ? <p>Next goal: {focus.next_goal}</p> : null}
           {focus.progress_notes ? (
             <p className="whitespace-pre-wrap">{focus.progress_notes}</p>
           ) : null}

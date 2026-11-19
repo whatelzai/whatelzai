@@ -1,13 +1,20 @@
-import type { Metadata } from "next";
+import { weosAccess } from "@/lib/weos-role-server";
+import { WeosRoleProvider } from "@/components/fcos/WeosRoleContext";
+import { THEME_INIT_SCRIPT } from "@/lib/theme-preference";
+import { getMemberLanguage } from "@/lib/fcos/language-server";
+import { MemberLanguageProvider } from "@/components/fcos/MemberLanguage";
+import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { siteSurface } from "@/lib/domain-routing";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import "./editorial.css";
 import "./themes.css";
+import "./offers.css";
 import { ShellProvider } from "@/components/shell/ShellProvider";
 import { getSiteIdentity } from "@/lib/site-identity";
-import { ensureUserRow, isAdminRole } from "@/lib/users";
+import { ensureUserRow } from "@/lib/users";
+import { isOwnerUser } from "@/lib/admin-policy";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +34,12 @@ const fraunces = Fraunces({
   axes: ["SOFT", "opsz"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 const SITE_URL = "https://whatelz.ai";
 const SITE_NAME = "whatelz.ai";
 
@@ -35,7 +48,48 @@ export async function generateMetadata(): Promise<Metadata> {
   const surface = siteSurface(requestHeaders.get("host") ?? "");
   if (surface !== "public") {
     return {
-      title: surface === "admin" ? "Whatelz Admin" : "Whatelz Members",
+      title: surface === "admin" ? "Whatelz Admin" : "weOS",
+      ...(surface === "app"
+        ? {
+            applicationName: "weOS",
+            manifest: "/fcos/app.webmanifest",
+            appleWebApp: {
+              capable: true,
+              title: "weOS",
+              statusBarStyle: "default" as const,
+            },
+            icons: {
+              icon: [
+                { url: "/weos/icon-v1.svg", type: "image/svg+xml" },
+                {
+                  url: "/weos/icon-192-v1.png",
+                  sizes: "192x192",
+                  type: "image/png",
+                },
+              ],
+              apple: "/weos/icon-180-v1.png",
+            },
+          }
+        : {
+            applicationName: "Whatelz Admin",
+            manifest: "/admin-pwa/app.webmanifest",
+            appleWebApp: {
+              capable: true,
+              title: "Whatelz Admin",
+              statusBarStyle: "default" as const,
+            },
+            icons: {
+              icon: [
+                { url: "/brand/icon.svg", type: "image/svg+xml" },
+                {
+                  url: "/admin-pwa/icon-192-v2.png",
+                  sizes: "192x192",
+                  type: "image/png",
+                },
+              ],
+              apple: "/admin-pwa/icon-180-v2.png",
+            },
+          }),
       robots: { index: false, follow: false },
     };
   }
@@ -72,6 +126,13 @@ export async function generateMetadata(): Promise<Metadata> {
       "EMDEE knowledge graph",
     ],
     applicationName: SITE_NAME,
+    icons: {
+      icon: [
+        { url: "/brand/icon.svg", type: "image/svg+xml" },
+        { url: "/brand/icon-32.png", sizes: "32x32", type: "image/png" },
+      ],
+      apple: "/brand/icon-180.png",
+    },
     authors: [{ name: s.owner_name, url: SITE_URL }],
     creator: s.owner_name,
     openGraph: {
@@ -112,12 +173,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// Upserts the current Clerk user into the users table on every request and returns
-// whether they're an admin. New sign-ins land as 'unauthorized' by default.
+// Syncs the verified Supabase account and exposes admin navigation only to
+// the configured owner. New sign-ins never acquire administrative access.
 async function getIsAdmin(): Promise<boolean> {
   try {
     const user = await ensureUserRow();
-    return isAdminRole(user?.role);
+    return isOwnerUser(user);
   } catch {
     return false;
   }
@@ -128,72 +189,92 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const requestHeaders = await headers();
   const surface = siteSurface(requestHeaders.get("host") ?? "");
-  const [isAdmin, s] = await Promise.all([getIsAdmin(), getSiteIdentity()]);
+  const memberLanguage = surface === "app" ? await getMemberLanguage() : "en";
+  const role = surface !== "public" ? (await weosAccess()).role : "guest";
+  // The member shell uses neither public identity nor the public admin-link flag.
+  // Keep its loading boundary free of these reads; protected pages verify identity.
+  const [isAdmin, s] =
+    surface === "app"
+      ? ([false, null] as const)
+      : await Promise.all([getIsAdmin(), getSiteIdentity()]);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Person",
-        "@id": `${SITE_URL}/#person`,
-        name: s.owner_name,
-        url: SITE_URL,
-        jobTitle: "AI Solopreneur & Builder",
-        description:
-          s.meta_description ?? "AI engineer and founder building AI systems.",
-        sameAs: [
-          "https://www.instagram.com/whatelz.ai/",
-          s.linkedin_url,
-          "https://www.youtube.com/@whatelzai",
-          "https://medium.com/@whatelz.ai",
-          "https://github.com/whatelzai",
-        ].filter(Boolean),
-        knowsAbout: [
-          "Artificial Intelligence",
-          "AI Systems Engineering",
-          "Large Language Models",
-          "Retrieval-Augmented Generation",
-          "Next.js",
-          "TypeScript",
-          "Supabase",
-          "AI Training",
+  const jsonLd = s
+    ? {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": `${SITE_URL}/#person`,
+            name: s.owner_name,
+            url: SITE_URL,
+            jobTitle: "AI Solopreneur & Builder",
+            description:
+              s.meta_description ??
+              "AI engineer and founder building AI systems.",
+            sameAs: [
+              "https://www.instagram.com/whatelz.ai/",
+              s.linkedin_url,
+              "https://www.youtube.com/@whatelzai",
+              "https://medium.com/@whatelz.ai",
+              "https://github.com/whatelzai",
+            ].filter(Boolean),
+            knowsAbout: [
+              "Artificial Intelligence",
+              "AI Systems Engineering",
+              "Large Language Models",
+              "Retrieval-Augmented Generation",
+              "Next.js",
+              "TypeScript",
+              "Supabase",
+              "AI Training",
+            ],
+          },
+          {
+            "@type": "WebSite",
+            "@id": `${SITE_URL}/#website`,
+            url: SITE_URL,
+            name: SITE_NAME,
+            description:
+              "The solopreneur’s playbook. Money Mindset × AI Skillset.",
+            author: { "@id": `${SITE_URL}/#person` },
+          },
         ],
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        url: SITE_URL,
-        name: SITE_NAME,
-        description: "The solopreneur’s playbook. Money Mindset × AI Skillset.",
-        author: { "@id": `${SITE_URL}/#person` },
-      },
-    ],
-  };
+      }
+    : null;
 
   return (
     <html
-      lang="en"
+      data-theme="light"
+      lang={memberLanguage === "zh" ? "zh-Hans" : "en"}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var t;try{t=localStorage.getItem('whatelz-theme-v1')}catch(e){}document.documentElement.dataset.theme=t==='light'||t==='dark'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()`,
+            __html: THEME_INIT_SCRIPT,
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        {jsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+        )}
       </head>
       <body className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
         <ShellProvider
           isAdmin={isAdmin}
-          ownerName={s.owner_name}
+          ownerName={s?.owner_name ?? "weOS"}
           surface={surface}
         >
-          {children}
+          {surface === "app" ? (
+            <MemberLanguageProvider language={memberLanguage}>
+              <WeosRoleProvider role={role}>{children}</WeosRoleProvider>
+            </MemberLanguageProvider>
+          ) : (
+            <WeosRoleProvider role={role}>{children}</WeosRoleProvider>
+          )}
         </ShellProvider>
       </body>
     </html>

@@ -1,30 +1,98 @@
-import Link from "next/link";
-
+"use client";
+import { useWeosRole } from "@/components/fcos/WeosRoleContext";
+import { canUseBusinessTools } from "@/lib/weos-roles";
+import { useMemberLanguage } from "@/components/fcos/MemberLanguage";
+import Link from "@/components/fcos/MemberLink";
+import {
+  CalendarDays,
+  House,
+  MessageCircle,
+  UsersRound,
+  Library,
+  UserRound,
+} from "lucide-react";
+import { WeosBrand } from "@/components/brand/WeosBrand";
+import { memberTab } from "@/lib/fcos/navigation";
 const items = [
-  { href: "/", label: "Home" },
-  { href: "/team", label: "My team" },
-  { href: "/catalogue", label: "Products" },
-  { href: "/calendar", label: "Calendar" },
-  { href: "/culture", label: "Culture" },
-  { href: "/leads", label: "Leads" },
+  { href: "/leads", label: "Baobeis", icon: UsersRound },
+  { href: "/assistant", label: "Chat", icon: MessageCircle },
+  { href: "/", label: "Home", icon: House },
+  { href: "/resources", label: "Resources", icon: Library },
+  { href: "/profile", label: "Profile", icon: UserRound },
 ];
-
-export function MemberNav({ current }: { current: string }) {
+export function MemberNav({
+  current,
+  compact = false,
+  persistent = false,
+}: {
+  current: string;
+  compact?: boolean;
+  persistent?: boolean;
+}) {
+  const { t } = useMemberLanguage();
+  const role = useWeosRole();
+  const visibleItems = canUseBusinessTools(role)
+    ? items
+    : [
+        { href: "/calendar", label: "Events", icon: CalendarDays },
+        ...items.slice(1),
+      ];
+  const selected = current === "/calendar" ? "/calendar" : memberTab(current);
   return (
     <nav
-      aria-label="Member workspace"
-      className="flex flex-wrap gap-2 border-b border-zinc-200 pb-4 text-sm"
+      aria-label={t("weOS workspace")}
+      data-fcos-nav
+      data-fcos-persistent-nav={persistent || undefined}
+      className={
+        compact
+          ? "shrink-0 md:mb-2 md:border-b md:border-zinc-200 md:pb-3"
+          : "mb-2 border-b border-zinc-200 pb-4"
+      }
     >
-      {items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          aria-current={current === item.href ? "page" : undefined}
-          className={`rounded-lg px-3 py-2 ${current === item.href ? "bg-yellow-100 font-semibold text-zinc-900" : "text-zinc-600 hover:bg-zinc-100"}`}
-        >
-          {item.label}
+      <div
+        className={
+          compact ? "hidden" : "flex items-baseline justify-between md:mb-4"
+        }
+      >
+        <Link href="/" className="text-xl font-bold tracking-tight">
+          <WeosBrand />
         </Link>
-      ))}
+        <span className="text-xs text-zinc-500">
+          {t("Prepare · connect · grow")}
+        </span>
+      </div>
+      <div
+        className={`${persistent ? "fcos-persistent-tabs " : ""}fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-zinc-200 bg-white px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_24px_rgba(0,0,0,0.04)] md:static md:gap-1 md:border-0 md:p-0 md:shadow-none`}
+      >
+        {visibleItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={selected === item.href ? "page" : undefined}
+            className={`flex min-h-[76px] min-w-0 flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium focus-visible:outline-2 focus-visible:outline-yellow-600 md:min-h-14 md:flex-row md:gap-2 md:rounded-xl md:px-2 md:text-sm ${selected === item.href ? "text-weos-ink md:bg-yellow-100" : "text-zinc-500 hover:text-zinc-950"}`}
+          >
+            <span
+              className={
+                item.href === "/"
+                  ? `-mt-6 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-weos-yellow text-weos-ink shadow-md md:mt-0 md:h-auto md:w-auto md:border-0 md:bg-transparent md:text-inherit md:shadow-none ${selected === "/" ? "ring-2 ring-yellow-500 md:ring-0" : ""}`
+                  : `flex h-8 w-10 items-center justify-center rounded-xl md:h-auto md:w-auto ${selected === item.href ? "bg-yellow-100 text-weos-ink md:bg-transparent" : ""}`
+              }
+            >
+              <item.icon
+                size={item.href === "/" ? 25 : 22}
+                aria-hidden="true"
+              />
+            </span>
+            <span
+              className={
+                item.href === "/" ? "font-bold uppercase md:normal-case" : ""
+              }
+            >
+              {t(item.label)}
+            </span>
+          </Link>
+        ))}
+      </div>
     </nav>
   );
 }

@@ -1,0 +1,361 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { runMemberAgent, type Receipt } from "../lib/member-ai/agent";
+import {
+  reserveCost,
+  usageCost,
+  type MemberModel,
+} from "../lib/member-ai/model";
+const receipt = (): Receipt => ({
+  input: 0,
+  output: 0,
+  charge: 0,
+  uncertain: false,
+});
+const options = () => ({
+  key: "fake-test-key",
+  model: "gpt-6-luna" as MemberModel,
+  history: [
+    { id: "a", role: "user" as const, body: "Help me plan", proposals: [] },
+  ],
+  day: "2026-10-21",
+  receipt: receipt(),
+  readCommitments: async () => ({ items: [] }),
+  readVault: async () => ({ available: false }),
+});
+const reply = (
+  output: unknown[],
+  usage = { input_tokens: 100, output_tokens: 20 },
+) => Response.json({ status: "completed", usage, output });
+test("tool loop binds reads through the server and proposals remain uncommitted", async () => {
+  let calls = 0;
+  let reads = 0;
+  const config = options();
+  config.readCommitments = async () => {
+    reads++;
+    return { items: [] };
+  };
+  const result = await runMemberAgent({
+    role: "beacon",
+    ...config,
+    request: async (_url, init) => {
+      const body = JSON.parse(String(init?.body));
+      assert.equal(body.store, false);
+      assert.equal(body.max_output_tokens, 1024);
+      calls++;
+      if (calls === 1)
+        return reply([
+          {
+            type: "function_call",
+            name: "read_commitments",
+            arguments: "{}",
+            call_id: "r",
+          },
+        ]);
+      if (calls === 2)
+        return reply([
+          {
+            type: "function_call",
+            name: "prepare_commitment",
+            arguments: JSON.stringify({
+              title: "Write a draft",
+              lane: "ai-business",
+              due_on: "2026-10-22",
+            }),
+            call_id: "p",
+          },
+        ]);
+      assert.match(JSON.stringify(body.input), /requires_member_acceptance/);
+      return reply([
+        {
+          type: "message",
+          content: [
+            { type: "output_text", text: "Here is a proposal to review." },
+          ],
+        },
+      ]);
+    },
+  });
+  assert.equal(reads, 1);
+  assert.equal(result.proposals.length, 1);
+  assert.equal(calls, 3);
+  assert.equal(config.receipt.charge, 60);
+  assert.equal(config.receipt.uncertain, false);
+});
+test("model cannot inject a different user into a private read", async () => {
+  let reads = 0;
+  await assert.rejects(
+    runMemberAgent({
+      role: "beacon",
+      ...options(),
+      readCommitments: async () => {
+        reads++;
+        return [];
+      },
+      request: async () =>
+        reply([
+          {
+            type: "function_call",
+            name: "read_commitments",
+            arguments: '{"userId":"someone-else"}',
+            call_id: "r",
+          },
+        ]),
+    }),
+  );
+  assert.equal(reads, 0);
+});
+test("unknown provider outcome retains reservation; known incomplete receipts remain chargeable", async () => {
+  const config = options();
+  await assert.rejects(
+    runMemberAgent({
+      role: "beacon",
+      ...config,
+      request: async () => {
+        throw Error("timeout");
+      },
+    }),
+  );
+  assert.equal(config.receipt.uncertain, true);
+  const second = options();
+  await assert.rejects(
+    runMemberAgent({
+      role: "beacon",
+      ...second,
+      request: async () =>
+        Response.json({
+          status: "incomplete",
+          usage: { input_tokens: 100, output_tokens: 20 },
+          output: [],
+        }),
+    }),
+  );
+  assert.equal(second.receipt.uncertain, false);
+  assert.equal(second.receipt.charge, 20);
+});
+test("oversized input fails before contacting provider", async () => {
+  const config = options();
+  config.history[0].body = "x".repeat(61000);
+  let called = false;
+  await assert.rejects(
+    runMemberAgent({
+      role: "beacon",
+      ...config,
+      request: async () => {
+        called = true;
+        return reply([]);
+      },
+    }),
+  );
+  assert.equal(called, false);
+});
+test("loop stops after four provider calls and reservations exceed bounded usage", async () => {
+  let calls = 0;
+  await assert.rejects(
+    runMemberAgent({
+      role: "beacon",
+      ...options(),
+      request: async (_url, init) => {
+        calls++;
+        if (calls === 4)
+          assert.equal(JSON.parse(String(init?.body)).tool_choice, "none");
+        return reply([
+          {
+            type: "function_call",
+            name: "read_commitments",
+            arguments: "{}",
+            call_id: String(calls),
+          },
+        ]);
+      },
+    }),
+  );
+  assert.equal(calls, 4);
+  for (const model of ["gpt-6-luna", "gpt-6.1-sol"] as const)
+    assert.ok(reserveCost(model) >= 4 * usageCost(model, 60000, 1024));
+});
+
+test("GPT-6.1 Sol uses Responses with supported reasoning and its own usage rates", async () => {
+  const config = { ...options(), model: "gpt-6.1-sol" as MemberModel };
+  const result = await runMemberAgent({
+    role: "beacon",
+    ...config,
+    request: async (url, init) => {
+      assert.equal(url, "https://api.openai.com/v1/responses");
+      const body = JSON.parse(String(init?.body));
+      assert.equal(body.model, "gpt-6.1-sol");
+      assert.equal(body.reasoning.effort, "low");
+      assert.equal(body.store, false);
+      return reply([
+        { type: "message", content: [{ type: "output_text", text: "Ready." }] },
+      ]);
+    },
+  });
+  assert.equal(result.body, "Ready.");
+  assert.equal(config.receipt.charge, 400);
+});
+
+test("group HQH tool context can exceed ordinary snippets and gets enough output room", async () => {
+  let calls = 0;
+  const result = await runMemberAgent({
+    role: "beacon",
+    ...options(),
+    readFcos: async () => ({
+      format: "One combined message",
+      people: ["One", "Two", "Three", "Four", "Five", "Six"],
+      context: "x".repeat(13000),
+    }),
+    request: async (_url, init) => {
+      const body = JSON.parse(String(init?.body));
+      calls++;
+      if (calls === 1) {
+        assert.equal(body.max_output_tokens, 1024);
+        return reply([
+          {
+            type: "function_call",
+            name: "read_fcos",
+            arguments: JSON.stringify({
+              source: "hqh",
+              query: "One|Two|Three|Four|Five|Six",
+            }),
+            call_id: "hqh",
+          },
+        ]);
+      }
+      assert.equal(body.max_output_tokens, 4096);
+      return reply([
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "1. One > ❌ Not 破题\n2. Two > ❌ Not 破题",
+            },
+          ],
+        },
+      ]);
+    },
+  });
+  assert.equal(calls, 2);
+  assert.ok(result.body.includes("❌"));
+});
+
+test("natural HQH request receives saved people before the first model response", async () => {
+  let lookedUp = false;
+  const config = options();
+  config.history = [
+    {
+      id: "hqh",
+      role: "user",
+      body: "Can you help me write the HQH for my 6 baobeis for this JB trip?",
+      proposals: [],
+    },
+  ];
+  const result = await runMemberAgent({
+    role: "beacon",
+    ...config,
+    readFcos: async (input) => {
+      assert.equal((input as { source: string }).source, "hqh_discover");
+      lookedUp = true;
+      return {
+        resolved: true,
+        names: ["A", "B", "C", "D", "E", "F"],
+        format: "One numbered message",
+      };
+    },
+    request: async (_url, init) => {
+      assert.equal(lookedUp, true);
+      const body = JSON.parse(String(init?.body));
+      assert.equal(body.max_output_tokens, 4096);
+      const saved = body.input.find(
+        (x: { type: string }) => x.type === "function_call_output",
+      );
+      assert.deepEqual(JSON.parse(saved.output).names, [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+      ]);
+      return reply([
+        {
+          type: "message",
+          content: [
+            { type: "output_text", text: "HQH\n1. A > Objective > Welcome" },
+          ],
+        },
+      ]);
+    },
+  });
+  assert.match(result.body, /1\. A/);
+});
+
+test("an explicit HQH re-read replaces automatic context instead of doubling the request", async () => {
+  let calls = 0,
+    reads = 0;
+  const config = options();
+  config.history = [
+    {
+      id: "request",
+      role: "user",
+      body: "Write HQH for my six people",
+      proposals: [],
+    },
+  ];
+  const context = {
+    resolved: true,
+    people: Array.from({ length: 6 }, (_, i) => ({
+      person: { name: `Person ${i}`, story: "x".repeat(1200) },
+      currentHqh: {
+        intake: { raw_input: "x".repeat(900), objective: "Meet people" },
+        invitation_context: "x".repeat(1300),
+      },
+      history: { notes: [{ body: "x".repeat(1500) }] },
+    })),
+  };
+  await runMemberAgent({
+    role: "beacon",
+    ...config,
+    readFcos: async () => {
+      reads++;
+      return context;
+    },
+    request: async (_url, init) => {
+      calls++;
+      const body = JSON.parse(String(init?.body));
+      assert.ok(Buffer.byteLength(String(init?.body)) <= 60000);
+      if (calls === 1)
+        return reply([
+          {
+            type: "function_call",
+            name: "read_fcos",
+            arguments: JSON.stringify({
+              source: "hqh",
+              query: "Person 0|Person 1|Person 2|Person 3|Person 4|Person 5",
+            }),
+            call_id: "fresh_hqh",
+          },
+        ]);
+      assert.equal(
+        body.input.some(
+          (x: { call_id?: string }) => x.call_id === "hqh_discovery",
+        ),
+        false,
+      );
+      return reply([
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "HQH\n1. Person 0 > Objective > Meet people",
+            },
+          ],
+        },
+      ]);
+    },
+  });
+  assert.equal(reads, 2);
+  assert.equal(calls, 2);
+});

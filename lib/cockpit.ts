@@ -6,6 +6,34 @@
 // Contract for owner-metrics response is defined in SPRINT-103 spec. Any
 // field can be null; whatelz.ai side never crashes on missing data.
 
+import "server-only";
+import { z } from "zod";
+
+const metric = z.number().finite().nonnegative().nullable();
+const metricsSchema = z.object({
+  product: z.string(),
+  generated_at: z.iso.datetime({ offset: true }),
+  schema_version: z.literal(1),
+  business: z.object({
+    dau: metric,
+    wau: metric,
+    mau: metric,
+    arr_usd: metric,
+    signups_7d: metric,
+    churn_30d: metric,
+    active_workspaces: metric,
+  }),
+  usage: z
+    .record(z.string(), metric)
+    .refine((values) => Object.keys(values).length <= 100),
+  product_health: z.object({
+    uptime_pct_24h: metric,
+    error_rate_24h: metric,
+    latest_deploy_sha: z.string().nullable(),
+    npm_version: z.string().nullable(),
+  }),
+});
+
 const DEFAULT_TIMEOUT_MS = 2500;
 
 export type ProductKey = "whatelz" | "emdee";
@@ -62,7 +90,7 @@ async function fetchRemote(
   if (!config.origin || !config.token) {
     return {
       status: "pending",
-      reason: `Set ${config.key.toUpperCase()}_ORIGIN + ${config.key.toUpperCase()}_OWNER_METRICS_TOKEN in Vercel env`,
+      reason: `${config.label} product metrics are not connected. Review the connection in Settings.`,
     };
   }
 
@@ -70,33 +98,39 @@ async function fetchRemote(
   const timer = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 
   try {
-    const res = await fetch(`${config.origin}/api/internal/owner-metrics`, {
+    const origin = new URL(config.origin);
+    if (origin.protocol !== "https:")
+      throw new Error("A secure product connection is required.");
+    const res = await fetch(new URL("/api/internal/owner-metrics", origin), {
+      redirect: "error",
       method: "GET",
       headers: { Authorization: `Bearer ${config.token}` },
       cache: "no-store",
       signal: controller.signal,
     });
-    clearTimeout(timer);
-
     if (!res.ok) {
       return {
         status: "error",
-        reason: `${res.status} ${res.statusText}`,
+        reason:
+          "Product metrics could not be read. Review the connection or retry later.",
       };
     }
-    const data = (await res.json()) as OwnerMetrics;
+    const data = metricsSchema.parse(await res.json());
+    if (data.product !== config.key)
+      throw new Error("Product identity mismatch");
     return {
       status: "available",
       data,
       fetched_at: new Date().toISOString(),
     };
   } catch (err) {
-    clearTimeout(timer);
     const msg =
       (err as Error).name === "AbortError"
         ? `timeout after ${DEFAULT_TIMEOUT_MS}ms`
-        : (err as Error).message;
+        : "Product metrics could not be verified. Review the connection or retry later.";
     return { status: "error", reason: msg };
+  } finally {
+    clearTimeout(timer);
   }
 }
 

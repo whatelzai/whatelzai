@@ -1,0 +1,558 @@
+/* One private reading canvas: 1160px = 240px area index + 32px gap + 888px reading pane. */
+.mandala-page {
+  max-width: 1160px;
+  margin-inline: auto;
+  --mandala-ink: #18181b;
+  --mandala-muted: #62626a;
+  --mandala-surface: #f5f5f3;
+  --mandala-active: #eaeae7;
+  --mandala-line: #e6e6e3;
+  --mandala-paper: #fff;
+  --mandala-yellow: #facc15;
+  color: var(--mandala-ink);
+}
+.admin-shell[data-admin-theme="dark"] .mandala-page {
+  --mandala-ink: #f4f4f5;
+  --mandala-muted: #b4b4bd;
+  --mandala-surface: #242427;
+  --mandala-active: #343438;
+  --mandala-line: #3b3b40;
+  --mandala-paper: #18181b;
+}
+.mandala-page-header {
+  padding-bottom: 24px;
+}
+.mandala-page-header > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--mandala-muted);
+}
+.admin-shell #admin-main .mandala-page h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+  margin: 4px 0 8px;
+}
+.mandala-page-header > p {
+  color: var(--mandala-muted);
+  font-size: 0.9375rem;
+}
+.mandala-reader {
+  color: var(--mandala-ink);
+}
+.mandala-direction {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  align-items: center;
+  gap: 32px;
+  padding: 24px;
+  background: var(--mandala-surface);
+  border-radius: 16px;
+}
+.mandala-direction-title {
+  max-width: 30ch;
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.mandala-subtitle {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: var(--mandala-muted);
+  line-height: 1.6;
+}
+.mandala-goal-figures {
+  display: grid;
+  grid-template-columns: 1.5fr 0.65fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.mandala-goal-figures dt {
+  font-size: 0.75rem;
+  color: var(--mandala-muted);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.mandala-goal-figures dd {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  font-weight: 400;
+}
+.mandala-goal-figures .mandala-income dd {
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+.mandala-income dd::after {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 3px;
+  margin-top: 10px;
+  background: var(--mandala-yellow);
+}
+.mandala-goal-fallback {
+  line-height: 1.7;
+}
+.mandala-view-tabs {
+  display: flex;
+  gap: 24px;
+  margin: 24px 0 28px;
+  border-bottom: 1px solid var(--mandala-line);
+}
+.mandala-view-tabs > button {
+  min-height: 48px;
+  padding: 10px 0;
+  border-bottom: 2px solid transparent;
+  color: var(--mandala-muted);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+.mandala-view-tabs > button[aria-selected="true"] {
+  color: var(--mandala-ink);
+  border-bottom-color: var(--mandala-ink);
+  font-weight: 500;
+}
+.mandala-page button,
+.mandala-page a,
+.mandala-page select {
+  -webkit-tap-highlight-color: transparent;
+}
+.mandala-page button:focus-visible,
+.mandala-page select:focus-visible,
+.mandala-page [tabindex="0"]:focus-visible {
+  outline: 2px solid var(--mandala-ink);
+  outline-offset: 4px;
+}
+.mandala-page button {
+  transition:
+    background-color 120ms ease,
+    opacity 120ms ease;
+}
+.mandala-page button:not(:disabled):hover {
+  opacity: 0.75;
+}
+.mandala-page button:active {
+  opacity: 0.6;
+}
+.mandala-page button:disabled {
+  color: var(--mandala-muted);
+  opacity: 0.5;
+  cursor: default;
+}
+.mandala-area-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.mandala-area-nav {
+  padding-right: 8px;
+}
+.mandala-area-nav > p:first-child {
+  margin: 0 12px 14px;
+  font-size: 0.8125rem;
+  color: var(--mandala-muted);
+}
+.mandala-area-nav > button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  text-align: left;
+  line-height: 1.4;
+}
+.mandala-area-nav > button[aria-current="true"] {
+  background: var(--mandala-active);
+  font-weight: 500;
+}
+.mandala-area-nav > button > svg {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.mandala-area-rank {
+  flex-shrink: 0;
+  color: var(--mandala-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  width: 12px;
+}
+.mandala-nav-note {
+  padding: 20px 12px 0;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--mandala-muted);
+}
+.mandala-area-mobile {
+  display: none;
+}
+.mandala-area-content {
+  min-width: 0;
+}
+.mandala-area-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 20px;
+  padding: 0 0 24px;
+}
+.mandala-area-header h2,
+.mandala-plan-section h2,
+.mandala-grid-section h2,
+.mandala-source > h2 {
+  font-size: 1.375rem;
+  line-height: 1.35;
+  font-weight: 500;
+}
+.mandala-area-header p {
+  margin-top: 8px;
+  color: var(--mandala-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.mandala-approval {
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  color: var(--mandala-muted);
+  white-space: nowrap;
+  padding-top: 5px;
+}
+.mandala-action-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 32px;
+  row-gap: 28px;
+  list-style: none;
+  padding: 24px;
+  margin: 0;
+  border-radius: 16px;
+  background: var(--mandala-surface);
+}
+.mandala-action-list > li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  align-content: start;
+}
+.mandala-action-number {
+  color: var(--mandala-muted);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  padding-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.mandala-action-list h3 {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+.admin-shell #admin-main .mandala-action-list .prose {
+  color: var(--mandala-muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+.admin-shell #admin-main .mandala-action-list .prose :is(p, ul, ol) {
+  margin: 0;
+}
+.mandala-area-provenance {
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--mandala-muted);
+  margin: 16px 0 0;
+}
+.mandala-area-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+.mandala-area-pager > button,
+.mandala-reader-footer > button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+.mandala-area-pager > span {
+  color: var(--mandala-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.mandala-plan-layout:not([hidden]) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 32px;
+  align-items: start;
+}
+.mandala-plan-section {
+  background: var(--mandala-surface);
+  padding: 24px;
+  border-radius: 16px;
+  min-width: 0;
+}
+.mandala-plan-section > h2 {
+  margin-bottom: 20px;
+}
+.admin-shell #admin-main .mandala-plan-section .prose {
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  color: var(--mandala-ink);
+}
+.mandala-plan-section .prose table {
+  min-width: 29rem;
+}
+.mandala-plan-section :is(th, td):not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.mandala-grid-section > p {
+  margin: 8px 0 24px;
+  max-width: 65ch;
+  color: var(--mandala-muted);
+  line-height: 1.7;
+  font-size: 0.9375rem;
+}
+.mandala-grid-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 16px;
+}
+.mandala-full-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 1056px;
+  gap: 12px;
+}
+.mandala-grid-block {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  background: var(--mandala-paper);
+}
+.mandala-grid-block > :is(div, button) {
+  display: flex;
+  min-height: 94px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  text-align: center;
+  background: var(--mandala-surface);
+  color: var(--mandala-ink);
+}
+.mandala-grid-block > button {
+  background: var(--mandala-active);
+  font-weight: 500;
+}
+.mandala-grid-block > .mandala-grid-goal {
+  background: var(--mandala-yellow);
+  color: #18181b;
+  font-weight: 500;
+}
+.mandala-source {
+  max-width: 76ch;
+}
+.mandala-source-note {
+  margin: 12px 0 32px;
+  color: var(--mandala-muted);
+  line-height: 1.7;
+  font-size: 0.9375rem;
+}
+.mandala-source-path {
+  margin-top: 32px;
+  word-break: break-all;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--mandala-muted);
+}
+.mandala-reader-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 24px;
+  margin-top: 32px;
+  color: var(--mandala-muted);
+  font-size: 0.75rem;
+}
+.mandala-reader-footer > span {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+@media (max-width: 1100px) {
+  .mandala-direction {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .mandala-area-layout {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+  }
+  .mandala-action-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mandala-plan-layout:not([hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mandala-area-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+@media (max-width: 800px) {
+  .mandala-area-layout {
+    display: block;
+  }
+  .mandala-area-nav {
+    display: none;
+  }
+  .mandala-area-mobile {
+    display: block;
+    margin-bottom: 24px;
+  }
+  .mandala-area-mobile label {
+    display: block;
+    font-size: 0.8125rem;
+    margin-bottom: 8px;
+    color: var(--mandala-muted);
+  }
+  .mandala-area-mobile select {
+    width: 100%;
+    min-height: 48px;
+    background: var(--mandala-paper);
+    color: var(--mandala-ink);
+    border: 1px solid var(--mandala-line);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+}
+@media (max-width: 480px) {
+  .mandala-direction {
+    padding: 20px;
+    gap: 20px;
+    border-radius: 12px;
+  }
+  .mandala-goal-figures {
+    grid-template-columns: 1.5fr 0.6fr 1fr;
+    gap: 16px;
+  }
+  .mandala-goal-figures dt {
+    font-size: 0.6875rem;
+  }
+  .mandala-goal-figures dd {
+    font-size: 0.9375rem;
+  }
+  .mandala-goal-figures .mandala-income dd {
+    font-size: 1.625rem;
+  }
+  .mandala-view-tabs {
+    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 20px 0 24px;
+  }
+  .mandala-view-tabs > button {
+    font-size: 0.75rem;
+    white-space: normal;
+    padding-inline: 4px;
+  }
+  .mandala-action-list {
+    padding: 20px;
+    row-gap: 24px;
+    border-radius: 12px;
+  }
+  .mandala-area-header h2 {
+    font-size: 1.25rem;
+  }
+  .mandala-plan-section {
+    padding: 20px;
+  }
+  .mandala-area-pager > button {
+    font-size: 0.75rem;
+    gap: 5px;
+  }
+  .mandala-area-pager > button > svg {
+    width: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mandala-page button {
+    transition: none;
+  }
+}
+
+.mandala-expense-baseline {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+}
+@media (max-width: 800px) {
+  .mandala-page-header {
+    padding-bottom: 16px;
+  }
+  .mandala-page-header > p,
+  .mandala-subtitle,
+  .mandala-area-header p {
+    display: none;
+  }
+  .mandala-direction {
+    gap: 16px;
+    padding: 16px;
+  }
+  .mandala-area-mobile {
+    margin-bottom: 20px;
+  }
+  .mandala-area-mobile label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .mandala-area-header {
+    padding-bottom: 16px;
+    gap: 4px;
+  }
+  .mandala-goal-figures {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.6fr) minmax(0, 1fr);
+  }
+  .mandala-goal-figures dd {
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 380px) {
+  .mandala-goal-figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mandala-goal-figures .mandala-income {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .mandala-goal-figures .mandala-income dt {
+    margin-bottom: 0;
+    max-width: 14ch;
+  }
+  .mandala-income dd::after {
+    display: none;
+  }
+}

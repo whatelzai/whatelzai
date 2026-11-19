@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getStripe, isStripeConfigured } from "@/lib/stripe-server";
 import { SignUpBlock } from "./sign-up-block";
+import { canFulfillCheckout } from "@/lib/stripe-fulfillment";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,13 @@ async function loadEmail(
   try {
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!canFulfillCheckout(session)) return null;
+    if (
+      session.metadata?.product_slug !== "playbook" &&
+      session.metadata?.offer_slug !== "playbook" &&
+      session.metadata?.offer_slug !== "playbook-lifetime-v1"
+    )
+      return null;
     return (
       session.customer_details?.email ??
       (session.customer_email as string | null | undefined) ??
@@ -35,6 +43,20 @@ export default async function SuccessPage({
 }) {
   const { session_id } = await searchParams;
   const email = await loadEmail(session_id);
+
+  if (!email)
+    return (
+      <main className="field-wrap py-20">
+        <h1 className="text-3xl">Your order is not confirmed yet.</h1>
+        <p className="my-6">
+          Payment may still be processing. Check your Stripe confirmation, or
+          return to your account to check access.
+        </p>
+        <Link href="/account" className="text-link">
+          Check my account →
+        </Link>
+      </main>
+    );
 
   return (
     <main className="editorial-index mx-auto max-w-xl px-6 py-20">
@@ -62,8 +84,8 @@ export default async function SuccessPage({
 
       <div className="mt-12 border-t border-zinc-100 pt-6 text-sm text-zinc-500">
         Prefer to read first?{" "}
-        <Link href="/playbook/introduction" className="underline">
-          Open the first chapter
+        <Link href="/playbook/read" className="underline">
+          Open the book
         </Link>
         . You&apos;ll be prompted to sign in when you get there.
       </div>

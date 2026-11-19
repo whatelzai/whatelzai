@@ -1,3 +1,8 @@
+import {
+  WorkspaceFocus,
+  WorkspaceFocusLoading,
+} from "@/components/admin/WorkspaceFocus";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AdminArea } from "@/components/admin/AdminArea";
 
@@ -5,7 +10,33 @@ export const metadata: Metadata = { title: "AI Business — Admin" };
 
 const links = [
   {
-    href: "/admin",
+    href: "/admin/ai-business/invites",
+    label: "People",
+    description:
+      "Contact details, invitation history and your next conversation.",
+  },
+  {
+    href: "/admin/event-checkin",
+    label: "Event registrations",
+    description: "People, payments, ticket emails and check-in.",
+  },
+  {
+    href: "/admin/ai-business/operations",
+    label: "Product health",
+    description: "Whatelzai and EMDEE activity and connection health.",
+  },
+  {
+    href: "/admin/ai-business/profile",
+    label: "My profile",
+    description: "Manage your profile and related website content.",
+  },
+  {
+    href: "/admin/design-system",
+    label: "Brand & design system",
+    description: "Logo, colours and brand assets.",
+  },
+  {
+    href: "/admin/site-dashboard",
     label: "Website dashboard",
     description: "Manage website sections and review content activity.",
   },
@@ -61,7 +92,7 @@ const links = [
   },
   {
     href: "/admin/events",
-    label: "Events",
+    label: "Event records",
     description: "Manage public event content.",
   },
 ];
@@ -70,8 +101,85 @@ export default function AIBusinessPage() {
   return (
     <AdminArea
       title="AI Business"
-      description="Your Whatelz website, offerings and marketing content. Product metrics are available in Overview."
-      links={links}
+      description="Events, relationships and paid offers."
+      intro={
+        <Suspense fallback={<WorkspaceFocusLoading />}>
+          <WorkspaceFocus lane="ai-business" />
+        </Suspense>
+      }
+      links={[]}
+      groups={[
+        {
+          label: "Events",
+          links: [
+            {
+              href: "/admin/ai-business/events",
+              label: "All events",
+              description: "Sign-ups, payments, posters and event photos.",
+            },
+            {
+              href: "/admin/ai-business/events#past-events",
+              label: "Past events",
+              description: "Upcoming sessions and past events.",
+            },
+          ],
+        },
+        {
+          label: "People",
+          links: [
+            {
+              href: "/admin/ai-business/invites",
+              label: "Invites & follow-ups",
+              description: "Your next conversation.",
+            },
+            {
+              href: "/admin/ai-business/people",
+              label: "People overview",
+              description: "Distinct and returning attendees.",
+            },
+          ],
+        },
+        {
+          label: "Proof",
+          links: [
+            {
+              href: "/admin/testimonials",
+              label: "Testimonials",
+              description: "Participant and client feedback.",
+            },
+            {
+              href: "/admin/ai-business/events#past-events",
+              label: "Event photos & videos",
+              description: "Open the event media library.",
+            },
+          ],
+        },
+        {
+          label: "Products",
+          links: [
+            {
+              href: "/admin/playbook",
+              label: "The playbook",
+              description: "View your digital product.",
+            },
+            {
+              href: "/admin/services",
+              label: "Offers & services",
+              description: "Your paid offers.",
+            },
+          ],
+        },
+      ]}
+      secondary={links.filter(
+        (link) =>
+          ![
+            "People",
+            "Event registrations",
+            "Testimonials",
+            "Events",
+            "Services",
+          ].includes(link.label),
+      )}
     />
   );
 }

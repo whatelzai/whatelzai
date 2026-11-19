@@ -1,45 +1,41 @@
 import type { Metadata } from "next";
-import { AdminArea } from "@/components/admin/AdminArea";
-import { MCPConnectHint } from "@/components/admin/MCPConnectHint";
-
+import { ensureUserRow } from "@/lib/users";
+import { AdminProfileIdentity } from "@/components/admin/AdminProfileIdentity";
+import SettingsPanel from "@/components/admin/SettingsPanel";
 export const metadata: Metadata = { title: "Settings — Admin" };
-
-export default function SettingsPage() {
+import { dailyOwner } from "@/lib/daily/server";
+import { SettingsTabs } from "@/components/admin/releases/SettingsTabs";
+import { AdminReleaseList } from "@/components/admin/releases/AdminReleaseList";
+import { AdminText } from "@/components/admin/AdminPreferences";
+import { adminReleases } from "@/lib/admin-releases/data";
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  await dailyOwner();
+  const user = await ensureUserRow();
+  const releases = (await searchParams).tab === "releases";
   return (
-    <AdminArea
-      title="Settings"
-      description="Your profile and connections to the tools you use."
-      links={[
-        {
-          href: "/admin/profile",
-          label: "My profile",
-          description: "Manage your profile and related website content.",
-        },
-        {
-          href: "/admin/tokens",
-          label: "MCP & API access",
-          description: "Manage access tokens for connected tools and agents.",
-        },
-        {
-          href: "/admin/developer",
-          label: "Developer tools",
-          description: "Open technical configuration and infrastructure links.",
-        },
-      ]}
-    >
-      <section
-        aria-labelledby="mcp-connections"
-        className="max-w-2xl rounded-xl border border-zinc-200 p-6"
-      >
-        <h2 id="mcp-connections" className="font-semibold text-zinc-900">
-          MCP connections
-        </h2>
-        <p className="mb-5 mt-2 text-sm text-zinc-600">
-          Connect your assistant to Whatelz. Access tokens remain managed
-          separately from your website sign-in.
-        </p>
-        <MCPConnectHint />
-      </section>
-    </AdminArea>
+    <div className="admin-profile-page">
+      {!releases && user && (
+        <AdminProfileIdentity
+          name={user.name}
+          email={user.email}
+          image={user.image_url}
+        />
+      )}
+      <SettingsTabs active={releases ? "releases" : "preferences"} />
+      {releases ? (
+        <section className="admin-release-archive">
+          <h1>
+            <AdminText text="Release notes" />
+          </h1>
+          <AdminReleaseList releases={adminReleases} />
+        </section>
+      ) : (
+        <SettingsPanel />
+      )}
+    </div>
   );
 }

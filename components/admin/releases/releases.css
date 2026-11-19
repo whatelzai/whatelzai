@@ -1,0 +1,166 @@
+.admin-release-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(560px, calc(100% - 32px));
+  height: min(720px, 82dvh);
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  color: #20201e;
+  box-shadow: 0 20px 70px #0003;
+  overflow: hidden;
+}
+.admin-release-dialog::backdrop {
+  background: #0006;
+}
+.admin-release-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.admin-release-dialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #e8e8e2;
+  flex-shrink: 0;
+}
+.admin-release-dialog header p {
+  font-size: 0.8rem;
+  color: #707078;
+  margin: 0 0 0.25rem;
+}
+.admin-release-dialog h2 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+.admin-release-dialog header button {
+  min-height: 44px;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #d8d8d2;
+  font: inherit;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.admin-release-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  flex: 1;
+  padding: 1.5rem;
+}
+.admin-release-dialog footer {
+  flex-shrink: 0;
+  padding: 0.8rem 1.5rem;
+  border-top: 1px solid #e8e8e2;
+}
+.admin-release-dialog footer a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.admin-release-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.admin-release-list > li + li {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e8e8e2;
+}
+.admin-release-list time {
+  font-size: 0.8rem;
+  color: #707078;
+}
+.admin-release-list h3 {
+  font-size: 1.05rem;
+  line-height: 1.4;
+  margin: 0.5rem 0 0.75rem;
+}
+.admin-release-list ul {
+  padding-left: 1.1rem;
+  list-style: disc;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #5b5b63;
+}
+.admin-release-list ul li + li {
+  margin-top: 0.6rem;
+}
+.admin-release-dialog :focus-visible,
+.admin-settings-tabs a:focus-visible {
+  outline: 3px solid #ad8500;
+  outline-offset: 3px;
+}
+.admin-release-scroll:focus-visible {
+  outline-offset: -3px;
+}
+.admin-settings-tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #deded8;
+}
+.admin-settings-tabs a {
+  padding: 0.7rem 0;
+  text-decoration: none;
+  font-size: 0.9rem;
+  color: #707078;
+  min-height: 44px;
+}
+.admin-settings-tabs a[aria-current="page"] {
+  color: inherit;
+  border-bottom: 2px solid #e2b800;
+  font-weight: 600;
+}
+.admin-release-archive {
+  max-width: 700px;
+}
+.admin-release-archive h1 {
+  font-size: 1.6rem;
+  margin: 0 0 1.5rem;
+}
+.admin-shell[data-admin-theme="dark"] .admin-release-dialog {
+  background: #20201e;
+  color: #f5f5ef;
+}
+.admin-shell[data-admin-theme="dark"] .admin-release-list ul,
+.admin-shell[data-admin-theme="dark"] .admin-release-list time,
+.admin-shell[data-admin-theme="dark"] .admin-release-dialog header p,
+.admin-shell[data-admin-theme="dark"] .admin-settings-tabs a {
+  color: #b8b8af;
+}
+.admin-shell[data-admin-theme="dark"]
+  .admin-settings-tabs
+  a[aria-current="page"] {
+  color: #f5f5ef;
+}
+.admin-shell[data-admin-theme="dark"] .admin-release-dialog > header,
+.admin-shell[data-admin-theme="dark"] .admin-release-dialog footer,
+.admin-shell[data-admin-theme="dark"] .admin-release-list > li + li {
+  border-color: #44443e;
+}
+@media (max-width: 600px) {
+  .admin-release-dialog > header,
+  .admin-release-dialog footer {
+    padding: 0.9rem 1rem;
+  }
+  .admin-release-scroll {
+    padding: 1rem;
+  }
+  .admin-release-dialog {
+    height: 80dvh;
+  }
+}

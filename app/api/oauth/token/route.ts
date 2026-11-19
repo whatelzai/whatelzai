@@ -1,3 +1,4 @@
+import { isOwnerUser } from "@/lib/admin-policy";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { supabaseAdmin } from "@/lib/supabase-server";
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
     .eq("id", userId)
     .maybeSingle();
 
-  if (!userRow || (userRow.role !== "admin" && userRow.role !== "superadmin"))
+  if (!isOwnerUser(userRow))
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   // Scope decode. Missing / empty → owner default (backwards compat).

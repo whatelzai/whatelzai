@@ -3,7 +3,7 @@ import { adminUrl } from "@/lib/admin-url";
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import {
   Button,
   Field,

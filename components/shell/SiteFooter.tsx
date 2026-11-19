@@ -1,29 +1,26 @@
 "use client";
 import Link from "next/link";
+import { WhatelzMark } from "@/components/brand/WhatelzMark";
 import { usePathname } from "next/navigation";
 export function SiteFooter({ ownerName }: { ownerName: string }) {
   const pathname = usePathname();
   if (pathname.startsWith("/admin")) return null;
   return (
-    <footer className="editorial-footer">
+    <footer className="editorial-footer focused-footer">
       <div className="field-wrap">
         <div className="footer-top">
           <div>
-            <h2>
-              Follow what I’m
-              <br />
-              building and learning.
-            </h2>
-            <Link href="/this-week" className="field-button">
-              Follow the journey <span>↗</span>
+            <h2>See you at the next session.</h2>
+            <Link href="/events" className="text-link">
+              Explore events ↗
             </Link>
           </div>
           <nav aria-label="Footer navigation">
-            <Link href="/playbook">The playbook</Link>
-            <Link href="/about">My story</Link>
-            <Link href="/projects">Things I’m building</Link>
+            <Link href="/events">Events</Link>
             <Link href="/activities">Activities</Link>
-            <Link href="/blog">Field notes</Link>
+            <Link href="/playbook">The book</Link>
+            <Link href="/about">My why</Link>
+            <Link href="/testimonials">Testimonials</Link>
             <Link href="/contact">Say hello ↗</Link>
           </nav>
           <nav aria-label="Social links">
@@ -58,8 +55,13 @@ export function SiteFooter({ ownerName }: { ownerName: string }) {
             <Link href="/channels">All channels →</Link>
           </nav>
         </div>
-        <Link href="/" className="footer-wordmark" aria-label="whatelz.ai home">
-          whatelz<span>↗</span>
+        <Link
+          href="/"
+          className="footer-wordmark whatelz-brand-lockup"
+          aria-label="whatelz.ai home"
+        >
+          <WhatelzMark className="whatelz-brand-symbol" />
+          whatelz.ai
         </Link>
         <div className="footer-bottom">
           <span>

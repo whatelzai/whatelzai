@@ -100,7 +100,7 @@ export default async function TestimonialsPage({
                   {filteredItems.length}{" "}
                   {filteredItems.length === 1 ? "person says" : "people say"}{" "}
                   <span
-                    className="px-2 py-0.5"
+                    className="public-yellow-surface px-2 py-0.5"
                     style={{ backgroundColor: "var(--accent)" }}
                   >
                     {keywordLabel(activeFilter)}

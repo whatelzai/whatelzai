@@ -19,7 +19,6 @@ const ADMIN_NAV = [
   { type: "link" as const, href: "/admin/media", label: "Media" },
   { type: "link" as const, href: "/admin/presence", label: "Presence" },
   { type: "link" as const, href: "/admin/blog", label: "Blog" },
-  { type: "link" as const, href: "/admin/developer", label: "Developer" },
 ];
 
 export function AdminNavInjector() {

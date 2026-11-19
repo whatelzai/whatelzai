@@ -39,12 +39,22 @@ export function FieldHero({
   );
 }
 
-export function BookObject({ compact = false }: { compact?: boolean }) {
+export function BookObject({
+  compact = false,
+  href = "/playbook",
+}: {
+  compact?: boolean;
+  href?: string;
+}) {
   return (
     <Link
-      href="/playbook"
+      href={href}
       className={`book-object ${compact ? "book-compact" : ""}`}
-      aria-label="Open The Solopreneur’s Playbook"
+      aria-label={
+        href === "/playbook/read"
+          ? "Open your Playbook reader"
+          : "Open The Money & AI Playbook"
+      }
     >
       <span className="book-pages" aria-hidden="true" />
       <span className="book-face">
@@ -54,7 +64,7 @@ export function BookObject({ compact = false }: { compact?: boolean }) {
         <span className="book-title">
           The
           <br />
-          Solopreneur’s
+          Money &amp; AI
           <br />
           <em>Playbook.</em>
         </span>

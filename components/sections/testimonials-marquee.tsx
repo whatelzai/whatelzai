@@ -81,7 +81,7 @@ function Card({ t }: { t: Testimonial }) {
           ))}
         </div>
         <span
-          className="ml-auto shrink-0 self-start px-2 py-0.5 font-mono text-[10px] tracking-widest text-zinc-900 uppercase"
+          className="public-yellow-surface ml-auto shrink-0 self-start px-2 py-0.5 font-mono text-[10px] tracking-widest text-zinc-900 uppercase"
           style={{ backgroundColor: "var(--accent)" }}
         >
           {CATEGORY_LABELS[t.category]}

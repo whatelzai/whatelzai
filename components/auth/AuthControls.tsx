@@ -65,9 +65,17 @@ export function SignInButton({
 export function SignOutButton({
   children,
   redirectUrl = "/sign-in",
+  className = "text-sm underline",
+  labels = {
+    idle: "Sign out",
+    busy: "Signing out…",
+    error: "Could not sign out. Try again.",
+  },
 }: {
   children?: ReactElement<{ onClick?: () => void; disabled?: boolean }>;
   redirectUrl?: string;
+  className?: string;
+  labels?: { idle: string; busy: string; error: string };
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
@@ -91,12 +99,12 @@ export function SignOutButton({
           type="button"
           disabled={busy}
           onClick={signOut}
-          className="text-sm underline"
+          className={className}
         >
-          {busy ? "Signing out…" : "Sign out"}
+          {busy ? labels.busy : labels.idle}
         </button>
       )}
-      {error ? <span role="alert">Could not sign out. Try again.</span> : null}
+      {error ? <span role="alert">{labels.error}</span> : null}
     </>
   );
 }

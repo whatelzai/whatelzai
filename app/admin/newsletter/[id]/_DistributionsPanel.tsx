@@ -93,7 +93,6 @@ export function DistributionsPanel({
                 {d.external_url && (
                   <a
                     href={d.external_url}
-                    target="_blank"
                     rel="noopener"
                     className="mt-0.5 block text-xs text-zinc-500 hover:text-zinc-900 truncate"
                   >

@@ -1,6 +1,6 @@
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import { listIssues, subscriberStats } from "@/lib/newsletter";
 
 export const metadata: Metadata = { title: "Newsletter — Admin" };

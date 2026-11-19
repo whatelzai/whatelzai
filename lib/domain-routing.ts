@@ -35,10 +35,19 @@ export function domainRoute(hostname: string, pathname: string) {
   if (
     surface === "public" &&
     (pathname === "/member-home" ||
+      pathname === "/pending-assignment" ||
+      pathname === "/assistant" ||
+      pathname.startsWith("/assistant/") ||
       pathname === "/team" ||
       pathname === "/catalogue" ||
       pathname === "/calendar" ||
+      pathname.startsWith("/calendar/") ||
+      pathname === "/profile" ||
       pathname === "/culture" ||
+      pathname === "/resources" ||
+      pathname === "/communities" ||
+      pathname === "/briefings" ||
+      pathname.startsWith("/briefings/") ||
       pathname === "/leads" ||
       pathname.startsWith("/leads/"))
   ) {

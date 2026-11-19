@@ -1,3 +1,5 @@
+import { findActiveToken } from "@/lib/auth/tokens";
+import { OWNER_SCOPE } from "@/lib/auth/scopes";
 import { NextRequest, NextResponse } from "next/server";
 import {
   getAllPosts,
@@ -1417,12 +1419,11 @@ const TOOL_SCHEMAS = [
 async function checkAuth(req: NextRequest) {
   const auth = req.headers.get("authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  const { data } = await supabaseAdmin
-    .from("system_config")
-    .select("value")
-    .eq("key", "mcp_token")
-    .single();
-  if (!data?.value || token !== data.value) {
+  // This legacy tool catalogue has no per-tool scope enforcement. Only the
+  // configured owner's full-scope, revocable tokens may use it. Narrow tokens
+  // use /api/mcp/whatelz, which checks individual tool scopes.
+  const credential = token ? await findActiveToken(token) : null;
+  if (!credential || !credential.scopes.includes(OWNER_SCOPE)) {
     const url = new URL(req.url);
     const resourceMetadata = `${url.protocol}//${url.host}/api/mcp/function/.well-known/oauth-protected-resource`;
     return NextResponse.json(

@@ -1,6 +1,6 @@
 import { adminUrl } from "@/lib/admin-url";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/admin/AdminLink";
 import { listCareer } from "@/lib/career";
 import { ProfileTabs } from "@/components/admin/profile-tabs";
 
