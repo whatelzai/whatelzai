@@ -37,7 +37,7 @@ export const chinese: Record<string, string> = {
   "Plan my next step": "规划下一步",
   Unread: "未读",
   "Close notifications": "关闭通知",
-  "Mark all read": "全部标为已读",
+  "Mark all as read": "全部标为已读",
   "Notification settings": "通知设置",
   "No notifications yet.": "暂无通知。",
   "Dismiss notification": "移除此通知",

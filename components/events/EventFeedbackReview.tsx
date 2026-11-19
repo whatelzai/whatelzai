@@ -52,7 +52,7 @@ export default async function EventFeedbackReview({
             {(count ?? 0) > 100 ? " · Showing the latest 100" : ""}
           </p>
           {data?.map((r) => (
-            <article key={r.id} className="admin-panel">
+            <article id={`feedback-${r.id}`} key={r.id} className="admin-panel">
               <h3>
                 {r.form_id === "feedback-v1"
                   ? "Anonymous"

@@ -7,7 +7,7 @@ export function AdminReleaseList({ releases }: { releases: AdminRelease[] }) {
   return (
     <ol className="admin-release-list">
       {releases.map((r) => (
-        <li key={r.id}>
+        <li id={`release-${r.id}`} key={r.id}>
           <article>
             <time dateTime={r.publishedAt ?? r.date}>
               {new Date(
