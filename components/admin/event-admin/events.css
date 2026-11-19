@@ -171,7 +171,7 @@
   display: grid;
   grid-template-columns:
     minmax(150px, 2fr) minmax(110px, 1.1fr) minmax(80px, 1fr)
-    minmax(85px, 1fr) 18px;
+    minmax(85px, 1fr) minmax(95px, 1fr) 18px;
   gap: 16px;
   align-items: center;
 }
@@ -207,6 +207,7 @@
   margin-top: 4px;
 }
 .event-payment,
+.event-feedback-state,
 .event-email-state,
 .event-checkin-state {
   font-size: 0.78rem;
@@ -415,6 +416,11 @@
   .event-person-chevron {
     grid-column: 3;
     grid-row: 1;
+  }
+  .event-feedback-state {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    font-size: 0.72rem;
   }
   .event-email-state {
     grid-column: 1;
@@ -1146,4 +1152,12 @@
   margin-top: 6px;
   max-height: 32rem;
   overflow-y: auto;
+}
+
+.event-feedback-pending {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #facc15;
+  border: 1px solid #a16207;
 }

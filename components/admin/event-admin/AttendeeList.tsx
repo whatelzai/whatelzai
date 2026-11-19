@@ -236,6 +236,7 @@ export default function AttendeeList({
         <span>Payment</span>
         <span>Ticket email</span>
         <span>Check-in</span>
+        <span>Feedback</span>
       </div>
       <div
         className="event-attendee-scroll"
@@ -297,6 +298,26 @@ export default function AttendeeList({
                       : r.status === "confirmed"
                         ? "Not checked in"
                         : "—"}
+                  </span>
+                  <span className="event-feedback-state">
+                    {r.feedbackSubmitted ? (
+                      <>
+                        <span className="event-checked-icon" aria-hidden="true">
+                          <Check size={12} strokeWidth={3} />
+                        </span>
+                        Feedback submitted
+                      </>
+                    ) : r.status === "confirmed" ? (
+                      <>
+                        <span
+                          className="event-feedback-pending"
+                          aria-hidden="true"
+                        />
+                        Feedback pending
+                      </>
+                    ) : (
+                      "—"
+                    )}
                   </span>
                   <ChevronDown size={15} className="event-person-chevron" />
                 </summary>

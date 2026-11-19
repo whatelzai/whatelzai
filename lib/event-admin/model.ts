@@ -1,4 +1,5 @@
 export type Ticket = {
+  feedback?: { id: string }[];
   id: string;
   signup_attempt_id: string | null;
   person_id: string | null;
@@ -39,6 +40,7 @@ export type Attendee = {
   amount: number | null;
   createdAt: string;
   emailSent: string | null;
+  feedbackSubmitted: boolean;
   checkedIn: string | null;
   accountLinked: boolean;
   accountType: "guest";
@@ -82,6 +84,7 @@ export function eventView(
       amount: a?.state === "confirmed" ? a.amount : null,
       createdAt: t.created_at,
       emailSent: t.email_sent_at,
+      feedbackSubmitted: !!t.feedback?.length,
       checkedIn: t.checked_in_at,
       accountType:
         people.find((p) => p.id === t.person_id)?.account_type ?? "guest",
@@ -107,6 +110,7 @@ export function eventView(
       amount: a.amount,
       createdAt: a.created_at,
       emailSent: null,
+      feedbackSubmitted: false,
       checkedIn: null,
       accountType: "guest",
       accountLinked: false,
