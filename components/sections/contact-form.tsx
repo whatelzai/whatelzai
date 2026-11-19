@@ -2,9 +2,19 @@
 
 import { useState } from "react";
 
-export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
+export function ContactForm({
+  fallbackEmail,
+  initialMessage = "",
+  submitLabel = "Send",
+  successMessage = "Got it — I’ll get back to you soon.",
+}: {
+  fallbackEmail: string;
+  initialMessage?: string;
+  submitLabel?: string;
+  successMessage?: string;
+}) {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(initialMessage);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
     "idle",
   );
@@ -33,13 +43,14 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
 
   if (status === "sent") {
     return (
-      <div className="mt-10 border-l-2 border-[var(--accent)] pl-6 py-2">
+      <div
+        role="status"
+        className="mt-10 border-l-2 border-[var(--accent)] pl-6 py-2"
+      >
         <p className="font-mono text-xs tracking-widest text-zinc-500 uppercase">
           Sent
         </p>
-        <p className="mt-1 text-base text-zinc-700">
-          Got it — I&apos;ll get back to you soon.
-        </p>
+        <p className="mt-1 text-base text-zinc-700">{successMessage}</p>
       </div>
     );
   }
@@ -68,6 +79,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
           id="cf-message"
           aria-label="Your message"
           required
+          maxLength={2000}
           rows={4}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -77,7 +89,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
       </div>
 
       {status === "error" && (
-        <p className="font-mono text-xs text-red-500">
+        <p role="alert" className="font-mono text-xs text-red-500">
           Something went wrong — email {fallbackEmail} directly
         </p>
       )}
@@ -87,7 +99,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
         disabled={status === "sending"}
         className="inline-flex items-center gap-2 border border-zinc-900 px-5 py-3 font-mono text-xs tracking-widest uppercase transition-colors hover:bg-[var(--accent)] hover:text-zinc-900 disabled:opacity-50"
       >
-        {status === "sending" ? "Sending…" : "Send"}
+        {status === "sending" ? "Sending…" : submitLabel}
         <span aria-hidden="true">→</span>
       </button>
     </form>

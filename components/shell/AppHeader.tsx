@@ -8,6 +8,7 @@ const navigation = [
   ["/about", "My why"],
   ["/testimonials", "Testimonials"],
   ["/events", "Events"],
+  ["/activities", "Activities"],
   ["/playbook", "The book"],
 ];
 export function AppHeader() {

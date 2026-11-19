@@ -1093,3 +1093,5 @@ columns. A week belongs to its Monday start year; never render a combined year l
 The owner defines seasons as quarters: Spring Jan–Mar, Summer Apr–Jun, Autumn Jul–Sep,
 Winter Oct–Dec, with three month shades per palette. This supersedes geographic season
 mapping. Verified real scroll geometry at 360/768/1440px, year boundary, and 34 tests.
+
+Public Activities at /activities lists small gatherings and expressions of interest. /events remains the event catalogue with registration. See docs/activities/README.md.

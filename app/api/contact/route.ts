@@ -37,13 +37,14 @@ export async function POST(req: NextRequest) {
       const { Resend } = await import("resend");
       const resend = new Resend(apiKey);
       const site = await getSiteIdentity();
-      await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: "whatelz.ai <contact@whatelz.ai>",
         to: site.email,
         replyTo: email,
         subject,
         text,
       });
+      if (error) throw new Error(error.message);
     } catch (err) {
       console.error("[contact] Resend failed:", err);
       return NextResponse.json(
@@ -52,8 +53,10 @@ export async function POST(req: NextRequest) {
       );
     }
   } else {
-    console.log("[contact] RESEND_API_KEY not set — logging instead:");
-    console.log({ subject, text });
+    return NextResponse.json(
+      { error: "Email delivery is temporarily unavailable" },
+      { status: 503 },
+    );
   }
 
   return NextResponse.json({ ok: true });

@@ -17,6 +17,7 @@ export function SiteFooter({ ownerName }: { ownerName: string }) {
           </div>
           <nav aria-label="Footer navigation">
             <Link href="/events">Events</Link>
+            <Link href="/activities">Activities</Link>
             <Link href="/playbook">The book</Link>
             <Link href="/about">My why</Link>
             <Link href="/testimonials">Testimonials</Link>

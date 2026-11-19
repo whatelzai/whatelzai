@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { activities } from "@/content/activities";
 import { listProjects } from "@/lib/projects";
 import { getAllPosts } from "@/lib/blog";
 import { listHackathons } from "@/lib/hackathons";
@@ -41,6 +42,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${SITE_URL}/activities`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    ...activities.map((a) => ({
+      url: `${SITE_URL}/activities/${a.slug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${SITE_URL}/`,
       lastModified: now,

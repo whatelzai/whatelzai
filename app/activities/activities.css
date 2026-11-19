@@ -1,0 +1,320 @@
+.activities-page {
+  padding-bottom: 70px;
+}
+.activity-hero {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+  gap: 70px;
+  padding-block: 75px 90px;
+}
+.activity-hero h1 {
+  font: 400 clamp(42px, 5vw, 70px)/1.08 var(--font-fraunces);
+  letter-spacing: -0.045em;
+  margin-top: 25px;
+}
+.activity-hero h1 span {
+  text-decoration: underline;
+  text-decoration-color: var(--brand-yellow);
+  text-decoration-thickness: 7px;
+  text-underline-offset: 7px;
+}
+.activity-hero > div:not(.activity-poster) > p:not(.field-eyebrow) {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 43ch;
+  margin-block: 28px;
+}
+.activity-poster {
+  background: var(--brand-yellow);
+  color: var(--brand-ink);
+  border: 1px solid var(--brand-ink);
+  padding: 45px 35px 28px;
+  box-shadow: 8px 8px 0 var(--brand-ink);
+  transform: rotate(2deg);
+}
+.activity-poster > p {
+  font: 400 clamp(30px, 3.3vw, 46px)/1.22 var(--font-fraunces);
+  letter-spacing: -0.03em;
+  margin-block: 30px 50px;
+}
+.activity-poster > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 13px;
+  border-top: 1px solid #25251d50;
+  padding-top: 20px;
+}
+.activity-list {
+  padding-block: 50px 65px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 95px;
+}
+.activity-section-heading h2,
+.activity-welcome h2,
+.activity-detail h2,
+.activity-list > h2 {
+  font: 400 clamp(30px, 3vw, 42px)/1.15 var(--font-fraunces);
+  letter-spacing: -0.03em;
+}
+.activity-section-heading > p {
+  color: var(--muted);
+  font-size: 16px;
+  margin-top: 14px;
+}
+.activity-notice {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 22px 0;
+}
+.activity-card {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  margin-top: 25px;
+}
+.activity-card-mark {
+  background: var(--yellow-wash);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 35px;
+  gap: 35px;
+}
+.activity-card-mark span {
+  font-size: 13px;
+}
+.activity-card > div:last-child {
+  padding: 35px;
+}
+.activity-card h3 {
+  font: 400 clamp(32px, 3.6vw, 44px)/1.1 var(--font-fraunces);
+  margin-top: 15px;
+}
+.activity-card h3 a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.activity-card h3 a:hover {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+.activity-card .activity-theme {
+  font-size: 20px;
+  margin-block: 18px 10px;
+  color: var(--ink);
+}
+.activity-card p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 58ch;
+}
+.activity-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  margin-top: 28px;
+  padding-top: 18px;
+}
+.activity-card-footer > span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.activity-welcome {
+  border-top: 1px solid var(--line);
+  padding-block: 65px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+}
+.activity-welcome p,
+.activity-detail-grid p,
+.activity-interest p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.activity-welcome p + p {
+  margin-top: 18px;
+}
+.activity-past {
+  padding-block: 30px;
+  border-bottom: 1px solid var(--line);
+}
+.activity-past h3 {
+  font: 30px var(--font-fraunces);
+  margin-block: 15px;
+}
+.activity-detail {
+  padding-top: 35px;
+}
+.activity-detail-header {
+  padding-block: 45px;
+  border-bottom: 1px solid var(--line);
+}
+.activity-detail-header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  font: 400 clamp(48px, 7vw, 86px)/1.1 var(--font-fraunces);
+  letter-spacing: -0.045em;
+  margin-block: 20px;
+}
+.activity-detail-header > p:last-child {
+  font-size: 23px;
+  color: var(--muted);
+}
+.activity-detail-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 80px;
+  padding-block: 60px;
+  align-items: start;
+}
+.activity-detail-grid > div h2 {
+  font-size: 31px;
+  margin-block: 35px 20px;
+}
+.activity-detail-grid > div h2:first-child {
+  margin-top: 0;
+}
+.activity-agenda {
+  list-style: decimal;
+  padding-left: 23px;
+}
+.activity-agenda li {
+  padding-left: 8px;
+  margin-block: 18px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.activity-agenda strong {
+  color: var(--ink);
+}
+.activity-facts {
+  background: var(--surface);
+  border-top: 5px solid var(--brand-yellow);
+  padding: 30px;
+}
+.activity-facts h2 {
+  font-size: 28px;
+}
+.activity-facts dl {
+  margin-block: 25px;
+}
+.activity-facts dl > div {
+  padding-block: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.activity-facts dt {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+.activity-facts dd {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.activity-facts .field-button {
+  width: 100%;
+}
+.activity-interest {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  border-top: 1px solid var(--line);
+  padding-block: 60px;
+  scroll-margin-top: 95px;
+}
+.activity-interest h2 {
+  margin-block: 18px;
+}
+.activity-interest form {
+  margin-top: 0;
+}
+.activity-interest .activity-small {
+  font-size: 13px;
+  margin-top: 20px;
+}
+@media (max-width: 900px) {
+  .activity-hero {
+    gap: 35px;
+  }
+  .activity-card {
+    grid-template-columns: 150px 1fr;
+  }
+  .activity-detail-grid,
+  .activity-interest,
+  .activity-welcome {
+    gap: 35px;
+  }
+}
+@media (max-width: 700px) {
+  .activity-hero {
+    grid-template-columns: 1fr;
+    padding-block: 40px 55px;
+    gap: 45px;
+  }
+  .activity-hero h1 {
+    font-size: 42px;
+  }
+  .activity-poster {
+    margin: 0 7px;
+    padding: 28px;
+    transform: rotate(1deg);
+  }
+  .activity-poster > p {
+    margin-block: 20px 30px;
+  }
+  .activity-list {
+    padding-block: 35px;
+  }
+  .activity-card {
+    grid-template-columns: 1fr;
+  }
+  .activity-card-mark {
+    flex-direction: row;
+    align-items: center;
+    padding: 20px 25px;
+  }
+  .activity-card-mark svg {
+    width: 35px;
+    height: 35px;
+  }
+  .activity-card > div:last-child {
+    padding: 25px;
+  }
+  .activity-welcome,
+  .activity-detail-grid,
+  .activity-interest {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding-block: 40px;
+  }
+  .activity-detail-header {
+    padding-block: 30px;
+  }
+  .activity-detail-header h1 {
+    font-size: 48px;
+  }
+  .activity-detail-header h1 svg {
+    width: 35px;
+    flex-shrink: 0;
+  }
+}
