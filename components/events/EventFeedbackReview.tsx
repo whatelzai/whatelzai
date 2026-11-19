@@ -17,14 +17,17 @@ export default async function EventFeedbackReview({
   const { data, error, count } = await db
     .from("event_feedback")
     .select(
-      "id,rating,comment,created_at,form_id,question_answers,identity_method",
+      "id,rating,comment,created_at,form_id,question_answers,identity_method,registration:event_registrations!registration_id(attendee_name)",
       {
         count: "exact",
       },
     )
     .eq("event_id", recordId)
     .order("created_at", { ascending: false })
-    .limit(100);
+    .limit(100)
+    .overrideTypes<
+      Array<{ registration: { attendee_name: string | null } | null }>
+    >();
   return (
     <section
       className="event-feedback-review"
@@ -50,7 +53,12 @@ export default async function EventFeedbackReview({
           </p>
           {data?.map((r) => (
             <article key={r.id} className="admin-panel">
-              <h3>{r.rating} / 5</h3>
+              <h3>
+                {r.form_id === "feedback-v1"
+                  ? "Anonymous"
+                  : r.registration?.attendee_name?.trim() || "Name unavailable"}
+              </h3>
+              <p>{r.rating} / 5</p>
               <p>
                 {new Date(r.created_at).toLocaleString("en-SG", {
                   timeZone: "Asia/Singapore",
