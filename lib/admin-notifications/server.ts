@@ -35,7 +35,24 @@ export async function syncAdminNotices(owner: string) {
     .order("created_at", { ascending: false })
     .limit(100);
   if (r.error) throw Error("Registration notifications unavailable");
+  const feedback = await db
+    .from("event_feedback")
+    .select("id,event_id,created_at")
+    .gte("created_at", cut)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (feedback.error) throw Error("Feedback notifications unavailable");
   const notices = [
+    ...(feedback.data ?? []).map((f) => ({
+      owner_id: owner,
+      source_key:
+        "push:feedback-" +
+        createHash("sha256").update(f.id).digest("hex").slice(0, 24),
+      title: "New event feedback",
+      body: "An attendee submitted feedback.",
+      url: "/ai-business/events/" + f.event_id + "#event-feedback-heading",
+      created_at: f.created_at,
+    })),
     ...adminReleases.map((n) => ({
       owner_id: owner,
       source_key: "release:" + n.id,

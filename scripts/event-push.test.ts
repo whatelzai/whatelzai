@@ -139,3 +139,16 @@ test("per-device batch bounds work; a declined lease sends nothing", async () =>
   });
   assert.equal(declined.sent, 0);
 });
+
+test("feedback and signup get separate receipts and safe destinations", () => {
+  const response = {
+    ...ticket(),
+    feedbackEventId: "d61b02e0-76c3-422c-b65d-e9ec570d7ff2",
+  };
+  const feedback = eventPushCandidate(response, enabled, now)!;
+  const signup = eventPushCandidate(ticket(), enabled, now)!;
+  assert.equal(feedback.title, "New event feedback");
+  assert.match(feedback.url, /event-feedback-heading$/);
+  assert.notEqual(feedback.tag, signup.tag);
+  assert.notEqual(feedback.path, signup.path);
+});

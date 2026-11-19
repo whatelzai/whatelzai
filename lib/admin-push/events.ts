@@ -4,6 +4,7 @@ export const EVENT_PUSH_START = "2026-11-11T12:48:30.000Z";
 export const EVENT_PUSH_LOOKBACK = 7 * 24 * 60 * 60 * 1000;
 export type EventPushTicket = {
   id: string;
+  feedbackEventId?: string;
   status: string;
   created_at: string;
 };
@@ -29,6 +30,19 @@ export function eventPushCandidate(
     created > time
   )
     return null;
+  if (ticket.feedbackEventId) {
+    const hash = createHash("sha256").update(ticket.id).digest("hex");
+    return {
+      path: "event-feedback/" + ticket.id,
+      hash,
+      title: "New event feedback",
+      url:
+        "/ai-business/events/" +
+        ticket.feedbackEventId +
+        "#event-feedback-heading",
+      tag: "feedback-" + hash.slice(0, 24),
+    };
+  }
   return {
     path: `event-registration/${ticket.id}`,
     hash: createHash("sha256").update(ticket.id).digest("hex"),
