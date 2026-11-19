@@ -9,7 +9,7 @@ export async function eventAdminData(eventKey: string = mapEvent.key) {
     db
       .from("event_registrations")
       .select(
-        "id,signup_attempt_id,person_id,attendee_name,email,phone,status,email_sent_at,checked_in_at,created_at,stripe_payment_intent_id",
+        "id,signup_attempt_id,person_id,attendee_name,email,phone,status,email_sent_at,checked_in_at,created_at,stripe_payment_intent_id,feedback:event_feedback!registration_id(id)",
         { count: "exact" },
       )
       .eq("event_key", eventKey)
