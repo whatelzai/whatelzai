@@ -3,7 +3,8 @@ import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { EVENT_KEY } from "@/lib/event-tickets";
 import EventOperations from "@/components/admin/event-admin/EventOperations";
-import { currentEvent, adminSeminarById } from "@/lib/public-events/map";
+import { findAdminOccurrence } from "@/lib/event-portfolio/server";
+import { currentEvent } from "@/lib/public-events/map";
 import { notFound } from "next/navigation";
 import {
   grantEventStaff,
@@ -22,7 +23,7 @@ export default async function Page({
   searchParams: Promise<{ event?: string }>;
 }) {
   const query = await searchParams;
-  const event = adminSeminarById(query.event ?? currentEvent.id);
+  const event = await findAdminOccurrence(query.event ?? currentEvent.id);
   if (!event) notFound();
   await dailyOwner();
   return (

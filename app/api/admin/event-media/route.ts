@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
-import { currentEvent, adminSeminarById } from "@/lib/public-events/map";
+import { findAdminOccurrence } from "@/lib/event-portfolio/server";
+import { currentEvent } from "@/lib/public-events/map";
 function requestEvent(req: Request) {
-  return adminSeminarById(
+  return findAdminOccurrence(
     new URL(req.url).searchParams.get("event") ?? currentEvent.id,
   );
 }
@@ -30,7 +31,7 @@ async function authorized(req: Request) {
 export async function GET(req: Request) {
   if (!(await authorized(req)))
     return json({ error: "Owner Admin access required." }, 403);
-  const event = requestEvent(req);
+  const event = await requestEvent(req);
   if (!event) return json({ error: "Event not found." }, 404);
   const requestedPath = new URL(req.url).searchParams.get("path");
   if (requestedPath !== null) {
@@ -97,7 +98,7 @@ export async function POST(req: Request) {
     !(await authorized(req))
   )
     return json({ error: "Owner Admin access required." }, 403);
-  const event = requestEvent(req);
+  const event = await requestEvent(req);
   if (!event) return json({ error: "Event not found." }, 404);
   let file;
   try {
@@ -131,7 +132,7 @@ export async function PATCH(req: Request) {
   } catch {
     return json({ error: "Owner Admin access required." }, 403);
   }
-  const event = requestEvent(req);
+  const event = await requestEvent(req);
   if (!event) return json({ error: "Event not found." }, 404);
   let input;
   try {

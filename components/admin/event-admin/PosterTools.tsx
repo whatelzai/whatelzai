@@ -1,8 +1,9 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- this is the original downloadable PNG, not an optimised derivative. */
+import type { AdminOccurrence } from "@/lib/event-admin/occurrence";
 import { useState } from "react";
 import { Copy, Image as ImageIcon } from "lucide-react";
-import { currentEvent, type PublicSeminar } from "@/lib/public-events/map";
+import { currentEvent } from "@/lib/public-events/map";
 import { eventSharing } from "@/lib/event-admin/sharing";
 import SocialImageExport from "./SocialImageExport";
 export default function PosterTools({
@@ -10,7 +11,7 @@ export default function PosterTools({
   event = currentEvent,
 }: {
   embedded?: boolean;
-  event?: PublicSeminar;
+  event?: AdminOccurrence;
 }) {
   const mapEvent = event;
   const { eventCaption, eventUrl, posterFilename } = eventSharing(event);
@@ -69,6 +70,7 @@ export default function PosterTools({
             </button>
             <button
               type="button"
+              disabled={!eventUrl}
               onClick={() => void copy(eventUrl, "Event link")}
             >
               <Copy size={16} />

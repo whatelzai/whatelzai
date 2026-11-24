@@ -1,4 +1,5 @@
 "use client";
+import type { AdminOccurrence } from "@/lib/event-admin/occurrence";
 import {
   useCallback,
   useEffect,
@@ -26,7 +27,7 @@ import {
   type EventData,
   type Payment,
 } from "@/lib/event-admin/model";
-import { currentEvent, type PublicSeminar } from "@/lib/public-events/map";
+import { currentEvent } from "@/lib/public-events/map";
 import { retryEventTicketEmail } from "@/app/admin/event-checkin/actions";
 import ManualCheckin from "./ManualCheckin";
 import ScanTickets from "./ScanTickets";
@@ -42,7 +43,7 @@ export default function AttendeeList({
   event = currentEvent,
   feedback,
 }: {
-  event?: PublicSeminar;
+  event?: AdminOccurrence;
   feedback?: ReactNode;
 }) {
   const mapEvent = event;
@@ -111,12 +112,7 @@ export default function AttendeeList({
         <div>
           <h1>Registrations</h1>
           <p>
-            {new Date(mapEvent.startsAt).toLocaleDateString("en-SG", {
-              day: "numeric",
-              month: "short",
-              timeZone: "Asia/Singapore",
-            })}{" "}
-            · {mapEvent.shortName}
+            {mapEvent.dateLabel} · {mapEvent.shortName}
           </p>
         </div>
         <button
@@ -150,7 +146,9 @@ export default function AttendeeList({
               <UsersIcon />
               <strong>
                 {c.confirmed}
-                <small> / {mapEvent.capacity}</small>
+                {mapEvent.capacity != null && (
+                  <small> / {mapEvent.capacity}</small>
+                )}
               </strong>
               <span>Confirmed</span>
             </div>
