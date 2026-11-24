@@ -4,13 +4,21 @@ import { useState } from "react";
 import "./carousel.css";
 
 const arrowClass = "grid size-11 place-items-center rounded-full border border-zinc-300 text-xl disabled:opacity-30";
-const quarters = ["2026 Q4", "2027 Q1", "2027 Q2"];
+const quarters = ["2026 Q4", "2027 Q1", "2027 Q2", "2027 Q3", "2027 Q4", "2028 Q1", "2028 Q2", "2028 Q3", "2028 Q4"];
 // The root has its own identity because Nicole's Q2 recruit also uses E.
 const additions = [
   [["edmund", "N"], ["edmund", "ZH"]],
   [["edmund", "A"], ["N", "B"], ["ZH", "C"]],
   [["edmund", "D"], ["N", "E"], ["B", "F"], ["ZH", "G"], ["C", "H"], ["A", "I"]],
 ];
+// Allocate each quarter from its opening roster; new recruits start next quarter.
+const roster = ["edmund", ...additions.flat().map(([, child]) => child)];
+let nextNumber = 1;
+while (additions.length < quarters.length) {
+  const recruits = roster.map(parent => [parent, "P" + nextNumber++]);
+  additions.push(recruits);
+  roster.push(...recruits.map(([, child]) => child));
+}
 const names: Record<string, string> = { edmund: "Edmund", N: "Nicole", ZH: "Zhi Hao" };
 
 export default function QuarterCarousel() {
@@ -31,14 +39,11 @@ export default function QuarterCarousel() {
   const byId = new Map(nodes.map(node => [node.id, node]));
   const width = leaves * 55;
   const height = Math.max(...nodes.map(node => node.y)) + 25;
-  return <section className="rounded-2xl border border-zinc-300 p-4">
-    <header className="flex items-center justify-between gap-3">
-      <button type="button" className={arrowClass} aria-label="Previous quarter" disabled={index === 0} onClick={() => setIndex(index - 1)}>←</button>
-      <h2 aria-live="polite" className="text-lg font-semibold">{quarters[index]}</h2>
-      <button type="button" className={arrowClass} aria-label="Next quarter" disabled={index === quarters.length - 1} onClick={() => setIndex(index + 1)}>→</button>
-    </header>
-    <div className="grid min-h-60 place-items-center"><svg key={index} className="motion-safe:animate-[quarter-enter_180ms_ease-out]" role="img" aria-label={edges.map(([p,c]) => (names[p] ?? p) + " sponsors " + (names[c] ?? c)).join(". ")}
-      viewBox={`0 0 ${width} ${height}`} style={{width: "100%", maxWidth: width, margin: "1rem auto", display: "block"}}>
+  const direct = children("edmund");
+  const compact = index >= 3;
+  const diagram = <svg key={index} className="motion-safe:animate-[quarter-enter_180ms_ease-out]" role="img"
+      aria-label={quarters[index] + " projected sponsor tree, " + root.size + " people"}
+      viewBox={`0 0 ${width} ${height}`} style={{width: compact ? width : "100%", maxWidth: compact ? "none" : width, margin: "1rem auto", display: "block"}}>
       {edges.map(([parent, child]) => {
         const p = byId.get(parent)!;
         const c = byId.get(child)!;
@@ -48,11 +53,31 @@ export default function QuarterCarousel() {
         <circle cx={x} cy={y} r="19" fill={id === "edmund" ? "#ffdf16" : additions[index].some(([,child]) => child === id) ? "#fff2aa" : "white"} stroke="#333"/>
         <text x={x} y={y} dy=".35em" textAnchor="middle" fontSize="14" fill="#171717">{id === "edmund" ? "E" : id}</text>
       </g>)}
-    </svg></div>
+    </svg>;
+  return <section className="rounded-2xl border border-zinc-300 p-4">
+    <header className="flex items-center justify-between gap-3">
+      <button type="button" className={arrowClass} aria-label="Previous quarter" disabled={index === 0} onClick={() => setIndex(index - 1)}>←</button>
+      <h2 aria-live="polite" className="text-lg font-semibold">{quarters[index]}</h2>
+      <button type="button" className={arrowClass} aria-label="Next quarter" disabled={index === quarters.length - 1} onClick={() => setIndex(index + 1)}>→</button>
+    </header>
+    {compact ? <div key={index} className="my-4">
+      <div className="mx-auto w-fit rounded-full bg-yellow-300 px-4 py-2 text-black">Edmund · {root.size}</div>
+      <ul aria-label="Edmund’s direct branches" className="mx-auto mt-3 grid max-w-md grid-cols-3 gap-2">
+        {direct.map(id => <li key={id} className="rounded-xl border border-zinc-300 p-2 text-center text-sm">
+          {names[id] ?? id}<strong className="block text-lg">{byId.get(id)!.size}</strong>
+        </li>)}
+      </ul>
+      <details className="mt-4">
+        <summary className="cursor-pointer py-2">Explore all {root.size} nodes</summary>
+        <div tabIndex={0} aria-label="Scrollable team diagram" className="overflow-x-auto">{diagram}</div>
+      </details>
+    </div> : <div className="grid min-h-60 place-items-center">{diagram}</div>}
+    {!compact && <>
     <p className="mb-2 font-semibold">Edmund · {root.size} total</p>
     <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm" aria-label="Direct branch totals">
       {children("edmund").map(id => <span key={id}>{names[id] ?? id} · <strong>{byId.get(id)!.size}</strong></span>)}
     </div>
+    </>}
   </section>;
 }
 
