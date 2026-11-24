@@ -43,6 +43,17 @@ export const loadCheckoutConfig = cache(
       eventKey: key,
       amount: offer.data.amount,
       priceId: price,
+      ...(Number.isInteger(event.data.metadata?.personal_amount) &&
+      event.data.metadata.personal_amount > 0 &&
+      event.data.metadata.personal_amount < offer.data.amount &&
+      /^price_[A-Za-z0-9]+$/.test(event.data.metadata.personal_price_id || "")
+        ? {
+            personalOffer: {
+              amount: event.data.metadata.personal_amount,
+              priceId: event.data.metadata.personal_price_id,
+            },
+          }
+        : {}),
       ...(typeof offer.data.return_amount === "number" &&
       offer.data.return_amount > 0 &&
       offer.data.return_amount < offer.data.amount &&

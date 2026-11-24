@@ -22,10 +22,11 @@ export async function POST(req: NextRequest) {
   if (!checkRateLimit(`event-promo:${getClientIp(req)}`).allowed)
     return reply({ error: "Please try again in a moment." }, 429);
   let code = "";
+  let email = "";
   let event: CatalogEvent;
   try {
     const text = await req.text();
-    if (text.length > 256) return reply({ error: "Code too long." }, 400);
+    if (text.length > 768) return reply({ error: "Code too long." }, 400);
     const data = JSON.parse(text);
     const selected = resolveEvent(
       await loadPublicEvents(),
@@ -34,6 +35,8 @@ export async function POST(req: NextRequest) {
     if (!selected || !selected.registrationUrl)
       return reply({ error: "Registration is closed." }, 409);
     event = selected;
+    email =
+      typeof data.email === "string" ? data.email.trim().toLowerCase() : "";
     if (typeof data.code === "string") code = data.code.trim().toUpperCase();
   } catch {
     return reply({ error: "Enter a promo code." }, 400);
@@ -61,7 +64,7 @@ export async function POST(req: NextRequest) {
   const hash = signupHash(code);
   const { data, error } = await supabaseAdmin
     .from("event_signup_codes")
-    .select("max_uses")
+    .select("max_uses,recipient_email,ticket_amount")
     .eq("event_key", event.key)
     .eq("code_hash", hash)
     .eq("enabled", true)
@@ -69,7 +72,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
   if (error)
     return reply({ error: "Unable to check the code. Please try again." }, 503);
-  if (!data)
+  if (!data || (data.recipient_email && data.recipient_email !== email))
     return reply(
       { error: "This code is invalid or no longer available." },
       409,
@@ -84,5 +87,5 @@ export async function POST(req: NextRequest) {
     return reply({ error: "Unable to check the code. Please try again." }, 503);
   if ((count ?? 0) >= data.max_uses)
     return reply({ error: "This code has reached its limit." }, 409);
-  return reply({ free: true });
+  return reply({ free: !data.ticket_amount, amount: data.ticket_amount ?? 0 });
 }
