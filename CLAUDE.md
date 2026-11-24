@@ -1095,3 +1095,7 @@ Winter Oct–Dec, with three month shades per palette. This supersedes geographi
 mapping. Verified real scroll geometry at 360/768/1440px, year boundary, and 34 tests.
 
 Public Activities at /activities lists small gatherings and expressions of interest. /events remains the event catalogue with registration. See docs/activities/README.md.
+
+## weOS release preference
+
+Edmund requests automatic merge and production deployment of authorized weOS changes after checks pass. Verify the deployment before reporting it live.
