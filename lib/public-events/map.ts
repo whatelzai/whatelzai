@@ -37,7 +37,23 @@ export const currentEvent = {
   price: "S$8",
   checkoutUrl: "/events/register?event=ELZ-EVT-0005",
 } as const;
-export type PublicSeminar = typeof mapEvent | typeof currentEvent;
+const decemberEvent = {
+  ...mapEvent,
+  id: "ELZ-EVT-0011",
+  key: "ai-skillset-money-mindset-20261201",
+  path: "/events/ELZ-EVT-0011",
+  poster: "/api/admin/event-poster?event=05bee96e-1b5a-4c50-88bd-611c3a162e99&format=original",
+  startsAt: "2026-12-01T19:30:00+08:00",
+  endsAt: "2026-12-01T21:30:00+08:00",
+  dateLabel: "Tuesday, 1 December 2026",
+  venue: "Near Paya Lebar MRT",
+  address: "Singapore",
+  venueUrl: "",
+  price: "S$13",
+  capacity: 30,
+  checkoutUrl: "/events/register?event=ELZ-EVT-0011",
+} as const;
+export type PublicSeminar = typeof mapEvent | typeof currentEvent | typeof decemberEvent;
 export const seminarEvents: readonly PublicSeminar[] = [mapEvent, currentEvent];
 export const seminarByKey = (key: string) =>
   seminarEvents.find((e) => e.key === key);
@@ -53,3 +69,6 @@ export const registrationPath = (event: PublicSeminar) =>
   `/events/register?event=${event.id}`;
 export const isSeminarOpen = (event: PublicSeminar, now = Date.now()) =>
   now < Date.parse(event.startsAt);
+
+export const adminSeminarById = (id: string) =>
+  id === decemberEvent.id ? decemberEvent : seminarById(id);

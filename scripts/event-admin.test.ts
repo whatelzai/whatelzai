@@ -1,6 +1,6 @@
 import test from "node:test";
 import * as mediaPolicy from "../lib/event-admin/media-policy";
-import { currentEvent, mapEvent, seminarById } from "../lib/public-events/map";
+import { currentEvent, mapEvent, adminSeminarById } from "../lib/public-events/map";
 import assert from "node:assert/strict";
 import {
   eventView,
@@ -137,7 +137,7 @@ test("API rejects non-Admin hosts before accessing private data and never caches
     exports: mod.exports,
     require: (name: string) =>
       name.includes("public-events/map")
-        ? { currentEvent, seminarById }
+        ? { currentEvent, adminSeminarById }
         : {
             eventAdminData: async (key: string) => {
               assert.ok(
@@ -277,7 +277,7 @@ test("media scope rejects unknown events and another occurrence's storage path b
       name === "node:crypto"
         ? { randomUUID: () => "test" }
         : name.includes("public-events/map")
-          ? { currentEvent, seminarById }
+          ? { currentEvent, adminSeminarById }
           : name.includes("media-policy")
             ? mediaPolicy
             : name.includes("daily/server")

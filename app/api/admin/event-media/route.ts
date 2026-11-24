@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
-import { currentEvent, seminarById } from "@/lib/public-events/map";
+import { currentEvent, adminSeminarById } from "@/lib/public-events/map";
 function requestEvent(req: Request) {
-  return seminarById(
+  return adminSeminarById(
     new URL(req.url).searchParams.get("event") ?? currentEvent.id,
   );
 }
