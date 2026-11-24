@@ -1,6 +1,6 @@
 import test from "node:test";
 import * as mediaPolicy from "../lib/event-admin/media-policy";
-import { currentEvent, mapEvent, adminSeminarById } from "../lib/public-events/map";
+import { currentEvent, mapEvent, seminarById } from "../lib/public-events/map";
 import assert from "node:assert/strict";
 import {
   eventView,
@@ -136,8 +136,9 @@ test("API rejects non-Admin hosts before accessing private data and never caches
     module: mod,
     exports: mod.exports,
     require: (name: string) =>
-      name.includes("public-events/map")
-        ? { currentEvent, adminSeminarById }
+      name.includes("public-events/map") ||
+      name.includes("event-portfolio/server")
+        ? { currentEvent, findAdminOccurrence: seminarById }
         : {
             eventAdminData: async (key: string) => {
               assert.ok(
@@ -276,8 +277,9 @@ test("media scope rejects unknown events and another occurrence's storage path b
     require: (name: string) =>
       name === "node:crypto"
         ? { randomUUID: () => "test" }
-        : name.includes("public-events/map")
-          ? { currentEvent, adminSeminarById }
+        : name.includes("public-events/map") ||
+            name.includes("event-portfolio/server")
+          ? { currentEvent, findAdminOccurrence: seminarById }
           : name.includes("media-policy")
             ? mediaPolicy
             : name.includes("daily/server")
@@ -344,4 +346,28 @@ test("Guest migration defaults both existing and future participants without cha
   } finally {
     await db.close();
   }
+});
+
+test("portfolio events with and without ticket metadata get their own dashboard scope", async () => {
+  const { adminOccurrence } = await import("../lib/event-admin/occurrence");
+  const row = {
+    id: "kl-record",
+    name: "KL training",
+    published: false,
+    date: null,
+    location: null,
+    metadata: {},
+  };
+  const draft = adminOccurrence(row);
+  assert.equal(draft.id, row.id);
+  assert.equal(draft.key, row.id);
+  assert.equal(draft.capacity, undefined);
+  assert.equal(draft.dateLabel, "Date to confirm");
+  const ticketed = adminOccurrence({
+    ...row,
+    metadata: { event_id: "ELZ-EVT-0011", event_key: "december", capacity: 30 },
+  });
+  assert.equal(ticketed.id, "ELZ-EVT-0011");
+  assert.equal(ticketed.key, "december");
+  assert.equal(ticketed.capacity, 30);
 });

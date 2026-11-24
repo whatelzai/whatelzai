@@ -1,4 +1,5 @@
-import { currentEvent, adminSeminarById } from "@/lib/public-events/map";
+import { findAdminOccurrence } from "@/lib/event-portfolio/server";
+import { currentEvent } from "@/lib/public-events/map";
 import { eventAdminData } from "@/lib/event-admin/server";
 export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
@@ -14,7 +15,7 @@ export async function GET(req: Request) {
       { status: 403, headers },
     );
   try {
-    const event = adminSeminarById(
+    const event = await findAdminOccurrence(
       new URL(req.url).searchParams.get("event") ?? currentEvent.id,
     );
     if (!event)

@@ -1,4 +1,5 @@
 import "server-only";
+import { adminOccurrence } from "../event-admin/occurrence";
 import { cache } from "react";
 import { dailyOwner } from "@/lib/daily/server";
 import { supabaseAdmin as db } from "@/lib/supabase-server";
@@ -30,3 +31,8 @@ export const loadEventPortfolio = cache(async () => {
     },
   });
 });
+
+export async function findAdminOccurrence(id: string) {
+  const events = await loadEventPortfolio();
+  return events.map(adminOccurrence).find((event) => event.id === id);
+}

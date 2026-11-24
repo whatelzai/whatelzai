@@ -1,4 +1,5 @@
 "use client";
+import type { AdminOccurrence } from "@/lib/event-admin/occurrence";
 import { useId, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
@@ -8,7 +9,7 @@ import {
   Images,
   MessageSquare,
 } from "lucide-react";
-import { currentEvent, type PublicSeminar } from "@/lib/public-events/map";
+import { currentEvent } from "@/lib/public-events/map";
 import { EventScope } from "./EventScope";
 const Scanner = dynamic(() => import("@/app/event-checkin/Scanner"), {
   loading: () => <p role="status">Opening camera…</p>,
@@ -25,7 +26,7 @@ export default function EventTools({
   feedback,
 }: {
   onCheckedIn: () => void;
-  event?: PublicSeminar;
+  event?: AdminOccurrence;
   feedback?: ReactNode;
 }) {
   const initialTool = useSearchParams().get("tool");
@@ -41,6 +42,7 @@ export default function EventTools({
         <div className="event-tool-tabs" aria-label="Event tools">
           <button
             type="button"
+            disabled={!event.poster}
             aria-expanded={active === "poster"}
             aria-controls={id}
             onClick={() => setActive(active === "poster" ? null : "poster")}

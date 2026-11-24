@@ -2,7 +2,8 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/users";
 import { supabaseAdmin } from "@/lib/supabase-server";
-import { currentEvent, adminSeminarById } from "@/lib/public-events/map";
+import { findAdminOccurrence } from "@/lib/event-portfolio/server";
+import { currentEvent } from "@/lib/public-events/map";
 import { EVENT_KEY } from "@/lib/event-tickets";
 export async function grantEventStaff(form: FormData) {
   await requireAdmin();
@@ -100,7 +101,9 @@ export async function closeLegacyEventCheckouts() {
 export async function retryEventTicketEmail(form: FormData) {
   await requireAdmin();
   const id = String(form.get("ticket_id") ?? "");
-  const event = adminSeminarById(String(form.get("event_id") ?? currentEvent.id));
+  const event = await findAdminOccurrence(
+    String(form.get("event_id") ?? currentEvent.id),
+  );
   if (!event) throw Error("Invalid event.");
   if (!/^[0-9a-f-]{36}$/i.test(id)) throw Error("Invalid ticket.");
   const { data, error } = await supabaseAdmin

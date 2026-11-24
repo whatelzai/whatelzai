@@ -131,11 +131,6 @@ export function EventDetail({
           )}
         </section>
       )}
-      {event.key && (
-        <Link className="focus-primary" href={adminUrl("/admin/event-checkin")}>
-          Registrations, check-in & media
-        </Link>
-      )}
       {!!m.poster_files && typeof m.poster_files === "object" && (
         <section>
           <h2>Posters</h2>
