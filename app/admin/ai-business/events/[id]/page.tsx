@@ -1,5 +1,5 @@
 import EventOperations from "@/components/admin/event-admin/EventOperations";
-import { seminarById } from "@/lib/public-events/map";
+import { adminSeminarById } from "@/lib/public-events/map";
 import EventFeedbackReview from "@/components/events/EventFeedbackReview";
 import { notFound } from "next/navigation";
 import { loadEventPortfolio } from "@/lib/event-portfolio/server";
@@ -28,7 +28,7 @@ export default async function Page({
   }
   const event = events.find((e) => e.id === id);
   if (!event) notFound();
-  const configured = seminarById(String(event.metadata.event_id ?? ""));
+  const configured = adminSeminarById(String(event.metadata.event_id ?? ""));
   if (configured && eventReference(event) === configured.key)
     return <EventOperations event={configured} />;
   const [peopleResult, ticketResult] = await Promise.allSettled([
