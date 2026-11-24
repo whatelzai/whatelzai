@@ -25,6 +25,7 @@ export default function RegistrationForm({
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
   const [applied, setApplied] = useState<string | null>(null);
+  const [linkedCode, setLinkedCode] = useState("");
   const [promoAmount, setPromoAmount] = useState(0);
   const [codeMessage, setCodeMessage] = useState("");
   const [waiting, setWaiting] = useState(checkExisting);
@@ -45,6 +46,57 @@ export default function RegistrationForm({
     );
     return () => clearInterval(timer);
   }, [returnOffer]);
+
+  useEffect(() => {
+    const value = new URLSearchParams(window.location.hash.slice(1)).get(
+      "invite",
+    );
+    if (value && /^[A-F0-9]{20}$/.test(value) && !returnOffer) {
+      setLinkedCode(value);
+      setCode(value);
+    }
+  }, [eventId, returnOffer]);
+
+  useEffect(() => {
+    if (
+      !linkedCode ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registrationEmail.trim())
+    )
+      return;
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch("/api/event-registration/promo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            eventId,
+            code: linkedCode,
+            email: registrationEmail,
+          }),
+        });
+        if (!response.ok)
+          throw Error(
+            "Use the email you registered with. This invitation may also have expired or been used.",
+          );
+        const data = await response.json();
+        if (controller.signal.aborted) return;
+        setPromoAmount(data.amount);
+        setApplied(linkedCode);
+        setCodeMessage("✓ Personal code applied.");
+      } catch (error) {
+        if (!controller.signal.aborted)
+          setCodeMessage(
+            error instanceof Error ? error.message : "Please try again.",
+          );
+      }
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [linkedCode, registrationEmail, eventId]);
 
   function requestToken() {
     if (!token.current) {
@@ -104,7 +156,7 @@ export default function RegistrationForm({
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy || applying) return;
+    if (busy || applying || (linkedCode && applied !== linkedCode)) return;
     setBusy(true);
     setError("");
     const form = new FormData(event.currentTarget);
@@ -229,30 +281,40 @@ export default function RegistrationForm({
               The REJOIN offer is no longer active. Your ticket is {price}.
             </p>
           )}
-          <div className="event-promo-field">
-            <label htmlFor="event-promo">Promo code (optional)</label>
-            <div className="event-promo-row">
-              <input
-                id="event-promo"
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value);
-                  setApplied(null);
-                  setCodeMessage("");
-                }}
-                autoComplete="off"
-                maxLength={64}
-              />
-              <button
-                type="button"
-                disabled={applying || busy || !code.trim()}
-                onClick={() => void apply()}
-              >
-                {applying ? "Checking…" : "Apply"}
-              </button>
+          {linkedCode ? (
+            <div className="event-return-applied" role="status">
+              <strong>Returning attendee invitation</strong>
+              <p>
+                {codeMessage ||
+                  "Enter your registered email to apply your personal ticket price automatically."}
+              </p>
             </div>
-            {codeMessage && <p role="status">{codeMessage}</p>}
-          </div>
+          ) : (
+            <div className="event-promo-field">
+              <label htmlFor="event-promo">Promo code (optional)</label>
+              <div className="event-promo-row">
+                <input
+                  id="event-promo"
+                  value={code}
+                  onChange={(e) => {
+                    setCode(e.target.value);
+                    setApplied(null);
+                    setCodeMessage("");
+                  }}
+                  autoComplete="off"
+                  maxLength={64}
+                />
+                <button
+                  type="button"
+                  disabled={applying || busy || !code.trim()}
+                  onClick={() => void apply()}
+                >
+                  {applying ? "Checking…" : "Apply"}
+                </button>
+              </div>
+              {codeMessage && <p role="status">{codeMessage}</p>}
+            </div>
+          )}
         </>
       )}
       <div className="registration-honeypot" aria-hidden="true">
@@ -275,7 +337,7 @@ export default function RegistrationForm({
       <button
         className="field-button"
         type="submit"
-        disabled={busy || applying}
+        disabled={busy || applying || (!!linkedCode && applied !== linkedCode)}
       >
         {busy
           ? "Registering…"
