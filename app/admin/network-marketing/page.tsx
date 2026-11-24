@@ -8,6 +8,11 @@ import { AdminArea } from "@/components/admin/AdminArea";
 export const metadata: Metadata = { title: "Network Marketing — Admin" };
 const links = [
   {
+    href: "/admin/network-marketing/goals",
+    label: "Quarterly goals",
+    description: "See your projected team and the size of each direct branch.",
+  },
+  {
     href: "/admin/users",
     label: "People",
     description: "Activation, account assignment and AI credits.",
@@ -64,7 +69,7 @@ export default function NetworkMarketingPage() {
         </Suspense>
       }
       links={links.filter((link) =>
-        ["Leads", "Team management"].includes(link.label),
+        ["Leads", "Team management", "Quarterly goals"].includes(link.label),
       )}
       groups={[
         {
