@@ -163,8 +163,11 @@ export async function POST(req: NextRequest) {
       );
     }
     const attempt = data as SignupAttempt;
-    let amountMatches = input.code ? attempt.amount === 0 : false;
-    if (!input.code) {
+    const matchesCode =
+      (attempt.code_hash ?? null) ===
+      (input.code ? signupHash(input.code.toUpperCase()) : null);
+    let amountMatches = matchesCode && !!input.code && attempt.amount === 0;
+    if (matchesCode && !amountMatches) {
       try {
         configForReservedAttempt(config, attempt);
         amountMatches = true;

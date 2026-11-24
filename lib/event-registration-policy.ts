@@ -33,6 +33,7 @@ export type EventCheckoutConfig = {
   eventKey: string;
   amount: number;
   priceId: string;
+  personalOffer?: { amount: number; priceId: string };
   returnOffer?: { amount: number; priceId: string };
 };
 export const PLATFORM_EVENT_MARKER = "ELZ-EVT-0004";
@@ -111,8 +112,22 @@ export function paymentFreezeUntil(startedAt: string | null) {
 
 export function configForReservedAttempt(
   config: EventCheckoutConfig,
-  attempt: { amount: number; return_offer_id?: string | null },
+  attempt: {
+    amount: number;
+    code_hash?: string | null;
+    return_offer_id?: string | null;
+  },
 ) {
+  if (
+    config.personalOffer &&
+    attempt.code_hash &&
+    attempt.amount === config.personalOffer.amount
+  )
+    return {
+      ...config,
+      amount: config.personalOffer.amount,
+      priceId: config.personalOffer.priceId,
+    };
   if (attempt.amount === config.amount) return config;
   if (
     config.returnOffer &&

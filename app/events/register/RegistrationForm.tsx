@@ -25,6 +25,7 @@ export default function RegistrationForm({
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
   const [applied, setApplied] = useState<string | null>(null);
+  const [promoAmount, setPromoAmount] = useState(0);
   const [codeMessage, setCodeMessage] = useState("");
   const [waiting, setWaiting] = useState(checkExisting);
   const [returnEnabled, setReturnEnabled] = useState(!!returnOffer),
@@ -68,12 +69,17 @@ export default function RegistrationForm({
       const response = await fetch("/api/event-registration/promo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, eventId }),
+        body: JSON.stringify({ code, eventId, email: registrationEmail }),
       });
       const data = await response.json();
       if (!response.ok) throw Error(data.error || "Code could not be checked.");
       setApplied(code.trim().toUpperCase());
-      setCodeMessage("Code applied. No payment required.");
+      setPromoAmount(data.amount ?? 0);
+      setCodeMessage(
+        data.amount
+          ? `Code applied. Your ticket is S$${data.amount / 100}.`
+          : "Code applied. No payment required.",
+      );
     } catch (e) {
       setCodeMessage(
         (e instanceof Error ? e.message : "Code not applied.") +
@@ -180,7 +186,11 @@ export default function RegistrationForm({
         <label htmlFor="event-email">Email address</label>
         <input
           value={registrationEmail}
-          onChange={(e) => setRegistrationEmail(e.target.value)}
+          onChange={(e) => {
+            setRegistrationEmail(e.target.value);
+            setApplied(null);
+            setCodeMessage("");
+          }}
           readOnly={returnActive}
           id="event-email"
           name="email"
@@ -253,7 +263,13 @@ export default function RegistrationForm({
       </div>
       <p className="registration-total">
         Ticket total{" "}
-        <strong>{returnActive ? totalPrice : applied ? "S$0" : price}</strong>
+        <strong>
+          {returnActive
+            ? totalPrice
+            : applied
+              ? `S$${promoAmount / 100}`
+              : price}
+        </strong>
       </p>
       {error && <p role="alert">{error}</p>}
       <button
@@ -264,7 +280,9 @@ export default function RegistrationForm({
         {busy
           ? "Registering…"
           : applied
-            ? "Confirm registration"
+            ? promoAmount
+              ? `Pay S$${promoAmount / 100}`
+              : "Confirm registration"
             : returnActive
               ? `Pay ${totalPrice}`
               : "Proceed to payment"}

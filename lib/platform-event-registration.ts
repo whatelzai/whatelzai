@@ -22,6 +22,7 @@ export type SignupAttempt = {
   email: string;
   phone: string;
   amount: number;
+  code_hash?: string | null;
   return_offer_id?: string | null;
   state: string;
   stripe_session_id: string | null;
