@@ -760,3 +760,17 @@
   font-size: 14px;
   text-decoration: underline;
 }
+
+.event-registration-form input[type="email"][aria-invalid="true"] {
+  border: 2px solid #d33838;
+  outline-color: #d33838;
+  box-shadow: 0 0 0 2px #d3383833;
+}
+.event-registration-form input[aria-invalid="true"] + .event-input-hint {
+  color: #bf3030;
+  font-weight: 600;
+}
+.event-registration-form button[type="submit"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
