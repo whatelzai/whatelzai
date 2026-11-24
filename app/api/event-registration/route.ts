@@ -4,7 +4,10 @@ import { configForReservedAttempt } from "@/lib/event-registration-policy";
 import { loadPublicEvents } from "@/lib/public-events/catalog-server";
 import { resolveEvent } from "@/lib/public-events/catalog";
 import { registrationCookie } from "@/lib/public-events/map";
-import { loadCheckoutConfig } from "@/lib/event-offer";
+import {
+  checkoutConfigForMarker as loadCheckoutConfigForInvitation,
+  loadCheckoutConfig,
+} from "@/lib/event-offer";
 import { NextRequest, NextResponse } from "next/server";
 import { eventRegistrationSchema } from "@/lib/event-registration-policy";
 import {
@@ -74,6 +77,59 @@ export async function POST(req: NextRequest) {
         {
           error: "Please complete your missing registration details.",
           needsDetails: true,
+        },
+        409,
+      );
+    raw.name = previous.attendee_name;
+    raw.phone = previous.phone;
+  }
+  if (raw?.personalInvitation === true) {
+    const email =
+      typeof raw.email === "string" ? raw.email.trim().toLowerCase() : "";
+    if (
+      !email ||
+      email.length > 254 ||
+      typeof raw.code !== "string" ||
+      !/^[A-F0-9]{20}$/.test(raw.code) ||
+      typeof raw.eventId !== "string" ||
+      raw.returnOffer
+    )
+      return response(
+        { error: "Please use the email registered for this invitation." },
+        409,
+      );
+    const config = await loadCheckoutConfigForInvitation(raw.eventId);
+    if (!config) return response({ error: "Invitation unavailable." }, 409);
+    const { data: code, error: codeError } = await supabaseAdmin
+      .from("event_signup_codes")
+      .select("recipient_email")
+      .eq("event_key", config.eventKey)
+      .eq("code_hash", signupHash(raw.code))
+      .eq("recipient_email", email)
+      .eq("enabled", true)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+    if (codeError) return response({ error: "Please try again shortly." }, 503);
+    if (!code)
+      return response(
+        { error: "Please use the email registered for this invitation." },
+        409,
+      );
+    const { data: previous, error: detailsError } = await supabaseAdmin
+      .from("event_registrations")
+      .select("attendee_name,phone")
+      .eq("email", email)
+      .eq("status", "confirmed")
+      .eq("is_test", false)
+      .not("checked_in_at", "is", null)
+      .order("checked_in_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (detailsError || !previous?.attendee_name || !previous.phone)
+      return response(
+        {
+          error:
+            "Your saved attendee details are unavailable. Please contact Edmund.",
         },
         409,
       );

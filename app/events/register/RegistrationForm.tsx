@@ -25,6 +25,7 @@ export default function RegistrationForm({
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
   const [applied, setApplied] = useState<string | null>(null);
+  const [inviteMismatch, setInviteMismatch] = useState(false);
   const [linkedCode, setLinkedCode] = useState("");
   const [promoAmount, setPromoAmount] = useState(0);
   const [codeMessage, setCodeMessage] = useState("");
@@ -76,10 +77,14 @@ export default function RegistrationForm({
             email: registrationEmail,
           }),
         });
-        if (!response.ok)
+        if (!response.ok && !controller.signal.aborted) {
+          setInviteMismatch(response.status === 409);
+          if (response.status !== 409)
+            throw Error("Email check unavailable. Please try again shortly.");
           throw Error(
             "Use the email you registered with. This invitation may also have expired or been used.",
           );
+        }
         const data = await response.json();
         if (controller.signal.aborted) return;
         setPromoAmount(data.amount);
@@ -167,6 +172,7 @@ export default function RegistrationForm({
         body: JSON.stringify({
           ...Object.fromEntries(form),
           eventId,
+          personalInvitation: !!linkedCode,
           code: returnActive ? "" : (applied ?? ""),
           returnOffer: returnActive,
           requestToken: requestToken(),
@@ -204,7 +210,7 @@ export default function RegistrationForm({
     );
   return (
     <form className="event-registration-form" onSubmit={submit}>
-      {(!returnActive || needsDetails) && (
+      {!linkedCode && (!returnActive || needsDetails) && (
         <>
           <label>
             Name
@@ -239,10 +245,12 @@ export default function RegistrationForm({
         <input
           value={registrationEmail}
           onChange={(e) => {
+            setInviteMismatch(false);
             setRegistrationEmail(e.target.value);
             setApplied(null);
             setCodeMessage("");
           }}
+          aria-invalid={inviteMismatch || undefined}
           readOnly={returnActive}
           id="event-email"
           name="email"
@@ -254,7 +262,13 @@ export default function RegistrationForm({
           aria-describedby="event-email-hint"
         />
         <span id="event-email-hint" className="event-input-hint">
-          We’ll send your QR ticket here.
+          {linkedCode
+            ? inviteMismatch
+              ? "✕ Please use the email you registered with."
+              : applied
+                ? "✓ Registered email matched."
+                : "Use the email you registered with previously."
+            : "We’ll send your QR ticket here."}
         </span>
       </div>
       {returnActive ? (
