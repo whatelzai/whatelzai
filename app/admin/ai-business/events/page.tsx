@@ -13,7 +13,9 @@ export const metadata = { title: "All events — Admin" };
 export default async function Page() {
   let events;
   try {
-    events = await loadEventPortfolio();
+    events = (await loadEventPortfolio()).filter(
+      (event) => event.metadata.status !== "archived",
+    );
   } catch {
     return (
       <div className="admin-ledger">
@@ -66,6 +68,9 @@ export default async function Page() {
           <EventRows events={undated} />
         </section>
       )}
+      <Link href={adminUrl("/admin/ai-business/events/archived")}>
+        Archived events
+      </Link>
       <details className="workspace-secondary">
         <summary>Event administration</summary>
         <Link href={adminUrl("/admin/events")}>
