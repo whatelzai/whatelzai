@@ -182,6 +182,22 @@ export async function POST(req: NextRequest) {
       p_email: input.email,
       p_phone: input.phone,
     };
+    let codeHash = input.code ? signupHash(input.code.toUpperCase()) : null;
+    if (input.code === "EMAIL-OFFER") {
+      const lookup = await supabaseAdmin
+        .from("event_signup_codes")
+        .select("code_hash")
+        .eq("event_key", event.key)
+        .eq("recipient_email", input.email.trim().toLowerCase())
+        .eq("enabled", true)
+        .gt("expires_at", new Date().toISOString())
+        .maybeSingle();
+      if (lookup.error)
+        return response({ error: "Offer check unavailable." }, 503);
+      if (!lookup.data)
+        return response({ error: "Your offer is no longer available." }, 409);
+      codeHash = lookup.data.code_hash;
+    }
     const { data, error } = input.returnOffer
       ? await supabaseAdmin.rpc("reserve_event_signup_with_return", {
           ...baseArgs,
@@ -190,7 +206,7 @@ export async function POST(req: NextRequest) {
         })
       : await supabaseAdmin.rpc("reserve_event_signup_for_event", {
           ...baseArgs,
-          p_code_hash: input.code ? signupHash(input.code.toUpperCase()) : null,
+          p_code_hash: codeHash,
         });
     if (error) {
       const messages: Record<string, string> = {

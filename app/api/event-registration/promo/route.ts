@@ -49,7 +49,8 @@ export async function POST(req: NextRequest) {
       },
       409,
     );
-  if (!/^[A-Z0-9_-]{4,64}$/.test(code))
+  const emailLookup = !code && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!emailLookup && !/^[A-Z0-9_-]{4,64}$/.test(code))
     return reply({ error: "This code is invalid." }, 400);
   const { data: allowed, error: rateError } = await supabaseAdmin.rpc(
     "consume_event_signup_limit",
@@ -61,17 +62,20 @@ export async function POST(req: NextRequest) {
   );
   if (rateError || !allowed)
     return reply({ error: "Please try again later." }, 429);
-  const hash = signupHash(code);
-  const { data, error } = await supabaseAdmin
+  const lookup = supabaseAdmin
     .from("event_signup_codes")
-    .select("max_uses,recipient_email,ticket_amount")
+    .select("code_hash,max_uses,recipient_email,ticket_amount")
     .eq("event_key", event.key)
-    .eq("code_hash", hash)
     .eq("enabled", true)
-    .gt("expires_at", new Date().toISOString())
-    .maybeSingle();
+    .gt("expires_at", new Date().toISOString());
+  const { data, error } = await (
+    emailLookup
+      ? lookup.eq("recipient_email", email)
+      : lookup.eq("code_hash", signupHash(code))
+  ).maybeSingle();
   if (error)
     return reply({ error: "Unable to check the code. Please try again." }, 503);
+  if (emailLookup && !data) return reply({ eligible: false });
   if (!data || (data.recipient_email && data.recipient_email !== email))
     return reply(
       { error: "This code is invalid or no longer available." },
@@ -81,10 +85,11 @@ export async function POST(req: NextRequest) {
     .from("event_signup_attempts")
     .select("id", { head: true, count: "exact" })
     .eq("event_key", event.key)
-    .eq("code_hash", hash)
     .in("state", ["reserved", "checkout", "confirmed"]);
   if (countError)
     return reply({ error: "Unable to check the code. Please try again." }, 503);
+  if (emailLookup && (count ?? 0) >= data.max_uses)
+    return reply({ eligible: false });
   if ((count ?? 0) >= data.max_uses)
     return reply({ error: "This code has reached its limit." }, 409);
   return reply({ free: !data.ticket_amount, amount: data.ticket_amount ?? 0 });
