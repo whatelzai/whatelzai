@@ -4,11 +4,9 @@ import "server-only";
 import { recordAdminNotice } from "@/lib/admin-notifications/server";
 import { createHash } from "node:crypto";
 import {
-  DEFAULT_FOCUS,
   validFocusSettings,
   type FocusSettings,
 } from "@/lib/admin-focus";
-import { focusPushCandidate } from "./focus";
 import webpush from "web-push";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { decryptSecret, encryptSecret } from "@/lib/daily/crypto";
@@ -302,72 +300,5 @@ export async function checkRoutinePush() {
   });
   if (state.error) throw Error("monitor_state_unavailable");
   if (errorCode) throw Error(errorCode);
-  return { devices: data?.length ?? 0, sent };
-}
-
-/** Runs independently of EMDEE, so a disconnected vault cannot block focus alerts. */
-export async function checkFocusPush(now = new Date()) {
-  if (!pushConfigured()) throw Error("push_not_configured");
-  const owner = process.env.WHATELZ_OWNER_USER_ID;
-  const { data: user, error: userError } = await supabaseAdmin
-    .from("users")
-    .select("id,role")
-    .eq("id", owner ?? "00000000-0000-0000-0000-000000000000")
-    .maybeSingle();
-  if (userError || !isOwnerUser(user)) throw Error("owner_unavailable");
-  const { data, error } = await supabaseAdmin
-    .from("admin_push_subscriptions")
-    .select(
-      "id,owner_id,encrypted_subscription,enabled_at,enabled,focus_settings,focus_hash,focus_updated_at",
-    )
-    .eq("owner_id", owner!)
-    .eq("enabled", true)
-    .limit(11);
-  if (error || (data?.length ?? 0) > 10) throw Error("devices_unavailable");
-  let sent = 0;
-  let failed = false;
-  for (const device of (data ?? []) as Device[]) {
-    const since = new Date(
-      Math.max(
-        Date.parse(device.enabled_at),
-        Date.parse(device.focus_updated_at ?? device.enabled_at),
-      ),
-    ).toISOString();
-    const candidate = focusPushCandidate(now, device.focus_settings, since);
-    if (!candidate) continue;
-    const { data: claimed, error: claimError } = await supabaseAdmin.rpc(
-      "claim_admin_push",
-      {
-        p_subscription: device.id,
-        p_document: candidate.path,
-        p_hash:
-          device.focus_hash ??
-          createHash("sha256")
-            .update(JSON.stringify(DEFAULT_FOCUS))
-            .digest("hex"),
-      },
-    );
-    if (claimError) throw Error("delivery_claim_unavailable");
-    if (!claimed) continue;
-    const ok = await sendPush(device, candidate, {
-      ttl: Math.max(
-        1,
-        Math.min(60, Math.floor((candidate.endsAt - now.getTime()) / 1000)),
-      ),
-      focusHash: device.focus_hash ?? null,
-    });
-    const { error: updateError } = await supabaseAdmin
-      .from("admin_push_deliveries")
-      .update({
-        status: ok ? "sent" : "failed",
-        ...(ok ? { sent_at: new Date().toISOString() } : {}),
-      })
-      .eq("subscription_id", device.id)
-      .eq("document_path", candidate.path);
-    if (updateError) throw Error("delivery_state_unavailable");
-    if (ok) sent++;
-    else failed = true;
-  }
-  if (failed) throw Error("focus_delivery_failed");
   return { devices: data?.length ?? 0, sent };
 }

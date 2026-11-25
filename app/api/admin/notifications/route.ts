@@ -22,6 +22,7 @@ export async function GET(request: Request) {
       .from("admin_notifications")
       .select("id,title,body,url,created_at,read_at")
       .eq("owner_id", owner)
+      .not("source_key", "like", "push:focus-%")
       .is("archived_at", null)
       .order("created_at", { ascending: false })
       .limit(100);
@@ -29,6 +30,7 @@ export async function GET(request: Request) {
       .from("admin_notifications")
       .select("id", { count: "exact", head: true })
       .eq("owner_id", owner)
+      .not("source_key", "like", "push:focus-%")
       .is("archived_at", null)
       .is("read_at", null);
     if (r.error || count.error) throw Error();
