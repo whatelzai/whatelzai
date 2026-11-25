@@ -27,6 +27,9 @@ export default function RegistrationForm({
   const [applied, setApplied] = useState<string | null>(null);
   const [inviteMismatch, setInviteMismatch] = useState(false);
   const [linkedCode, setLinkedCode] = useState("");
+  const [lookupAttempt, retryLookup] = useState(0);
+  const [checkedEmail, setCheckedEmail] = useState("");
+  const autoLookup = !returnOffer && !linkedCode && !code.trim();
   const [promoAmount, setPromoAmount] = useState(0);
   const [codeMessage, setCodeMessage] = useState("");
   const [waiting, setWaiting] = useState(checkExisting);
@@ -37,6 +40,7 @@ export default function RegistrationForm({
     [registrationEmail, setRegistrationEmail] = useState(
       returnOffer?.email || "",
     );
+  const awaitingPrice = autoLookup && checkedEmail !== registrationEmail;
   const returnActive = !!returnOffer && returnEnabled && returnSeconds > 0;
   const totalPrice = returnActive ? `S$${returnOffer.amount / 100}` : price;
   useEffect(() => {
@@ -60,7 +64,7 @@ export default function RegistrationForm({
 
   useEffect(() => {
     if (
-      !linkedCode ||
+      (!linkedCode && !autoLookup) ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registrationEmail.trim())
     )
       return;
@@ -87,9 +91,11 @@ export default function RegistrationForm({
         }
         const data = await response.json();
         if (controller.signal.aborted) return;
+        setCheckedEmail(registrationEmail);
+        if (data.eligible === false) return;
         setPromoAmount(data.amount);
-        setApplied(linkedCode);
-        setCodeMessage("✓ Personal code applied.");
+        setApplied(linkedCode || "EMAIL-OFFER");
+        setCodeMessage("Your attendee price has been applied.");
       } catch (error) {
         if (!controller.signal.aborted)
           setCodeMessage(
@@ -101,7 +107,7 @@ export default function RegistrationForm({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [linkedCode, registrationEmail, eventId]);
+  }, [linkedCode, autoLookup, registrationEmail, eventId, lookupAttempt]);
 
   function requestToken() {
     if (!token.current) {
@@ -161,7 +167,13 @@ export default function RegistrationForm({
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy || applying || (linkedCode && applied !== linkedCode)) return;
+    if (
+      busy ||
+      applying ||
+      awaitingPrice ||
+      (linkedCode && applied !== linkedCode)
+    )
+      return;
     setBusy(true);
     setError("");
     const form = new FormData(event.currentTarget);
@@ -246,6 +258,7 @@ export default function RegistrationForm({
           value={registrationEmail}
           onChange={(e) => {
             setInviteMismatch(false);
+            setCheckedEmail("");
             setRegistrationEmail(e.target.value);
             setApplied(null);
             setCodeMessage("");
@@ -311,6 +324,7 @@ export default function RegistrationForm({
                   id="event-promo"
                   value={code}
                   onChange={(e) => {
+                    setCheckedEmail("");
                     setCode(e.target.value);
                     setApplied(null);
                     setCodeMessage("");
@@ -327,6 +341,11 @@ export default function RegistrationForm({
                 </button>
               </div>
               {codeMessage && <p role="status">{codeMessage}</p>}
+              {awaitingPrice && codeMessage && (
+                <button type="button" onClick={() => retryLookup((n) => n + 1)}>
+                  Retry email check
+                </button>
+              )}
             </div>
           )}
         </>
@@ -351,7 +370,12 @@ export default function RegistrationForm({
       <button
         className="field-button"
         type="submit"
-        disabled={busy || applying || (!!linkedCode && applied !== linkedCode)}
+        disabled={
+          busy ||
+          applying ||
+          awaitingPrice ||
+          (!!linkedCode && applied !== linkedCode)
+        }
       >
         {busy
           ? "Registering…"
