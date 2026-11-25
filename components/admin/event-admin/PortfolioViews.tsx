@@ -1,11 +1,11 @@
 import {
-  CalendarDays,
   ChevronRight,
   UsersRound,
   Repeat2,
   Ticket,
 } from "lucide-react";
 import Link from "@/components/admin/AdminLink";
+import { adminOccurrence } from "@/lib/event-admin/occurrence";
 import { adminUrl } from "@/lib/admin-url";
 import {
   eventReference,
@@ -24,6 +24,21 @@ export function eventDate(date: string | null) {
       })
     : "Date to confirm";
 }
+function EventThumbnail({ event }: { event: PortfolioEvent }) {
+  const { poster } = adminOccurrence(event);
+  return (
+    <span className="portfolio-event-thumbnail" aria-hidden="true">
+      {poster ? (
+        // The admin poster endpoint authorizes the browser request before serving private artwork.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={poster} width={72} height={72} alt="" loading="lazy" />
+      ) : (
+        <b>{event.name}</b>
+      )}
+    </span>
+  );
+}
+
 export function EventRows({ events }: { events: PortfolioEvent[] }) {
   return (
     <div className="portfolio-event-list">
@@ -33,7 +48,7 @@ export function EventRows({ events }: { events: PortfolioEvent[] }) {
           href={adminUrl("/admin/ai-business/events/" + e.id)}
           className="portfolio-event-row"
         >
-          <CalendarDays size={19} aria-hidden="true" />
+          <EventThumbnail event={e} />
           <span>
             <small>{eventDate(e.date)}</small>
             <strong>{e.name}</strong>

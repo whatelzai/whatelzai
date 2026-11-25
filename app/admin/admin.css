@@ -1633,11 +1633,32 @@ html:has(.admin-shell[data-admin-size="larger"]) {
 }
 .portfolio-event-row {
   display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) 18px;
+  grid-template-columns: clamp(56px, 12vw, 72px) minmax(0, 1fr) 18px;
   gap: 14px;
   align-items: center;
   padding: 18px 0;
   border-bottom: 1px solid var(--ledger-rule);
+}
+.portfolio-event-thumbnail {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  display: grid;
+  align-items: end;
+  background: #ffe552;
+  color: #242119;
+  border-radius: 8px;
+}
+.portfolio-event-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.portfolio-event-thumbnail b {
+  padding: 6px;
+  font-size: clamp(10px, 2.2vw, 12px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
 }
 .portfolio-event-row strong,
 .portfolio-event-row small {
