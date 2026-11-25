@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
     .from("event_signup_attempts")
     .select("id", { head: true, count: "exact" })
     .eq("event_key", event.key)
+    .eq("code_hash", data.code_hash)
     .in("state", ["reserved", "checkout", "confirmed"]);
   if (countError)
     return reply({ error: "Unable to check the code. Please try again." }, 503);
