@@ -178,35 +178,6 @@ function fixture(owner = true) {
     endpoint: subscription.endpoint,
   };
 }
-test("focus dispatch verifies sole owner before reading devices", async () => {
-  const f = fixture(false);
-  await assert.rejects(
-    f.api.checkFocusPush(new Date("2026-10-23T00:00:00Z")),
-    /owner_unavailable/,
-  );
-  assert.equal(f.sourceReads(), 0);
-});
-test("closed-app focus dispatch is independent of EMDEE and deduplicates concurrent repeats", async () => {
-  const f = fixture();
-  const now = new Date("2026-10-23T10:00:00Z");
-  await Promise.all([f.api.checkFocusPush(now), f.api.checkFocusPush(now)]);
-  assert.equal(f.sent.length, 1);
-  const notice = JSON.parse(f.sent[0].payload);
-  assert.equal(notice.title, "Time for Overview");
-  assert.equal(notice.url, "/");
-  assert.equal(f.sent[0].options.TTL, 60);
-  assert(!f.sent[0].payload.includes("encrypted_subscription"));
-});
-test("pause and post-boundary opt-in suppress focus delivery", async () => {
-  const f = fixture();
-  f.device.focus_settings = { ...focus.DEFAULT_FOCUS, enabled: false };
-  await f.api.checkFocusPush(new Date("2026-10-23T00:00:00Z"));
-  assert.equal(f.sent.length, 0);
-  f.device.focus_settings = null;
-  f.device.focus_updated_at = "2026-10-23T00:00:01Z";
-  await f.api.checkFocusPush(new Date("2026-10-23T00:01:00Z"));
-  assert.equal(f.sent.length, 0);
-});
 test("unchanged timetable sync preserves its activation timestamp", async () => {
   const f = fixture();
   await f.api.savePushFocus("owner", f.endpoint, focus.DEFAULT_FOCUS);
