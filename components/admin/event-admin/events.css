@@ -549,6 +549,23 @@
   border-left: 2px solid currentColor;
   padding-left: 10px;
 }
+@media (min-width: 651px) {
+  .event-poster-body {
+    grid-template-columns: minmax(0, 32%) minmax(0, 1fr);
+  }
+  .event-poster-preview {
+    position: relative;
+    align-self: stretch;
+    border-radius: 12px;
+    background: var(--ledger-surface, #f6f5f1);
+  }
+  .event-poster-preview img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    object-fit: contain;
+  }
+}
 @media (max-width: 650px) {
   .event-poster-body {
     grid-template-columns: 1fr;
