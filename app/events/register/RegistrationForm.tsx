@@ -222,41 +222,12 @@ export default function RegistrationForm({
     );
   return (
     <form className="event-registration-form" onSubmit={submit}>
-      {!linkedCode && (!returnActive || needsDetails) && (
-        <>
-          <label>
-            Name
-            <input
-              name="name"
-              autoComplete="name"
-              placeholder="Your full name"
-              required
-              maxLength={160}
-            />
-          </label>
-          <div className="event-form-field">
-            <label htmlFor="event-phone">Phone number</label>
-            <input
-              id="event-phone"
-              name="phone"
-              type="tel"
-              autoComplete="tel"
-              required
-              maxLength={24}
-              placeholder="e.g. +65 8123 4567"
-              aria-describedby="event-phone-hint"
-            />
-            <span id="event-phone-hint" className="event-input-hint">
-              Include your country code, e.g. +65 or +60.
-            </span>
-          </div>
-        </>
-      )}
       <div className="event-form-field">
         <label htmlFor="event-email">Email address</label>
         <input
           value={registrationEmail}
           onChange={(e) => {
+            setNeedsDetails(false);
             setInviteMismatch(false);
             setCheckedEmail("");
             setRegistrationEmail(e.target.value);
@@ -284,6 +255,42 @@ export default function RegistrationForm({
             : "We’ll send your QR ticket here."}
         </span>
       </div>
+      {applied === "EMAIL-OFFER" && !needsDetails && (
+        <p role="status">
+          We’ll use the name and phone number from your previous registration.
+        </p>
+      )}
+      {!linkedCode &&
+        ((!returnActive && applied !== "EMAIL-OFFER") || needsDetails) && (
+          <>
+            <label>
+              Name
+              <input
+                name="name"
+                autoComplete="name"
+                placeholder="Your full name"
+                required
+                maxLength={160}
+              />
+            </label>
+            <div className="event-form-field">
+              <label htmlFor="event-phone">Phone number</label>
+              <input
+                id="event-phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                required
+                maxLength={24}
+                placeholder="e.g. +65 8123 4567"
+                aria-describedby="event-phone-hint"
+              />
+              <span id="event-phone-hint" className="event-input-hint">
+                Include your country code, e.g. +65 or +60.
+              </span>
+            </div>
+          </>
+        )}
       {returnActive ? (
         <div className="event-return-applied" role="status">
           <strong>✓ REJOIN applied!</strong>

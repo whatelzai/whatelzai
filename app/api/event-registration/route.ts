@@ -83,14 +83,18 @@ export async function POST(req: NextRequest) {
     raw.name = previous.attendee_name;
     raw.phone = previous.phone;
   }
-  if (raw?.personalInvitation === true) {
+  const reuseByEmail =
+    raw?.code === "EMAIL-OFFER" &&
+    raw.name === undefined &&
+    raw.phone === undefined;
+  if (raw?.personalInvitation === true || reuseByEmail) {
     const email =
       typeof raw.email === "string" ? raw.email.trim().toLowerCase() : "";
     if (
       !email ||
       email.length > 254 ||
       typeof raw.code !== "string" ||
-      !/^[A-F0-9]{20}$/.test(raw.code) ||
+      (!reuseByEmail && !/^[A-F0-9]{20}$/.test(raw.code)) ||
       typeof raw.eventId !== "string" ||
       raw.returnOffer
     )
@@ -100,15 +104,16 @@ export async function POST(req: NextRequest) {
       );
     const config = await loadCheckoutConfigForInvitation(raw.eventId);
     if (!config) return response({ error: "Invitation unavailable." }, 409);
-    const { data: code, error: codeError } = await supabaseAdmin
+    let invitation = supabaseAdmin
       .from("event_signup_codes")
       .select("recipient_email")
       .eq("event_key", config.eventKey)
-      .eq("code_hash", signupHash(raw.code))
       .eq("recipient_email", email)
       .eq("enabled", true)
-      .gt("expires_at", new Date().toISOString())
-      .maybeSingle();
+      .gt("expires_at", new Date().toISOString());
+    if (!reuseByEmail)
+      invitation = invitation.eq("code_hash", signupHash(raw.code));
+    const { data: code, error: codeError } = await invitation.maybeSingle();
     if (codeError) return response({ error: "Please try again shortly." }, 503);
     if (!code)
       return response(
@@ -125,16 +130,27 @@ export async function POST(req: NextRequest) {
       .order("checked_in_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (detailsError || !previous?.attendee_name || !previous.phone)
+    if (detailsError)
+      return response(
+        { error: "Unable to load saved details. Please try again." },
+        503,
+      );
+    if (
+      !eventRegistrationSchema.shape.name.safeParse(previous?.attendee_name)
+        .success ||
+      !eventRegistrationSchema.shape.phone.safeParse(previous?.phone).success
+    )
       return response(
         {
-          error:
-            "Your saved attendee details are unavailable. Please contact Edmund.",
+          needsDetails: reuseByEmail,
+          error: reuseByEmail
+            ? "Please enter your name and phone number to continue."
+            : "Your saved attendee details are unavailable. Please contact Edmund.",
         },
         409,
       );
-    raw.name = previous.attendee_name;
-    raw.phone = previous.phone;
+    raw.name = previous!.attendee_name;
+    raw.phone = previous!.phone;
   }
   const parsed = eventRegistrationSchema.safeParse(raw);
   if (!parsed.success)
