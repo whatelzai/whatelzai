@@ -235,9 +235,7 @@ export async function POST(req: NextRequest) {
       );
     }
     const attempt = data as SignupAttempt;
-    const matchesCode =
-      (attempt.code_hash ?? null) ===
-      (input.code ? signupHash(input.code.toUpperCase()) : null);
+    const matchesCode = (attempt.code_hash ?? null) === codeHash;
     let amountMatches = matchesCode && !!input.code && attempt.amount === 0;
     if (matchesCode && !amountMatches) {
       try {
