@@ -40,7 +40,7 @@ test("confirmed attempt joins once; pending and released never count as payments
   const d = eventView(
     [ticket("t", { signup_attempt_id: "a" })],
     [
-      attempt("a", { state: "confirmed" }),
+      attempt("a", { state: "confirmed", amount: 1300 }),
       attempt("b"),
       attempt("c", { state: "released" }),
     ],
@@ -51,7 +51,7 @@ test("confirmed attempt joins once; pending and released never count as payments
   assert.equal(d.counts.confirmed, 1);
   assert.equal(d.counts.pending, 1);
   assert.equal(d.counts.paid, 1);
-  assert.equal(d.counts.recordedPaidMinor, 700);
+  assert.equal(d.counts.recordedPaidMinor, 1300);
 });
 test("legacy amounts stay unknown; free tickets and full refunds are not paid revenue", () => {
   const d = eventView(
