@@ -69,7 +69,7 @@ export function eventView(
       : a?.state === "confirmed"
         ? a.amount === 0
           ? "free"
-          : [700, 800].includes(a.amount)
+          : Number.isSafeInteger(a.amount) && a.amount > 0
             ? "paid"
             : "unknown"
         : "unknown";
