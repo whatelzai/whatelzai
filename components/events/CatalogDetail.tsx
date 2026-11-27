@@ -28,6 +28,13 @@ export default function CatalogDetail({
       >
         <header className="event-hero-intro">
           <h1>{e.title}</h1>
+          {e.cancelled && (
+            <p role="status">
+              <strong>
+                This event has been cancelled. Registration is closed.
+              </strong>
+            </p>
+          )}
           <p className="event-intro-mobile-facts">
             {e.dateLabel}
             <br />
@@ -93,45 +100,50 @@ export default function CatalogDetail({
                 <dt>Attended</dt>
                 <dd>{e.attended} people</dd>
               </div>
-            ) : !past && e.capacity !== null ? (
+            ) : !e.cancelled && !past && e.capacity !== null ? (
               <div>
                 <dt>Places</dt>
                 <dd>{e.capacity} maximum</dd>
               </div>
             ) : null}
           </dl>
-          <div
-            className={`event-book-ticket${past ? " event-book-ticket-past" : ""}`}
-          >
-            {past ? (
-              <div>
-                <strong>This session has ended.</strong>
-                <p>Join us at an upcoming weekly session.</p>
-              </div>
-            ) : e.priceMinor !== null ? (
-              <p className="map-price">
-                {e.originalPriceMinor != null &&
-                  e.originalPriceMinor > e.priceMinor! && (
-                    <del>{priceLabel(e.originalPriceMinor)}</del>
-                  )}
-                <strong>{priceLabel(e.priceMinor)}</strong>
-                <span>per person · final price</span>
-              </p>
-            ) : (
-              <p>Ticket details to be announced.</p>
-            )}
-            {past ? (
-              <Link className="event-primary-button" href="/events/next">
-                See the next session ↗
-              </Link>
-            ) : open ? (
-              <Link className="event-primary-button" href={e.registrationUrl!}>
-                Register ↗
-              </Link>
-            ) : (
-              <p>Registration is not open.</p>
-            )}
-          </div>
+          {!e.cancelled && (
+            <div
+              className={`event-book-ticket${past ? " event-book-ticket-past" : ""}`}
+            >
+              {past ? (
+                <div>
+                  <strong>This session has ended.</strong>
+                  <p>Join us at an upcoming weekly session.</p>
+                </div>
+              ) : e.priceMinor !== null ? (
+                <p className="map-price">
+                  {e.originalPriceMinor != null &&
+                    e.originalPriceMinor > e.priceMinor! && (
+                      <del>{priceLabel(e.originalPriceMinor)}</del>
+                    )}
+                  <strong>{priceLabel(e.priceMinor)}</strong>
+                  <span>per person · final price</span>
+                </p>
+              ) : (
+                <p>Ticket details to be announced.</p>
+              )}
+              {past ? (
+                <Link className="event-primary-button" href="/events/next">
+                  See the next session ↗
+                </Link>
+              ) : open ? (
+                <Link
+                  className="event-primary-button"
+                  href={e.registrationUrl!}
+                >
+                  Register ↗
+                </Link>
+              ) : (
+                <p>Registration is not open.</p>
+              )}
+            </div>
+          )}
           {open && (
             <p className="event-ticket-note">
               Your QR ticket, delivered to your inbox.
@@ -174,7 +186,7 @@ export default function CatalogDetail({
           )}
         </section>
       )}
-      {past && (
+      {!e.cancelled && past && (
         <p>
           <Link className="text-link" href={feedbackPath(e.id)}>
             Attended this session? Share feedback ↗

@@ -3,7 +3,7 @@ import {
   loadReturnOffer,
   returnOfferView,
 } from "@/lib/event-return-offer/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import Image from "next/image";
@@ -41,6 +41,7 @@ export default async function RegisterPage({
     event || legacyEvent.id,
   );
   if (!mapEvent) notFound();
+  if (mapEvent.cancelled) redirect(mapEvent.path);
   let returnOffer = null;
   if (offerMode === "rejoin" && mapEvent.key) {
     try {
