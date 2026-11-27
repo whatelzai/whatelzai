@@ -79,6 +79,7 @@ export const loadPublicEvents = cache(async (): Promise<CatalogEvent[]> => {
       (row) => row.id === e.recordId,
     )?.metadata.stripe_price_id;
     if (
+      !e.cancelled &&
       offer &&
       e.format === "weekly" &&
       typeof price === "string" &&

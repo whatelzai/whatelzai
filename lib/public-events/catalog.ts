@@ -33,6 +33,7 @@ export type CatalogEvent = {
   topic: EventTopic;
   format: EventFormat;
   listed: boolean;
+  cancelled?: boolean;
   capacity: number | null;
   attended: number | null;
   priceMinor: number | null;
@@ -99,7 +100,8 @@ export function projectEvent(row: CatalogRow): CatalogEvent | null {
     !row.published ||
     !["training", "workshop", "talk"].includes(row.type) ||
     m.superseded_by ||
-    ["duplicate", "cancelled", "draft"].includes(String(m.status)) ||
+    ["duplicate", "draft"].includes(String(m.status)) ||
+    (m.status === "cancelled" && m.keep_cancelled_listing !== true) ||
     !row.date ||
     !/^\d{4}-\d{2}-\d{2}$/.test(row.date) ||
     !Number.isFinite(Date.parse(row.date))
@@ -177,6 +179,7 @@ export function projectEvent(row: CatalogRow): CatalogEvent | null {
     posterHeight: num(m.poster_height) || 1440,
     topic,
     format,
+    cancelled: m.status === "cancelled",
     listed:
       m.public_visibility === "listed" ||
       (m.public_visibility !== "unlisted" && format !== "intensive"),
@@ -205,7 +208,7 @@ export function eventEnds(event: CatalogEvent) {
 }
 export function pastEvents(events: CatalogEvent[], now = Date.now()) {
   return events
-    .filter((e) => e.listed && eventEnds(e) <= now)
+    .filter((e) => e.listed && !e.cancelled && eventEnds(e) <= now)
     .sort(
       (a, b) =>
         eventEnds(b) - eventEnds(a) || a.recordId.localeCompare(b.recordId),
@@ -213,7 +216,7 @@ export function pastEvents(events: CatalogEvent[], now = Date.now()) {
 }
 export function upcomingEvents(events: CatalogEvent[], now = Date.now()) {
   return events
-    .filter((e) => e.listed && eventStarts(e) > now)
+    .filter((e) => e.listed && !e.cancelled && eventStarts(e) > now)
     .sort(
       (a, b) =>
         eventStarts(a) - eventStarts(b) || a.recordId.localeCompare(b.recordId),
